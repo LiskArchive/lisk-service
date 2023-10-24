@@ -15,7 +15,9 @@
  */
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
-const { CHAIN_ID_PREFIX_NETWORK_MAP } = require('../../../../services/blockchain-app-registry/config');
+const {
+	CHAIN_ID_PREFIX_NETWORK_MAP,
+} = require('../../../../services/blockchain-app-registry/config');
 
 const {
 	badRequestSchema,
@@ -26,7 +28,13 @@ const {
 const {
 	blockchainAppMetadataSchema,
 } = require('../../../schemas/api_v3/blockchainAppsMetadataSchema.schema');
-const { invalidChainIDCSV, invalidNamesCSV, invalidOffsets, invalidLimits, invalidPartialSearches } = require('../constants/invalidInputs');
+const {
+	invalidChainIDCSV,
+	invalidNamesCSV,
+	invalidOffsets,
+	invalidLimits,
+	invalidPartialSearches,
+} = require('../constants/invalidInputs');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
@@ -104,7 +112,9 @@ describe('Blockchain applications metadata API', () => {
 	});
 
 	it('should retrieve blockchain application off-chain metadata by CSV of chainID and network', async () => {
-		const response = await api.get(`${endpoint}?chainID=02000000,${curChainID}&network=betanet,${curNetwork}`);
+		const response = await api.get(
+			`${endpoint}?chainID=02000000,${curChainID}&network=betanet,${curNetwork}`,
+		);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);
@@ -199,8 +209,10 @@ describe('Blockchain applications metadata API', () => {
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);
 		expect(response.data.length).toBeLessThanOrEqual(10);
-		response.data.map(blockchainAppMetadata => expect(blockchainAppMetadata)
-			.toMap(blockchainAppMetadataSchema), { isDefault: true });
+		response.data.map(
+			blockchainAppMetadata => expect(blockchainAppMetadata).toMap(blockchainAppMetadataSchema),
+			{ isDefault: true },
+		);
 		expect(response.meta).toMap(metaSchema);
 	});
 
@@ -210,8 +222,10 @@ describe('Blockchain applications metadata API', () => {
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);
 		expect(response.data.length).toBeLessThanOrEqual(10);
-		response.data.map(blockchainAppMetadata => expect(blockchainAppMetadata)
-			.toMap(blockchainAppMetadataSchema), { isDefault: false });
+		response.data.map(
+			blockchainAppMetadata => expect(blockchainAppMetadata).toMap(blockchainAppMetadataSchema),
+			{ isDefault: false },
+		);
 		expect(response.meta).toMap(metaSchema);
 	});
 
@@ -237,7 +251,6 @@ describe('Blockchain applications metadata API', () => {
 
 	it('should return bad request for an invalid chain ID param', async () => {
 		for (let i = 0; i < invalidChainIDCSV.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await api.get(`${endpoint}?chainID=${invalidChainIDCSV[i]}`, 400);
 			expect(response).toMap(badRequestSchema);
 		}
@@ -245,7 +258,6 @@ describe('Blockchain applications metadata API', () => {
 
 	it('should return bad request for an invalid chain name param', async () => {
 		for (let i = 0; i < invalidNamesCSV.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await api.get(`${endpoint}?chainName=${invalidNamesCSV[i]}`, 400);
 			expect(response).toMap(badRequestSchema);
 		}
@@ -253,7 +265,6 @@ describe('Blockchain applications metadata API', () => {
 
 	it('should return bad request for an invalid display name param', async () => {
 		for (let i = 0; i < invalidNamesCSV.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await api.get(`${endpoint}?displayName=${invalidNamesCSV[i]}`, 400);
 			expect(response).toMap(badRequestSchema);
 		}
@@ -266,7 +277,6 @@ describe('Blockchain applications metadata API', () => {
 
 	it('should return bad request for an invalid search param', async () => {
 		for (let i = 0; i < invalidPartialSearches.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await api.get(`${endpoint}?search=${invalidPartialSearches[i]}`, 400);
 			expect(response).toMap(badRequestSchema);
 		}
@@ -274,7 +284,6 @@ describe('Blockchain applications metadata API', () => {
 
 	it('should return bad request for an invalid limit', async () => {
 		for (let i = 0; i < invalidLimits.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await api.get(`${endpoint}?limit=${invalidLimits[i]}`, 400);
 			expect(response).toMap(badRequestSchema);
 		}
@@ -282,7 +291,6 @@ describe('Blockchain applications metadata API', () => {
 
 	it('should return bad request for an invalid offset', async () => {
 		for (let i = 0; i < invalidOffsets.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await api.get(`${endpoint}?offset=${invalidOffsets[i]}`, 400);
 			expect(response).toMap(badRequestSchema);
 		}

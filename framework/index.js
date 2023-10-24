@@ -37,7 +37,7 @@ module.exports = {
 		waitForIt: require('./src/waitForIt'),
 		Data: require('./src/data'),
 		fs: require('./src/fs'),
-		...(require('./src/data')),
+		...require('./src/data'),
 		delay: require('./src/delay'),
 	},
 	Constants: {

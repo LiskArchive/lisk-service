@@ -36,7 +36,7 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getAccountsTable = () => getTableInstance(accountsTableSchema, MYSQL_ENDPOINT);
 
-const updateAccountInfoPk = async (job) => {
+const updateAccountInfoPk = async job => {
 	const publicKey = job.data;
 
 	try {
@@ -53,7 +53,7 @@ const updateAccountInfoPk = async (job) => {
 	}
 };
 
-const updateAccountInfoAddr = async (job) => {
+const updateAccountInfoAddr = async job => {
 	const address = job.data;
 
 	try {
@@ -82,15 +82,11 @@ const accountAddrUpdateQueue = Queue(
 	updateAccountInfoAddr,
 	config.queue.accountQueueByAddress.concurrency,
 );
-const indexAccountPublicKey = async (publicKey) => redis.sadd(
-	config.queue.indexAccountPublicKey.name,
-	publicKey,
-);
+const indexAccountPublicKey = async publicKey =>
+	redis.sadd(config.queue.indexAccountPublicKey.name, publicKey);
 
-const indexAccountAddress = async (address) => redis.sadd(
-	config.queue.indexAccountAddress.name,
-	address,
-);
+const indexAccountAddress = async address =>
+	redis.sadd(config.queue.indexAccountAddress.name, address);
 
 const triggerAccountUpdates = async () => {
 	const publicKeys = await redis.spop(

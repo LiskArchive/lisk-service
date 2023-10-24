@@ -21,8 +21,11 @@ module.exports = {
 	lastCertificateHeight: '=,number',
 	lastUpdated: '=,number',
 	escrowedLSK: '=,string',
-	escrow: ['escrow', {
-		tokenID: '=,string',
-		amount: '=,string',
-	}],
+	escrow: [
+		'escrow',
+		{
+			tokenID: '=,string',
+			amount: '=,string',
+		},
+	],
 };

@@ -18,7 +18,7 @@ const { getAddressByName } = require('../../utils/validator');
 
 const { getLisk32AddressFromPublicKey } = require('../../../utils/account');
 
-const tokenHasUserAccount = async (params) => {
+const tokenHasUserAccount = async params => {
 	const response = {
 		data: {
 			isExists: false,
@@ -39,7 +39,10 @@ const tokenHasUserAccount = async (params) => {
 
 	// Check existence if address found. Return false otherwise
 	if (address) {
-		const { exists: isExists } = await requestConnector('tokenHasUserAccount', { address, tokenID });
+		const { exists: isExists } = await requestConnector('tokenHasUserAccount', {
+			address,
+			tokenID,
+		});
 		response.data.isExists = isExists;
 	}
 

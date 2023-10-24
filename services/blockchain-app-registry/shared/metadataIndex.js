@@ -22,9 +22,7 @@ const {
 	},
 	Logger,
 	DB: {
-		MySQL: {
-			getTableInstance,
-		},
+		MySQL: { getTableInstance },
 	},
 } = require('lisk-service-framework');
 
@@ -49,7 +47,7 @@ const indexTokensMeta = async (tokenMeta, dbTrx) => {
 
 	const tokenMetaToIndex = await BluebirdPromise.map(
 		tokenMeta.tokens,
-		async (token) => {
+		async token => {
 			const result = {
 				chainName: tokenMeta.chainName,
 				network: tokenMeta.network,
@@ -82,9 +80,11 @@ const indexAppMeta = async (appMeta, dbTrx) => {
 // Given filepath of app.json or nativetokens.json, indexes the information in DB
 const indexMetadataFromFile = async (filePath, dbTrx) => {
 	const [network, app, filename] = filePath.split('/').slice(-3);
-	logger.debug(`Indexing metadata information for the app: ${app} (${network}) filename: ${filename}.`);
+	logger.debug(
+		`Indexing metadata information for the app: ${app} (${network}) filename: ${filename}.`,
+	);
 
-	if (!network || !app) throw Error('Require both \'network\' and \'app\'.');
+	if (!network || !app) throw Error("Require both 'network' and 'app'.");
 
 	// While processing nativetokens.json in sync job, newly downloaded app.json will be present
 	// in the temp download directory. Read from this file if present to fetch updated information.
@@ -93,7 +93,9 @@ const indexMetadataFromFile = async (filePath, dbTrx) => {
 	const repo = config.gitHub.appRegistryRepoName;
 	const oldAppJsonPath = `${dataDir}/${repo}/${network}/${app}/${FILENAME.APP_JSON}`;
 	const downloadedAppJsonPath = `${path.dirname(filePath)}/${FILENAME.APP_JSON}`;
-	const appJsonPath = await exists(downloadedAppJsonPath) ? downloadedAppJsonPath : oldAppJsonPath;
+	const appJsonPath = (await exists(downloadedAppJsonPath))
+		? downloadedAppJsonPath
+		: oldAppJsonPath;
 
 	logger.trace('Reading chain information.');
 	const appMetaString = await read(appJsonPath);
@@ -118,7 +120,9 @@ const indexMetadataFromFile = async (filePath, dbTrx) => {
 		await indexTokensMeta(tokenMeta, dbTrx);
 		logger.debug(`Indexed tokens information for the app: ${app} (${network}).`);
 	}
-	logger.info(`Finished indexing metadata information for the app: ${app} (${network}) file: ${filename}.`);
+	logger.info(
+		`Finished indexing metadata information for the app: ${app} (${network}) file: ${filename}.`,
+	);
 };
 
 const deleteAppMeta = async (appMeta, dbTrx) => {
@@ -135,7 +139,7 @@ const deleteTokensMeta = async (tokenMeta, dbTrx) => {
 	const tokenMetadataTable = await getTokenMetadataTable();
 	await BluebirdPromise.map(
 		tokenMeta.tokenIDs,
-		async (tokenID) => {
+		async tokenID => {
 			const queryParams = {
 				tokenID: tokenID.toLowerCase(),
 			};
@@ -147,9 +151,11 @@ const deleteTokensMeta = async (tokenMeta, dbTrx) => {
 
 const deleteIndexedMetadataFromFile = async (filePath, dbTrx) => {
 	const [network, app, filename] = filePath.split('/').slice(-3);
-	logger.debug(`Deleting metadata information for the app: ${app} (${network}) filename: ${filename}.`);
+	logger.debug(
+		`Deleting metadata information for the app: ${app} (${network}) filename: ${filename}.`,
+	);
 
-	if (!network || !app) throw Error('Require both \'network\' and \'app\'.');
+	if (!network || !app) throw Error("Require both 'network' and 'app'.");
 
 	const appPathInClonedRepo = path.dirname(filePath);
 	logger.trace('Reading chain information.');
@@ -175,10 +181,12 @@ const deleteIndexedMetadataFromFile = async (filePath, dbTrx) => {
 		await deleteTokensMeta(tokenMeta, dbTrx);
 		logger.debug(`Deleted tokens information for the app: ${app} (${network}).`);
 	}
-	logger.info(`Finished deleting metadata information for the app: ${app} (${network}) filename: ${filename}.`);
+	logger.info(
+		`Finished deleting metadata information for the app: ${app} (${network}) filename: ${filename}.`,
+	);
 };
 
-const indexAllBlockchainAppsMeta = async (dbTrx) => {
+const indexAllBlockchainAppsMeta = async dbTrx => {
 	const dataDirectory = config.dataDir;
 	const repo = config.gitHub.appRegistryRepoName;
 	const repoPath = path.join(dataDirectory, repo);

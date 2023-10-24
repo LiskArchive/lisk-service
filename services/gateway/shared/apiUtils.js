@@ -20,14 +20,15 @@ const curlyBracketsToColon = str => str.split('{').join(':').replace(/}/g, '');
 const transformPath = url => curlyBracketsToColon(dropOneSlashAtBeginning(url));
 
 const typeMappings = {
-	string_number: (input) => Number(input),
-	number_string: (input) => String(input),
-	array_string: (input) => input.join(','),
-	string_boolean: (input) => String(input).toLowerCase() === 'true',
+	string_number: input => Number(input),
+	number_string: input => String(input),
+	array_string: input => input.join(','),
+	string_boolean: input => String(input).toLowerCase() === 'true',
 };
 
 const convertType = (item, toType) => {
-	const fromType = typeof item === 'object' && item.constructor.name === 'Array' ? 'array' : typeof item;
+	const fromType =
+		typeof item === 'object' && item.constructor.name === 'Array' ? 'array' : typeof item;
 	const typeMatch = `${fromType}_${toType}`;
 	if (typeMappings[typeMatch]) return typeMappings[typeMatch](item);
 	return item;
@@ -46,13 +47,14 @@ const mapParam = (source, originalKey, mappingKey) => {
 const mapParamWithType = (source, originalSetup, mappingKey) => {
 	const [originalKey, dataType] = originalSetup.split(',');
 	const mapObject = mapParam(source, originalKey, mappingKey);
-	if (typeof dataType === 'string') return { key: mappingKey, value: convertType(mapObject.value, dataType) };
+	if (typeof dataType === 'string')
+		return { key: mappingKey, value: convertType(mapObject.value, dataType) };
 	return mapObject;
 };
 
 const transformParams = (params = {}, specs) => {
 	const output = {};
-	Object.keys(specs).forEach((specParam) => {
+	Object.keys(specs).forEach(specParam => {
 		const result = mapParamWithType(params, specs[specParam], specParam);
 		if (result.key) output[result.key] = result.value;
 	});

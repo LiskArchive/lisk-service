@@ -14,7 +14,12 @@
  *
  */
 import moment from 'moment';
-import { invalidAddresses, invalidBlockIDs, invalidLimits, invalidOffsets } from '../constants/invalidInputs';
+import {
+	invalidAddresses,
+	invalidBlockIDs,
+	invalidLimits,
+	invalidOffsets,
+} from '../constants/invalidInputs';
 
 const config = require('../../../config');
 const { request } = require('../../../helpers/socketIoRpcRequest');
@@ -28,9 +33,7 @@ const {
 	invalidRequestSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
-const {
-	eventSchema,
-} = require('../../../schemas/api_v3/event.schema');
+const { eventSchema } = require('../../../schemas/api_v3/event.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getEvents = async params => request(wsRpcUrl, 'get.events', params);
@@ -92,7 +95,6 @@ describe('Method get.events', () => {
 
 		it('should return invalid params for invalid limit', async () => {
 			for (let i = 0; i < invalidLimits.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await getEvents({ limit: invalidLimits[i] });
 				expect(response).toMap(invalidParamsSchema);
 			}
@@ -100,7 +102,6 @@ describe('Method get.events', () => {
 
 		it('should return invalid params for invalid offset', async () => {
 			for (let i = 0; i < invalidOffsets.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await getEvents({ offset: invalidOffsets[i] });
 				expect(response).toMap(invalidParamsSchema);
 			}
@@ -156,7 +157,6 @@ describe('Method get.events', () => {
 
 		it('should return invalid params for invalid block ID', async () => {
 			for (let i = 0; i < invalidBlockIDs.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await getEvents({ blockID: invalidBlockIDs[i] });
 				expect(response).toMap(invalidParamsSchema);
 			}
@@ -193,13 +193,14 @@ describe('Method get.events', () => {
 		});
 
 		it('should return invalid param for invalid senderAddress', async () => {
-			const response = await getEvents({ senderAddress: 'lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj' });
+			const response = await getEvents({
+				senderAddress: 'lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj',
+			});
 			expect(response).toMap(invalidParamsSchema);
 		});
 
 		it('should return invalid params for invalid senderAddress', async () => {
 			for (let i = 0; i < invalidBlockIDs.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await getEvents({ senderAddress: invalidAddresses[i] });
 				expect(response).toMap(invalidParamsSchema);
 			}
@@ -319,7 +320,9 @@ describe('Method get.events', () => {
 
 	describe('is able to retrieve events using timestamps', () => {
 		it('should return from to', async () => {
-			const from = moment(refTransaction.block.timestamp * 10 ** 3).subtract(1, 'day').unix();
+			const from = moment(refTransaction.block.timestamp * 10 ** 3)
+				.subtract(1, 'day')
+				.unix();
 			const toTimestamp = refTransaction.block.timestamp;
 			const response = await getEvents({ timestamp: `${from}:${toTimestamp}` });
 
@@ -347,7 +350,9 @@ describe('Method get.events', () => {
 		});
 
 		it('should return half bounded range from', async () => {
-			const from = moment(refTransaction.block.timestamp * 10 ** 3).subtract(1, 'day').unix();
+			const from = moment(refTransaction.block.timestamp * 10 ** 3)
+				.subtract(1, 'day')
+				.unix();
 			const response = await getEvents({ timestamp: `${from}:` });
 
 			expect(response).toMap(jsonRpcEnvelopeSchema);

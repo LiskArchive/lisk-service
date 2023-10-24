@@ -16,10 +16,7 @@
 const logger = require('lisk-service-framework').Logger();
 
 const config = require('../../config');
-const {
-	reloadValidatorCache,
-	isPosModuleRegistered,
-} = require('../../shared/dataService');
+const { reloadValidatorCache, isPosModuleRegistered } = require('../../shared/dataService');
 const { validateValidatorCache } = require('../../shared/jobs/validateValidatorsCache');
 
 module.exports = [

@@ -13,7 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { DB: { MySQL: { getTableInstance } } } = require('lisk-service-framework');
+const {
+	DB: {
+		MySQL: { getTableInstance },
+	},
+} = require('lisk-service-framework');
 
 const config = require('../../../../config');
 const validatorsTableSchema = require('../../../database/schema/validators');
@@ -34,10 +38,12 @@ const getValidator = async params => {
 	const { address } = params;
 
 	const validatorsTable = await getValidatorsTable();
-	const [{ proofOfPossession } = {}] = await validatorsTable.find({ address, limit: 1 }, ['proofOfPossession']);
+	const [{ proofOfPossession } = {}] = await validatorsTable.find({ address, limit: 1 }, [
+		'proofOfPossession',
+	]);
 
 	validator.data = {
-		...await requestConnector('getValidator', { address }),
+		...(await requestConnector('getValidator', { address })),
 		proofOfPossession,
 	};
 

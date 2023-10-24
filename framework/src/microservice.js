@@ -19,9 +19,7 @@ const { ServiceBroker } = require('moleculer');
 const cron = require('node-cron');
 const requireAllJs = require('./requireAllJs');
 const loggerLib = require('./logger');
-const {
-	isProperObject,
-} = require('./data');
+const { isProperObject } = require('./data');
 
 const methodSchema = {
 	name: { type: 'string' },
@@ -69,26 +67,29 @@ const Microservice = (config = {}) => {
 	});
 
 	const getBroker = () => broker;
-	const nop = () => { };
+	const nop = () => {};
 
 	const addMethod = item => {
 		const validDefinition = validator.validate(item, methodSchema);
 		if (validDefinition !== true) {
-			logger.warn([
-				`Invalid method definition in ${moleculerConfig.name}:`,
-				`${util.inspect(item)}`,
-				`${util.inspect(validDefinition)}`,
-			].join('\n'));
+			logger.warn(
+				[
+					`Invalid method definition in ${moleculerConfig.name}:`,
+					`${util.inspect(item)}`,
+					`${util.inspect(validDefinition)}`,
+				].join('\n'),
+			);
 			return false;
 		}
 
 		try {
 			nop(isProperObject(item.params) ? validator.validate({}, item.params) : true);
 		} catch (err) {
-			logger.warn([
-				`Invalid parameter definition in ${moleculerConfig.name}:`,
-				`${util.inspect(item)}`,
-			].join('\n'));
+			logger.warn(
+				[`Invalid parameter definition in ${moleculerConfig.name}:`, `${util.inspect(item)}`].join(
+					'\n',
+				),
+			);
 			return false;
 		}
 
@@ -103,11 +104,13 @@ const Microservice = (config = {}) => {
 	const addEvent = event => {
 		const validDefinition = validator.validate(event, eventSchema);
 		if (validDefinition !== true) {
-			logger.warn([
-				`Invalid event definition in ${moleculerConfig.name}:`,
-				`${util.inspect(event)}`,
-				`${util.inspect(validDefinition)}`,
-			].join('\n'));
+			logger.warn(
+				[
+					`Invalid event definition in ${moleculerConfig.name}:`,
+					`${util.inspect(event)}`,
+					`${util.inspect(validDefinition)}`,
+				].join('\n'),
+			);
 			return false;
 		}
 
@@ -130,35 +133,43 @@ const Microservice = (config = {}) => {
 	const scheduleJob = async job => {
 		const validDefinition = validator.validate(job, jobSchema);
 		if (validDefinition !== true) {
-			logger.warn([
-				`Invalid event definition in ${moleculerConfig.name}:`,
-				`${util.inspect(job)}`,
-				`${util.inspect(validDefinition)}`,
-			].join('\n'));
+			logger.warn(
+				[
+					`Invalid event definition in ${moleculerConfig.name}:`,
+					`${util.inspect(job)}`,
+					`${util.inspect(validDefinition)}`,
+				].join('\n'),
+			);
 			return false;
 		}
 		if (!job.init && !job.controller) {
-			logger.warn([
-				`Invalid event definition in ${moleculerConfig.name}, neither init, nor controller is defined for job:`,
-				`${util.inspect(job)}`,
-				`${util.inspect(validDefinition)}`,
-			].join('\n'));
+			logger.warn(
+				[
+					`Invalid event definition in ${moleculerConfig.name}, neither init, nor controller is defined for job:`,
+					`${util.inspect(job)}`,
+					`${util.inspect(validDefinition)}`,
+				].join('\n'),
+			);
 			return false;
 		}
-		if ((job.controller && !job.schedule && !job.interval)) {
-			logger.warn([
-				`Invalid event definition in ${moleculerConfig.name}, neither schedule, nor interval set:`,
-				`${util.inspect(job)}`,
-				`${util.inspect(validDefinition)}`,
-			].join('\n'));
+		if (job.controller && !job.schedule && !job.interval) {
+			logger.warn(
+				[
+					`Invalid event definition in ${moleculerConfig.name}, neither schedule, nor interval set:`,
+					`${util.inspect(job)}`,
+					`${util.inspect(validDefinition)}`,
+				].join('\n'),
+			);
 			return false;
 		}
 		if ((job.schedule || job.interval) && !job.controller) {
-			logger.warn([
-				`Invalid event definition in ${moleculerConfig.name}, controller is required with schedule or interval:`,
-				`${util.inspect(job)}`,
-				`${util.inspect(validDefinition)}`,
-			].join('\n'));
+			logger.warn(
+				[
+					`Invalid event definition in ${moleculerConfig.name}, controller is required with schedule or interval:`,
+					`${util.inspect(job)}`,
+					`${util.inspect(validDefinition)}`,
+				].join('\n'),
+			);
 			return false;
 		}
 		if (job.init) {
@@ -189,9 +200,11 @@ const Microservice = (config = {}) => {
 			job: addJob,
 		};
 
-		Object.keys(items)
-			.forEach(itemGroup => items[itemGroup]
-				.forEach(item => fnMap[type].call(this, item)));
+		// eslint-disable-next-line max-len
+		Object.keys(items).forEach(itemGroup =>
+			// eslint-disable-next-line implicit-arrow-linebreak
+			items[itemGroup].forEach(item => fnMap[type].call(this, item)),
+		);
 	};
 
 	const addMethods = folderPath => {
@@ -213,22 +226,22 @@ const Microservice = (config = {}) => {
 		broker.createService(serviceConfig);
 
 		// Start server
-		return broker
-		.start()
-		.then(() => {
+		return broker.start().then(() => {
 			scheduleJobs();
 		});
 	};
 
-	const requestRpc = (method, params) => new Promise((resolve, reject) => {
-		broker
-			.call(method, params)
-			.then(res => resolve(res))
-			.catch(err => {
-				logger.error(`Error occurred! ${err.message}`);
-				reject(err);
-			});
-	});
+	const requestRpc = (method, params) =>
+		// eslint-disable-next-line implicit-arrow-linebreak
+		new Promise((resolve, reject) => {
+			broker
+				.call(method, params)
+				.then(res => resolve(res))
+				.catch(err => {
+					logger.error(`Error occurred! ${err.message}`);
+					reject(err);
+				});
+		});
 
 	return {
 		addMethods,

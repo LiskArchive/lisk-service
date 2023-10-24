@@ -22,13 +22,13 @@ const { timeoutMessage, invokeEndpoint } = require('./client');
 
 const logger = Logger();
 
-const getAuthAccount = async (address) => {
+const getAuthAccount = async address => {
 	try {
 		const authAccountInfo = await invokeEndpoint('auth_getAuthAccount', { address });
 		return authAccountInfo;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getAuthAccount\'.');
+			throw new TimeoutException("Request timed out when calling 'getAuthAccount'.");
 		}
 		throw err;
 	}
@@ -40,7 +40,7 @@ const getAuthMultiSigRegMsgSchema = async () => {
 		return multiSigRegMsgSchema;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getMultiSigRegMsgSchema\'.');
+			throw new TimeoutException("Request timed out when calling 'getMultiSigRegMsgSchema'.");
 		}
 		logger.warn(`Error returned when invoking 'auth_getMultiSigRegMsgSchema'.\n${err.stack}`);
 		throw err;

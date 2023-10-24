@@ -434,7 +434,14 @@ const engineEndpoints = [
 		request: {
 			$id: '/lisk/updateStatusRequest',
 			type: 'object',
-			required: ['address', 'password', 'enable', 'height', 'maxHeightGenerated', 'maxHeightPrevoted'],
+			required: [
+				'address',
+				'password',
+				'enable',
+				'height',
+				'maxHeightGenerated',
+				'maxHeightPrevoted',
+			],
 			properties: {
 				address: {
 					type: 'string',

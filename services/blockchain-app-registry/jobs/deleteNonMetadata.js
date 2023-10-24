@@ -24,7 +24,7 @@ const logger = Logger();
 const config = require('../config');
 const { isMetadataFile } = require('../shared/utils/downloadRepository');
 
-const removeDirectoryIfEmpty = async (dirPath) => {
+const removeDirectoryIfEmpty = async dirPath => {
 	const files = await getFilesAndDirs(dirPath);
 
 	if (files.length === 0) {
@@ -33,23 +33,23 @@ const removeDirectoryIfEmpty = async (dirPath) => {
 	}
 };
 
-const removeEmptyDirectoriesAndNonMetaFiles = async (dirPath) => {
+const removeEmptyDirectoriesAndNonMetaFiles = async dirPath => {
 	const contents = await getFilesAndDirs(dirPath);
 
 	for (let i = 0; i < contents.length; i++) {
-		/* eslint-disable no-await-in-loop */
 		const filePath = contents[i];
 		const isDirectory = (await stats(filePath)).isDirectory();
 
 		if (isDirectory) {
 			await removeEmptyDirectoriesAndNonMetaFiles(filePath);
 			await removeDirectoryIfEmpty(filePath);
-		} else if (!config.ALLOWED_FILE_EXTENSIONS.some((ending) => filePath.endsWith(ending))
-			&& !isMetadataFile(filePath)) {
+		} else if (
+			!config.ALLOWED_FILE_EXTENSIONS.some(ending => filePath.endsWith(ending)) &&
+			!isMetadataFile(filePath)
+		) {
 			await rm(filePath);
 			logger.trace(`Removed file: ${filePath}.`);
 		}
-		/* eslint-enable no-await-in-loop */
 	}
 };
 

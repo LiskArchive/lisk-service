@@ -1,0 +1,61 @@
+# Files
+Jenkinsfile*
+Makefile
+Dockerfile
+LICENSE
+.DS_Store
+data/
+.idea
+logs/
+jenkins/*.deployment
+
+docs/
+
+.gitkeep
+mocha.opts
+
+# rc files
+.*rc
+## ignore files
+.*ignore
+
+# Ignore extensions
+*.png
+*.sql
+*.blob
+*.ejs
+*.sh
+*.conf
+*.env
+*.info
+*.log
+*.tgz
+*.lock
+*.sqlite3
+
+## jest snapshot
+*.snap
+*.tsbuildinfo
+
+# project specific paths
+test/.coverage-unit/
+helm
+coverage/
+build/
+dist/
+docker/.env*
+qa/
+bin
+tmp/
+
+*.pid
+*.gz
+
+*.SHA256
+*.mock
+*.txt
+.editorconfig
+
+*.mainnet
+
+docker/*

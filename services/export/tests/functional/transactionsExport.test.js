@@ -39,21 +39,21 @@ describe('Excel export utils', () => {
 		it('should return standardized interval when both start and end date supplied', async () => {
 			const result = await standardizeIntervalFromParams({ interval: interval.startEnd });
 			expect(typeof result).toBe('string');
-			expect(result.length).toBe((2 * config.excel.dateFormat.length) + 1);
+			expect(result.length).toBe(2 * config.excel.dateFormat.length + 1);
 			expect(result).toMatch(STANDARDIZED_INTERVAL);
 		});
 
 		it('should return standardized interval when only start date supplied', async () => {
 			const result = await standardizeIntervalFromParams({ interval: interval.onlyStart });
 			expect(typeof result).toBe('string');
-			expect(result.length).toBe((2 * config.excel.dateFormat.length) + 1);
+			expect(result.length).toBe(2 * config.excel.dateFormat.length + 1);
 			expect(result).toMatch(STANDARDIZED_INTERVAL);
 		});
 
 		xit('should return standardized interval when dates not supplied', async () => {
 			const result = await standardizeIntervalFromParams({});
 			expect(typeof result).toBe('string');
-			expect(result.length).toBe((2 * config.excel.dateFormat.length) + 1);
+			expect(result.length).toBe(2 * config.excel.dateFormat.length + 1);
 			expect(result).toMatch(STANDARDIZED_INTERVAL);
 		});
 	});

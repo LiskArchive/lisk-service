@@ -14,13 +14,13 @@
  *
  */
 const {
-	address: {
-		getLisk32AddressFromPublicKey: getLisk32AddressFromPublicKeyHelper,
-	},
+	address: { getLisk32AddressFromPublicKey: getLisk32AddressFromPublicKeyHelper },
 } = require('@liskhq/lisk-cryptography');
 
 const {
-	DB: { MySQL: { getTableInstance } },
+	DB: {
+		MySQL: { getTableInstance },
+	},
 } = require('lisk-service-framework');
 
 const accountsTableSchema = require('../database/schema/accounts');
@@ -30,9 +30,10 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getAccountsTable = () => getTableInstance(accountsTableSchema, MYSQL_ENDPOINT);
 
-const getLisk32AddressFromPublicKey = publicKey => getLisk32AddressFromPublicKeyHelper(Buffer.from(publicKey, 'hex'));
+const getLisk32AddressFromPublicKey = publicKey =>
+	getLisk32AddressFromPublicKeyHelper(Buffer.from(publicKey, 'hex'));
 
-const updateAccountInfo = async (params) => {
+const updateAccountInfo = async params => {
 	const accountInfo = {};
 	Object.keys(accountsTableSchema.schema).forEach(columnName => {
 		if (columnName in params) {

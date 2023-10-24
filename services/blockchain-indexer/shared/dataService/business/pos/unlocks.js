@@ -39,41 +39,42 @@ const getPosUnlocks = async params => {
 		return unlocks;
 	}
 
-	const { pendingUnlocks = [] } = await requestConnector(
-		'getPosPendingUnlocks',
-		{ address: params.address },
-	);
+	const { pendingUnlocks = [] } = await requestConnector('getPosPendingUnlocks', {
+		address: params.address,
+	});
 
-	const { data: { lastBlockID, genesis: { blockTime } } } = await getNetworkStatus();
+	const {
+		data: {
+			lastBlockID,
+			genesis: { blockTime },
+		},
+	} = await getNetworkStatus();
 	const { height, timestamp } = await getBlockByID(lastBlockID);
 
 	const tokenID = await getPosTokenID();
-	const filteredPendingUnlocks = pendingUnlocks.reduce(
-		(accumulator, pendingUnlock) => {
-			const { unlockable, ...remPendingUnlock } = pendingUnlock;
-			const isLocked = !pendingUnlock.unlockable;
-			// Filter results based on `params.isLocked`
-			if (params.isLocked === undefined || params.isLocked === isLocked) {
-				// Calculate expected unlock time
-				const expectedUnlockTime = timestamp
-					+ (remPendingUnlock.expectedUnlockableHeight - height) * blockTime;
+	const filteredPendingUnlocks = pendingUnlocks.reduce((accumulator, pendingUnlock) => {
+		const { unlockable, ...remPendingUnlock } = pendingUnlock;
+		const isLocked = !pendingUnlock.unlockable;
+		// Filter results based on `params.isLocked`
+		if (params.isLocked === undefined || params.isLocked === isLocked) {
+			// Calculate expected unlock time
+			const expectedUnlockTime =
+				timestamp + (remPendingUnlock.expectedUnlockableHeight - height) * blockTime;
 
-				accumulator.push({
-					...remPendingUnlock,
-					isLocked,
-					expectedUnlockTime,
-					tokenID,
-				});
-			}
-			return accumulator;
-		},
-		[],
-	);
+			accumulator.push({
+				...remPendingUnlock,
+				isLocked,
+				expectedUnlockTime,
+				tokenID,
+			});
+		}
+		return accumulator;
+	}, []);
 
-	const { publicKey, name } = await getIndexedAccountInfo(
-		{ address: params.address, limit: 1 },
-		['name', 'publicKey'],
-	);
+	const { publicKey, name } = await getIndexedAccountInfo({ address: params.address, limit: 1 }, [
+		'name',
+		'publicKey',
+	]);
 
 	// Update index if public key is not indexed asynchronously
 	if (!publicKey && params.publicKey) indexAccountPublicKey(params.publicKey);
@@ -86,8 +87,10 @@ const getPosUnlocks = async params => {
 	};
 
 	const total = unlocks.data.pendingUnlocks.length;
-	unlocks.data.pendingUnlocks = unlocks.data.pendingUnlocks
-		.slice(params.offset, params.offset + params.limit);
+	unlocks.data.pendingUnlocks = unlocks.data.pendingUnlocks.slice(
+		params.offset,
+		params.offset + params.limit,
+	);
 
 	unlocks.meta = {
 		count: unlocks.data.pendingUnlocks.length,

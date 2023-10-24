@@ -15,7 +15,7 @@
  */
 const business = require('../business');
 
-const getLegacyAccountInfo = async (params) => {
+const getLegacyAccountInfo = async params => {
 	const legacyAccountInfo = await business.getLegacyAccountInfo(params);
 	return legacyAccountInfo;
 };

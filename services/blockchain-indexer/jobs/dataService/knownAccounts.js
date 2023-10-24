@@ -17,9 +17,7 @@ const logger = require('lisk-service-framework').Logger();
 
 const config = require('../../config');
 
-const {
-	reloadAccountKnowledge,
-} = require('../../shared/dataService/knownAccounts');
+const { reloadAccountKnowledge } = require('../../shared/dataService/knownAccounts');
 
 module.exports = [
 	{

@@ -15,9 +15,7 @@
  */
 const config = require('../../../config');
 
-const {
-	request,
-} = require('../../../helpers/socketIoRpcRequest');
+const { request } = require('../../../helpers/socketIoRpcRequest');
 
 const {
 	invalidParamsSchema,
@@ -31,7 +29,8 @@ const {
 const { invalidLimits, invalidChainIDCSV, invalidOffsets } = require('../constants/invalidInputs');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
-const getBlockchainAppsTokensSupportedMetadata = async (params) => request(wsRpcUrl, 'get.blockchain.apps.meta.tokens.supported', params);
+const getBlockchainAppsTokensSupportedMetadata = async params =>
+	request(wsRpcUrl, 'get.blockchain.apps.meta.tokens.supported', params);
 const getNetworkStatus = async params => request(wsRpcUrl, 'get.network.status', params);
 
 let curChainID;
@@ -89,7 +88,10 @@ describe('get.blockchain.apps.meta.tokens.supported', () => {
 	});
 
 	it('should return blockchain applications off-chain metadata for supported tokens by chainID and sort=tokenID:desc', async () => {
-		const response = await getBlockchainAppsTokensSupportedMetadata({ chainID: curChainID, sort: 'tokenID:desc' });
+		const response = await getBlockchainAppsTokensSupportedMetadata({
+			chainID: curChainID,
+			sort: 'tokenID:desc',
+		});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
@@ -113,7 +115,6 @@ describe('get.blockchain.apps.meta.tokens.supported', () => {
 
 	it('should return invalid params for an invalid chainID param', async () => {
 		for (let i = 0; i < invalidChainIDCSV.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getBlockchainAppsTokensSupportedMetadata({
 				chainID: invalidChainIDCSV[i],
 			});
@@ -123,7 +124,6 @@ describe('get.blockchain.apps.meta.tokens.supported', () => {
 
 	it('should return invalid params for an invalid limit', async () => {
 		for (let i = 0; i < invalidLimits.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getBlockchainAppsTokensSupportedMetadata({ limit: invalidLimits[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}
@@ -131,7 +131,6 @@ describe('get.blockchain.apps.meta.tokens.supported', () => {
 
 	it('should return invalid params for an invalid offset', async () => {
 		for (let i = 0; i < invalidOffsets.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getBlockchainAppsTokensSupportedMetadata({
 				offset: invalidOffsets[i],
 			});

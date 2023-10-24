@@ -77,7 +77,9 @@ describe('Test getCurrentHeight method', () => {
 
 	it('should throw error when requestConnector throws error', async () => {
 		jest.mock(mockRequestFilePath, () => ({
-			requestConnector: async () => { throw new Error('Custom Error'); },
+			requestConnector: async () => {
+				throw new Error('Custom Error');
+			},
 		}));
 
 		const { getCurrentHeight } = require(mockConstantsPath);

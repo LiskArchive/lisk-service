@@ -17,12 +17,14 @@ const { requestConnector } = require('../../../utils/request');
 
 const { getRewardTokenID } = require('./constants');
 
-const getDefaultRewardAtHeight = async (params) => {
+const getDefaultRewardAtHeight = async params => {
 	const response = {
 		data: {},
 		meta: {},
 	};
-	const defaultRewardResponse = await requestConnector('getDefaultRewardAtHeight', { height: params.height });
+	const defaultRewardResponse = await requestConnector('getDefaultRewardAtHeight', {
+		height: params.height,
+	});
 	const rewardTokenID = await getRewardTokenID();
 
 	response.data = {

@@ -14,13 +14,15 @@
  *
  */
 const {
-	HTTP: { StatusCodes: { NOT_FOUND } },
+	HTTP: {
+		StatusCodes: { NOT_FOUND },
+	},
 	Exceptions: { NotFoundException },
 } = require('lisk-service-framework');
 
 const dataService = require('../../../shared/dataService');
 
-const getEvents = async (params) => {
+const getEvents = async params => {
 	const events = {
 		data: {},
 		meta: {},

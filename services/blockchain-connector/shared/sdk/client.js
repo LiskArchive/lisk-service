@@ -62,7 +62,7 @@ const instantiateClient = async (isForceUpdate = false) => {
 			return clientCache;
 		}
 
-		if ((Date.now() - instantiationBeginTime) > MAX_INSTANTIATION_WAIT_TIME) {
+		if (Date.now() - instantiationBeginTime > MAX_INSTANTIATION_WAIT_TIME) {
 			// Waited too long, reset the flag to re-attempt client instantiation
 			isInstantiating = false;
 		}
@@ -76,7 +76,8 @@ const instantiateClient = async (isForceUpdate = false) => {
 
 		logger.error(errMessage);
 		logger.error(err.message);
-		if (err.code === 'ECONNREFUSED') throw new Error('ECONNREFUSED: Unable to reach a network node.');
+		if (err.code === 'ECONNREFUSED')
+			throw new Error('ECONNREFUSED: Unable to reach a network node.');
 
 		return {
 			data: { error: 'Action not supported' },
@@ -95,7 +96,6 @@ const invokeEndpoint = async (endpoint, params = {}, numRetries = NUM_REQUEST_RE
 	const apiClient = await getApiClient();
 	let retries = numRetries;
 	do {
-		/* eslint-disable no-await-in-loop */
 		try {
 			const response = await apiClient._channel.invoke(endpoint, params);
 			return response;
@@ -106,7 +106,6 @@ const invokeEndpoint = async (endpoint, params = {}, numRetries = NUM_REQUEST_RE
 				throw err;
 			}
 		}
-		/* eslint-enable no-await-in-loop */
 	} while (retries--);
 };
 

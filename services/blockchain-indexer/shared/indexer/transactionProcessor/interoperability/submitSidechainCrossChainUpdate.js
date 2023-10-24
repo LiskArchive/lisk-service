@@ -15,7 +15,9 @@
  */
 const {
 	Logger,
-	DB: { MySQL: { getTableInstance } },
+	DB: {
+		MySQL: { getTableInstance },
+	},
 } = require('lisk-service-framework');
 
 const { MODULE_NAME } = require('./index');
@@ -48,7 +50,9 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 
 	const chainInfo = await getChainInfo(tx.params.sendingChainID);
 
-	logger.trace(`Indexing cross chain update transaction ${tx.id} contained in block at height ${tx.height}.`);
+	logger.trace(
+		`Indexing cross chain update transaction ${tx.id} contained in block at height ${tx.height}.`,
+	);
 
 	const appInfo = {
 		chainID: tx.params.sendingChainID,
@@ -58,13 +62,18 @@ const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	};
 
 	await blockchainAppsTable.upsert(appInfo, dbTrx);
-	await ccuTable.upsert({
-		height: tx.height,
-		sendingChainID: tx.params.sendingChainID,
-		transactionID: tx.id,
-	}, dbTrx);
+	await ccuTable.upsert(
+		{
+			height: tx.height,
+			sendingChainID: tx.params.sendingChainID,
+			transactionID: tx.id,
+		},
+		dbTrx,
+	);
 
-	logger.debug(`Indexed cross chain update transaction ${tx.id} contained in block at height ${tx.height}.`);
+	logger.debug(
+		`Indexed cross chain update transaction ${tx.id} contained in block at height ${tx.height}.`,
+	);
 };
 
 const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
@@ -73,7 +82,9 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	const blockchainAppsTable = await getBlockchainAppsTable();
 	const ccuTable = await getCCUTable();
 
-	logger.trace(`Reverting cross chain update transaction ${tx.id} contained in block at height ${tx.height}.`);
+	logger.trace(
+		`Reverting cross chain update transaction ${tx.id} contained in block at height ${tx.height}.`,
+	);
 
 	let prevTransaction;
 	const chainInfo = await getChainInfo(tx.params.sendingChainID);
@@ -81,22 +92,25 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	if (chainInfo.status === APP_STATUS.ACTIVATED) {
 		const searchParams = {
 			sendingChainID: tx.params.sendingChainID,
-			propBetweens: [{
-				property: 'height',
-				lowerThan: blockHeader.height,
-			}],
+			propBetweens: [
+				{
+					property: 'height',
+					lowerThan: blockHeader.height,
+				},
+			],
 			sort: 'height:desc',
 		};
 
 		const resultSet = await ccuTable.find(searchParams, 'height');
 
 		for (let i = 0; i < resultSet.length; i++) {
-			/* eslint-disable no-await-in-loop */
-			const result = (await getTransactions({
-				height: resultSet[i].height,
-				moduleCommand: tx.moduleCommand,
-				executionStatus: TRANSACTION_STATUS.SUCCESSFUL,
-			})).data;
+			const result = (
+				await getTransactions({
+					height: resultSet[i].height,
+					moduleCommand: tx.moduleCommand,
+					executionStatus: TRANSACTION_STATUS.SUCCESSFUL,
+				})
+			).data;
 
 			if (result.length) {
 				prevTransaction = result.find(e => e.params.sendingChainID === tx.params.sendingChainID);
@@ -104,18 +118,22 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 			}
 		}
 	} else if (chainInfo.status === APP_STATUS.REGISTERED) {
-		const COMMAND = await isMainchain()
+		const COMMAND = (await isMainchain())
 			? COMMAND_NAME_REGISTER_SIDECHAIN
 			: COMMAND_NAME_REGISTER_MAINCHAIN;
 
-		const result = (await getTransactions({
-			moduleCommand: `${MODULE_NAME}:${COMMAND}`,
-			executionStatus: TRANSACTION_STATUS.SUCCESSFUL,
-			propBetweens: [{
-				property: 'height',
-				lowerThan: blockHeader.height,
-			}],
-		})).data;
+		const result = (
+			await getTransactions({
+				moduleCommand: `${MODULE_NAME}:${COMMAND}`,
+				executionStatus: TRANSACTION_STATUS.SUCCESSFUL,
+				propBetweens: [
+					{
+						property: 'height',
+						lowerThan: blockHeader.height,
+					},
+				],
+			})
+		).data;
 
 		if (result.length) {
 			prevTransaction = result.find(e => e.params.sendingChainID === tx.params.sendingChainID);
@@ -130,8 +148,9 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	};
 
 	await blockchainAppsTable.upsert(appInfo, dbTrx);
-	/* eslint-enable no-await-in-loop */
-	logger.debug(`Reverted cross chain update transaction ${tx.id} contained in block at height ${tx.height}.`);
+	logger.debug(
+		`Reverted cross chain update transaction ${tx.id} contained in block at height ${tx.height}.`,
+	);
 };
 
 module.exports = {

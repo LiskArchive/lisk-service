@@ -49,9 +49,7 @@ const invalidTokenIDs = [
 	'000000000 OR 1=1', // SQL injection
 ];
 
-const invalidTokenIDCSV = [
-	'___%',
-];
+const invalidTokenIDCSV = ['___%'];
 
 const invalidPartialSearches = [
 	'12345678901234567890123456789012345678901234567890123456789012345', // more than 64 characters
@@ -62,35 +60,13 @@ const invalidPartialSearches = [
 	'___%',
 ];
 
-const invalidNamesCSV = [
-	'A!',
-	'space space',
-	'special?char',
-	'%%%%%',
-	'__%,__%',
-];
+const invalidNamesCSV = ['A!', 'space space', 'special?char', '%%%%%', '__%,__%'];
 
-const invalidLimits = [
-	'abc',
-	0,
-	-1,
-	105,
-	'one',
-	'%',
-];
+const invalidLimits = ['abc', 0, -1, 105, 'one', '%'];
 
-const invalidOffsets = [
-	'abc',
-	-1,
-	'one',
-	'%',
-];
+const invalidOffsets = ['abc', -1, 'one', '%'];
 
-const invalidChainIDCSV = [
-	'abcdefghijklmnop',
-	'ABCDEFGH',
-	'__%',
-];
+const invalidChainIDCSV = ['abcdefghijklmnop', 'ABCDEFGH', '__%'];
 
 module.exports = {
 	invalidAddresses,

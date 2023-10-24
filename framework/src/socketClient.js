@@ -64,7 +64,9 @@ const SocketClient = endpoint => {
 		debug('Reconnection failed');
 	});
 
-	const emit = (event, data) => new Promise(resolve => {
+	const emit = (event, data) =>
+		// eslint-disable-next-line implicit-arrow-linebreak
+		new Promise(resolve => {
 			socket.emit(event, data, answer => {
 				debug(
 					`Emitting socket event ${event} with data ${util.inspect(data)}: ${util.inspect(answer)}`,
@@ -73,7 +75,9 @@ const SocketClient = endpoint => {
 			});
 		});
 
-	const requestRpc = params => new Promise(resolve => {
+	const requestRpc = params =>
+		// eslint-disable-next-line implicit-arrow-linebreak
+		new Promise(resolve => {
 			debug(`Emitting RPC request ${params}`);
 			socket.emit('request', params, answer => {
 				debug(

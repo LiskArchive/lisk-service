@@ -23,7 +23,12 @@ module.exports = {
 	swaggerApiPath: '/generators',
 	rpcMethod: 'get.generators',
 	params: {
-		search: { optional: true, type: 'string', pattern: regex.PARTIAL_SEARCH, altSwaggerKey: 'searchByNameAddressPubKey' },
+		search: {
+			optional: true,
+			type: 'string',
+			pattern: regex.PARTIAL_SEARCH,
+			altSwaggerKey: 'searchByNameAddressPubKey',
+		},
 		limit: { optional: true, type: 'number', min: 1, max: 103, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
 	},
@@ -37,7 +42,10 @@ module.exports = {
 			rpcMethod: this.rpcMethod,
 			description: 'Returns generators list',
 		});
-		generatorSchema[this.swaggerApiPath].get.parameters = transformParams('Generators', this.params);
+		generatorSchema[this.swaggerApiPath].get.parameters = transformParams(
+			'Generators',
+			this.params,
+		);
 		generatorSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'Returns a list of generators',

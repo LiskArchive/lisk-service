@@ -22,14 +22,17 @@ const {
 	invalidRequestSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
+const { stakesResponseSchema } = require('../../../schemas/api_v3/stakes.schema');
 const {
-	stakesResponseSchema,
-} = require('../../../schemas/api_v3/stakes.schema');
-const { invalidPublicKeys, invalidAddresses, invalidPartialSearches, invalidNames } = require('../constants/invalidInputs');
+	invalidPublicKeys,
+	invalidAddresses,
+	invalidPartialSearches,
+	invalidNames,
+} = require('../constants/invalidInputs');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 
-const getStakes = async (params) => request(wsRpcUrl, 'get.pos.stakes', params);
+const getStakes = async params => request(wsRpcUrl, 'get.pos.stakes', params);
 
 describe('get.pos.stakes', () => {
 	let refStaker;
@@ -41,16 +44,24 @@ describe('get.pos.stakes', () => {
 		maxNumberSentStakes = posConstants.data.maxNumberSentStakes;
 
 		do {
-			// eslint-disable-next-line no-await-in-loop
-			const response = await request(wsRpcUrl, 'get.transactions', { moduleCommand: 'pos:stake', limit: 1 });
+			const response = await request(wsRpcUrl, 'get.transactions', {
+				moduleCommand: 'pos:stake',
+				limit: 1,
+			});
 			const { data: [stakeTx] = [] } = response.result;
 			if (stakeTx) {
-				const { params: { stakes: [stake] } } = stakeTx;
+				const {
+					params: {
+						stakes: [stake],
+					},
+				} = stakeTx;
 				refValidatorAddress = stake.validatorAddress;
 				refStaker = stakeTx.sender;
 			}
 		} while (!refStaker);
-		const validatorsResponse = await request(wsRpcUrl, 'get.pos.validators', { address: refValidatorAddress });
+		const validatorsResponse = await request(wsRpcUrl, 'get.pos.validators', {
+			address: refValidatorAddress,
+		});
 		[refValidator] = validatorsResponse.result.data;
 	});
 
@@ -104,8 +115,7 @@ describe('get.pos.stakes', () => {
 		expect(result).toMap(stakesResponseSchema);
 		expect(result.data.stakes.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
-		expect(result.data.stakes.some(staker => staker.address === refValidator.address))
-			.toBe(true);
+		expect(result.data.stakes.some(staker => staker.address === refValidator.address)).toBe(true);
 	});
 
 	it('should return list of stakes when requested for known staker address and search (partial validator address) param', async () => {
@@ -116,8 +126,7 @@ describe('get.pos.stakes', () => {
 		expect(result).toMap(stakesResponseSchema);
 		expect(result.data.stakes.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
-		expect(result.data.stakes.some(staker => staker.address === refValidator.address))
-			.toBe(true);
+		expect(result.data.stakes.some(staker => staker.address === refValidator.address)).toBe(true);
 	});
 
 	it('should return list of stakes when requested for known staker address and search (partial validator public key) param', async () => {
@@ -128,8 +137,7 @@ describe('get.pos.stakes', () => {
 		expect(result).toMap(stakesResponseSchema);
 		expect(result.data.stakes.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.stakes.length).toBeLessThanOrEqual(maxNumberSentStakes);
-		expect(result.data.stakes.some(staker => staker.address === refValidator.address))
-			.toBe(true);
+		expect(result.data.stakes.some(staker => staker.address === refValidator.address)).toBe(true);
 	});
 
 	it('should return list of stakes when requested for known staker name', async () => {
@@ -159,7 +167,6 @@ describe('get.pos.stakes', () => {
 
 	it('should return invalid params for invalid address', async () => {
 		for (let i = 0; i < invalidAddresses.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getStakes({ address: invalidAddresses[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}
@@ -167,7 +174,6 @@ describe('get.pos.stakes', () => {
 
 	it('should return invalid params for invalid publicKey', async () => {
 		for (let i = 0; i < invalidPublicKeys.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getStakes({ publicKey: invalidPublicKeys[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}
@@ -175,7 +181,6 @@ describe('get.pos.stakes', () => {
 
 	it('should return invalid params for invalid name', async () => {
 		for (let i = 0; i < invalidNames.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getStakes({ name: invalidNames[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}
@@ -183,7 +188,6 @@ describe('get.pos.stakes', () => {
 
 	it('should return invalid params for invalid search', async () => {
 		for (let i = 0; i < invalidPartialSearches.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getStakes({
 				address: refStaker.address,
 				search: invalidPartialSearches[i],

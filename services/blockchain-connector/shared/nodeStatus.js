@@ -30,44 +30,48 @@ const NODE_SYNC_CHECK_INTERVAL = 15 * 1000; // in ms
 
 let intervalID;
 
-const checkStatus = () => new Promise((resolve, reject) => getNodeInfo()
-	.then(nodeInfo => {
-		resolve(nodeInfo);
-	})
-	.catch(() => {
-		logger.debug(`The node ${liskAppAddress} not available at the moment.`);
-		reject();
-	}));
+const checkStatus = () =>
+	new Promise((resolve, reject) =>
+		getNodeInfo()
+			.then(nodeInfo => {
+				resolve(nodeInfo);
+			})
+			.catch(() => {
+				logger.debug(`The node ${liskAppAddress} not available at the moment.`);
+				reject();
+			}),
+	);
 
 const waitForNode = () => waitForIt(checkStatus, NODE_DISCOVERY_INTERVAL);
 
-const waitForNodeToFinishSync = resolve => new Promise(res => {
-	if (!resolve) resolve = res;
-	if (intervalID) {
-		clearInterval(intervalID);
-		intervalID = null;
-	}
+const waitForNodeToFinishSync = resolve =>
+	new Promise(res => {
+		if (!resolve) resolve = res;
+		if (intervalID) {
+			clearInterval(intervalID);
+			intervalID = null;
+		}
 
-	return getNodeInfo(true).then(nodeInfo => {
-		const { syncing } = nodeInfo;
-		const isNodeSyncComplete = !syncing;
+		return getNodeInfo(true).then(nodeInfo => {
+			const { syncing } = nodeInfo;
+			const isNodeSyncComplete = !syncing;
 
-		return isNodeSyncComplete
-			? (() => {
-				logger.info('Node is fully synchronized with the network.');
-				return resolve(isNodeSyncComplete);
-			})()
-			: (() => {
-				logger.info(
-					'Node synchronization in progress. Will wait for node to sync with the network before scheduling indexing.',
-				);
-				intervalID = setInterval(
-					waitForNodeToFinishSync.bind(null, resolve),
-					NODE_SYNC_CHECK_INTERVAL,
-				);
-			})();
+			return isNodeSyncComplete
+				? (() => {
+						logger.info('Node is fully synchronized with the network.');
+						return resolve(isNodeSyncComplete);
+				  })()
+				: (() => {
+						logger.info(
+							'Node synchronization in progress. Will wait for node to sync with the network before scheduling indexing.',
+						);
+						intervalID = setInterval(
+							waitForNodeToFinishSync.bind(null, resolve),
+							NODE_SYNC_CHECK_INTERVAL,
+						);
+				  })();
+		});
 	});
-});
 
 module.exports = {
 	waitForNode,

@@ -14,14 +14,12 @@
  *
  */
 const {
-	Exceptions: {
-		InvalidParamsException,
-	},
+	Exceptions: { InvalidParamsException },
 } = require('lisk-service-framework');
 
 const { requestConnector } = require('../../../utils/request');
 
-const getTokenBalances = async (params) => {
+const getTokenBalances = async params => {
 	const tokensInfo = [];
 	const tokens = {
 		data: [],
@@ -29,26 +27,28 @@ const getTokenBalances = async (params) => {
 	};
 
 	if (params.tokenID && !params.address) {
-		throw new InvalidParamsException('TokenID based retrieval is only possible along with address.');
+		throw new InvalidParamsException(
+			'TokenID based retrieval is only possible along with address.',
+		);
 	}
 
 	if (params.tokenID && params.address) {
-		const response = await requestConnector(
-			'getTokenBalance',
-			{ address: params.address, tokenID: params.tokenID });
+		const response = await requestConnector('getTokenBalance', {
+			address: params.address,
+			tokenID: params.tokenID,
+		});
 
 		tokensInfo.push({ ...response, tokenID: params.tokenID });
 	} else {
-		const response = await requestConnector(
-			'getTokenBalances',
-			{ address: params.address });
+		const response = await requestConnector('getTokenBalances', { address: params.address });
 
 		if (response.balances) tokensInfo.push(...response.balances);
 	}
 
-	tokens.data = 'offset' in params && 'limit' in params
-		? tokensInfo.slice(params.offset, params.offset + params.limit)
-		: tokensInfo;
+	tokens.data =
+		'offset' in params && 'limit' in params
+			? tokensInfo.slice(params.offset, params.offset + params.limit)
+			: tokensInfo;
 
 	tokens.meta = {
 		address: params.address,

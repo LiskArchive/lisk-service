@@ -14,17 +14,25 @@
  *
  */
 const {
-	address: {
-		getAddressFromLisk32Address,
-	},
+	address: { getAddressFromLisk32Address },
 } = require('@liskhq/lisk-cryptography');
 
 const config = require('../../../config');
 const { request } = require('../../../helpers/socketIoRpcRequest');
 
-const { invalidParamsSchema, jsonRpcEnvelopeSchema } = require('../../../schemas/rpcGenerics.schema');
+const {
+	invalidParamsSchema,
+	jsonRpcEnvelopeSchema,
+} = require('../../../schemas/rpcGenerics.schema');
 const { validatorsResponseSchema } = require('../../../schemas/api_v3/posValidators.schema');
-const { invalidLimits, invalidOffsets, invalidPartialSearches, invalidNamesCSV, invalidAddresses, invalidPublicKeys } = require('../constants/invalidInputs');
+const {
+	invalidLimits,
+	invalidOffsets,
+	invalidPartialSearches,
+	invalidNamesCSV,
+	invalidAddresses,
+	invalidPublicKeys,
+} = require('../constants/invalidInputs');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 
@@ -54,8 +62,9 @@ describe('pos/validators API', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(validatorsResponseSchema);
-			expect(result.data.length)
-				.toBeLessThanOrEqual(numberActiveValidators + numberStandbyValidators);
+			expect(result.data.length).toBeLessThanOrEqual(
+				numberActiveValidators + numberStandbyValidators,
+			);
 		});
 
 		it('should return list of correctly sorted validators when called with sort=validatorWeight:desc', async () => {
@@ -72,19 +81,24 @@ describe('pos/validators API', () => {
 			for (let index = 0; index < validators.length - 1; index++) {
 				const curValidator = validators[index];
 				const nextValidator = validators[index + 1];
-				expect(BigInt(curValidator.validatorWeight))
-					.toBeGreaterThanOrEqual(BigInt(nextValidator.validatorWeight));
+				expect(BigInt(curValidator.validatorWeight)).toBeGreaterThanOrEqual(
+					BigInt(nextValidator.validatorWeight),
+				);
 
 				if (curValidator.validatorWeight === nextValidator.validatorWeight) {
 					// Should be sorted by address when validator weights are same
 					if (curValidator.rank < nextValidator.rank) {
-						expect(getAddressFromLisk32Address(curValidator.address)
-							.compare(getAddressFromLisk32Address(nextValidator.address)))
-							.toBe(-1);
+						expect(
+							getAddressFromLisk32Address(curValidator.address).compare(
+								getAddressFromLisk32Address(nextValidator.address),
+							),
+						).toBe(-1);
 					} else {
-						expect(getAddressFromLisk32Address(curValidator.address)
-							.compare(getAddressFromLisk32Address(nextValidator.address)))
-							.toBe(1);
+						expect(
+							getAddressFromLisk32Address(curValidator.address).compare(
+								getAddressFromLisk32Address(nextValidator.address),
+							),
+						).toBe(1);
 					}
 				} else {
 					expect(curValidator.rank).toBeLessThan(nextValidator.rank);
@@ -104,7 +118,9 @@ describe('pos/validators API', () => {
 
 		it('should return list of validators when requested with search param (partial validator address)', async () => {
 			if (refGenerators.address) {
-				const searchParam = refGenerators[0].address ? refGenerators[0].address.substring(0, 3) : '';
+				const searchParam = refGenerators[0].address
+					? refGenerators[0].address.substring(0, 3)
+					: '';
 				const response = await getValidators({ search: searchParam });
 				expect(response).toMap(jsonRpcEnvelopeSchema);
 				const { result } = response;
@@ -138,7 +154,9 @@ describe('pos/validators API', () => {
 
 		it('should return list of validators when requested with search param (partial validator address) and offset=1', async () => {
 			if (refGenerators.address) {
-				const searchParam = refGenerators[0].address ? refGenerators[0].address.substring(0, 5) : '';
+				const searchParam = refGenerators[0].address
+					? refGenerators[0].address.substring(0, 5)
+					: '';
 				const response = await getValidators({ search: searchParam, offset: 1 });
 				expect(response).toMap(jsonRpcEnvelopeSchema);
 				const { result } = response;
@@ -172,7 +190,9 @@ describe('pos/validators API', () => {
 
 		it('should return list of validators when requested with search param (partial validator address) and limit=5', async () => {
 			if (refGenerators.address) {
-				const searchParam = refGenerators[0].address ? refGenerators[0].address.substring(0, 3) : '';
+				const searchParam = refGenerators[0].address
+					? refGenerators[0].address.substring(0, 3)
+					: '';
 				const response = await getValidators({ search: searchParam, limit: 5 });
 				expect(response).toMap(jsonRpcEnvelopeSchema);
 				const { result } = response;
@@ -349,7 +369,9 @@ describe('pos/validators API', () => {
 		});
 
 		it('should return empty when requested for known non-validator address', async () => {
-			const response = await getValidators({ address: 'lsk99999999999999999999999999999999999999' });
+			const response = await getValidators({
+				address: 'lsk99999999999999999999999999999999999999',
+			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(validatorsResponseSchema);
@@ -358,7 +380,6 @@ describe('pos/validators API', () => {
 
 		it('should return invalid params for invalid address', async () => {
 			for (let i = 0; i < invalidAddresses.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await getValidators({ address: invalidAddresses[i] });
 				expect(response).toMap(invalidParamsSchema);
 			}
@@ -366,7 +387,6 @@ describe('pos/validators API', () => {
 
 		it('should return invalid params for invalid publicKey', async () => {
 			for (let i = 0; i < invalidPublicKeys.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await getValidators({ publicKey: invalidPublicKeys[i] });
 				expect(response).toMap(invalidParamsSchema);
 			}
@@ -374,7 +394,6 @@ describe('pos/validators API', () => {
 
 		it('should return invalid params for invalid name', async () => {
 			for (let i = 0; i < invalidNamesCSV.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await getValidators({ name: invalidNamesCSV[i] });
 				expect(response).toMap(invalidParamsSchema);
 			}
@@ -382,7 +401,6 @@ describe('pos/validators API', () => {
 
 		it('should return invalid params for invalid search', async () => {
 			for (let i = 0; i < invalidPartialSearches.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await getValidators({ search: invalidPartialSearches[i] });
 				expect(response).toMap(invalidParamsSchema);
 			}
@@ -390,7 +408,6 @@ describe('pos/validators API', () => {
 
 		it('should return invalid params for invalid limit', async () => {
 			for (let i = 0; i < invalidLimits.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await getValidators({ limit: invalidLimits[i] });
 				expect(response).toMap(invalidParamsSchema);
 			}
@@ -398,7 +415,6 @@ describe('pos/validators API', () => {
 
 		it('should return invalid params for invalid search', async () => {
 			for (let i = 0; i < invalidOffsets.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await getValidators({ offset: invalidOffsets[i] });
 				expect(response).toMap(invalidParamsSchema);
 			}

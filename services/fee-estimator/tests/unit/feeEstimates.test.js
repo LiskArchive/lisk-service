@@ -13,11 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	emptyBlock,
-	nonEmptyBlock,
-	fullySaturatedBlock,
-} = require('../constants/blocks');
+const { emptyBlock, nonEmptyBlock, fullySaturatedBlock } = require('../constants/blocks');
 
 const {
 	calculateBlockSize,
@@ -76,10 +72,9 @@ describe('Fee estimation tests', () => {
 		});
 
 		it('Batch of 20 blocks each having size 15', async () => {
-			const blocks = new Array(20).fill(
-				{
-					transactions: [{ size: 15 }],
-				});
+			const blocks = new Array(20).fill({
+				transactions: [{ size: 15 }],
+			});
 
 			const wavg = await calculateWeightedAvg(blocks);
 			expect(wavg).not.toBe(0);

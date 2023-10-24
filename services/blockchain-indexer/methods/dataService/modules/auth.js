@@ -13,9 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getAuthAccountInfo,
-} = require('../controllers/auth');
+const { getAuthAccountInfo } = require('../controllers/auth');
 
 module.exports = [
 	{

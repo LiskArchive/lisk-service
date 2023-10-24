@@ -38,7 +38,7 @@ const getTokenBalances = async params => {
 	}
 };
 
-const getTokenTopBalances = async (params) => {
+const getTokenTopBalances = async params => {
 	const tokenTopBalances = {
 		data: {},
 		meta: {},
@@ -88,7 +88,7 @@ const getTokenConstants = async () => {
 	return constants;
 };
 
-const getAvailableTokenIDs = async (params) => {
+const getAvailableTokenIDs = async params => {
 	const tokenIDsResponse = {
 		data: {},
 		meta: {},

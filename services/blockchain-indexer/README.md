@@ -1,11 +1,11 @@
 # Lisk Service Blockchain Indexer
 
-The Blockchain Indexer service, in the *indexing* mode, is primarily responsible to index all the blockchain information, based on the scheduled jobs by the Blockchain Coordinator.
-In the *data service* mode, it serves user request queries made via the RESTful API or WebSocket-based RPC calls.
+The Blockchain Indexer service, in the _indexing_ mode, is primarily responsible to index all the blockchain information, based on the scheduled jobs by the Blockchain Coordinator.
+In the _data service_ mode, it serves user request queries made via the RESTful API or WebSocket-based RPC calls.
 It can run both the indexer and data service modes simultaneously, and is enabled by default.
 
 This microservice encapsulates most of the business logic for the Lisk Service API. By default, it only implements the business logic for all the available commands from the Lisk SDK.
-The *applyTransaction* and *revertTransaction* hooks implement the indexing logic and are specific to each available command. The *applyTransaction* is triggered when processing an included transaction within a new block while (usually) indexing the `chain_newBlock` event. The *revertTransaction* hook is triggered when processing an included transaction within a deleted block while processing the `chain_deleteBlock` event. All the implemented hooks are grouped [here](./shared/indexer/transactionProcessor). Command specific hooks are always implemented within a single file and are grouped by the module. When interested in extending Lisk Service and implementing hooks for your custom modules, please check the [Extending Indexer](#extending-indexer) section below.
+The _applyTransaction_ and _revertTransaction_ hooks implement the indexing logic and are specific to each available command. The _applyTransaction_ is triggered when processing an included transaction within a new block while (usually) indexing the `chain_newBlock` event. The _revertTransaction_ hook is triggered when processing an included transaction within a deleted block while processing the `chain_deleteBlock` event. All the implemented hooks are grouped [here](./shared/indexer/transactionProcessor). Command specific hooks are always implemented within a single file and are grouped by the module. When interested in extending Lisk Service and implementing hooks for your custom modules, please check the [Extending Indexer](#extending-indexer) section below.
 
 > Note that this installation instruction is required only for development activities. For a regular Lisk Service user the official [documentation](https://lisk.com/documentation/lisk-service/) is sufficient to run an instance. The global readme file present in the root directory describes running all the microservices at once.
 
@@ -84,16 +84,16 @@ Press `Ctrl+C` in the terminal to stop the process.
 
 ## Extending Indexer
 
-The *applyTransaction* and *revertTransaction* hooks are arranged per command in a file and are grouped by the module that they belong to.<br />
+The _applyTransaction_ and _revertTransaction_ hooks are arranged per command in a file and are grouped by the module that they belong to.<br />
 Existing hooks are located in the [shared/indexer/transactionProcessor](./shared/indexer/transactionProcessor) directory.
 
 When implementing the custom hooks please adhere to the following:
 
 - Create a sub-directory with the module name. For example: [token](./shared/indexer/transactionProcessor/token).
 - Add `index.js` under the above directory.
-  - Export a `MODULE_NAME` variable. The value must match the *module* name as registered within the application.
+  - Export a `MODULE_NAME` variable. The value must match the _module_ name as registered within the application.
 - Create a file specific to the command for which you need to implement the custom hooks. For example: [transfer](./shared/indexer/transactionProcessor/token/transfer.js).
-  - Export a `COMMAND_NAME` variable. The value must match the *command* name as registered within the application.
+  - Export a `COMMAND_NAME` variable. The value must match the _command_ name as registered within the application.
   - Implement the custom logic for the `applyTransaction` and `revertTransaction` hooks.
   - Export the hooks.
 - To aid your development, please use the sample templates [here](./shared/indexer/transactionProcessor/0_moduleName).

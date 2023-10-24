@@ -15,25 +15,19 @@
  */
 const config = require('../../../config');
 
-const {
-	request,
-} = require('../../../helpers/socketIoRpcRequest');
+const { request } = require('../../../helpers/socketIoRpcRequest');
 
 const {
 	invalidParamsSchema,
 	jsonRpcEnvelopeSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
-const {
-	goodRequestSchema,
-} = require('../../../schemas/httpGenerics.schema');
+const { goodRequestSchema } = require('../../../schemas/httpGenerics.schema');
 
-const {
-	networkStatisticsSchema,
-} = require('../../../schemas/api_v3/networkStatistics.schema');
+const { networkStatisticsSchema } = require('../../../schemas/api_v3/networkStatistics.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
-const getNetworkStatistics = async (params) => request(wsRpcUrl, 'get.network.statistics', params);
+const getNetworkStatistics = async params => request(wsRpcUrl, 'get.network.statistics', params);
 
 describe('get.network.statistics', () => {
 	it('should return network statistics', async () => {

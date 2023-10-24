@@ -71,7 +71,9 @@ const getPendingTransactionsFromCore = async () => {
 const loadAllPendingTransactions = async () => {
 	try {
 		pendingTransactionsList = await getPendingTransactionsFromCore();
-		logger.info(`Updated pending transaction cache with ${pendingTransactionsList.length} transactions.`);
+		logger.info(
+			`Updated pending transaction cache with ${pendingTransactionsList.length} transactions.`,
+		);
 	} catch (err) {
 		logger.error(`Failed to update the 'pendingTransactionsList' due to:\n${err.stack}`);
 	}
@@ -79,8 +81,10 @@ const loadAllPendingTransactions = async () => {
 
 const validateParams = async params => {
 	const validatedParams = {};
-	if (params.nonce && !(params.senderAddress)) {
-		throw new ValidationException('Nonce based retrieval is only possible along with senderAddress');
+	if (params.nonce && !params.senderAddress) {
+		throw new ValidationException(
+			'Nonce based retrieval is only possible along with senderAddress',
+		);
 	}
 
 	if (params.id) validatedParams.id = params.id;
@@ -104,31 +108,32 @@ const getPendingTransactions = async params => {
 
 	const validatedParams = await validateParams(params);
 
-	const sortComparator = (sortParam) => {
+	const sortComparator = sortParam => {
 		const sortProp = sortParam.split(':')[0];
 		const sortOrder = sortParam.split(':')[1];
 
-		const comparator = (a, b) => (sortOrder === 'asc')
-			? Number(a[sortProp] || 0) - Number(b[sortProp] || 0)
-			: Number(b[sortProp] || 0) - Number(a[sortProp] || 0);
+		const comparator = (a, b) =>
+			sortOrder === 'asc'
+				? Number(a[sortProp] || 0) - Number(b[sortProp] || 0)
+				: Number(b[sortProp] || 0) - Number(a[sortProp] || 0);
 		return comparator;
 	};
 
 	if (pendingTransactionsList.length) {
 		// Filter according to the request params
-		const filteredPendingTxs = pendingTransactionsList.filter(transaction => (
-			(!validatedParams.id
-				|| transaction.id === validatedParams.id)
-			&& (!validatedParams.senderAddress
-				|| transaction.sender.address === validatedParams.senderAddress)
-			&& (!validatedParams.recipientAddress
-				|| transaction.params.recipientAddress === validatedParams.recipientAddress)
-			&& (!validatedParams.address
-				|| transaction.sender.address === validatedParams.address
-				|| transaction.params.recipientAddress === validatedParams.address)
-			&& (!validatedParams.moduleCommand
-				|| transaction.moduleCommand === validatedParams.moduleCommand)
-		));
+		const filteredPendingTxs = pendingTransactionsList.filter(
+			transaction =>
+				(!validatedParams.id || transaction.id === validatedParams.id) &&
+				(!validatedParams.senderAddress ||
+					transaction.sender.address === validatedParams.senderAddress) &&
+				(!validatedParams.recipientAddress ||
+					transaction.params.recipientAddress === validatedParams.recipientAddress) &&
+				(!validatedParams.address ||
+					transaction.sender.address === validatedParams.address ||
+					transaction.params.recipientAddress === validatedParams.address) &&
+				(!validatedParams.moduleCommand ||
+					transaction.moduleCommand === validatedParams.moduleCommand),
+		);
 
 		pendingTransactions.data = filteredPendingTxs
 			.sort(sortComparator(validatedParams.sort))

@@ -16,9 +16,7 @@
 const config = require('../../config');
 const { api } = require('../../helpers/api');
 
-const {
-	notFoundSchema,
-} = require('../../schemas/httpGenerics.schema');
+const { notFoundSchema } = require('../../schemas/httpGenerics.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const endpoint = `${baseUrl}/api`;

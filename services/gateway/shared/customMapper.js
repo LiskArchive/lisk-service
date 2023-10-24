@@ -19,44 +19,47 @@ const isObject = obj => !!(obj && obj.constructor.name === 'Object');
 const isEmptyObj = obj => Object.entries(obj).length === 0 && obj.constructor === Object;
 const isEmptyArr = obj => Array.isArray(obj) && obj.length === 0;
 const validate = obj => !(isEmptyObj(obj) || isEmptyArr(obj));
-const isObjectWithValues = obj => !(!Object.values(obj).some(value => value !== undefined));
+const isObjectWithValues = obj => !!Object.values(obj).some(value => value !== undefined);
 
 const cast = {
 	number: input => Number(input),
 	string: input => String(input),
-	boolean: input => ((input === '0') ? false : !!input),
-	isodate: input => (new Date(input)).toISOString(),
+	boolean: input => (input === '0' ? false : !!input),
+	isodate: input => new Date(input).toISOString(),
 	epoch: input => Date.parse(input) / 1000,
 	datetime: input => moment(new Date(input)).utc().format('MM-DD-YYYY HH:mm:ss'),
-	hex: input => (input ? (Buffer.from(input)).toString('hex') : undefined),
-	base64: input => (input ? (Buffer.from(input)).toString('base64') : undefined),
+	hex: input => (input ? Buffer.from(input).toString('hex') : undefined),
+	base64: input => (input ? Buffer.from(input).toString('base64') : undefined),
 };
 
 // Retrieves value of a nested key inside an object. Returns undefined when not found.
 const resolvePath = (obj, path) => {
 	try {
-		return path.split('.').reduce(
-			(subObj, prop) => subObj && subObj[prop] !== undefined ? subObj[prop] : undefined,
-			obj,
-		);
+		return path
+			.split('.')
+			.reduce(
+				(subObj, prop) => (subObj && subObj[prop] !== undefined ? subObj[prop] : undefined),
+				obj,
+			);
 	} catch (e) {
 		return undefined;
 	}
 };
 
 // Maps the response object in respect to the source definition
-const mapObject = (rootObj, definition, subObj = rootObj) => Object.keys(definition)
-	.reduce((acc, key) => {
+const mapObject = (rootObj, definition, subObj = rootObj) =>
+	Object.keys(definition).reduce((acc, key) => {
 		// Directly assign the casted value unless it is array or object
 		if (definition[key] !== null && typeof definition[key] === 'string') {
 			const [path, type] = definition[key].split(',');
-			const val = (path === '=') ? subObj[key] : resolvePath(rootObj, path);
+			const val = path === '=' ? subObj[key] : resolvePath(rootObj, path);
 			acc[key] = (val || val === 0) && type ? cast[type](val) : val;
-		// Map each element of array
+			// Map each element of array
 		} else if (Array.isArray(definition[key])) {
 			if (definition[key].length === 2) {
 				const innerDef = definition[key][1];
-				const dataSource = (definition[key][0] === '') ? rootObj : resolvePath(rootObj, definition[key][0]);
+				const dataSource =
+					definition[key][0] === '' ? rootObj : resolvePath(rootObj, definition[key][0]);
 				if (Array.isArray(dataSource)) {
 					const tempArr = [];
 					dataSource.forEach(item => {
@@ -76,14 +79,15 @@ const mapObject = (rootObj, definition, subObj = rootObj) => Object.keys(definit
 		return acc;
 	}, {});
 
-const mapArray = (rootObj, definition) => definition.reduce((acc, item, i) => {
-	if (i === 0 && !isObject(item)) acc.push(item);
-	if (i === 0 && isObject(item)) acc.push(mapObject(rootObj, item));
-	if (i === 1 && isObject(item)) {
-		acc.push(mapObject(rootObj, { [acc[i - 1]]: Object.values(item)[0] }));
-	}
-	return acc;
-}, []);
+const mapArray = (rootObj, definition) =>
+	definition.reduce((acc, item, i) => {
+		if (i === 0 && !isObject(item)) acc.push(item);
+		if (i === 0 && isObject(item)) acc.push(mapObject(rootObj, item));
+		if (i === 1 && isObject(item)) {
+			acc.push(mapObject(rootObj, { [acc[i - 1]]: Object.values(item)[0] }));
+		}
+		return acc;
+	}, []);
 
 /*
  * The Mapper always follows definition, which means

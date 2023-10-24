@@ -1,6 +1,7 @@
 {
 	"extends": [
-		"lisk-base"
+		"lisk-base",
+		"prettier"
 	],
 	"plugins": [
 		"import",
@@ -8,9 +9,9 @@
 	],
 	"globals": {
 		"ipc": true,
+		"BigInt": true,
 		"PRODUCTION": true,
-		"TEST": true,
-		"BigInt": true
+		"TEST": true
 	},
 	"env": {
 		"node": true,
@@ -42,6 +43,7 @@
 				]
 			}
 		],
+		"no-await-in-loop": "off",
 		"no-loop-func": "off",
 		"no-plusplus": "off",
 		"no-restricted-properties": "off",
@@ -70,9 +72,6 @@
 			}
 		],
 		"mocha/no-skipped-tests": "off",
-		"indent": [
-			"error",
-			"tab"
-		]
+		"indent": "off"
 	}
 }

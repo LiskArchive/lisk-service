@@ -51,7 +51,9 @@ describe('getFileDownloadURLAndHeaders', () => {
 
 	it('should return the correct URL and headers for a public repository', async () => {
 		const result = await getFileDownloadURLAndHeaders(file);
-		expect(result.url).toEqual(`https://api.github.com/repos/${owner}/${repo}/contents/${file}?ref=${config.gitHub.branch}`);
+		expect(result.url).toEqual(
+			`https://api.github.com/repos/${owner}/${repo}/contents/${file}?ref=${config.gitHub.branch}`,
+		);
 		expect(result.headers).toHaveProperty('User-Agent');
 	});
 
@@ -59,7 +61,9 @@ describe('getFileDownloadURLAndHeaders', () => {
 		config.gitHub.accessToken = 'testToken';
 
 		const result = await getFileDownloadURLAndHeaders(file);
-		expect(result.url).toEqual(`https://api.github.com/repos/${owner}/${repo}/contents/${file}?ref=${config.gitHub.branch}`);
+		expect(result.url).toEqual(
+			`https://api.github.com/repos/${owner}/${repo}/contents/${file}?ref=${config.gitHub.branch}`,
+		);
 		expect(result.headers).toHaveProperty('User-Agent');
 		expect(result.headers).toHaveProperty('Authorization');
 		expect(result.headers.Authorization).toEqual('token testToken');
@@ -136,10 +140,7 @@ describe('Test getUniqueNetworkAppDirPairs method', () => {
 	});
 
 	it('should return proper response when files are unique', async () => {
-		const response = await getUniqueNetworkAppDirPairs([
-			'devnet/dir2',
-			'mainnet/dir1/extra/text',
-		]);
+		const response = await getUniqueNetworkAppDirPairs(['devnet/dir2', 'mainnet/dir1/extra/text']);
 		expect(response).toEqual([
 			{
 				network: 'devnet',

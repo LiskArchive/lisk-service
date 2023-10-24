@@ -17,9 +17,11 @@ const Joi = require('joi');
 
 const serviceUnavailableSchema = {
 	status: Joi.string().valid('SERVICE_UNAVAILABLE').required(),
-	data: Joi.object().keys({
-		error: Joi.string().valid('Service is not ready yet').required(),
-	}).required(),
+	data: Joi.object()
+		.keys({
+			error: Joi.string().valid('Service is not ready yet').required(),
+		})
+		.required(),
 };
 
 module.exports = {

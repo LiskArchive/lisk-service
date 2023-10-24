@@ -15,10 +15,7 @@
  */
 const dataService = require('../../../shared/dataService');
 
-const {
-	getTotalStaked,
-	getTotalSelfStaked,
-} = require('../../../shared/utils/pos');
+const { getTotalStaked, getTotalSelfStaked } = require('../../../shared/utils/pos');
 const { getTotalLocked } = require('../../../shared/utils/token');
 
 const getNetworkStatus = async () => {

@@ -15,9 +15,7 @@
  */
 const config = require('../../../config');
 
-const {
-	request,
-} = require('../../../helpers/socketIoRpcRequest');
+const { request } = require('../../../helpers/socketIoRpcRequest');
 
 const {
 	invalidParamsSchema,
@@ -32,8 +30,8 @@ const {
 const { invalidAddresses } = require('../constants/invalidInputs');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
-const getValidator = async (params) => request(wsRpcUrl, 'get.validator', params);
-const getGenerators = async (params) => request(wsRpcUrl, 'get.generators', params);
+const getValidator = async params => request(wsRpcUrl, 'get.validator', params);
+const getGenerators = async params => request(wsRpcUrl, 'get.generators', params);
 
 describe('get.validator', () => {
 	let refGenerator;
@@ -58,14 +56,15 @@ describe('get.validator', () => {
 
 	it('should return invalid params when requested with invalid address', async () => {
 		for (let i = 0; i < invalidAddresses.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getValidator({ address: invalidAddresses[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}
 	});
 
 	it('should return invalid params when requested with address CSV', async () => {
-		const response = await getValidator({ address: `${refGenerator.address},${refGenerator.address}` });
+		const response = await getValidator({
+			address: `${refGenerator.address},${refGenerator.address}`,
+		});
 		expect(response).toMap(invalidParamsSchema);
 	});
 

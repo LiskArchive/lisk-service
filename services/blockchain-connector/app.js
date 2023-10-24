@@ -14,11 +14,7 @@
  *
  */
 const path = require('path');
-const {
-	Microservice,
-	Logger,
-	LoggerConfig,
-} = require('lisk-service-framework');
+const { Microservice, Logger, LoggerConfig } = require('lisk-service-framework');
 
 const config = require('./config');
 
@@ -45,11 +41,11 @@ nodeStatus.waitForNode().then(async () => {
 		app.addMethods(path.join(__dirname, 'methods'));
 
 		const allBlockchainEndpoints = await require('./methods/proxy/allEndpoints');
-		allBlockchainEndpoints.forEach((method) => app.addMethod(method));
+		allBlockchainEndpoints.forEach(method => app.addMethod(method));
 
 		app.addEvents(path.join(__dirname, 'events'));
 		const allBlockchainEvents = await require('./events/proxy/allEvents');
-		allBlockchainEvents.forEach((event) => app.addEvent(event));
+		allBlockchainEvents.forEach(event => app.addEvent(event));
 
 		app.addJobs(path.join(__dirname, 'jobs'));
 
@@ -57,7 +53,8 @@ nodeStatus.waitForNode().then(async () => {
 			app.addMethods(path.join(__dirname, 'methods', 'tests'));
 		}
 
-		app.run()
+		app
+			.run()
 			.then(async () => {
 				await init();
 			})

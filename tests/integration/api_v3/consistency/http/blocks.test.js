@@ -36,18 +36,22 @@ for (let i = 0; i < baseUrls.length; i++) {
 			const validatorAddresses = response.data.map(({ address }) => address);
 
 			for (let j = 0; j < validatorAddresses.length; j++) {
-				/* eslint-disable no-await-in-loop */
 				const n = validatorAddresses[j];
-				const { meta: { total } } = await api.get(`${blockEndpoint}&generatorAddress=${n}`);
-				const { data: [{ generatedBlocks }] } = await api.get(`${validatorEndpoint}&address=${n}`);
+				const {
+					meta: { total },
+				} = await api.get(`${blockEndpoint}&generatorAddress=${n}`);
+				const {
+					data: [{ generatedBlocks }],
+				} = await api.get(`${validatorEndpoint}&address=${n}`);
 				try {
 					expect(total).toEqual(generatedBlocks);
 				} catch (e) {
-					console.error(`Mismatch --> validator: ${n}, blockProduced: ${total}, generatedBlocks: ${generatedBlocks}`);
+					console.error(
+						`Mismatch --> validator: ${n}, blockProduced: ${total}, generatedBlocks: ${generatedBlocks}`,
+					);
 					// console.error(e);
 					// throw e;
 				}
-				/* eslint-enable no-await-in-loop */
 			}
 		});
 	});

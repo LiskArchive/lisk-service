@@ -16,9 +16,7 @@
 const {
 	DB: {
 		MySQL: {
-			KVStore: {
-				getKeyValueTable,
-			},
+			KVStore: { getKeyValueTable },
 		},
 	},
 } = require('lisk-service-framework');
@@ -28,7 +26,7 @@ const { KV_STORE_KEY } = require('../constants');
 
 const keyValueTable = getKeyValueTable();
 
-const getStakeInfo = async (keyPrefix) => {
+const getStakeInfo = async keyPrefix => {
 	const [row] = await keyValueTable.getByPattern(keyPrefix);
 	const stakeAmount = row && row.value ? row.value.toString() : '0';
 

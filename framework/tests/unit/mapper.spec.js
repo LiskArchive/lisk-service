@@ -62,8 +62,10 @@ describe('Object mapper: ', () => {
 	});
 
 	it('Object with multiple key-val pairs -> ok', () => {
-		const result = mapperService({ value: 16009998, number: '100', addr: '16009998050678037905L' },
-			{ value: '=,string', number: '=,number', address: 'addr,string' });
+		const result = mapperService(
+			{ value: 16009998, number: '100', addr: '16009998050678037905L' },
+			{ value: '=,string', number: '=,number', address: 'addr,string' },
+		);
 		expect(result).toMatchObject({
 			value: '16009998',
 			number: 100,
@@ -74,7 +76,8 @@ describe('Object mapper: ', () => {
 	it('Multiple key-val pairs in the input will be mapped only if the definition has the key-val -> ok', () => {
 		const result = mapperService(
 			{ value: 16009998, number: '100', addr: '16009998050678037905L' },
-			{ value: '=,string', address: 'addr,string' });
+			{ value: '=,string', address: 'addr,string' },
+		);
 
 		expect(result).toMatchObject({
 			value: '16009998',
@@ -97,7 +100,10 @@ describe('Object mapper: ', () => {
 	});
 
 	it('Map an array inside a plain object -> ok', () => {
-		const result = mapperService({ data: [{ address: '16009998050678037905L' }] }, ['data', { address: '=' }]);
+		const result = mapperService({ data: [{ address: '16009998050678037905L' }] }, [
+			'data',
+			{ address: '=' },
+		]);
 		expect(result).toBeInstanceOf(Array);
 		expect(result).toHaveLength(2);
 		expect(result).toEqual(['data', { data: [{ address: '16009998050678037905L' }] }]);
@@ -114,12 +120,12 @@ describe('Object mapper: ', () => {
 	});
 
 	it('Plain object with empty array maps to an object with empty array -> ok', () => {
-		const result = mapperService({	address: [] }, { address: '=' });
+		const result = mapperService({ address: [] }, { address: '=' });
 		expect(result).toEqual({ address: [] });
 	});
 
 	it('Plain object with empty array maps to an object with empty array -> ok', () => {
-		const result = mapperService({	addr: [] }, { address: 'addr' });
+		const result = mapperService({ addr: [] }, { address: 'addr' });
 		expect(result).toEqual({ address: [] });
 	});
 
@@ -144,7 +150,10 @@ describe('Object mapper: ', () => {
 	});
 
 	it('Nested object with empty object maps to a plain object -> ok', () => {
-		const result = mapperService({ addr: { name: { addres: 'address' } } }, { address: 'addr.name' });
+		const result = mapperService(
+			{ addr: { name: { addres: 'address' } } },
+			{ address: 'addr.name' },
+		);
 		expect(result).toEqual({ address: { addres: 'address' } });
 	});
 
@@ -202,16 +211,18 @@ describe('Object mapper: ', () => {
 	});
 
 	it('Multi-level array mapping', () => {
-		const input = { data: [
-			{
-				address: '16009998050678037905L',
-				asset: {
-					amount: {
-						average: '1000',
+		const input = {
+			data: [
+				{
+					address: '16009998050678037905L',
+					asset: {
+						amount: {
+							average: '1000',
+						},
 					},
 				},
-			},
-		] };
+			],
+		};
 		const def = { data: ['data', { address: '=', avg: 'asset.amount.average' }] };
 		const result = { data: [{ address: '16009998050678037905L', avg: '1000' }] };
 		const response = mapperService(input, def);

@@ -47,7 +47,9 @@ const getGenesisBlock = async (isIncludeAssets = false) => {
 			assets: isIncludeAssets ? block.assets : [],
 		};
 	} catch (_) {
-		logger.debug('Genesis block snapshot retrieval was not possible, attempting to retrieve directly from the node.');
+		logger.debug(
+			'Genesis block snapshot retrieval was not possible, attempting to retrieve directly from the node.',
+		);
 	}
 
 	const height = await getGenesisHeight();
@@ -56,7 +58,7 @@ const getGenesisBlock = async (isIncludeAssets = false) => {
 		return block;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getGenesisBlock\'.');
+			throw new TimeoutException("Request timed out when calling 'getGenesisBlock'.");
 		}
 		throw err;
 	}
@@ -84,7 +86,7 @@ const getGenesisConfig = async () => {
 		return genesisConfig;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getGenesisConfig\'.');
+			throw new TimeoutException("Request timed out when calling 'getGenesisConfig'.");
 		}
 		throw err;
 	}
@@ -110,12 +112,14 @@ const getGenesisAssets = async (params = {}) => {
 			moduleData = moduleData.slice(params.offset, params.offset + params.limit);
 		}
 
-		return [{
-			...assetByModule,
-			data: {
-				[params.subStore]: moduleData,
+		return [
+			{
+				...assetByModule,
+				data: {
+					[params.subStore]: moduleData,
+				},
 			},
-		}];
+		];
 	}
 
 	// This will only be executed when params.module is present. Return the module info if found
@@ -140,17 +144,16 @@ const getGenesisAssetByModule = async (params = {}) => {
 	}
 }
 */
-const getGenesisAssetsLength = async (params) => {
+const getGenesisAssetsLength = async params => {
 	const genesisAssets = await getGenesisAssets(params);
 	const assetLengthMap = {};
 
 	// eslint-disable-next-line no-restricted-syntax
 	for (const asset of genesisAssets) {
-		Object.keys(asset.data).forEach(
-			subStoreKey => {
-				if (!assetLengthMap[asset.module]) assetLengthMap[asset.module] = {};
-				assetLengthMap[asset.module][subStoreKey] = asset.data[subStoreKey].length;
-			});
+		Object.keys(asset.data).forEach(subStoreKey => {
+			if (!assetLengthMap[asset.module]) assetLengthMap[asset.module] = {};
+			assetLengthMap[asset.module][subStoreKey] = asset.data[subStoreKey].length;
+		});
 	}
 
 	return assetLengthMap;

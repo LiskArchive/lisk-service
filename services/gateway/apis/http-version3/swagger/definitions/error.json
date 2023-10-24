@@ -1,41 +1,41 @@
 {
-    "badRequest": {
-        "type": "object",
-        "properties": {
-            "error": {
-                "type": "boolean",
-                "example": true
-            },
-            "message": {
-                "type": "string",
-                "example": "Unknown input parameter(s): id"
-            }
-        }
-    },
-    "notFound": {
-        "type": "object",
-        "properties": {
-            "error": {
-                "type": "boolean",
-                "example": true
-            },
-            "message": {
-                "type": "string",
-                "example": "Not found"
-            }
-        }
-    },
-    "serviceUnavailable": {
-        "type": "object",
-        "properties": {
-            "error": {
-                "type": "boolean",
-                "example": true
-            },
-            "message": {
-                "type": "string",
-                "example": "Service Unavailable"
-            }
-        }
-    }
+	"badRequest": {
+		"type": "object",
+		"properties": {
+			"error": {
+				"type": "boolean",
+				"example": true
+			},
+			"message": {
+				"type": "string",
+				"example": "Unknown input parameter(s): id"
+			}
+		}
+	},
+	"notFound": {
+		"type": "object",
+		"properties": {
+			"error": {
+				"type": "boolean",
+				"example": true
+			},
+			"message": {
+				"type": "string",
+				"example": "Not found"
+			}
+		}
+	},
+	"serviceUnavailable": {
+		"type": "object",
+		"properties": {
+			"error": {
+				"type": "boolean",
+				"example": true
+			},
+			"message": {
+				"type": "string",
+				"example": "Service Unavailable"
+			}
+		}
+	}
 }

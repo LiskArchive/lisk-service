@@ -19,8 +19,11 @@ module.exports = {
 		height: '=,number',
 		timestamp: '=,number',
 	},
-	assets: ['assets', {
-		module: '=,string',
-		data: '=',
-	}],
+	assets: [
+		'assets',
+		{
+			module: '=,string',
+			data: '=',
+		},
+	],
 };

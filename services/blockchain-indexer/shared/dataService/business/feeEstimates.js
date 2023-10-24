@@ -15,10 +15,7 @@
  */
 const logger = require('lisk-service-framework').Logger();
 
-const {
-	requestFeeEstimator,
-	requestConnector,
-} = require('../../utils/request');
+const { requestFeeEstimator, requestConnector } = require('../../utils/request');
 
 let feeEstimates = {
 	low: 0,
@@ -27,7 +24,7 @@ let feeEstimates = {
 	minFeePerByte: 1000,
 };
 
-const setFeeEstimates = async (payload) => {
+const setFeeEstimates = async payload => {
 	if (payload && Object.keys(payload).length > 0 && payload.status !== 'SERVICE_UNAVAILABLE') {
 		feeEstimates = payload;
 	}

@@ -16,7 +16,7 @@
 const { HTTP } = require('lisk-service-framework');
 const dataService = require('../../../shared/dataService');
 
-const getBlockchainApps = async (params) => {
+const getBlockchainApps = async params => {
 	if (await dataService.isMainchain()) {
 		const result = await dataService.getBlockchainApps(params);
 		return result;
@@ -25,10 +25,7 @@ const getBlockchainApps = async (params) => {
 	// Redirect call to the mainchain service
 	const serviceURL = await dataService.resolveMainchainServiceURL();
 	const blockchainAppsEndpoint = `${serviceURL}/api/v3/blockchain/apps`;
-	const { data: response } = await HTTP.request(
-		blockchainAppsEndpoint,
-		params,
-	);
+	const { data: response } = await HTTP.request(blockchainAppsEndpoint, params);
 	return response;
 };
 

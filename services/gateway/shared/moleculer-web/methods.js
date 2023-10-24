@@ -6,10 +6,7 @@
  * MIT Licensed
  */
 const util = require('util');
-const {
-	MoleculerError,
-	MoleculerServerError,
-} = require('moleculer').Errors;
+const { MoleculerError, MoleculerServerError } = require('moleculer').Errors;
 const _ = require('lodash');
 const kleur = require('kleur');
 const {
@@ -52,13 +49,14 @@ module.exports = {
 					const reqParams = Object.fromEntries(
 						new Map(Object.entries(req.$params).filter(([, v]) => v)),
 					);
-					if (err && !(err instanceof ValidationException)) this.logger.error(
-						`<= ${this.coloringStatusCode(err.code)} Request error: ${err.name}: ${
-							err.message
-						} \n${err.stack} \nData: \nRequest params: ${util.inspect(
-							reqParams,
-						)} \nRequest body: ${util.inspect(req.body)}`,
-					);
+					if (err && !(err instanceof ValidationException))
+						this.logger.error(
+							`<= ${this.coloringStatusCode(err.code)} Request error: ${err.name}: ${
+								err.message
+							} \n${err.stack} \nData: \nRequest params: ${util.inspect(
+								reqParams,
+							)} \nRequest body: ${util.inspect(req.body)}`,
+						);
 				}
 
 				if (err instanceof ValidationException) {
@@ -147,7 +145,8 @@ module.exports = {
 		logRequest(req) {
 			if (req.$route && !req.$route.logging) return;
 			if (this.settings.enableHTTPRequest) {
-				if (this.settings.logRequest && this.settings.logRequest in this.logger) this.logger[this.settings.logRequest](`=> ${req.method} ${req.url}`);
+				if (this.settings.logRequest && this.settings.logRequest in this.logger)
+					this.logger[this.settings.logRequest](`=> ${req.method} ${req.url}`);
 			}
 		},
 	},

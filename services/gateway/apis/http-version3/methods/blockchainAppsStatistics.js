@@ -27,7 +27,8 @@ module.exports = {
 		const blockchainAppsStatsSchema = {};
 		blockchainAppsStatsSchema[this.swaggerApiPath] = { get: {} };
 		blockchainAppsStatsSchema[this.swaggerApiPath].get.tags = this.tags;
-		blockchainAppsStatsSchema[this.swaggerApiPath].get.summary = 'Requests blockchain application statistics';
+		blockchainAppsStatsSchema[this.swaggerApiPath].get.summary =
+			'Requests blockchain application statistics';
 		blockchainAppsStatsSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
 			description: 'Returns blockchain applications statistics',

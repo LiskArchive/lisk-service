@@ -16,23 +16,22 @@
 const requestAll = async (fn, method, params, limit) => {
 	const defaultMaxAmount = limit || 1000;
 	const oneRequestLimit = params.limit || 100;
-	const firstRequest = await fn(method,
-		{
-			...params,
-			...{
-				limit: oneRequestLimit,
-				offset: 0,
-			},
-		});
+	const firstRequest = await fn(method, {
+		...params,
+		...{
+			limit: oneRequestLimit,
+			offset: 0,
+		},
+	});
 	const { data } = firstRequest;
 	if (!data.error) {
-		const maxAmount = !firstRequest.meta.total || firstRequest.meta.total > defaultMaxAmount
-			? defaultMaxAmount
-			: firstRequest.meta.total;
+		const maxAmount =
+			!firstRequest.meta.total || firstRequest.meta.total > defaultMaxAmount
+				? defaultMaxAmount
+				: firstRequest.meta.total;
 
 		if (maxAmount > oneRequestLimit) {
 			for (let page = 1; page < Math.ceil(maxAmount / oneRequestLimit); page++) {
-				/* eslint-disable-next-line no-await-in-loop */
 				const result = await fn(method, {
 					...params,
 					...{

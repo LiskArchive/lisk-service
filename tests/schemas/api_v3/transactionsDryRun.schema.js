@@ -16,10 +16,13 @@
 import Joi from 'joi';
 
 const regex = require('./regex');
-const { TRANSACTION_VERIFY_RESULT } = require('../../../services/blockchain-indexer/shared/constants');
+const {
+	TRANSACTION_VERIFY_RESULT,
+} = require('../../../services/blockchain-indexer/shared/constants');
 
-const TRANSACTION_VERIFY_STATUSES = Object
-	.keys(TRANSACTION_VERIFY_RESULT).map(e => e.toLowerCase());
+const TRANSACTION_VERIFY_STATUSES = Object.keys(TRANSACTION_VERIFY_RESULT).map(e =>
+	e.toLowerCase(),
+);
 
 const event = {
 	data: Joi.object().required(),
@@ -38,24 +41,32 @@ const eventSchemaWithSkipDecode = {
 
 const dryrunTransactionSuccessResponseSchema = {
 	result: Joi.number().integer().valid(TRANSACTION_VERIFY_RESULT.VALID).required(),
-	status: Joi.string().valid(...TRANSACTION_VERIFY_STATUSES).required(),
+	status: Joi.string()
+		.valid(...TRANSACTION_VERIFY_STATUSES)
+		.required(),
 	events: Joi.array().items(Joi.object(event).required()).min(1).required(),
 };
 
 const dryrunTxSuccessSchemaWithSkipDecode = {
 	result: Joi.number().integer().valid(TRANSACTION_VERIFY_RESULT.VALID).required(),
-	status: Joi.string().valid(...TRANSACTION_VERIFY_STATUSES).required(),
+	status: Joi.string()
+		.valid(...TRANSACTION_VERIFY_STATUSES)
+		.required(),
 	events: Joi.array().items(Joi.object(eventSchemaWithSkipDecode).required()).min(1).required(),
 };
 
 const dryrunTransactionPendingResponseSchema = {
 	result: Joi.number().integer().valid(TRANSACTION_VERIFY_RESULT.PENDING).required(),
-	status: Joi.string().valid(...TRANSACTION_VERIFY_STATUSES).required(),
+	status: Joi.string()
+		.valid(...TRANSACTION_VERIFY_STATUSES)
+		.required(),
 	events: Joi.array().items(Joi.object(event).required()).min(1).required(),
 };
 const dryrunTransactionInvalidResponseSchema = {
 	result: Joi.number().integer().valid(TRANSACTION_VERIFY_RESULT.INVALID).required(),
-	status: Joi.string().valid(...TRANSACTION_VERIFY_STATUSES).required(),
+	status: Joi.string()
+		.valid(...TRANSACTION_VERIFY_STATUSES)
+		.required(),
 	events: Joi.array().length(0).required(),
 	errorMessage: Joi.string().required(),
 };
@@ -69,9 +80,7 @@ module.exports = {
 	dryrunTransactionSuccessResponseSchema: Joi.object(
 		dryrunTransactionSuccessResponseSchema,
 	).required(),
-	dryrunTxSuccessSchemaWithSkipDecode: Joi.object(
-		dryrunTxSuccessSchemaWithSkipDecode,
-	).required(),
+	dryrunTxSuccessSchemaWithSkipDecode: Joi.object(dryrunTxSuccessSchemaWithSkipDecode).required(),
 	dryrunTransactionPendingResponseSchema: Joi.object(
 		dryrunTransactionPendingResponseSchema,
 	).required(),

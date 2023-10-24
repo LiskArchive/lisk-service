@@ -33,17 +33,20 @@ const {
 } = require('../../../schemas/api_v3/transactionStatistics.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
-const requestTransactionStatistics = async (params) => request(wsRpcUrl, 'get.transactions.statistics', params);
+const requestTransactionStatistics = async params =>
+	request(wsRpcUrl, 'get.transactions.statistics', params);
 
 describe('get.transactions.statistics', () => {
-	[{
-		interval: 'day',
-		dateFormat: 'YYYY-MM-DD',
-	},
-	{
-		interval: 'month',
-		dateFormat: 'YYYY-MM',
-	}].forEach(({ interval, dateFormat }) => {
+	[
+		{
+			interval: 'day',
+			dateFormat: 'YYYY-MM-DD',
+		},
+		{
+			interval: 'month',
+			dateFormat: 'YYYY-MM',
+		},
+	].forEach(({ interval, dateFormat }) => {
 		describe(`get.transactions.statistics by interval as ${interval}`, () => {
 			const startOfIntervalInUTC = moment().utc().startOf(interval);
 
@@ -78,11 +81,12 @@ describe('get.transactions.statistics', () => {
 				tokensListEntries.forEach(([tokenID, timeline]) => {
 					expect(tokenID).toMatch(regex.TOKEN_ID);
 					expect(timeline).toHaveLength(1);
-					timeline.forEach(timelineItem => expect(timelineItem)
-						.toMap(timelineItemSchema, {
+					timeline.forEach(timelineItem =>
+						expect(timelineItem).toMap(timelineItemSchema, {
 							date: startOfIntervalInUTC.format(dateFormat),
 							timestamp: startOfIntervalInUTC.unix(),
-						}));
+						}),
+					);
 				});
 				expect(result.meta).toMap(metaSchema, { limit });
 			});
@@ -103,11 +107,12 @@ describe('get.transactions.statistics', () => {
 						expect(tokenID).toMatch(regex.TOKEN_ID);
 						expect(timeline.length).toBeGreaterThanOrEqual(0);
 						expect(timeline.length).toBeLessThanOrEqual(limit);
-						timeline.forEach(timelineItem => expect(timelineItem)
-							.toMap(timelineItemSchema, {
+						timeline.forEach(timelineItem =>
+							expect(timelineItem).toMap(timelineItemSchema, {
 								date: startOfYesterday.format(dateFormat),
 								timestamp: startOfYesterday.unix(),
-							}));
+							}),
+						);
 					});
 
 					expect(result.meta.duration).toMatchObject({
@@ -155,7 +160,6 @@ describe('get.transactions.statistics', () => {
 
 			it('should return invalid params if called with invalid limits', async () => {
 				for (let i = 0; i < invalidLimits.length; i++) {
-					// eslint-disable-next-line no-await-in-loop
 					const response = await requestTransactionStatistics({
 						interval,
 						limit: invalidLimits[i],
@@ -166,7 +170,6 @@ describe('get.transactions.statistics', () => {
 
 			it('should return invalid params if called with invalid offset', async () => {
 				for (let i = 0; i < invalidOffsets.length; i++) {
-					// eslint-disable-next-line no-await-in-loop
 					const response = await requestTransactionStatistics({
 						interval,
 						offset: invalidOffsets[i],
@@ -177,7 +180,7 @@ describe('get.transactions.statistics', () => {
 		});
 	});
 
-	describe('GET get.transactions.statistics with interval: \'year\'', () => {
+	describe("GET get.transactions.statistics with interval: 'year'", () => {
 		it('should return invalid param error if called without any params as years are not supported', async () => {
 			const response = await requestTransactionStatistics({ interval: 'year' });
 			expect(response).toMap(invalidParamsSchema);

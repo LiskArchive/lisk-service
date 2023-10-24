@@ -17,7 +17,9 @@
 /* eslint-disable import/no-dynamic-require */
 const { resolve } = require('path');
 
-const mockTransactionsDryRunFilePath = resolve(`${__dirname}/../../../../../shared/dataService/business/transactionsDryRun`);
+const mockTransactionsDryRunFilePath = resolve(
+	`${__dirname}/../../../../../shared/dataService/business/transactionsDryRun`,
+);
 const { requestConnector } = require('../../../../../shared/utils/request');
 const { mockTxrequestConnector } = require('../../constants/transactionEstimateFees');
 const {

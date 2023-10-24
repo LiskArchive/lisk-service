@@ -22,21 +22,25 @@ const {
 	invalidRequestSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
+const { goodResponseSchema } = require('../../../schemas/api_v3/posClaimableRewards.schema');
 const {
-	goodResponseSchema,
-} = require('../../../schemas/api_v3/posClaimableRewards.schema');
-const { invalidAddresses, invalidNames, invalidPublicKeys, invalidLimits, invalidOffsets } = require('../constants/invalidInputs');
+	invalidAddresses,
+	invalidNames,
+	invalidPublicKeys,
+	invalidLimits,
+	invalidOffsets,
+} = require('../constants/invalidInputs');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 
-const getPosClaimableRewards = async (params) => request(wsRpcUrl, 'get.pos.rewards.claimable', params);
+const getPosClaimableRewards = async params =>
+	request(wsRpcUrl, 'get.pos.rewards.claimable', params);
 const getGenerators = async () => request(wsRpcUrl, 'get.generators');
 
 describe('Claimable rewards API', () => {
 	let refGenerator;
 	beforeAll(async () => {
 		do {
-			// eslint-disable-next-line no-await-in-loop
 			const { result } = await getGenerators();
 			if (result.data.length) {
 				[refGenerator] = result.data;
@@ -110,7 +114,9 @@ describe('Claimable rewards API', () => {
 
 	it('should return list of claimable rewards with known validator address, offset=1 and limit=5', async () => {
 		const response = await getPosClaimableRewards({
-			address: refGenerator.address, offset: 1, limit: 5,
+			address: refGenerator.address,
+			offset: 1,
+			limit: 5,
 		});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
@@ -134,7 +140,8 @@ describe('Claimable rewards API', () => {
 	it('should return list of of claimable rewards with known validator publicKey and offset=1', async () => {
 		if (refGenerator.publicKey) {
 			const response = await getPosClaimableRewards({
-				publicKey: refGenerator.publicKey, offset: 1,
+				publicKey: refGenerator.publicKey,
+				offset: 1,
 			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -147,7 +154,8 @@ describe('Claimable rewards API', () => {
 	it('should return list of claimable rewards with known validator publicKey and limit=5', async () => {
 		if (refGenerator.publicKey) {
 			const response = await getPosClaimableRewards({
-				publicKey: refGenerator.publicKey, limit: 5,
+				publicKey: refGenerator.publicKey,
+				limit: 5,
 			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -160,7 +168,9 @@ describe('Claimable rewards API', () => {
 	it('should return list of claimable rewards with known validator publicKey, offset=1 and limit=5', async () => {
 		if (refGenerator.publicKey) {
 			const response = await getPosClaimableRewards({
-				publicKey: refGenerator.publicKey, offset: 1, limit: 5,
+				publicKey: refGenerator.publicKey,
+				offset: 1,
+				limit: 5,
 			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -177,7 +187,6 @@ describe('Claimable rewards API', () => {
 
 	it('should return invalid params if requested with invalid address', async () => {
 		for (let i = 0; i < invalidAddresses.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getPosClaimableRewards({ address: invalidAddresses[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}
@@ -185,7 +194,6 @@ describe('Claimable rewards API', () => {
 
 	it('should return invalid params if requested with invalid name', async () => {
 		for (let i = 0; i < invalidNames.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getPosClaimableRewards({ name: invalidNames[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}
@@ -193,7 +201,6 @@ describe('Claimable rewards API', () => {
 
 	it('should return invalid params if requested with invalid publicKey', async () => {
 		for (let i = 0; i < invalidPublicKeys.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getPosClaimableRewards({ publicKey: invalidPublicKeys[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}
@@ -201,7 +208,6 @@ describe('Claimable rewards API', () => {
 
 	it('should return invalid params if requested with invalid limit', async () => {
 		for (let i = 0; i < invalidLimits.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getPosClaimableRewards({
 				address: refGenerator.address,
 				limit: invalidLimits[i],
@@ -212,7 +218,6 @@ describe('Claimable rewards API', () => {
 
 	it('should return invalid params if requested with invalid offset', async () => {
 		for (let i = 0; i < invalidOffsets.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getPosClaimableRewards({
 				address: refGenerator.address,
 				offset: invalidOffsets[i],

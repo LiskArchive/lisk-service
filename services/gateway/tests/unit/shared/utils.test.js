@@ -13,8 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { transformParams, requireAllJson, getSwaggerDescription, isValidNonEmptyResponse } = require('../../../shared/utils');
-const { transformParamsInput, transformParamsExpectedResponse, requireAllJsonExpectedResponse } = require('../../constants/utils');
+const {
+	transformParams,
+	requireAllJson,
+	getSwaggerDescription,
+	isValidNonEmptyResponse,
+} = require('../../../shared/utils');
+const {
+	transformParamsInput,
+	transformParamsExpectedResponse,
+	requireAllJsonExpectedResponse,
+} = require('../../constants/utils');
 
 describe('Test transformParams method', () => {
 	it('should return correctly mapped params when called with all possible key types', async () => {

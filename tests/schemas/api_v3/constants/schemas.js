@@ -36,11 +36,7 @@ const blockSchema = {
 			fieldNumber: 3,
 		},
 	},
-	required: [
-		'header',
-		'transactions',
-		'assets',
-	],
+	required: ['header', 'transactions', 'assets'],
 };
 
 const headerSchema = {
@@ -103,11 +99,7 @@ const headerSchema = {
 		aggregateCommit: {
 			type: 'object',
 			fieldNumber: 14,
-			required: [
-				'height',
-				'aggregationBits',
-				'certificateSignature',
-			],
+			required: ['height', 'aggregationBits', 'certificateSignature'],
 			properties: {
 				height: {
 					dataType: 'uint32',
@@ -150,10 +142,7 @@ const headerSchema = {
 const assetSchema = {
 	$id: '/block/asset/3',
 	type: 'object',
-	required: [
-		'module',
-		'data',
-	],
+	required: ['module', 'data'],
 	properties: {
 		module: {
 			dataType: 'string',
@@ -169,14 +158,7 @@ const assetSchema = {
 const transactionSchema = {
 	$id: '/lisk/transaction',
 	type: 'object',
-	required: [
-		'module',
-		'command',
-		'nonce',
-		'fee',
-		'senderPublicKey',
-		'params',
-	],
+	required: ['module', 'command', 'nonce', 'fee', 'senderPublicKey', 'params'],
 	properties: {
 		module: {
 			dataType: 'string',
@@ -221,14 +203,7 @@ const transactionSchema = {
 const eventSchema = {
 	$id: '/block/event',
 	type: 'object',
-	required: [
-		'module',
-		'name',
-		'data',
-		'topics',
-		'height',
-		'index',
-	],
+	required: ['module', 'name', 'data', 'topics', 'height', 'index'],
 	properties: {
 		module: {
 			dataType: 'string',
@@ -269,9 +244,7 @@ const eventSchema = {
 const standardEventSchema = {
 	$id: '/block/event/standard',
 	type: 'object',
-	required: [
-		'success',
-	],
+	required: ['success'],
 	properties: {
 		success: {
 			dataType: 'boolean',
@@ -345,13 +318,7 @@ const ccmSchema = {
 const messageSchema = {
 	$id: '/auth/command/regMultisigMsg',
 	type: 'object',
-	required: [
-		'address',
-		'nonce',
-		'numberOfSignatures',
-		'mandatoryKeys',
-		'optionalKeys',
-	],
+	required: ['address', 'nonce', 'numberOfSignatures', 'mandatoryKeys', 'optionalKeys'],
 	properties: {
 		address: {
 			dataType: 'bytes',

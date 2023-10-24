@@ -17,9 +17,7 @@ const moment = require('moment');
 const config = require('../../../config');
 const exportConfig = require('../../../../services/export/config');
 
-const {
-	api,
-} = require('../../../helpers/api');
+const { api } = require('../../../helpers/api');
 
 const {
 	metaSchemaForExport,
@@ -28,15 +26,9 @@ const {
 	goodRequestSchemaForExport,
 } = require('../../../schemas/api_v3/export.schema');
 
-const {
-	notFoundSchema,
-	badRequestSchema,
-} = require('../../../schemas/httpGenerics.schema');
+const { notFoundSchema, badRequestSchema } = require('../../../schemas/httpGenerics.schema');
 
-const {
-	waitForSuccess,
-	isStringCsvParsable,
-} = require('../../../helpers/utils');
+const { waitForSuccess, isStringCsvParsable } = require('../../../helpers/utils');
 
 const httpStatus = {
 	OK: 200,
@@ -112,13 +104,11 @@ describe('Export API', () => {
 	});
 
 	describe('File is ready to export', () => {
-		const successValidator = (response) => response.meta.ready;
+		const successValidator = response => response.meta.ready;
 
 		it('should return 200 OK when scheduled from account address', async () => {
-			const scheduleExport = async () => api.get(
-				`${baseUrlV3}/export/transactions?address=${mockAddress2}`,
-				httpStatus.OK,
-			);
+			const scheduleExport = async () =>
+				api.get(`${baseUrlV3}/export/transactions?address=${mockAddress2}`, httpStatus.OK);
 			const response = await waitForSuccess(scheduleExport, successValidator);
 			const expected = { ready: true };
 			expect(response).toMap(goodRequestSchemaForExport);
@@ -129,10 +119,8 @@ describe('Export API', () => {
 		}, 2147483647);
 
 		it('should return 200 OK when scheduled from account publicKey', async () => {
-			const scheduleExport = async () => api.get(
-				`${baseUrlV3}/export/transactions?publicKey=${mockPublicKey2}`,
-				httpStatus.OK,
-			);
+			const scheduleExport = async () =>
+				api.get(`${baseUrlV3}/export/transactions?publicKey=${mockPublicKey2}`, httpStatus.OK);
 			const response = await waitForSuccess(scheduleExport, successValidator);
 			const expected = { ready: true };
 			expect(response).toMap(goodRequestSchemaForExport);
@@ -145,13 +133,11 @@ describe('Export API', () => {
 
 	describe('Download processed transaction history -> returns 200 OK', () => {
 		const parseParams = { delimiter: exportConfig.excel.delimiter };
-		const successValidator = (response) => response.meta.ready;
+		const successValidator = response => response.meta.ready;
 
 		it('should return 200 OK when scheduled from account address', async () => {
-			const scheduleExport = async () => api.get(
-				`${baseUrlV3}/export/transactions?address=${mockAddress2}`,
-				httpStatus.OK,
-			);
+			const scheduleExport = async () =>
+				api.get(`${baseUrlV3}/export/transactions?address=${mockAddress2}`, httpStatus.OK);
 			const res = await waitForSuccess(scheduleExport, successValidator);
 
 			const response = await api.get(`${baseUrl}${res.data.fileUrl}`, httpStatus.OK);
@@ -159,10 +145,8 @@ describe('Export API', () => {
 		}, 2147483647);
 
 		it('should return 200 OK when scheduled from account publicKey', async () => {
-			const scheduleExport = async () => api.get(
-				`${baseUrlV3}/export/transactions?publicKey=${mockPublicKey2}`,
-				httpStatus.OK,
-			);
+			const scheduleExport = async () =>
+				api.get(`${baseUrlV3}/export/transactions?publicKey=${mockPublicKey2}`, httpStatus.OK);
 			const res = await waitForSuccess(scheduleExport, successValidator);
 
 			const response = await api.get(`${baseUrl}${res.data.fileUrl}`, httpStatus.OK);
@@ -228,7 +212,10 @@ describe('Export API', () => {
 
 		it('should return 404 NOT FOUND when attempting to download a non-existent file', async () => {
 			const validFileName = `transactions_99999999_${mockAddress1}_${startDate}_${endDate}.xlsx`;
-			const response = await api.get(`${baseUrlV3}/export/download?filename=${validFileName}`, httpStatus.NOT_FOUND);
+			const response = await api.get(
+				`${baseUrlV3}/export/download?filename=${validFileName}`,
+				httpStatus.NOT_FOUND,
+			);
 			expect(response).toMap(notFoundSchema);
 		});
 	});

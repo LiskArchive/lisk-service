@@ -16,9 +16,7 @@
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
 
-const {
-	badRequestSchema,
-} = require('../../../schemas/httpGenerics.schema');
+const { badRequestSchema } = require('../../../schemas/httpGenerics.schema');
 
 const {
 	goodRequestSchemaForAuth,
@@ -34,7 +32,9 @@ const endpoint = `${baseUrlV3}/auth`;
 describe('Auth accounts API', () => {
 	let refTransaction;
 	beforeAll(async () => {
-		const response = await api.get(`${baseUrlV3}/transactions?limit=1&moduleCommand=auth:registerMultisignature`);
+		const response = await api.get(
+			`${baseUrlV3}/transactions?limit=1&moduleCommand=auth:registerMultisignature`,
+		);
 		[refTransaction] = response.data;
 	});
 
@@ -52,7 +52,6 @@ describe('Auth accounts API', () => {
 
 	it('should return bad request for an invalid address', async () => {
 		for (let i = 0; i < invalidAddresses.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await api.get(`${endpoint}?address=${invalidAddresses[i]}`, 400);
 			expect(response).toMap(badRequestSchema);
 		}

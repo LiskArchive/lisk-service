@@ -3,7 +3,6 @@
 # See https://docs.docker.com/compose/extends/#example-use-case
 version: '3.3'
 services:
-
   mysql:
     image: mysql:8
     platform: linux/amd64
@@ -18,9 +17,9 @@ services:
       MYSQL_USER: lisk
       MYSQL_PASSWORD: password
     ports:
-      - "127.0.0.1:3306:3306"
+      - '127.0.0.1:3306:3306'
     healthcheck:
-      test: [ 'CMD', 'bash', '/healthcheck.sh' ]
+      test: ['CMD', 'bash', '/healthcheck.sh']
 
 volumes:
   db-data:

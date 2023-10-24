@@ -13,9 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	Readable,
-} = require('stream');
+const { Readable } = require('stream');
 const Minio = require('minio');
 const moment = require('moment');
 
@@ -54,135 +52,124 @@ const awsClientParams = {
 
 if (AWS_S3_SESSION_TOKEN) Object.assign(awsClientParams, { sessionToken: AWS_S3_SESSION_TOKEN });
 
-const clientParams = (AWS_S3_ACCESS_KEY && AWS_S3_SECRET_KEY)
-	? awsClientParams
-	: minioClientParams;
+const clientParams = AWS_S3_ACCESS_KEY && AWS_S3_SECRET_KEY ? awsClientParams : minioClientParams;
 
 const minioClient = new Minio.Client(clientParams);
 
 // eslint-disable-next-line no-unused-vars
-const createDir = async (dirPath, options) => new Promise((resolve, reject) => {
-	// Check if bucket exists, create if not exist
-	minioClient.bucketExists(
-		AWS_S3_BUCKET_NAME,
-		(errBucketExists, isExists) => {
+const createDir = async (dirPath, options) =>
+	new Promise((resolve, reject) => {
+		// Check if bucket exists, create if not exist
+		minioClient.bucketExists(AWS_S3_BUCKET_NAME, (errBucketExists, isExists) => {
 			if (errBucketExists) return reject(errBucketExists);
-			if (isExists) return resolve(`Bucket ${AWS_S3_BUCKET_NAME} already exists in region '${AWS_S3_REGION}'.`);
+			if (isExists)
+				return resolve(`Bucket ${AWS_S3_BUCKET_NAME} already exists in region '${AWS_S3_REGION}'.`);
 
-			return minioClient.makeBucket(
-				AWS_S3_BUCKET_NAME,
-				AWS_S3_REGION,
-				(errMakeBucket, data) => {
-					if (errMakeBucket) return reject(errMakeBucket);
-					logger.info(data);
-					return resolve(`Bucket '${AWS_S3_BUCKET_NAME}' created successfully in region '${AWS_S3_REGION}'.`);
-				},
-			);
-		},
-	);
-});
+			return minioClient.makeBucket(AWS_S3_BUCKET_NAME, AWS_S3_REGION, (errMakeBucket, data) => {
+				if (errMakeBucket) return reject(errMakeBucket);
+				logger.info(data);
+				return resolve(
+					`Bucket '${AWS_S3_BUCKET_NAME}' created successfully in region '${AWS_S3_REGION}'.`,
+				);
+			});
+		});
+	});
 
-const write = async (fileName, content) => new Promise((resolve, reject) => {
-	// Stringify the content
-	const contentString = (typeof content === 'object')
-		? JSON.stringify(content)
-		: content;
+const write = async (fileName, content) =>
+	new Promise((resolve, reject) => {
+		// Stringify the content
+		const contentString = typeof content === 'object' ? JSON.stringify(content) : content;
 
-	// Create a Readable stream from the content string
-	const stream = new Readable();
-	stream.push(Buffer.from(contentString));
-	stream.push(null);
+		// Create a Readable stream from the content string
+		const stream = new Readable();
+		stream.push(Buffer.from(contentString));
+		stream.push(null);
 
-	minioClient.putObject(
-		AWS_S3_BUCKET_NAME,
-		fileName,
-		stream,
-		(err, objInfo) => {
+		minioClient.putObject(AWS_S3_BUCKET_NAME, fileName, stream, (err, objInfo) => {
 			if (err) return reject(err);
 			return resolve(`Successfully wrote file ${fileName}`, objInfo);
-		},
-	);
-});
+		});
+	});
 
-const read = async (fileName) => new Promise((resolve, reject) => {
-	minioClient.getObject(
-		AWS_S3_BUCKET_NAME,
-		fileName,
-		(errGetObject, stream) => {
+const read = async fileName =>
+	new Promise((resolve, reject) => {
+		minioClient.getObject(AWS_S3_BUCKET_NAME, fileName, (errGetObject, stream) => {
 			if (errGetObject) reject(errGetObject);
 			else {
 				const chunks = [];
-				stream.on('data', (chunk) => chunks.push(chunk));
-				stream.on('error', (errorStream) => reject(errorStream));
+				stream.on('data', chunk => chunks.push(chunk));
+				stream.on('error', errorStream => reject(errorStream));
 				stream.on('end', () => {
 					const contentString = Buffer.concat(chunks).toString('utf8');
-					new Promise((innerResolve) => innerResolve(JSON.parse(contentString)))
+					new Promise(innerResolve => innerResolve(JSON.parse(contentString)))
 						.then(json => resolve(json))
 						.catch(() => resolve(contentString));
 				});
 			}
 		});
-});
+	});
 
-const remove = async (file) => new Promise((resolve, reject) => {
-	const files = Array.isArray(file) ? file : [file];
-	minioClient.removeObjects(
-		AWS_S3_BUCKET_NAME,
-		files,
-		(err) => {
+const remove = async file =>
+	new Promise((resolve, reject) => {
+		const files = Array.isArray(file) ? file : [file];
+		minioClient.removeObjects(AWS_S3_BUCKET_NAME, files, err => {
 			if (err) reject(err);
 			resolve('Successfully to removed the requested file(s)');
 		});
-});
+	});
 
 // eslint-disable-next-line no-unused-vars
-const list = async (dirPath, count = 100, page = 0) => new Promise((resolve, reject) => {
-	const chunks = [];
-	const stream = minioClient.listObjects(AWS_S3_BUCKET_NAME);
-	stream.on('data', (chunk) => chunks.push(chunk));
-	stream.on('error', (err) => reject(err));
-	stream.on('end', () => resolve(chunks.slice(page, page + count).map(e => e.name)));
-});
+const list = async (dirPath, count = 100, page = 0) =>
+	new Promise((resolve, reject) => {
+		const chunks = [];
+		const stream = minioClient.listObjects(AWS_S3_BUCKET_NAME);
+		stream.on('data', chunk => chunks.push(chunk));
+		stream.on('error', err => reject(err));
+		stream.on('end', () => resolve(chunks.slice(page, page + count).map(e => e.name)));
+	});
 
 const filterEligibleFilesForPurging = async (fileInfoList, days) => {
 	const deleteBeforeMoment = moment().subtract(days, 'days');
 
 	// Filter out files older than `days` days
-	const filteredFileInfoList = fileInfoList
-		.filter(file => deleteBeforeMoment.diff(moment(file.lastModified)) >= 0);
+	const filteredFileInfoList = fileInfoList.filter(
+		file => deleteBeforeMoment.diff(moment(file.lastModified)) >= 0,
+	);
 	const eligibleFiles = filteredFileInfoList.map(f => f.name);
 	return eligibleFiles;
 };
 
 // eslint-disable-next-line no-unused-vars
-const purge = async (dirPath, days) => new Promise((resolve, reject) => {
-	if (days === undefined) throw new ValidationException('days cannot be undefined');
+const purge = async (dirPath, days) =>
+	new Promise((resolve, reject) => {
+		if (days === undefined) throw new ValidationException('days cannot be undefined');
 
-	const fileInfoList = [];
-	const stream = minioClient.listObjects(AWS_S3_BUCKET_NAME);
-	stream.on('data', (info) => fileInfoList.push(info));
-	stream.on('error', (err) => reject(err));
-	stream.on('end', async () => {
-		const eligibleFiles = await filterEligibleFilesForPurging(fileInfoList, days);
-		remove(eligibleFiles)
-			.then(() => resolve(`Successfully removed ${eligibleFiles.length} files.`))
-			.catch((err) => reject(err));
+		const fileInfoList = [];
+		const stream = minioClient.listObjects(AWS_S3_BUCKET_NAME);
+		stream.on('data', info => fileInfoList.push(info));
+		stream.on('error', err => reject(err));
+		stream.on('end', async () => {
+			const eligibleFiles = await filterEligibleFilesForPurging(fileInfoList, days);
+			remove(eligibleFiles)
+				.then(() => resolve(`Successfully removed ${eligibleFiles.length} files.`))
+				.catch(err => reject(err));
+		});
 	});
-});
 
-const exists = async (fileName) => new Promise((resolve) => {
-	read(fileName)
-		.then(() => resolve(true))
-		.catch(() => resolve(false));
-});
+const exists = async fileName =>
+	new Promise(resolve => {
+		read(fileName)
+			.then(() => resolve(true))
+			.catch(() => resolve(false));
+	});
 
-const isFile = async (filePath) => {
+const isFile = async filePath => {
 	const fileExists = await exists(filePath);
 	if (!fileExists) {
 		return false;
 	}
 
-	const isNonEmptyFile = await new Promise((resolve) => {
+	const isNonEmptyFile = await new Promise(resolve => {
 		minioClient.statObject(AWS_S3_BUCKET_NAME, filePath, (err, stats) => {
 			if (err) {
 				resolve(false);

@@ -1,21 +1,21 @@
 {
-    "validateBLSKeyParams": {
-        "name": "body",
-        "in": "body",
-        "required": true,
-        "description": "The request body must contain two properties:\n- blsKey (required): The BLS key.\n- proofOfPossession (required): The Proof of Possession corresponding to the BLS key.",
-        "schema": {
-            "$ref": "#/definitions/blsKeyValidationParamEnvelope"
-        }
-    },
-    "addressRequired": {
-        "name": "address",
-        "in": "query",
-        "description": "Lisk account address.",
-        "type": "string",
-        "format": "address",
-        "minLength": 41,
-        "maxLength": 41,
-        "required": true
-    }
+	"validateBLSKeyParams": {
+		"name": "body",
+		"in": "body",
+		"required": true,
+		"description": "The request body must contain two properties:\n- blsKey (required): The BLS key.\n- proofOfPossession (required): The Proof of Possession corresponding to the BLS key.",
+		"schema": {
+			"$ref": "#/definitions/blsKeyValidationParamEnvelope"
+		}
+	},
+	"addressRequired": {
+		"name": "address",
+		"in": "query",
+		"description": "Lisk account address.",
+		"type": "string",
+		"format": "address",
+		"minLength": 41,
+		"maxLength": 41,
+		"required": true
+	}
 }

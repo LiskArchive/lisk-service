@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+/* eslint-disable operator-linebreak */
 const BullQueue = require('bull');
 
 const loggerLib = require('./logger');
@@ -26,69 +27,79 @@ const queuePool = {};
 const STATS_INTERVAL = 1 * 60 * 1000; // ms
 
 const defaultOptions = {
-    defaultJobOptions: {
-        attempts: 5,
-        timeout: 5 * 60 * 1000, // ms
-        removeOnComplete: true,
-    },
-    settings: {},
+	defaultJobOptions: {
+		attempts: 5,
+		timeout: 5 * 60 * 1000, // ms
+		removeOnComplete: true,
+	},
+	settings: {},
 };
 
-const queueInstance = (redisEndpoint, _queueName = 'defaultQueue', jobFn, concurrency = 1, options = defaultOptions) => {
-    const queueName = _queueName || 'defaultQueue';
+const queueInstance = (
+	redisEndpoint,
+	_queueName = 'defaultQueue',
+	jobFn,
+	concurrency = 1,
+	options = defaultOptions,
+) => {
+	const queueName = _queueName || 'defaultQueue';
 
-    if (!queuePool[queueName]) {
-        queuePool[queueName] = new BullQueue(queueName,
-            redisEndpoint,
-            {
-                prefix: `queue-${packageJson.name}`,
-                defaultJobOptions: options.defaultJobOptions,
-                settings: options.settings,
-                limiter: options.limiter,
-            });
+	if (!queuePool[queueName]) {
+		queuePool[queueName] = new BullQueue(queueName, redisEndpoint, {
+			prefix: `queue-${packageJson.name}`,
+			defaultJobOptions: options.defaultJobOptions,
+			settings: options.settings,
+			limiter: options.limiter,
+		});
 
-        const queue = queuePool[queueName];
+		const queue = queuePool[queueName];
 
-        logger.info(`Initialized queue ${queueName}`);
+		logger.info(`Initialized queue ${queueName}`);
 
-        queue.on('completed', job => {
-            logger.debug(`${job.name} job completed.`);
-            job.remove();
-        });
+		queue.on('completed', job => {
+			logger.debug(`${job.name} job completed.`);
+			job.remove();
+		});
 
-        queue.on('error', err => {
-            logger.error(`${queue.name} job error`, err);
-        });
+		queue.on('error', err => {
+			logger.error(`${queue.name} job error`, err);
+		});
 
-        queue.on('failed', (job, err) => {
-            logger.warn(`${job.name} job failed`, err.message);
-            logger.warn(`${job.name} job failed`, err.stack);
-        });
+		queue.on('failed', (job, err) => {
+			logger.warn(`${job.name} job failed`, err.message);
+			logger.warn(`${job.name} job failed`, err.stack);
+		});
 
-        setInterval(async () => {
-            const jc = await queue.getJobCounts();
-            if (Number(jc.waiting) > 0 || Number(jc.active) > 0
-                || Number(jc.failed) > 0 || Number(jc.paused) > 0) {
-                logger.info(`Queue counters (${queue.name}): waiting: ${jc.waiting}, active: ${jc.active}, failed: ${jc.failed}, paused: ${jc.paused}`);
-            } else {
-                logger.info(`Queue counters (${queue.name}): All scheduled jobs are done.`);
-            }
-        }, STATS_INTERVAL);
-    }
+		setInterval(async () => {
+			const jc = await queue.getJobCounts();
+			if (
+				Number(jc.waiting) > 0 ||
+				Number(jc.active) > 0 ||
+				Number(jc.failed) > 0 ||
+				Number(jc.paused) > 0
+			) {
+				logger.info(
+					`Queue counters (${queue.name}): waiting: ${jc.waiting}, active: ${jc.active}, failed: ${jc.failed}, paused: ${jc.paused}`,
+				);
+			} else {
+				logger.info(`Queue counters (${queue.name}): All scheduled jobs are done.`);
+			}
+		}, STATS_INTERVAL);
+	}
 
-    const queue = queuePool[queueName];
+	const queue = queuePool[queueName];
 
-    const jobName = queueName;
-    queue.process(jobName, concurrency, jobFn);
+	const jobName = queueName;
+	queue.process(jobName, concurrency, jobFn);
 
-    const add = params => queue.add(jobName, params);
+	const add = params => queue.add(jobName, params);
 
-    return {
-        add,
-        queue,
-        pause: queue.pause,
-        resume: queue.resume,
-    };
+	return {
+		add,
+		queue,
+		pause: queue.pause,
+		resume: queue.resume,
+	};
 };
 
 module.exports = queueInstance;

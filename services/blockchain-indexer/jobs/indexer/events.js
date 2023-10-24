@@ -23,15 +23,14 @@ const config = require('../../config');
 module.exports = [
 	{
 		name: 'delete.serializedEvents',
-		description: 'Delete the serialized events until the last indexed block or finalized height, whichever is lower.',
+		description:
+			'Delete the serialized events until the last indexed block or finalized height, whichever is lower.',
 		interval: config.job.deleteSerializedEvents.interval,
 		schedule: config.job.deleteSerializedEvents.schedule,
 		controller: async () => {
 			try {
 				if (!config.db.isPersistEvents) {
-					const {
-						data: { genesisHeight, lastIndexedBlockHeight } = {},
-					} = await getIndexStatus();
+					const { data: { genesisHeight, lastIndexedBlockHeight } = {} } = await getIndexStatus();
 					const finalizedHeight = await getFinalizedHeight();
 
 					// Default to 0, when getFinalizedHeight doesn't return response

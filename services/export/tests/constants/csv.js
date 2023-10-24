@@ -20,21 +20,36 @@ const jsonObj = {
 	d: '4',
 };
 
-const jsonObjList = Array(10).fill(jsonObj).map((o, i) => ({ num: String(i), ...o }));
+const jsonObjList = Array(10)
+	.fill(jsonObj)
+	.map((o, i) => ({ num: String(i), ...o }));
 
-const generateExcpectedCsv = (json, delimiter) => ''.concat(
-	Object.keys(json).map(k => `"${k}"`).join(delimiter),
-	'\n',
-	Object.values(json).map(k => `"${k}"`).join(delimiter),
-);
+const generateExcpectedCsv = (json, delimiter) =>
+	''.concat(
+		Object.keys(json)
+			.map(k => `"${k}"`)
+			.join(delimiter),
+		'\n',
+		Object.values(json)
+			.map(k => `"${k}"`)
+			.join(delimiter),
+	);
 
 const generateExcpectedCsvForList = (jsonList, delimiter) => {
 	const csvList = [];
 	jsonList.forEach((json, i) => {
 		if (i === 0) {
-			csvList.push(Object.keys(json).map(k => `"${k}"`).join(delimiter));
+			csvList.push(
+				Object.keys(json)
+					.map(k => `"${k}"`)
+					.join(delimiter),
+			);
 		}
-		csvList.push(Object.values(json).map(k => `"${k}"`).join(delimiter));
+		csvList.push(
+			Object.values(json)
+				.map(k => `"${k}"`)
+				.join(delimiter),
+		);
 	});
 
 	return csvList.join('\n');

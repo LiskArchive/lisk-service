@@ -15,9 +15,7 @@
  */
 const config = require('../../../config');
 
-const {
-	request,
-} = require('../../../helpers/socketIoRpcRequest');
+const { request } = require('../../../helpers/socketIoRpcRequest');
 
 const {
 	invalidParamsSchema,
@@ -28,10 +26,15 @@ const {
 	tokenBalancesSchema,
 	tokenBalancesMetaSchema,
 } = require('../../../schemas/api_v3/tokenBalances.schema');
-const { invalidLimits, invalidTokenIDs, invalidAddresses, invalidOffsets } = require('../constants/invalidInputs');
+const {
+	invalidLimits,
+	invalidTokenIDs,
+	invalidAddresses,
+	invalidOffsets,
+} = require('../constants/invalidInputs');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
-const getTokensInfo = async (params) => request(wsRpcUrl, 'get.token.balances', params);
+const getTokensInfo = async params => request(wsRpcUrl, 'get.token.balances', params);
 const getValidators = async params => request(wsRpcUrl, 'get.pos.validators', params);
 const getNetworkStatus = async params => request(wsRpcUrl, 'get.network.status', params);
 
@@ -92,7 +95,6 @@ describe('get.token.balances', () => {
 
 	it('should return invalid params when requested with invalid address', async () => {
 		for (let i = 0; i < invalidAddresses.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getTokensInfo({ address: invalidAddresses[i], tokenID: currTokenID });
 			expect(response).toMap(invalidParamsSchema);
 		}
@@ -100,8 +102,8 @@ describe('get.token.balances', () => {
 
 	it('should return invalid params when requested with invalid tokenIDs', async () => {
 		for (let i = 0; i < invalidTokenIDs.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
-			const response = await getTokensInfo({ address: refValidator.address,
+			const response = await getTokensInfo({
+				address: refValidator.address,
 				tokenID: invalidTokenIDs[i],
 			});
 			expect(response).toMap(invalidParamsSchema);
@@ -110,8 +112,8 @@ describe('get.token.balances', () => {
 
 	it('should return invalid params when requested with invalid limit', async () => {
 		for (let i = 0; i < invalidLimits.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
-			const response = await getTokensInfo({ address: refValidator.address,
+			const response = await getTokensInfo({
+				address: refValidator.address,
 				tokenID: currTokenID,
 				limit: invalidLimits[i],
 			});
@@ -121,8 +123,8 @@ describe('get.token.balances', () => {
 
 	it('should return invalid params when requested with invalid offset', async () => {
 		for (let i = 0; i < invalidOffsets.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
-			const response = await getTokensInfo({ address: refValidator.address,
+			const response = await getTokensInfo({
+				address: refValidator.address,
 				tokenID: currTokenID,
 				offset: invalidOffsets[i],
 			});

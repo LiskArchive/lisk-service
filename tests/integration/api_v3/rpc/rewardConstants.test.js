@@ -21,13 +21,11 @@ const {
 	jsonRpcEnvelopeSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
-const {
-	rewardConstantsResponseSchema,
-} = require('../../../schemas/api_v3/rewardConstants.schema');
+const { rewardConstantsResponseSchema } = require('../../../schemas/api_v3/rewardConstants.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 
-const getRewardConstants = async (params) => request(wsRpcUrl, 'get.reward.constants', params);
+const getRewardConstants = async params => request(wsRpcUrl, 'get.reward.constants', params);
 
 describe('get.reward.constants', () => {
 	it('should return reward constants when requested', async () => {

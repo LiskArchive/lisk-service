@@ -18,9 +18,7 @@ const { api } = require('../../../helpers/api');
 
 const { badRequestSchema } = require('../../../schemas/httpGenerics.schema');
 
-const {
-	goodResponseSchema,
-} = require('../../../schemas/api_v3/indexStatus.schema');
+const { goodResponseSchema } = require('../../../schemas/api_v3/indexStatus.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
@@ -42,4 +40,3 @@ describe('Index Status API', () => {
 		expect(response).toMap(badRequestSchema);
 	});
 });
-

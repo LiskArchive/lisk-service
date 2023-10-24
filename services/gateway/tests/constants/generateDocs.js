@@ -16,11 +16,10 @@
 const createApiDocsExpectedResponse = {
 	'/blocks/assets': {
 		get: {
-			tags: [
-				'Blocks',
-			],
+			tags: ['Blocks'],
 			summary: 'Requests block assets data.',
-			description: 'Returns block assets data. Assets are always returned empty for the genesis height.\n RPC => get.blocks.assets',
+			description:
+				'Returns block assets data. Assets are always returned empty for the genesis height.\n RPC => get.blocks.assets',
 			parameters: [
 				{
 					$ref: '#/parameters/blockID',
@@ -46,12 +45,7 @@ const createApiDocsExpectedResponse = {
 					description: 'Fields to sort results by.',
 					required: false,
 					type: 'string',
-					enum: [
-						'height:asc',
-						'height:desc',
-						'timestamp:asc',
-						'timestamp:desc',
-					],
+					enum: ['height:asc', 'height:desc', 'timestamp:asc', 'timestamp:desc'],
 					default: 'height:desc',
 				},
 			],
@@ -73,9 +67,7 @@ const createApiDocsExpectedResponse = {
 	},
 	'/blockchain/apps': {
 		get: {
-			tags: [
-				'Interoperability',
-			],
+			tags: ['Interoperability'],
 			summary: 'Requests list of blockchain applications',
 			description: 'Returns a list of blockchain applications\n RPC => get.blockchain.apps',
 			parameters: [
@@ -116,11 +108,11 @@ const createApiDocsExpectedResponse = {
 	},
 	'/blockchain/apps/meta/list': {
 		get: {
-			tags: [
-				'Application Off-Chain Metadata',
-			],
-			summary: 'Requests list of blockchain applications for which the off-chain metadata is available',
-			description: 'Returns a list of blockchain applications for which the off-chain metadata is available\n RPC => get.blockchain.apps.meta.list',
+			tags: ['Application Off-Chain Metadata'],
+			summary:
+				'Requests list of blockchain applications for which the off-chain metadata is available',
+			description:
+				'Returns a list of blockchain applications for which the off-chain metadata is available\n RPC => get.blockchain.apps.meta.list',
 			parameters: [
 				{
 					$ref: '#/parameters/chainName',
@@ -143,16 +135,14 @@ const createApiDocsExpectedResponse = {
 					description: 'Fields to sort results by.',
 					required: false,
 					type: 'string',
-					enum: [
-						'chainName:asc',
-						'chainName:desc',
-					],
+					enum: ['chainName:asc', 'chainName:desc'],
 					default: 'chainName:asc',
 				},
 			],
 			responses: {
 				200: {
-					description: 'Returns a list of blockchain applications for which the off-chain metadata is available',
+					description:
+						'Returns a list of blockchain applications for which the off-chain metadata is available',
 					schema: {
 						$ref: '#/definitions/BlockchainAppsMetaListWithEnvelope',
 					},
@@ -168,11 +158,10 @@ const createApiDocsExpectedResponse = {
 	},
 	'/blockchain/apps/meta': {
 		get: {
-			tags: [
-				'Application Off-Chain Metadata',
-			],
+			tags: ['Application Off-Chain Metadata'],
 			summary: 'Requests blockchain applications off-chain metadata',
-			description: 'Returns a list of blockchain applications off-chain metadata\n RPC => get.blockchain.apps.meta',
+			description:
+				'Returns a list of blockchain applications off-chain metadata\n RPC => get.blockchain.apps.meta',
 			parameters: [
 				{
 					$ref: '#/parameters/chainName',
@@ -204,12 +193,7 @@ const createApiDocsExpectedResponse = {
 					description: 'Fields to sort results by.',
 					required: false,
 					type: 'string',
-					enum: [
-						'chainName:asc',
-						'chainName:desc',
-						'chainID:asc',
-						'chainID:desc',
-					],
+					enum: ['chainName:asc', 'chainName:desc', 'chainID:asc', 'chainID:desc'],
 					default: 'chainName:asc',
 				},
 			],
@@ -231,11 +215,10 @@ const createApiDocsExpectedResponse = {
 	},
 	'/blockchain/apps/statistics': {
 		get: {
-			tags: [
-				'Interoperability',
-			],
+			tags: ['Interoperability'],
 			summary: 'Requests blockchain application statistics',
-			description: 'Returns blockchain applications statistics\n RPC => get.blockchain.apps.statistics',
+			description:
+				'Returns blockchain applications statistics\n RPC => get.blockchain.apps.statistics',
 			responses: {
 				200: {
 					description: 'Returns statistics for the blockchain applications in the Lisk ecosystem',
@@ -248,11 +231,10 @@ const createApiDocsExpectedResponse = {
 	},
 	'/blockchain/apps/meta/tokens': {
 		get: {
-			tags: [
-				'Application Off-Chain Metadata',
-			],
+			tags: ['Application Off-Chain Metadata'],
 			summary: 'Requests blockchain applications off-chain metadata for tokens',
-			description: 'Returns blockchain applications off-chain metadata for tokens\n RPC => get.blockchain.apps.meta.tokens',
+			description:
+				'Returns blockchain applications off-chain metadata for tokens\n RPC => get.blockchain.apps.meta.tokens',
 			parameters: [
 				{
 					$ref: '#/parameters/chainName',
@@ -284,10 +266,7 @@ const createApiDocsExpectedResponse = {
 					description: 'Fields to sort results by.',
 					required: false,
 					type: 'string',
-					enum: [
-						'chainName:asc',
-						'chainName:desc',
-					],
+					enum: ['chainName:asc', 'chainName:desc'],
 					default: 'chainName:asc',
 				},
 			],
@@ -309,11 +288,11 @@ const createApiDocsExpectedResponse = {
 	},
 	'/blockchain/apps/meta/tokens/supported': {
 		get: {
-			tags: [
-				'Application Off-Chain Metadata',
-			],
-			summary: 'Requests blockchain applications off-chain metadata for tokens supported on the specified chainID.',
-			description: 'Returns blockchain applications off-chain metadata for tokens supported on the specified chainID.\n RPC => get.blockchain.apps.meta.tokens.supported',
+			tags: ['Application Off-Chain Metadata'],
+			summary:
+				'Requests blockchain applications off-chain metadata for tokens supported on the specified chainID.',
+			description:
+				'Returns blockchain applications off-chain metadata for tokens supported on the specified chainID.\n RPC => get.blockchain.apps.meta.tokens.supported',
 			parameters: [
 				{
 					$ref: '#/parameters/chainID',
@@ -330,16 +309,14 @@ const createApiDocsExpectedResponse = {
 					description: 'Fields to sort results by.',
 					required: false,
 					type: 'string',
-					enum: [
-						'tokenID:asc',
-						'tokenID:desc',
-					],
+					enum: ['tokenID:asc', 'tokenID:desc'],
 					default: 'tokenID:asc',
 				},
 			],
 			responses: {
 				200: {
-					description: 'Returns a list of blockchain applications off-chain metadata for tokens supported on the specified chainID.',
+					description:
+						'Returns a list of blockchain applications off-chain metadata for tokens supported on the specified chainID.',
 					schema: {
 						$ref: '#/definitions/BlockchainAppsTokenMetadataWithEnvelope',
 					},
@@ -355,9 +332,7 @@ const createApiDocsExpectedResponse = {
 	},
 	'/blocks': {
 		get: {
-			tags: [
-				'Blocks',
-			],
+			tags: ['Blocks'],
 			summary: 'Requests blocks data',
 			description: 'Returns block data\n RPC => get.blocks',
 			parameters: [
@@ -385,12 +360,7 @@ const createApiDocsExpectedResponse = {
 					description: 'Fields to sort results by.',
 					required: false,
 					type: 'string',
-					enum: [
-						'height:asc',
-						'height:desc',
-						'timestamp:asc',
-						'timestamp:desc',
-					],
+					enum: ['height:asc', 'height:desc', 'timestamp:asc', 'timestamp:desc'],
 					default: 'height:desc',
 				},
 			],
@@ -412,9 +382,7 @@ const createApiDocsExpectedResponse = {
 	},
 	'/events': {
 		get: {
-			tags: [
-				'Events',
-			],
+			tags: ['Events'],
 			summary: 'Requests events data',
 			description: 'Returns events data\n RPC => get.events',
 			parameters: [
@@ -454,24 +422,17 @@ const createApiDocsExpectedResponse = {
 					description: 'Fields to sort results by.',
 					required: false,
 					type: 'string',
-					enum: [
-						'height:asc',
-						'height:desc',
-						'timestamp:asc',
-						'timestamp:desc',
-					],
+					enum: ['height:asc', 'height:desc', 'timestamp:asc', 'timestamp:desc'],
 					default: 'timestamp:desc',
 				},
 				{
 					name: 'order',
 					in: 'query',
-					description: 'Fields to order results by. The order condition is applied after the sort condition, usually to break ties when the sort condition results in collision.',
+					description:
+						'Fields to order results by. The order condition is applied after the sort condition, usually to break ties when the sort condition results in collision.',
 					required: false,
 					type: 'string',
-					enum: [
-						'index:asc',
-						'index:desc',
-					],
+					enum: ['index:asc', 'index:desc'],
 					default: 'index:asc',
 				},
 			],
@@ -493,9 +454,7 @@ const createApiDocsExpectedResponse = {
 	},
 	'/fees': {
 		get: {
-			tags: [
-				'Fee',
-			],
+			tags: ['Fee'],
 			summary: 'Requests fee estimates',
 			description: 'Returns fee estimates\n RPC => get.fees',
 			responses: {
@@ -516,9 +475,7 @@ const createApiDocsExpectedResponse = {
 	},
 	'/generators': {
 		get: {
-			tags: [
-				'Generators',
-			],
+			tags: ['Generators'],
 			summary: 'Requests generators list',
 			description: 'Returns generators list\n RPC => get.generators',
 			parameters: [
@@ -550,9 +507,7 @@ const createApiDocsExpectedResponse = {
 	},
 	'/index/status': {
 		get: {
-			tags: [
-				'Index Status',
-			],
+			tags: ['Index Status'],
 			summary: 'Requests current indexing status.',
 			description: 'Returns current indexing status.\n RPC => get.index.status',
 			responses: {
@@ -567,11 +522,10 @@ const createApiDocsExpectedResponse = {
 	},
 	'/invoke': {
 		post: {
-			tags: [
-				'Proxy',
-			],
+			tags: ['Proxy'],
 			summary: 'Proxy request to directly invoke application endpoint',
-			description: 'Returns endpoint response from the blockchain application in its original form.\n RPC => post.invoke',
+			description:
+				'Returns endpoint response from the blockchain application in its original form.\n RPC => post.invoke',
 			parameters: [
 				{
 					$ref: '#/parameters/invokeParams',
@@ -579,7 +533,8 @@ const createApiDocsExpectedResponse = {
 			],
 			responses: {
 				200: {
-					description: 'Returns endpoint response from the blockchain application in its original form.',
+					description:
+						'Returns endpoint response from the blockchain application in its original form.',
 					schema: {
 						$ref: '#/definitions/invokeWithEnvelope',
 					},
@@ -601,12 +556,8 @@ const createApiDocsExpectedResponse = {
 	},
 	'/market/prices': {
 		get: {
-			tags: [
-				'Market',
-			],
-			parameters: [
-
-			],
+			tags: ['Market'],
+			parameters: [],
 			summary: 'Requests market prices',
 			description: 'Returns market prices\n RPC => get.market.prices',
 			responses: {
@@ -633,9 +584,7 @@ const createApiDocsExpectedResponse = {
 	},
 	'/network/peers': {
 		get: {
-			tags: [
-				'Network',
-			],
+			tags: ['Network'],
 			summary: 'Requests peers data',
 			description: 'Returns peers data\n RPC => get.network.peers',
 			parameters: [
@@ -663,12 +612,7 @@ const createApiDocsExpectedResponse = {
 					description: 'Fields to sort results by.',
 					required: false,
 					type: 'string',
-					enum: [
-						'height:asc',
-						'height:desc',
-						'networkVersion:asc',
-						'networkVersion:desc',
-					],
+					enum: ['height:asc', 'height:desc', 'networkVersion:asc', 'networkVersion:desc'],
 					default: 'height:desc',
 				},
 			],
@@ -690,9 +634,7 @@ const createApiDocsExpectedResponse = {
 	},
 	'/network/statistics': {
 		get: {
-			tags: [
-				'Network',
-			],
+			tags: ['Network'],
 			summary: 'Requests network statistics',
 			description: 'Returns network statistics data\n RPC => get.network.statistics',
 			responses: {
@@ -713,9 +655,7 @@ const createApiDocsExpectedResponse = {
 	},
 	'/network/status': {
 		get: {
-			tags: [
-				'Network',
-			],
+			tags: ['Network'],
 			summary: 'Requests network status',
 			description: 'Returns network status\n RPC => get.network.status',
 			responses: {
@@ -730,9 +670,7 @@ const createApiDocsExpectedResponse = {
 	},
 	'/transactions': {
 		get: {
-			tags: [
-				'Transactions',
-			],
+			tags: ['Transactions'],
 			summary: 'Requests transactions data',
 			description: 'Returns transactions data\n RPC => get.transactions',
 			parameters: [
@@ -778,24 +716,17 @@ const createApiDocsExpectedResponse = {
 					description: 'Fields to sort results by.',
 					required: false,
 					type: 'string',
-					enum: [
-						'height:asc',
-						'height:desc',
-						'timestamp:asc',
-						'timestamp:desc',
-					],
+					enum: ['height:asc', 'height:desc', 'timestamp:asc', 'timestamp:desc'],
 					default: 'timestamp:desc',
 				},
 				{
 					name: 'order',
 					in: 'query',
-					description: 'Fields to order results by. The order condition is applied after the sort condition, usually to break ties when the sort condition results in collision.',
+					description:
+						'Fields to order results by. The order condition is applied after the sort condition, usually to break ties when the sort condition results in collision.',
 					required: false,
 					type: 'string',
-					enum: [
-						'index:asc',
-						'index:desc',
-					],
+					enum: ['index:asc', 'index:desc'],
 					default: 'index:asc',
 				},
 			],
@@ -815,9 +746,7 @@ const createApiDocsExpectedResponse = {
 			},
 		},
 		post: {
-			tags: [
-				'Transactions',
-			],
+			tags: ['Transactions'],
 			summary: 'Post transactions',
 			description: 'Post transactions and return transactionID\n RPC => post.transactions',
 			parameters: [
@@ -849,7 +778,8 @@ const createApiDocsExpectedResponse = {
 	},
 	'/transactions/estimate-fees': {
 		post: {
-			description: 'Returns estimated fees for the transaction.\n RPC => post.transactions.estimate-fees',
+			description:
+				'Returns estimated fees for the transaction.\n RPC => post.transactions.estimate-fees',
 			parameters: [
 				{
 					$ref: '#/parameters/transactionEstimateFees',
@@ -876,16 +806,12 @@ const createApiDocsExpectedResponse = {
 				},
 			},
 			summary: 'Requests estimated fees for the transaction.',
-			tags: [
-				'Transactions',
-			],
+			tags: ['Transactions'],
 		},
 	},
 	'/schemas': {
 		get: {
-			tags: [
-				'Schemas',
-			],
+			tags: ['Schemas'],
 			summary: 'Requests schemas.',
 			description: 'Returns schemas.\n RPC => get.schemas',
 			responses: {
@@ -906,9 +832,7 @@ const createApiDocsExpectedResponse = {
 	},
 	'/transactions/dryrun': {
 		post: {
-			tags: [
-				'Transactions',
-			],
+			tags: ['Transactions'],
 			summary: 'Dry run transactions.',
 			description: 'Dry run transactions.\n RPC => post.transactions.dryrun',
 			parameters: [
@@ -940,9 +864,7 @@ const createApiDocsExpectedResponse = {
 	},
 	'/transactions/statistics': {
 		get: {
-			tags: [
-				'Transactions',
-			],
+			tags: ['Transactions'],
 			summary: 'Requests transaction statistics',
 			description: 'Returns transaction statistics\n RPC => get.transactions.statistics',
 			parameters: [
@@ -952,10 +874,7 @@ const createApiDocsExpectedResponse = {
 					description: 'interval to query statistics',
 					required: true,
 					type: 'string',
-					enum: [
-						'day',
-						'month',
-					],
+					enum: ['day', 'month'],
 				},
 				{
 					$ref: '#/parameters/limit',
@@ -988,9 +907,7 @@ const createApiDocsExpectedResponse = {
 	},
 	'/auth': {
 		get: {
-			tags: [
-				'Auth',
-			],
+			tags: ['Auth'],
 			summary: 'Requests auth details by address',
 			description: 'Returns auth details by address\n RPC => get.auth',
 			parameters: [
@@ -1016,9 +933,7 @@ const createApiDocsExpectedResponse = {
 	},
 	'/validator': {
 		get: {
-			tags: [
-				'Validator',
-			],
+			tags: ['Validator'],
 			summary: 'Requests validator information',
 			description: 'Returns validator information\n RPC => get.validator',
 			parameters: [
@@ -1044,11 +959,10 @@ const createApiDocsExpectedResponse = {
 	},
 	'/validator/validate-bls-key': {
 		post: {
-			tags: [
-				'Validator',
-			],
+			tags: ['Validator'],
 			summary: 'Validates a BLS key against its corresponding Proof of Possession.',
-			description: 'Validates a BLS key against its corresponding Proof of Possession.\n RPC => post.validator.validate-bls-key',
+			description:
+				'Validates a BLS key against its corresponding Proof of Possession.\n RPC => post.validator.validate-bls-key',
 			parameters: [
 				{
 					$ref: '#/parameters/validateBLSKeyParams',
@@ -1056,7 +970,8 @@ const createApiDocsExpectedResponse = {
 			],
 			responses: {
 				200: {
-					description: 'Returns a boolean representing the validity of the supplied BLS key and Proof of Possession.',
+					description:
+						'Returns a boolean representing the validity of the supplied BLS key and Proof of Possession.',
 					schema: {
 						$ref: '#/definitions/blsKeyValidationWithEnvelope',
 					},
@@ -1072,11 +987,10 @@ const createApiDocsExpectedResponse = {
 	},
 	'/token/account/exists': {
 		get: {
-			tags: [
-				'Token',
-			],
+			tags: ['Token'],
 			summary: 'Requests to check existence of an account for the specified token.',
-			description: 'Returns existence of an account for the specified token.\n RPC => get.token.account.exists',
+			description:
+				'Returns existence of an account for the specified token.\n RPC => get.token.account.exists',
 			parameters: [
 				{
 					$ref: '#/parameters/address',
@@ -1109,9 +1023,7 @@ const createApiDocsExpectedResponse = {
 	},
 	'/token/available-ids': {
 		get: {
-			tags: [
-				'Token',
-			],
+			tags: ['Token'],
 			summary: 'Requests the list of available tokens identifiers.',
 			description: 'Returns all the available token identifiers.\n RPC => get.token.available-ids',
 			parameters: [
@@ -1121,10 +1033,7 @@ const createApiDocsExpectedResponse = {
 					description: 'Fields to sort results by.',
 					required: false,
 					type: 'string',
-					enum: [
-						'tokenID:desc',
-						'tokenID:asc',
-					],
+					enum: ['tokenID:desc', 'tokenID:asc'],
 					default: 'tokenID:asc',
 				},
 				{
@@ -1152,9 +1061,7 @@ const createApiDocsExpectedResponse = {
 	},
 	'/token/balances': {
 		get: {
-			tags: [
-				'Token',
-			],
+			tags: ['Token'],
 			summary: 'Requests tokens information',
 			description: 'Returns tokens information\n RPC => get.token.balances',
 			parameters: [
@@ -1189,11 +1096,10 @@ const createApiDocsExpectedResponse = {
 	},
 	'/token/constants': {
 		get: {
-			tags: [
-				'Token',
-			],
+			tags: ['Token'],
 			summary: 'Requests Token module constants.',
-			description: 'Requests all the configured constants for the Token module.\n RPC => get.token.constants',
+			description:
+				'Requests all the configured constants for the Token module.\n RPC => get.token.constants',
 			responses: {
 				200: {
 					description: 'Returns all the configured constants for the Token module.',
@@ -1212,17 +1118,15 @@ const createApiDocsExpectedResponse = {
 	},
 	'/token/summary': {
 		get: {
-			tags: [
-				'Token',
-			],
+			tags: ['Token'],
 			summary: 'Requests the tokens summary for the current blockchain application.',
-			description: "Returns the token summary. The 'supportedTokens' is an empty list when all the tokens are supported on the blockchain application.\n RPC => get.token.summary",
-			parameters: [
-
-			],
+			description:
+				"Returns the token summary. The 'supportedTokens' is an empty list when all the tokens are supported on the blockchain application.\n RPC => get.token.summary",
+			parameters: [],
 			responses: {
 				200: {
-					description: "Returns the token summary. The 'supportedTokens' is an empty list when all the tokens are supported on the blockchain application.",
+					description:
+						"Returns the token summary. The 'supportedTokens' is an empty list when all the tokens are supported on the blockchain application.",
 					schema: {
 						$ref: '#/definitions/tokenSummaryWithEnvelope',
 					},
@@ -1238,11 +1142,10 @@ const createApiDocsExpectedResponse = {
 	},
 	'/token/balances/top': {
 		get: {
-			tags: [
-				'Token',
-			],
+			tags: ['Token'],
 			summary: 'Requests the list of top accounts for the specified tokenID.',
-			description: 'Returns the list of top accounts for the specified tokenID.\n RPC => get.token.balances.top',
+			description:
+				'Returns the list of top accounts for the specified tokenID.\n RPC => get.token.balances.top',
 			parameters: [
 				{
 					$ref: '#/parameters/tokenIDRequired',
@@ -1262,10 +1165,7 @@ const createApiDocsExpectedResponse = {
 					description: 'Fields to sort results by.',
 					required: false,
 					type: 'string',
-					enum: [
-						'balance:desc',
-						'balance:asc',
-					],
+					enum: ['balance:desc', 'balance:asc'],
 					default: 'balance:desc',
 				},
 			],

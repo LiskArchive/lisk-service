@@ -200,7 +200,6 @@ describe('Method post.transactions.dryrun', () => {
 			const { senderPublicKey, ...remTransactionObject } = TRANSACTION_OBJECT_VALID;
 			for (let i = 0; i < invalidPublicKeys.length; i++) {
 				remTransactionObject.senderPublicKey = invalidPublicKeys[i];
-				// eslint-disable-next-line no-await-in-loop
 				const response = await postDryrunTransaction({ transaction: remTransactionObject });
 				expect(response).toMap(invalidParamsSchema);
 			}
@@ -215,7 +214,6 @@ describe('Method post.transactions.dryrun', () => {
 					...params,
 					recipientAddress: invalidAddresses[i],
 				};
-				// eslint-disable-next-line no-await-in-loop
 				const response = await postDryrunTransaction({ transaction: remTransactionObject });
 				expect(response).toMap(invalidRequestSchema);
 			}

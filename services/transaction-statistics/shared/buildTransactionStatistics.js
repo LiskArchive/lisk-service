@@ -45,8 +45,8 @@ const logger = Logger();
 const MYSQL_ENDPOINT_PRIMARY = config.endpoints.mysql;
 const MYSQL_ENDPOINT_REPLICA = config.endpoints.mysqlReplica;
 
-const getTransactionStatisticsTable = (dbEndpoint = MYSQL_ENDPOINT_PRIMARY) => getTableInstance(
-	txStatisticsTableSchema, dbEndpoint);
+const getTransactionStatisticsTable = (dbEndpoint = MYSQL_ENDPOINT_PRIMARY) =>
+	getTableInstance(txStatisticsTableSchema, dbEndpoint);
 
 const getTxStatsWithFallback = (acc, moduleCommand, range) => {
 	const defaultValue = {
@@ -54,21 +54,16 @@ const getTxStatsWithFallback = (acc, moduleCommand, range) => {
 		volume: 0,
 		tokenID: DB_CONSTANT.UNAVAILABLE,
 	};
-	return acc[moduleCommand]
-		? acc[moduleCommand][range] || defaultValue
-		: defaultValue;
+	return acc[moduleCommand] ? acc[moduleCommand][range] || defaultValue : defaultValue;
 };
 
 const getTxValue = tx => {
-	const totalValue = Object.keys(tx.params).reduce(
-		(total, property) => {
-			if (property.endsWith('Fee') || property === 'amount') {
-				total.plus(tx.params[property]);
-			}
-			return total;
-		},
-		BigNumber(tx.fee),
-	);
+	const totalValue = Object.keys(tx.params).reduce((total, property) => {
+		if (property.endsWith('Fee') || property === 'amount') {
+			total.plus(tx.params[property]);
+		}
+		return total;
+	}, BigNumber(tx.fee));
 
 	return totalValue;
 };
@@ -95,8 +90,8 @@ const getInitialValueToEnsureEachDayHasAtLeastOneEntry = () => {
 	};
 };
 
-const computeTransactionStats = transactions => transactions.reduce(
-	(acc, tx) => {
+const computeTransactionStats = transactions =>
+	transactions.reduce((acc, tx) => {
 		const txStatsWithFallback = getTxStatsWithFallback(acc, tx.moduleCommand, getRange(tx));
 		return {
 			...acc,
@@ -109,13 +104,11 @@ const computeTransactionStats = transactions => transactions.reduce(
 				},
 			},
 		};
-	},
-	getInitialValueToEnsureEachDayHasAtLeastOneEntry(),
-);
+	}, getInitialValueToEnsureEachDayHasAtLeastOneEntry());
 
-const transformStatsObjectToList = statsObject => (
+const transformStatsObjectToList = statsObject =>
 	Object.entries(statsObject).reduce(
-		(acc, [moduleCommand, rangeObject]) => ([
+		(acc, [moduleCommand, rangeObject]) => [
 			...acc,
 			...Object.entries(rangeObject).map(([range, { count, volume, tokenID }]) => ({
 				moduleCommand,
@@ -124,10 +117,9 @@ const transformStatsObjectToList = statsObject => (
 				range,
 				tokenID,
 			})),
-		]),
+		],
 		[],
-	)
-);
+	);
 
 const insertToDB = async (statsList, date) => {
 	const transactionStatisticsTable = await getTransactionStatisticsTable(MYSQL_ENDPOINT_PRIMARY);
@@ -159,18 +151,23 @@ const insertToDB = async (statsList, date) => {
 	}
 };
 
-const fetchTransactions = async (date) => {
+const fetchTransactions = async date => {
 	const params = {
 		timestamp: `${moment.unix(date).unix()}:${moment.unix(date).add(1, 'day').unix()}`,
 	};
 	const txMeta = (await requestIndexer('transactions', { ...params, limit: 1 })).meta;
 	const maxCount = txMeta ? txMeta.total : 1000;
-	const result = await requestAll(requestIndexer, 'transactions', { ...params, limit: 100 }, maxCount);
+	const result = await requestAll(
+		requestIndexer,
+		'transactions',
+		{ ...params, limit: 100 },
+		maxCount,
+	);
 	const transactions = result.error ? [] : result;
 	return transactions;
 };
 
-const queueJob = async (job) => {
+const queueJob = async job => {
 	const { date } = job.data;
 	if (!date) {
 		return Promise.reject(new Error('Missing date.'));
@@ -197,11 +194,10 @@ const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
 	const transactionStatisticsTable = await getTransactionStatisticsTable(MYSQL_ENDPOINT_REPLICA);
 	const scheduledDays = [];
 	for (let i = 0; i < n; i++) {
-		/* eslint-disable no-await-in-loop */
-		const date = moment().subtract(i, 'day').utc().startOf('day')
-			.unix();
+		const date = moment().subtract(i, 'day').utc().startOf('day').unix();
 
-		const shouldUpdate = i === 0 || !((await transactionStatisticsTable.find({ date, limit: 1 }, ['id'])).length);
+		const shouldUpdate =
+			i === 0 || !(await transactionStatisticsTable.find({ date, limit: 1 }, ['id'])).length;
 
 		if (shouldUpdate || forceReload) {
 			const formattedDate = moment.unix(date).format('YYYY-MM-DD');
@@ -211,9 +207,12 @@ const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
 			scheduledDays.push(formattedDate.toString());
 		}
 		if (scheduledDays.length === n) {
-			logger.info(`Scheduled statistics calculation for ${scheduledDays.length} days (${scheduledDays[scheduledDays.length - 1]} - ${scheduledDays[0]}).`);
+			logger.info(
+				`Scheduled statistics calculation for ${scheduledDays.length} days (${
+					scheduledDays[scheduledDays.length - 1]
+				} - ${scheduledDays[0]}).`,
+			);
 		}
-		/* eslint-enable no-await-in-loop */
 	}
 };
 
@@ -233,10 +232,12 @@ const validateTransactionStatistics = async historyLengthDays => {
 	const verifyStatistics = await BluebirdPromise.map(
 		Object.keys(distributionByType),
 		async moduleCommand => {
-			const fromTimestamp = Math.floor((moment.unix(dateFrom).unix()) / 1000);
-			const toTimestamp = Math.floor((moment.unix(dateTo).unix()) / 1000);
+			const fromTimestamp = Math.floor(moment.unix(dateFrom).unix() / 1000);
+			const toTimestamp = Math.floor(moment.unix(dateTo).unix() / 1000);
 
-			const { meta: { total } } = await requestIndexer('transactions', {
+			const {
+				meta: { total },
+			} = await requestIndexer('transactions', {
 				moduleCommand,
 				timestamp: `${fromTimestamp}:${toTimestamp}`,
 				limit: 1,
@@ -252,7 +253,11 @@ const validateTransactionStatistics = async historyLengthDays => {
 
 const init = async historyLengthDays => {
 	await fetchTransactionsForPastNDays(historyLengthDays, true);
-	logger.debug(`============== 'transactionStatsReady' signal: ${Signals.get('transactionStatsReady')} ==============`);
+	logger.debug(
+		`============== 'transactionStatsReady' signal: ${Signals.get(
+			'transactionStatsReady',
+		)} ==============`,
+	);
 	Signals.get('transactionStatsReady').dispatch(historyLengthDays);
 };
 

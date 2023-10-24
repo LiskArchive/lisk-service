@@ -20,10 +20,7 @@ const config = require('../../../config');
 const regex = require('../../../schemas/api_v3/regex');
 const { api } = require('../../../helpers/api');
 
-const {
-	wrongInputParamSchema,
-	badRequestSchema,
-} = require('../../../schemas/httpGenerics.schema');
+const { wrongInputParamSchema, badRequestSchema } = require('../../../schemas/httpGenerics.schema');
 
 const {
 	timelineItemSchema,
@@ -38,14 +35,16 @@ const baseEndpoint = `${baseUrlV3}/transactions/statistics`;
 
 describe('Transaction statistics API', () => {
 	describe('GET /transactions/statistics', () => {
-		[{
-			interval: 'day',
-			dateFormat: 'YYYY-MM-DD',
-		},
-		{
-			interval: 'month',
-			dateFormat: 'YYYY-MM',
-		}].forEach(({ interval, dateFormat }) => {
+		[
+			{
+				interval: 'day',
+				dateFormat: 'YYYY-MM-DD',
+			},
+			{
+				interval: 'month',
+				dateFormat: 'YYYY-MM',
+			},
+		].forEach(({ interval, dateFormat }) => {
 			describe(`GET /transactions/statistics?interval=${interval}`, () => {
 				const startOfIntervalInUTC = moment().utc().startOf(interval);
 
@@ -78,11 +77,12 @@ describe('Transaction statistics API', () => {
 					tokensListEntries.forEach(([tokenID, timeline]) => {
 						expect(tokenID).toMatch(regex.TOKEN_ID);
 						expect(timeline).toHaveLength(1);
-						timeline.forEach(timelineItem => expect(timelineItem)
-							.toMap(timelineItemSchema, {
+						timeline.forEach(timelineItem =>
+							expect(timelineItem).toMap(timelineItemSchema, {
 								date: startOfIntervalInUTC.format(dateFormat),
 								timestamp: startOfIntervalInUTC.unix(),
-							}));
+							}),
+						);
 					});
 					expect(response.meta).toMap(metaSchema, { limit });
 				});
@@ -93,18 +93,21 @@ describe('Transaction statistics API', () => {
 						const offset = 1;
 						const startOfYesterday = moment(startOfIntervalInUTC).subtract(1, interval);
 
-						const response = await api.get(`${baseEndpoint}?interval=${interval}&limit=${limit}&offset=${offset}`);
+						const response = await api.get(
+							`${baseEndpoint}?interval=${interval}&limit=${limit}&offset=${offset}`,
+						);
 						expect(response).toMap(goodRequestSchema);
 						expect(response.data).toMap(transactionStatisticsSchema);
 						const tokensListEntries = Object.entries(response.data.timeline);
 						tokensListEntries.forEach(([tokenID, timeline]) => {
 							expect(tokenID).toMatch(regex.TOKEN_ID);
 							expect(timeline.length).toBeGreaterThanOrEqual(0);
-							timeline.forEach(timelineItem => expect(timelineItem)
-								.toMap(timelineItemSchema, {
+							timeline.forEach(timelineItem =>
+								expect(timelineItem).toMap(timelineItemSchema, {
 									date: startOfYesterday.format(dateFormat),
 									timestamp: startOfYesterday.unix(),
-								}));
+								}),
+							);
 						});
 
 						expect(response.meta.duration).toMatchObject({
@@ -121,7 +124,9 @@ describe('Transaction statistics API', () => {
 						const limit = 2;
 						const offset = 1;
 
-						const response = await api.get(`${baseEndpoint}?interval=${interval}&limit=${limit}&offset=${offset}`);
+						const response = await api.get(
+							`${baseEndpoint}?interval=${interval}&limit=${limit}&offset=${offset}`,
+						);
 						expect(response).toMap(goodRequestSchema);
 						expect(response.data).toMap(transactionStatisticsSchema);
 						const tokensListEntries = Object.entries(response.data.timeline);
@@ -146,16 +151,20 @@ describe('Transaction statistics API', () => {
 
 				it('should return error 400 if called with invalid limits', async () => {
 					for (let i = 0; i < invalidLimits.length; i++) {
-						// eslint-disable-next-line no-await-in-loop
-						const response = await api.get(`${baseEndpoint}?interval=${interval}&limit=${invalidLimits[i]}`, 400);
+						const response = await api.get(
+							`${baseEndpoint}?interval=${interval}&limit=${invalidLimits[i]}`,
+							400,
+						);
 						expect(response).toMap(wrongInputParamSchema);
 					}
 				});
 
 				it('should return error 400 if called with invalid offset', async () => {
 					for (let i = 0; i < invalidLimits.length; i++) {
-						// eslint-disable-next-line no-await-in-loop
-						const response = await api.get(`${baseEndpoint}?interval=${interval}&offset=${invalidOffsets[i]}`, 400);
+						const response = await api.get(
+							`${baseEndpoint}?interval=${interval}&offset=${invalidOffsets[i]}`,
+							400,
+						);
 						expect(response).toMap(wrongInputParamSchema);
 					}
 				});

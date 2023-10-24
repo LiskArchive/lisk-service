@@ -13,10 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getAuthAccount,
-	getAuthMultiSigRegMsgSchema,
-} = require('../shared/sdk');
+const { getAuthAccount, getAuthMultiSigRegMsgSchema } = require('../shared/sdk');
 
 module.exports = [
 	{

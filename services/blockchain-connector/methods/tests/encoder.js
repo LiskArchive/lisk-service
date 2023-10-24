@@ -13,9 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	encodeTransaction,
-} = require('../../shared/sdk/encoder');
+const { encodeTransaction } = require('../../shared/sdk/encoder');
 
 module.exports = [
 	{

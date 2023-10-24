@@ -16,9 +16,7 @@
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
 
-const {
-	badRequestSchema,
-} = require('../../../schemas/httpGenerics.schema');
+const { badRequestSchema } = require('../../../schemas/httpGenerics.schema');
 
 const {
 	goodResponseSchemaForTokenAvailableIDs,
@@ -86,7 +84,6 @@ describe('Token IDs API', () => {
 
 	it('should return bad request when called with invalid limit', async () => {
 		for (let i = 0; i < invalidLimits.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await api.get(`${endpoint}?limit=${invalidLimits[i]}`, 400);
 			expect(response).toMap(badRequestSchema);
 		}
@@ -94,7 +91,6 @@ describe('Token IDs API', () => {
 
 	it('should return bad request when called with invalid offset', async () => {
 		for (let i = 0; i < invalidOffsets.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await api.get(`${endpoint}?offset=${invalidOffsets[i]}`, 400);
 			expect(response).toMap(badRequestSchema);
 		}

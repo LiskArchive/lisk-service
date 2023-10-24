@@ -16,8 +16,11 @@
 module.exports = {
 	tokenID: '=,string',
 	availableBalance: '=,string',
-	lockedBalances: ['lockedBalances', {
-		module: '=,string',
-		amount: '=,string',
-	}],
+	lockedBalances: [
+		'lockedBalances',
+		{
+			module: '=,string',
+			amount: '=,string',
+		},
+	],
 };

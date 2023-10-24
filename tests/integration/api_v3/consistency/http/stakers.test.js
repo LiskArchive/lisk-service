@@ -38,11 +38,14 @@ for (let i = 1; i < baseUrls.length; i++) {
 			const validatorsNames = response.data.map(({ name }) => name);
 
 			for (let j = 0; j < validatorsNames.length; j++) {
-				/* eslint-disable no-await-in-loop */
 				const name = validatorsNames[j];
 
-				const { meta: { total: total0 } } = await api.get(`${stakersEndpoint0}?limit=1&name=${name}`);
-				const { meta: { total: total1 } } = await api.get(`${stakersEndpoint1}?limit=1&name=${name}`);
+				const {
+					meta: { total: total0 },
+				} = await api.get(`${stakersEndpoint0}?limit=1&name=${name}`);
+				const {
+					meta: { total: total1 },
+				} = await api.get(`${stakersEndpoint1}?limit=1&name=${name}`);
 
 				try {
 					expect(total0).toBe(total1);
@@ -57,8 +60,12 @@ for (let i = 1; i < baseUrls.length; i++) {
 				const limit = 100;
 
 				for (let offset = 0; offset * limit < total0 + limit; offset++) {
-					const result0 = await api.get(`${stakersEndpoint0}?offset=${offset * limit}&limit=${limit}&name=${name}`);
-					const result1 = await api.get(`${stakersEndpoint1}?offset=${offset * limit}&limit=${limit}&name=${name}`);
+					const result0 = await api.get(
+						`${stakersEndpoint0}?offset=${offset * limit}&limit=${limit}&name=${name}`,
+					);
+					const result1 = await api.get(
+						`${stakersEndpoint1}?offset=${offset * limit}&limit=${limit}&name=${name}`,
+					);
 
 					votes0.push(result0.data);
 					votes1.push(result1.data);
@@ -71,7 +78,6 @@ for (let i = 1; i < baseUrls.length; i++) {
 					// console.error(e);
 					// throw e;
 				}
-				/* eslint-enable no-await-in-loop */
 			}
 		});
 	});

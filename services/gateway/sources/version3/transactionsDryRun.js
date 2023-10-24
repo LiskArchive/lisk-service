@@ -26,15 +26,18 @@ module.exports = {
 		data: {
 			result: '=,number',
 			status: '=,string',
-			events: ['data.events', {
-				data: '=',
-				index: '=,number',
-				module: '=,string',
-				name: '=,string',
-				topics: '=',
-				height: '=,number',
-				id: '=,string',
-			}],
+			events: [
+				'data.events',
+				{
+					data: '=',
+					index: '=,number',
+					module: '=,string',
+					name: '=,string',
+					topics: '=',
+					height: '=,number',
+					id: '=,string',
+				},
+			],
 			errorMessage: '=,string',
 		},
 		meta: {},

@@ -1,18 +1,12 @@
 {
 	"rewardDefaultWithEnvelope": {
 		"type": "object",
-		"required": [
-			"data",
-			"meta"
-		],
+		"required": ["data", "meta"],
 		"properties": {
 			"data": {
 				"description": "Default reward for a block height.",
 				"type": "object",
-				"required": [
-					"tokenID",
-					"defaultReward"
-				],
+				"required": ["tokenID", "defaultReward"],
 				"properties": {
 					"tokenID": {
 						"type": "string",
@@ -34,17 +28,12 @@
 	},
 	"rewardConstantsWithEnvelope": {
 		"type": "object",
-		"required": [
-			"data",
-			"meta"
-		],
+		"required": ["data", "meta"],
 		"properties": {
 			"data": {
 				"description": "Reward constants.",
 				"type": "object",
-				"required": [
-					"rewardTokenID"
-				],
+				"required": ["rewardTokenID"],
 				"properties": {
 					"rewardTokenID": {
 						"type": "string",
@@ -61,10 +50,7 @@
 	},
 	"rewardInflationWithEnvelope": {
 		"type": "object",
-		"required": [
-			"data",
-			"meta"
-		],
+		"required": ["data", "meta"],
 		"properties": {
 			"data": {
 				"description": "Current inflation rate for the specified reward token.",

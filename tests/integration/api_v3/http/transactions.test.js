@@ -15,7 +15,12 @@
  */
 import moment from 'moment';
 import { TRANSACTION_EXECUTION_STATUSES } from '../../../schemas/api_v3/constants/transactions';
-import { invalidAddresses, invalidBlockIDs, invalidLimits, invalidOffsets } from '../constants/invalidInputs';
+import {
+	invalidAddresses,
+	invalidBlockIDs,
+	invalidLimits,
+	invalidOffsets,
+} from '../constants/invalidInputs';
 import { waitMs } from '../../../helpers/utils';
 
 const config = require('../../../config');
@@ -45,7 +50,6 @@ describe('Transactions API', () => {
 
 		while (retries > 0 && !success) {
 			try {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?limit=1&moduleCommand=token:transfer`);
 				[refTransaction] = response.data;
 
@@ -57,7 +61,6 @@ describe('Transactions API', () => {
 				retries--;
 
 				// Delay by 3 sec
-				// eslint-disable-next-line no-await-in-loop
 				await waitMs(3000);
 			}
 		}
@@ -85,13 +88,17 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it(`should return list of transactions when called with executionStatus=${TRANSACTION_EXECUTION_STATUSES.join(',')}`, async () => {
-			const response = await api.get(`${endpoint}?executionStatus=${TRANSACTION_EXECUTION_STATUSES.join(',')}`);
+		it(`should return list of transactions when called with executionStatus=${TRANSACTION_EXECUTION_STATUSES.join(
+			',',
+		)}`, async () => {
+			const response = await api.get(
+				`${endpoint}?executionStatus=${TRANSACTION_EXECUTION_STATUSES.join(',')}`,
+			);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach((transaction) => {
+			response.data.forEach(transaction => {
 				if (transaction.executionStatus === 'pending') {
 					expect(transaction).toMap(pendingTransactionSchema);
 				} else {
@@ -108,8 +115,9 @@ describe('Transactions API', () => {
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach((transaction, i) => {
-				expect(transaction)
-					.toMap(transactionSchema, { moduleCommand: refTransaction.moduleCommand });
+				expect(transaction).toMap(transactionSchema, {
+					moduleCommand: refTransaction.moduleCommand,
+				});
 				if (i > 0) {
 					const prevTx = response.data[i - 1];
 					const prevTxTimestamp = prevTx.block.timestamp;
@@ -159,7 +167,10 @@ describe('Transactions API', () => {
 		});
 
 		it('should throw 400 BAD REQUEST error when called with long invalid transactionID', async () => {
-			const response = await api.get(`${endpoint}?transactionID=a0833fb5b5534a0c53c3a766bf356c92df2a28e1730fba85667b24f139f65b35578`, 400);
+			const response = await api.get(
+				`${endpoint}?transactionID=a0833fb5b5534a0c53c3a766bf356c92df2a28e1730fba85667b24f139f65b35578`,
+				400,
+			);
 			expect(response).toMap(badRequestSchema);
 		});
 
@@ -202,7 +213,6 @@ describe('Transactions API', () => {
 
 		it('should return bad request when called with invalid blockID', async () => {
 			for (let i = 0; i < invalidBlockIDs.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?blockID=${invalidBlockIDs[i]}`, 400);
 				expect(response).toMap(badRequestSchema);
 			}
@@ -284,7 +294,6 @@ describe('Transactions API', () => {
 
 		it('should return bad request when called with invalid senderAddress', async () => {
 			for (let i = 0; i < invalidAddresses.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?senderAddress=${invalidAddresses[i]}`, 400);
 				expect(response).toMap(badRequestSchema);
 			}
@@ -293,7 +302,9 @@ describe('Transactions API', () => {
 
 	describe('Retrieve transaction list by recipientAddress', () => {
 		it('should return transactions when called with known address', async () => {
-			const response = await api.get(`${endpoint}?recipientAddress=${refTransaction.params.recipientAddress}`);
+			const response = await api.get(
+				`${endpoint}?recipientAddress=${refTransaction.params.recipientAddress}`,
+			);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
@@ -329,7 +340,6 @@ describe('Transactions API', () => {
 
 		it('should throw error when called with invalid recipientAddress', async () => {
 			for (let i = 0; i < invalidAddresses.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?recipientAddress=${invalidAddresses[i]}`, 400);
 				expect(response).toMap(badRequestSchema);
 			}
@@ -345,8 +355,9 @@ describe('Transactions API', () => {
 			response.data.forEach((transaction, i) => {
 				expect(transaction).toMap(transactionSchema);
 				if (transaction.params.recipientAddress) {
-					expect([transaction.sender.address, transaction.params.recipientAddress])
-						.toContain(refTransaction.sender.address);
+					expect([transaction.sender.address, transaction.params.recipientAddress]).toContain(
+						refTransaction.sender.address,
+					);
 				} else {
 					expect(transaction.sender.address).toMatch(refTransaction.sender.address);
 				}
@@ -361,7 +372,6 @@ describe('Transactions API', () => {
 
 		it('should throw error when called with invalid address', async () => {
 			for (let i = 0; i < invalidAddresses.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?address=${invalidAddresses[i]}`, 400);
 				expect(response).toMap(badRequestSchema);
 			}
@@ -370,7 +380,9 @@ describe('Transactions API', () => {
 
 	describe('Retrieve transaction list within timestamps', () => {
 		it('should return transactions when called with timestamp range', async () => {
-			const from = moment(refTransaction.block.timestamp * 10 ** 3).subtract(1, 'day').unix();
+			const from = moment(refTransaction.block.timestamp * 10 ** 3)
+				.subtract(1, 'day')
+				.unix();
 			const toTimestamp = refTransaction.block.timestamp;
 			const response = await api.get(`${endpoint}?timestamp=${from}:${toTimestamp}`);
 			expect(response).toMap(goodRequestSchema);
@@ -391,7 +403,9 @@ describe('Transactions API', () => {
 		});
 
 		it('should return transactions when called with fromTimestamp', async () => {
-			const from = moment(refTransaction.block.timestamp * 10 ** 3).subtract(1, 'day').unix();
+			const from = moment(refTransaction.block.timestamp * 10 ** 3)
+				.subtract(1, 'day')
+				.unix();
 			const response = await api.get(`${endpoint}?timestamp=${from}:`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -493,7 +507,10 @@ describe('Transactions API', () => {
 			const expectedStatusCode = 400;
 			const minHeight = refTransaction.block.height;
 			const maxHeight = refTransaction.block.height + 100;
-			const response = await api.get(`${endpoint}?height=${maxHeight}:${minHeight}&limit=100`, expectedStatusCode);
+			const response = await api.get(
+				`${endpoint}?height=${maxHeight}:${minHeight}&limit=100`,
+				expectedStatusCode,
+			);
 			expect(response).toMap(badRequestSchema);
 		});
 	});
@@ -577,7 +594,11 @@ describe('Transactions API', () => {
 
 	describe('Fetch transactions based on multiple request params', () => {
 		it('should return transaction when called with senderAddress and nonce', async () => {
-			const response = await api.get(`${endpoint}?senderAddress=${refTransaction.sender.address}&nonce=${Number(refTransaction.nonce)}`);
+			const response = await api.get(
+				`${endpoint}?senderAddress=${refTransaction.sender.address}&nonce=${Number(
+					refTransaction.nonce,
+				)}`,
+			);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toEqual(1);
@@ -591,7 +612,12 @@ describe('Transactions API', () => {
 
 		it('should throw error when called with unsupported params', async () => {
 			const expectedStatusCode = 400;
-			const response = await api.get(`${endpoint}?address=${refTransaction.sender.address}&nonce=${Number(refTransaction.nonce) - 1}`, expectedStatusCode);
+			const response = await api.get(
+				`${endpoint}?address=${refTransaction.sender.address}&nonce=${
+					Number(refTransaction.nonce) - 1
+				}`,
+				expectedStatusCode,
+			);
 			expect(response).toMap(badRequestSchema);
 		});
 
@@ -603,7 +629,9 @@ describe('Transactions API', () => {
 		});
 
 		it('should return transaction when called with transactionID and blockID', async () => {
-			const response = await api.get(`${endpoint}?transactionID=${refTransaction.id}&blockID=${refTransaction.block.id}`);
+			const response = await api.get(
+				`${endpoint}?transactionID=${refTransaction.id}&blockID=${refTransaction.block.id}`,
+			);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toEqual(1);
@@ -616,7 +644,9 @@ describe('Transactions API', () => {
 		});
 
 		it('should return transaction when called with transactionID and height', async () => {
-			const response = await api.get(`${endpoint}?transactionID=${refTransaction.id}&height=${refTransaction.block.height}`);
+			const response = await api.get(
+				`${endpoint}?transactionID=${refTransaction.id}&height=${refTransaction.block.height}`,
+			);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toEqual(1);
@@ -654,7 +684,6 @@ describe('Transactions API', () => {
 
 		it('should return bad request if requested with invalid limit', async () => {
 			for (let i = 0; i < invalidLimits.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?limit=${invalidLimits[i]}`, 400);
 				expect(response).toMap(badRequestSchema);
 			}
@@ -662,7 +691,6 @@ describe('Transactions API', () => {
 
 		it('should return bad request if requested with invalid offset', async () => {
 			for (let i = 0; i < invalidOffsets.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?offset=${invalidOffsets[i]}`, 400);
 				expect(response).toMap(badRequestSchema);
 			}

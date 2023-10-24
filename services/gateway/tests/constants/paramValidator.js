@@ -47,10 +47,7 @@ const objDiffReference = {
 	key4: 'val4',
 	key6: 'val6',
 };
-const objDiffExpectedResponse = [
-	'key1',
-	'key3',
-];
+const objDiffExpectedResponse = ['key1', 'key3'];
 
 const dropEmptyPropsInput = {
 	key1: 'val1',
@@ -116,14 +113,17 @@ const validateSpecs = {
 	version: '2.0',
 	swaggerApiPath: '/blockchain/apps/meta/tokens',
 	rpcMethod: 'get.blockchain.apps.meta.tokens',
-	tags: [
-		'Interoperability',
-	],
+	tags: ['Interoperability'],
 	params: {
 		chainName: { optional: true, type: 'string', pattern: regex.NAME },
 		chainID: { optional: true, type: 'string', pattern: regex.CHAIN_ID },
 		tokenName: { optional: true, type: 'string', pattern: regex.NAME_CSV },
-		tokenID: { optional: true, type: 'string', pattern: regex.TOKEN_ID_CSV, altSwaggerKey: 'tokenIDCSV' },
+		tokenID: {
+			optional: true,
+			type: 'string',
+			pattern: regex.TOKEN_ID_CSV,
+			altSwaggerKey: 'tokenIDCSV',
+		},
 		network: { optional: true, type: 'string', pattern: regex.NETWORK_CSV },
 		search: { optional: true, type: 'string' },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
@@ -138,11 +138,10 @@ const validateSpecs = {
 	schema: {
 		'/blockchain/apps/meta/tokens': {
 			get: {
-				tags: [
-					'Interoperability',
-				],
+				tags: ['Interoperability'],
 				summary: 'Requests blockchain applications off-chain metadata for tokens',
-				description: 'Returns blockchain applications off-chain metadata for tokens\n RPC => get.blockchain.apps.meta.tokens',
+				description:
+					'Returns blockchain applications off-chain metadata for tokens\n RPC => get.blockchain.apps.meta.tokens',
 				parameters: [
 					{
 						$ref: '#/parameters/chainName',
@@ -174,10 +173,7 @@ const validateSpecs = {
 						description: 'Fields to sort results by.',
 						required: false,
 						type: 'string',
-						enum: [
-							'chainName:asc',
-							'chainName:desc',
-						],
+						enum: ['chainName:asc', 'chainName:desc'],
 						default: 'chainName:asc',
 					},
 				],
@@ -244,18 +240,12 @@ const validateSpecs = {
 				offset: '=,number',
 				total: '=,number',
 			},
-			links: {
-
-			},
+			links: {},
 		},
 	},
 	envelope: {
-		data: [
-
-		],
-		meta: {
-
-		},
+		data: [],
+		meta: {},
 	},
 };
 const validateExpectedParamReport = {
@@ -267,18 +257,10 @@ const validateExpectedParamReport = {
 		offset: 0,
 		sort: 'chainName:asc',
 	},
-	unknown: {
-
-	},
-	required: [
-
-	],
-	missing: [
-
-	],
-	invalid: [
-
-	],
+	unknown: {},
+	required: [],
+	missing: [],
+	invalid: [],
 };
 const validateInvalidKeyExpectedResponse = {
 	valid: {
@@ -292,12 +274,8 @@ const validateInvalidKeyExpectedResponse = {
 	unknown: {
 		invalidKey: 'invalidValue',
 	},
-	required: [
-
-	],
-	missing: [
-
-	],
+	required: [],
+	missing: [],
 };
 
 const checkMissingParamsRouteParams = {

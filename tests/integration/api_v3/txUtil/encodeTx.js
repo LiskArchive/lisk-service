@@ -14,7 +14,9 @@
  *
  */
 const { codec } = require('@liskhq/lisk-codec');
-const { address: { getAddressFromLisk32Address } } = require('@liskhq/lisk-cryptography');
+const {
+	address: { getAddressFromLisk32Address },
+} = require('@liskhq/lisk-cryptography');
 const { validator } = require('@liskhq/lisk-validator');
 const { api } = require('../../../helpers/api');
 
@@ -24,7 +26,7 @@ let metadata;
 
 const getTransactionSchema = () => schemas.transaction;
 
-const getTransactionParamsSchema = (transaction) => {
+const getTransactionParamsSchema = transaction => {
 	const moduleMetadata = metadata.modules.find(m => m.name === transaction.module);
 	const { params: schema } = moduleMetadata.commands.find(c => c.name === transaction.command);
 	return schema;
@@ -54,13 +56,15 @@ const parseInputBySchema = (input, schema) => {
 			if (type === 'array') {
 				acc[key] = currValue.map(item => parseInputBySchema(item, itemsSchema));
 			} else {
-				const innerSchema = (typeof currValue === 'object') ? schema.properties[key] : { dataType, format };
+				const innerSchema =
+					typeof currValue === 'object' ? schema.properties[key] : { dataType, format };
 				acc[key] = parseInputBySchema(currValue, innerSchema);
 			}
 			return acc;
 		}, {});
 		return formattedObj;
-	} if (schemaType === 'array') {
+	}
+	if (schemaType === 'array') {
 		const formattedArray = input.map(item => parseInputBySchema(item, schemaItemsSchema));
 		return formattedArray;
 	}
@@ -105,10 +109,7 @@ const encodeTransaction = async (transaction, endpoint) => {
 		throw new Error(err);
 	}
 
-	const txBuffer = codec.encode(
-		txSchema,
-		{ ...parsedTx, params: txParamsBuffer },
-	);
+	const txBuffer = codec.encode(txSchema, { ...parsedTx, params: txParamsBuffer });
 
 	return txBuffer.toString('hex');
 };

@@ -15,7 +15,9 @@
  */
 const {
 	Logger,
-	DB: { MySQL: { getTableInstance } },
+	DB: {
+		MySQL: { getTableInstance },
+	},
 } = require('lisk-service-framework');
 const config = require('../../../../config');
 
@@ -34,7 +36,7 @@ const getMultisignatureTable = () => getTableInstance(multisignatureTableSchema,
 // Command specific constants
 const COMMAND_NAME = 'registerMultisignature';
 
-const resolveMultisignatureMemberships = (tx) => {
+const resolveMultisignatureMemberships = tx => {
 	const multisignatureInfoToIndex = [];
 	const allKeys = tx.params.mandatoryKeys.concat(tx.params.optionalKeys);
 
@@ -53,24 +55,28 @@ const resolveMultisignatureMemberships = (tx) => {
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	// Asynchronously index all the publicKeys
-	tx.params.mandatoryKeys.forEach((key) => indexAccountPublicKey(key));
-	tx.params.optionalKeys.forEach((key) => indexAccountPublicKey(key));
+	tx.params.mandatoryKeys.forEach(key => indexAccountPublicKey(key));
+	tx.params.optionalKeys.forEach(key => indexAccountPublicKey(key));
 
 	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESSFUL) return;
 
 	const multisignatureTable = await getMultisignatureTable();
 
-	logger.trace(`Indexing multisignature information in transaction ${tx.id} contained in block at height ${tx.height}.`);
+	logger.trace(
+		`Indexing multisignature information in transaction ${tx.id} contained in block at height ${tx.height}.`,
+	);
 	const multisignatureInfoToIndex = resolveMultisignatureMemberships(tx);
 	await multisignatureTable.upsert(multisignatureInfoToIndex, dbTrx);
-	logger.debug(`Indexed multisignature information in transaction ${tx.id} contained in block at height ${tx.height}.`);
+	logger.debug(
+		`Indexed multisignature information in transaction ${tx.id} contained in block at height ${tx.height}.`,
+	);
 };
 
 // eslint-disable-next-line no-unused-vars
 const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	// Asynchronously index all the publicKeys
-	tx.params.mandatoryKeys.forEach((key) => indexAccountPublicKey(key));
-	tx.params.optionalKeys.forEach((key) => indexAccountPublicKey(key));
+	tx.params.mandatoryKeys.forEach(key => indexAccountPublicKey(key));
+	tx.params.optionalKeys.forEach(key => indexAccountPublicKey(key));
 
 	if (tx.executionStatus !== TRANSACTION_STATUS.SUCCESSFUL) return;
 
@@ -79,9 +85,13 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	const multisignatureInfo = resolveMultisignatureMemberships(tx);
 	const multisignatureIdsToDelete = multisignatureInfo.map(item => item.id);
 
-	logger.trace(`Reverting multisignature information in transaction ${tx.id} contained in block at height ${tx.height}.`);
+	logger.trace(
+		`Reverting multisignature information in transaction ${tx.id} contained in block at height ${tx.height}.`,
+	);
 	await multisignatureTable.deleteByPrimaryKey(multisignatureIdsToDelete, dbTrx);
-	logger.debug(`Reverted multisignature information in transaction ${tx.id} contained in block at height ${tx.height}.`);
+	logger.debug(
+		`Reverted multisignature information in transaction ${tx.id} contained in block at height ${tx.height}.`,
+	);
 };
 
 module.exports = {

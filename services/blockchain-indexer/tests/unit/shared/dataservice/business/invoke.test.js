@@ -18,19 +18,34 @@ const { resolve } = require('path');
 const mockedFilePath = resolve(`${__dirname}/../../../../../shared/constants`);
 
 jest.mock('../../../../../shared/constants', () => {
-	const { registeredEndpoints, engineEndpoints, allRegisteredEndpoints } = require('../../../../constants/endpoints');
+	const {
+		registeredEndpoints,
+		engineEndpoints,
+		allRegisteredEndpoints,
+	} = require('../../../../constants/endpoints');
 	const { metadata } = require('../../../../constants/metadata');
 	const actual = jest.requireActual(mockedFilePath);
 	return {
 		...actual,
-		getAllRegisteredEndpoints() { return allRegisteredEndpoints; },
-		getRegisteredEndpoints() { return registeredEndpoints; },
-		getEngineEndpoints() { return engineEndpoints; },
-		getSystemMetadata() { return metadata; },
+		getAllRegisteredEndpoints() {
+			return allRegisteredEndpoints;
+		},
+		getRegisteredEndpoints() {
+			return registeredEndpoints;
+		},
+		getEngineEndpoints() {
+			return engineEndpoints;
+		},
+		getSystemMetadata() {
+			return metadata;
+		},
 	};
 });
 
-const { checkIfEndpointRegistered, validateEndpointParams } = require('../../../../../shared/dataService/business/invoke');
+const {
+	checkIfEndpointRegistered,
+	validateEndpointParams,
+} = require('../../../../../shared/dataService/business/invoke');
 
 describe('Test checkIfEndpointRegistered method', () => {
 	it('should return true when called with valid registered endpoint', async () => {

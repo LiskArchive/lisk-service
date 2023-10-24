@@ -15,9 +15,7 @@
  */
 const config = require('../../../config');
 
-const {
-	request,
-} = require('../../../helpers/socketIoRpcRequest');
+const { request } = require('../../../helpers/socketIoRpcRequest');
 
 const {
 	invalidParamsSchema,
@@ -27,11 +25,16 @@ const {
 const {
 	goodResponseSchemaForTokenTopBalances,
 } = require('../../../schemas/api_v3/tokenTopBalances.schema');
-const { invalidOffsets, invalidLimits, invalidPartialSearches, invalidTokenIDs } = require('../constants/invalidInputs');
+const {
+	invalidOffsets,
+	invalidLimits,
+	invalidPartialSearches,
+	invalidTokenIDs,
+} = require('../constants/invalidInputs');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
-const getTokensTopBalances = async (params) => request(wsRpcUrl, 'get.token.balances.top', params);
-const getTokensIDs = async (params) => request(wsRpcUrl, 'get.token.available-ids', params);
+const getTokensTopBalances = async params => request(wsRpcUrl, 'get.token.balances.top', params);
+const getTokensIDs = async params => request(wsRpcUrl, 'get.token.available-ids', params);
 
 describe('get.token.balances.top', () => {
 	let tokenID;
@@ -41,7 +44,9 @@ describe('get.token.balances.top', () => {
 		const { result } = await getTokensIDs({});
 		[tokenID] = result.data.tokenIDs;
 
-		const { result: { data: tokenInformation } } = await getTokensTopBalances({ tokenID });
+		const {
+			result: { data: tokenInformation },
+		} = await getTokensTopBalances({ tokenID });
 		[tokenInfo] = tokenInformation[tokenID];
 	});
 
@@ -147,7 +152,6 @@ describe('get.token.balances.top', () => {
 
 	it('should return invalid params when called with invalid token ID', async () => {
 		for (let i = 0; i < invalidTokenIDs.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getTokensTopBalances({ tokenID: invalidTokenIDs[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}
@@ -155,7 +159,6 @@ describe('get.token.balances.top', () => {
 
 	it('should return invalid params when called with token ID and invalid search', async () => {
 		for (let i = 0; i < invalidPartialSearches.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getTokensTopBalances({ tokenID, search: invalidPartialSearches[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}
@@ -163,7 +166,6 @@ describe('get.token.balances.top', () => {
 
 	it('should return invalid params when called with invalid limit', async () => {
 		for (let i = 0; i < invalidLimits.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getTokensTopBalances({ tokenID, limit: invalidLimits[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}
@@ -171,7 +173,6 @@ describe('get.token.balances.top', () => {
 
 	it('should return invalid params when called with invalid offset', async () => {
 		for (let i = 0; i < invalidOffsets.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getTokensTopBalances({ tokenID, offset: invalidOffsets[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}

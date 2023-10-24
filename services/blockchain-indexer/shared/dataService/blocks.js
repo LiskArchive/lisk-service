@@ -35,8 +35,8 @@ const getLastBlock = async () => {
 	return lastBlock;
 };
 
-const getTotalNumberOfBlocks = async () => (await getLastBlock()).height
-	- (await getGenesisHeight()) + 1;
+const getTotalNumberOfBlocks = async () =>
+	(await getLastBlock()).height - (await getGenesisHeight()) + 1;
 
 const getBlocksFromServer = async params => {
 	const blocks = {
@@ -45,7 +45,8 @@ const getBlocksFromServer = async params => {
 	};
 
 	if (params.blockID) logger.debug(`Retrieved block with ID ${params.blockID} from Lisk Core`);
-	else if (params.height) logger.debug(`Retrieved block with height: ${params.height} from Lisk Core`);
+	else if (params.height)
+		logger.debug(`Retrieved block with height: ${params.height} from Lisk Core`);
 	else logger.debug(`Retrieved block with custom search: ${util.inspect(params)} from Lisk Core`);
 
 	const response = await business.getBlocks(params);
@@ -74,8 +75,10 @@ const getBlocks = async (params = {}) => {
 		total = blocksResponse.meta.total || null;
 	} else if (params.blockID || !Number.isNaN(Number(params.height))) {
 		total = blocksResponse.data.length;
-	} else if ((params.height && params.height.includes(':'))
-		|| (params.timestamp && params.timestamp.includes(':'))) {
+	} else if (
+		(params.height && params.height.includes(':')) ||
+		(params.timestamp && params.timestamp.includes(':'))
+	) {
 		total = blocksResponse.meta.total;
 	} else {
 		total = await getTotalNumberOfBlocks();
@@ -104,7 +107,7 @@ const getBlocksAssets = async params => {
 	return blocksAssets;
 };
 
-const performLastBlockUpdate = async (newBlock) => {
+const performLastBlockUpdate = async newBlock => {
 	try {
 		logger.debug(`Setting last block to height: ${newBlock.height} (id: ${newBlock.id})`);
 		await setLastBlock(newBlock);

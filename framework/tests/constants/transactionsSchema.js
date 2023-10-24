@@ -14,23 +14,22 @@
  *
  */
 module.exports = {
-    tableName: 'transactions',
-    primaryKey: 'id',
-    charset: 'utf8mb4',
-    schema: {
-        id: { type: 'string', null: false },
-        height: { type: 'integer', null: false },
-        moduleCommand: { type: 'string', null: false },
-        nonce: { type: 'integer', null: false },
-        blockID: { type: 'string', null: false },
-        timestamp: { type: 'integer', null: false },
-        tokenID: { type: 'string', null: true, default: null },
-        amount: { type: 'bigInteger', null: true, default: null },
-        messageFee: { type: 'bigInteger', null: true, default: null },
-        data: { type: 'string', null: true, default: null },
-        fee: { type: 'bigInteger', null: false },
-    },
-    indexes: {
-    },
-    purge: {},
+	tableName: 'transactions',
+	primaryKey: 'id',
+	charset: 'utf8mb4',
+	schema: {
+		id: { type: 'string', null: false },
+		height: { type: 'integer', null: false },
+		moduleCommand: { type: 'string', null: false },
+		nonce: { type: 'integer', null: false },
+		blockID: { type: 'string', null: false },
+		timestamp: { type: 'integer', null: false },
+		tokenID: { type: 'string', null: true, default: null },
+		amount: { type: 'bigInteger', null: true, default: null },
+		messageFee: { type: 'bigInteger', null: true, default: null },
+		data: { type: 'string', null: true, default: null },
+		fee: { type: 'bigInteger', null: false },
+	},
+	indexes: {},
+	purge: {},
 };

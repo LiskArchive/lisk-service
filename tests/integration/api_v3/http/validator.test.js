@@ -16,9 +16,7 @@
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
 
-const {
-	badRequestSchema,
-} = require('../../../schemas/httpGenerics.schema');
+const { badRequestSchema } = require('../../../schemas/httpGenerics.schema');
 
 const {
 	goodRequestSchemaForValidator,
@@ -26,9 +24,7 @@ const {
 	validatorMetaSchema,
 } = require('../../../schemas/api_v3/validatorSchema.schema');
 
-const {
-	invalidAddresses,
-} = require('../constants/invalidInputs');
+const { invalidAddresses } = require('../constants/invalidInputs');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
@@ -55,14 +51,16 @@ describe('Validator API', () => {
 
 	it('should return bad request when requested with invalid address', async () => {
 		for (let i = 0; i < invalidAddresses.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await api.get(`${endpoint}?address=${invalidAddresses[i]}`, 400);
 			expect(response).toMap(badRequestSchema);
 		}
 	});
 
 	it('should return bad request when requested with address CSV', async () => {
-		const response = await api.get(`${endpoint}?address=${refGenerator.address},${refGenerator.address}`, 400);
+		const response = await api.get(
+			`${endpoint}?address=${refGenerator.address},${refGenerator.address}`,
+			400,
+		);
 		expect(response).toMap(badRequestSchema);
 	});
 

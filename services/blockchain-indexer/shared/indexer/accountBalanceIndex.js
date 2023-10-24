@@ -15,7 +15,9 @@
  */
 const Redis = require('ioredis');
 const {
-	DB: { MySQL: { getTableInstance } },
+	DB: {
+		MySQL: { getTableInstance },
+	},
 	Logger,
 } = require('lisk-service-framework');
 
@@ -35,7 +37,7 @@ const MAX_ACCOUNT_COUNT_IN_ONE_EXECUTION = 1000; // 1e3
 
 const getAccountBalancesTable = () => getTableInstance(accountBalancesTableSchema, MYSQL_ENDPOINT);
 
-const updateAccountBalances = async (address) => {
+const updateAccountBalances = async address => {
 	const accountBalancesTable = await getAccountBalancesTable();
 	const { data: balanceInfos } = await getTokenBalances({ address });
 
@@ -49,16 +51,13 @@ const updateAccountBalances = async (address) => {
 	await accountBalancesTable.upsert(updatedTokenBalances);
 };
 
-const scheduleAddressesBalanceUpdate = async (addresses) => {
+const scheduleAddressesBalanceUpdate = async addresses => {
 	if (addresses.length) {
-		redis.sadd(
-			ACCOUNTS_BALANCE_UPDATE_SET_NAME,
-			addresses,
-		);
+		redis.sadd(ACCOUNTS_BALANCE_UPDATE_SET_NAME, addresses);
 	}
 };
 
-const getAddressesFromTokenEvents = (events) => {
+const getAddressesFromTokenEvents = events => {
 	const addressesToUpdate = [];
 	const tokenModuleEvents = events.filter(event => event.module === MODULE.TOKEN);
 
@@ -87,7 +86,6 @@ const triggerAccountsBalanceUpdate = async () => {
 	try {
 		// eslint-disable-next-line no-restricted-syntax
 		for (const address of addresses) {
-			// eslint-disable-next-line no-await-in-loop
 			await updateAccountBalances(address);
 		}
 	} catch (err) {

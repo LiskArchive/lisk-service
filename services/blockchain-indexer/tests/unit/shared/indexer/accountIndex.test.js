@@ -43,7 +43,7 @@ describe('updateAccountInfoPk', () => {
 				DB: {
 					MySQL: {
 						getTableInstance: jest.fn(() => ({
-							upsert: jest.fn((data) => {
+							upsert: jest.fn(data => {
 								expect(data).toEqual({
 									publicKey: mockPublicKey,
 									address: mockAddress,
@@ -95,7 +95,7 @@ describe('updateAccountInfoPk', () => {
 				},
 				Queue: jest.fn(),
 				Logger: jest.fn().mockReturnValue({
-					warn: jest.fn((data) => {
+					warn: jest.fn(data => {
 						expect(data).toEqual('Failed to update accounts table. Will retry later.');
 					}),
 				}),
@@ -137,7 +137,7 @@ describe('updateAccountInfoPk', () => {
 				},
 				Queue: jest.fn(),
 				Logger: jest.fn().mockReturnValue({
-					warn: jest.fn((data) => {
+					warn: jest.fn(data => {
 						expect(data).toEqual('Failed to update accounts table. Will retry later.');
 					}),
 				}),
@@ -175,7 +175,7 @@ describe('updateAccountInfoAddr', () => {
 				DB: {
 					MySQL: {
 						getTableInstance: jest.fn(() => ({
-							upsert: jest.fn((data) => {
+							upsert: jest.fn(data => {
 								expect(data).toEqual({
 									address: mockAddress,
 								});
@@ -226,7 +226,7 @@ describe('updateAccountInfoAddr', () => {
 				},
 				Queue: jest.fn(),
 				Logger: jest.fn().mockReturnValue({
-					warn: jest.fn((data) => {
+					warn: jest.fn(data => {
 						expect(data).toEqual('Failed to update accounts table. Will retry later.');
 					}),
 				}),
@@ -268,7 +268,7 @@ describe('updateAccountInfoAddr', () => {
 				},
 				Queue: jest.fn(),
 				Logger: jest.fn().mockReturnValue({
-					warn: jest.fn((data) => {
+					warn: jest.fn(data => {
 						expect(data).toEqual('Failed to update accounts table. Will retry later.');
 					}),
 				}),

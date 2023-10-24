@@ -39,11 +39,9 @@ module.exports = {
 		const exportSchema = {};
 		exportSchema[this.swaggerApiPath] = { get: {} };
 		exportSchema[this.swaggerApiPath].get.tags = this.tags;
-		exportSchema[this.swaggerApiPath].get.parameters = transformParams(
-			'export',
-			this.params,
-		);
-		exportSchema[this.swaggerApiPath].get.summary = 'Requests to schedule export of transaction history for a given account';
+		exportSchema[this.swaggerApiPath].get.parameters = transformParams('export', this.params);
+		exportSchema[this.swaggerApiPath].get.summary =
+			'Requests to schedule export of transaction history for a given account';
 		exportSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
 			description: 'Returns transaction history export scheduling information',

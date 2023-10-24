@@ -35,7 +35,9 @@ module.exports = {
 			rpcMethod: this.rpcMethod,
 			description: 'Post transactions and return transactionID',
 		});
-		postTransactionSchema[this.swaggerApiPath].post.parameters = [{ $ref: '#/parameters/transaction' }];
+		postTransactionSchema[this.swaggerApiPath].post.parameters = [
+			{ $ref: '#/parameters/transaction' },
+		];
 		postTransactionSchema[this.swaggerApiPath].post.responses = {
 			200: {
 				description: 'Broadcast transaction',

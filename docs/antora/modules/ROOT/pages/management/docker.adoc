@@ -11,10 +11,23 @@ Mona Bärenfänger <mona@lightcurve.io>
 :url_FLUSHALL: https://redis.io/commands/FLUSHALL
 :url_snapshot_config: configuration/index.adoc
 :url_backups: management/snapshots.adoc
+:url_rel_notes: https://github.com/LiskHQ/lisk-service/releases
+:url_tags: https://github.com/LiskHQ/lisk-service/tags
+
+== Build Docker image
+
+.Inside the lisk-service root folder
+----
+make build
+----
+This creates the necessary Docker images to start Lisk Service in the containers.
 
 == Start
 
 .Inside the lisk-service root folder
+----
+cp ./docker/example.env .env
+----
 ----
 make up
 ----
@@ -204,10 +217,147 @@ If you wish to take a snapshot of your Docker installation, the details can be f
 
 == Logging
 
-To check the logs for the different microservices of Lisk Service, use the command `docker container logs CONTAINER`, where `CONTAINER` is the respective Docker container that holds the logs you wish to view.
+The possibility exists here to either use the `docker` commands or the `make` commands to check the logs, and both options are listed here below.
+
+For `docker`, to check the logs for the different microservices of Lisk Service, use the command `docker container logs CONTAINER`, where `CONTAINER` is the respective Docker container that holds the logs you wish to view.
 
 For example, to see the logs for the Gateway microservice, execute the following command:
 
 ----
 docker container logs lisk-service_gateway_1
 ----
+
+To check the logs for different microservices using the `make` commands, the following commands listed below can be used:
+
+.Displays the logs for all the microservices that have been logged so far, and that are currently existing
+----
+make logs
+----
+
+.Displays the latest logs for all the microservices
+----
+make logs-live
+----
+
+.Displays the logs for the specified microservice.
+----
+make logs-blockchain-connector
+----
+In the above example, it will display logs only for the `blockchain-connector` microservice.
+
+.Displays the latest logs for the specified microservice.
+----
+make logs-live-blockchain-connector
+----
+In the above example, it will display the latest logs only for the `blockchain-connector` microservice.
+
+
+Replace the `blockchain-connector` with the specific service name required.
+
+
+== Upgrade Lisk Service
+
+To upgrade the Docker container to a desired version, please follow one of the two options below. To find all the tagged versions for Lisk Service, please check the {url_tags}[available tags] on GitHub.
+
+[tabs]
+====
+Option A - Download pre-built images from DockerHub::
++
+--
+. Stop Lisk Service
++
+----
+make stop
+----
+NOTE: In case the database needs to be flushed please execute the `make down` command instead. Please check the {url_rel_notes}[release notes] for the relevant version to see if the existing databases need to be flushed.
+
+. Checkout the version with *`git checkout <tag>`*
++
+----
+git checkout v0.7.0
+----
+
+. Update `docker-compose.yml` to download the specific image versions from the DockerHub as shown below.
+Update specified images with the desired version, for example `0.7.0`.
++
+.docker-compose.yml
+[source,yaml]
+----
+blockchain-app-registry:
+    image: lisk/service_blockchain_app_registry:0.7.0
+    ...
+
+  blockchain-connector:
+    image: lisk/service_blockchain_connector:0.7.0
+    ...
+
+  blockchain-indexer:
+    image: lisk/service_blockchain_indexer:0.7.0
+    ...
+
+  blockchain-coordinator:
+    image: lisk/service_blockchain_coordinator:0.7.0
+    ...
+
+  transaction-statistics:
+    image: lisk/service_transaction_statistics:0.7.0
+    ...
+
+  fee-estimator:
+    image: lisk/service_fee_estimator:0.7.0
+    ...
+
+  gateway:
+    image: lisk/service_gateway:0.7.0
+    ...
+
+  market:
+    image: lisk/service_market:0.7.0
+    ...
+
+  export:
+    image: lisk/service_export:0.7.0
+
+----
+
+. Start Lisk Service in the containers.
++
+----
+make up
+----
+--
+Option B - Build images locally ::
++
+--
+Build the images locally using the following steps.
+Navigate inside the lisk-service root folder, and execute the following commands.
+
+. Stop Lisk Service
++
+----
+make stop
+----
+NOTE: In case the database needs to be flushed please execute the `make down` command instead. Please check the {url_rel_notes}[release notes] for the relevant version to see if the existing databases need to be flushed.
+
+. Checkout the version with *`git checkout <tag>`*
++
+----
+git checkout v0.7.0
+----
+
+. Build the required updated Docker images
++
+----
+make build
+----
+
+. Start Lisk Service in the containers
++
+----
+make up
+----
+--
+
+====
+
+To verify the microservice logs, please refer to the <<Logging>> section.

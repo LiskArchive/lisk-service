@@ -9,7 +9,7 @@ jobs:
       - name: Set up node
         uses: actions/setup-node@v3
         with:
-          node-version-file: ".nvmrc"
+          node-version-file: '.nvmrc'
       - name: Install dependencies
         run: make build-local
       - name: Check test coverage

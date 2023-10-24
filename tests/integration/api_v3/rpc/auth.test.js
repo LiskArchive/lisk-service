@@ -15,9 +15,7 @@
  */
 const config = require('../../../config');
 
-const {
-	request,
-} = require('../../../helpers/socketIoRpcRequest');
+const { request } = require('../../../helpers/socketIoRpcRequest');
 
 const {
 	invalidParamsSchema,
@@ -30,18 +28,19 @@ const {
 	authAccountMetaSchema,
 } = require('../../../schemas/api_v3/authAccountSchema.schema');
 
-const {
-	invalidAddresses,
-} = require('../constants/invalidInputs');
+const { invalidAddresses } = require('../constants/invalidInputs');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
-const getAuthAccountInfo = async (params) => request(wsRpcUrl, 'get.auth', params);
-const getTransactions = async (params) => request(wsRpcUrl, 'get.transactions', params);
+const getAuthAccountInfo = async params => request(wsRpcUrl, 'get.auth', params);
+const getTransactions = async params => request(wsRpcUrl, 'get.transactions', params);
 
 describe('get.auth', () => {
 	let refTransaction;
 	beforeAll(async () => {
-		const response = await getTransactions({ moduleCommand: 'auth:registerMultisignature', limit: 1 });
+		const response = await getTransactions({
+			moduleCommand: 'auth:registerMultisignature',
+			limit: 1,
+		});
 		[refTransaction] = response.result.data;
 	});
 
@@ -61,7 +60,6 @@ describe('get.auth', () => {
 
 	it('should return invalid params for an invalid address', async () => {
 		for (let i = 0; i < invalidAddresses.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getAuthAccountInfo({ address: invalidAddresses[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}

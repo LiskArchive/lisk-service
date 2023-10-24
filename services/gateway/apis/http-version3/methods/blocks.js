@@ -27,7 +27,13 @@ module.exports = {
 		blockID: { optional: true, type: 'string', min: 64, max: 64, pattern: regex.BLOCK_ID },
 		height: { optional: true, type: 'string', min: 0, pattern: regex.HEIGHT_RANGE },
 		timestamp: { optional: true, type: 'string', min: 1, pattern: regex.TIMESTAMP_RANGE },
-		generatorAddress: { optional: true, type: 'string', min: 41, max: 41, pattern: regex.ADDRESS_LISK32 },
+		generatorAddress: {
+			optional: true,
+			type: 'string',
+			min: 41,
+			max: 41,
+			pattern: regex.ADDRESS_LISK32,
+		},
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10, pattern: regex.LIMIT },
 		offset: { optional: true, type: 'number', min: 0, default: 0, pattern: regex.OFFSET },
 		sort: {

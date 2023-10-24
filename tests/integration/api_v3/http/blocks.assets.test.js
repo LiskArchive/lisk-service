@@ -32,9 +32,7 @@ const {
 	metaSchema,
 } = require('../../../schemas/httpGenerics.schema');
 
-const {
-	blockAssetSchema,
-} = require('../../../schemas/api_v3/block.schema');
+const { blockAssetSchema } = require('../../../schemas/api_v3/block.schema');
 
 describe('Blocks Assets API', () => {
 	let refBlockAssets;
@@ -46,11 +44,9 @@ describe('Blocks Assets API', () => {
 
 		while (retries > 0 && !success) {
 			try {
-				// eslint-disable-next-line no-await-in-loop
 				const invokeRes = await api.post(invokeEndpoint, { endpoint: 'system_getNodeInfo' });
 				const { genesisHeight } = invokeRes.data;
 
-				// eslint-disable-next-line no-await-in-loop
 				[refBlockAssets = {}] = (await api.get(`${endpoint}?height=${genesisHeight}`)).data;
 				[refAsset] = refBlockAssets.assets;
 
@@ -62,7 +58,6 @@ describe('Blocks Assets API', () => {
 				retries--;
 
 				// Delay by 3 sec
-				// eslint-disable-next-line no-await-in-loop
 				await waitMs(3000);
 			}
 		}
@@ -82,8 +77,9 @@ describe('Blocks Assets API', () => {
 			response.data.forEach((blockAssets, i) => {
 				expect(blockAssets).toMap(blockAssetSchema);
 				if (i < response.data.length - 1) {
-					expect(blockAssets.block.height)
-						.toBeGreaterThanOrEqual(response.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height).toBeGreaterThanOrEqual(
+						response.data[i + 1].block.height + 1,
+					);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
@@ -98,8 +94,9 @@ describe('Blocks Assets API', () => {
 			response.data.forEach((blockAssets, i) => {
 				expect(blockAssets).toMap(blockAssetSchema);
 				if (i < response.data.length - 1) {
-					expect(blockAssets.block.height)
-						.toBeGreaterThanOrEqual(response.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height).toBeGreaterThanOrEqual(
+						response.data[i + 1].block.height + 1,
+					);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
@@ -111,7 +108,7 @@ describe('Blocks Assets API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach((blockAssets) => {
+			response.data.forEach(blockAssets => {
 				expect(blockAssets).toMap(blockAssetSchema);
 				blockAssets.assets.forEach(asset => expect(asset.module).toEqual(refAsset.module));
 			});
@@ -125,7 +122,7 @@ describe('Blocks Assets API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach((blockAssets) => {
+			response.data.forEach(blockAssets => {
 				expect(blockAssets).toMap(blockAssetSchema);
 				blockAssets.assets.forEach(asset => expect(modules).toContain(asset.module));
 			});
@@ -137,7 +134,7 @@ describe('Blocks Assets API', () => {
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toEqual(1);
-			response.data.forEach((blockAssets) => {
+			response.data.forEach(blockAssets => {
 				expect(blockAssets).toMap(blockAssetSchema);
 				expect(blockAssets.block.id).toEqual(refBlockAssets.block.id);
 			});
@@ -149,7 +146,7 @@ describe('Blocks Assets API', () => {
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toEqual(1);
-			response.data.forEach((blockAssets) => {
+			response.data.forEach(blockAssets => {
 				expect(blockAssets).toMap(blockAssetSchema);
 				expect(blockAssets.block.height).toEqual(refBlockAssets.block.height);
 			});
@@ -166,8 +163,9 @@ describe('Blocks Assets API', () => {
 				expect(blockAssets).toMap(blockAssetSchema);
 				expect(blockAssets.block.timestamp).toEqual(refBlockAssets.block.timestamp);
 				if (i < response.data.length - 1) {
-					expect(blockAssets.block.height)
-						.toBeGreaterThanOrEqual(response.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height).toBeGreaterThanOrEqual(
+						response.data[i + 1].block.height + 1,
+					);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
@@ -187,7 +185,6 @@ describe('Blocks Assets API', () => {
 
 		it('should return bad request if requested with invalid block ID', async () => {
 			for (let i = 0; i < invalidBlockIDs.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?blockID=${invalidBlockIDs[i]}`, 400);
 				expect(response).toMap(wrongInputParamSchema);
 			}
@@ -195,7 +192,6 @@ describe('Blocks Assets API', () => {
 
 		it('should return bad request if requested with invalid limit', async () => {
 			for (let i = 0; i < invalidLimits.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?limit=${invalidLimits[i]}`, 400);
 				expect(response).toMap(wrongInputParamSchema);
 			}
@@ -203,7 +199,6 @@ describe('Blocks Assets API', () => {
 
 		it('should return bad request if requested with invalid offset', async () => {
 			for (let i = 0; i < invalidOffsets.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?offset=${invalidOffsets[i]}`, 400);
 				expect(response).toMap(wrongInputParamSchema);
 			}
@@ -222,7 +217,9 @@ describe('Blocks Assets API', () => {
 
 	describe('Retrieve blocks assets within timestamps', () => {
 		it('should return blocks assets within set timestamps are returned', async () => {
-			const from = moment(refBlockAssets.block.timestamp * (10 ** 3)).subtract(1, 'day').unix();
+			const from = moment(refBlockAssets.block.timestamp * 10 ** 3)
+				.subtract(1, 'day')
+				.unix();
 			const toTimestamp = refBlockAssets.block.timestamp;
 			const response = await api.get(`${endpoint}?timestamp=${from}:${toTimestamp}&limit=100`);
 			expect(response).toMap(goodRequestSchema);
@@ -234,15 +231,18 @@ describe('Blocks Assets API', () => {
 				expect(blockAssets.block.timestamp).toBeGreaterThanOrEqual(from);
 				expect(blockAssets.block.timestamp).toBeLessThanOrEqual(toTimestamp);
 				if (i < response.data.length - 1) {
-					expect(blockAssets.block.height)
-						.toBeGreaterThanOrEqual(response.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height).toBeGreaterThanOrEqual(
+						response.data[i + 1].block.height + 1,
+					);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('should return blocks assets with half bounded range: fromTimestamp', async () => {
-			const from = moment(refBlockAssets.block.timestamp * (10 ** 3)).subtract(1, 'day').unix();
+			const from = moment(refBlockAssets.block.timestamp * 10 ** 3)
+				.subtract(1, 'day')
+				.unix();
 			const response = await api.get(`${endpoint}?timestamp=${from}:&limit=100`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -252,8 +252,9 @@ describe('Blocks Assets API', () => {
 				expect(blockAssets).toMap(blockAssetSchema);
 				expect(blockAssets.block.timestamp).toBeGreaterThanOrEqual(from);
 				if (i < response.data.length - 1) {
-					expect(blockAssets.block.height)
-						.toBeGreaterThanOrEqual(response.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height).toBeGreaterThanOrEqual(
+						response.data[i + 1].block.height + 1,
+					);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
@@ -270,8 +271,9 @@ describe('Blocks Assets API', () => {
 				expect(blockAssets).toMap(blockAssetSchema);
 				expect(blockAssets.block.timestamp).toBeLessThanOrEqual(toTimestamp);
 				if (i < response.data.length - 1) {
-					expect(blockAssets.block.height)
-						.toBeGreaterThanOrEqual(response.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height).toBeGreaterThanOrEqual(
+						response.data[i + 1].block.height + 1,
+					);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
@@ -292,8 +294,9 @@ describe('Blocks Assets API', () => {
 				expect(blockAssets.block.height).toBeGreaterThanOrEqual(minHeight);
 				expect(blockAssets.block.height).toBeLessThanOrEqual(maxHeight);
 				if (i < response.data.length - 1) {
-					expect(blockAssets.block.height)
-						.toBeGreaterThanOrEqual(response.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height).toBeGreaterThanOrEqual(
+						response.data[i + 1].block.height + 1,
+					);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
@@ -310,8 +313,9 @@ describe('Blocks Assets API', () => {
 				expect(blockAssets).toMap(blockAssetSchema);
 				expect(blockAssets.block.height).toBeGreaterThanOrEqual(minHeight);
 				if (i < response.data.length - 1) {
-					expect(blockAssets.block.height)
-						.toBeGreaterThanOrEqual(response.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height).toBeGreaterThanOrEqual(
+						response.data[i + 1].block.height + 1,
+					);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
@@ -328,8 +332,9 @@ describe('Blocks Assets API', () => {
 				expect(blockAssets).toMap(blockAssetSchema);
 				expect(blockAssets.block.height).toBeLessThanOrEqual(maxHeight);
 				if (i < response.data.length - 1) {
-					expect(blockAssets.block.height)
-						.toBeGreaterThanOrEqual(response.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height).toBeGreaterThanOrEqual(
+						response.data[i + 1].block.height + 1,
+					);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);

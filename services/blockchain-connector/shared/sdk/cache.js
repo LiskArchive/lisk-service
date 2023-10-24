@@ -16,11 +16,10 @@
 const moment = require('moment');
 const BluebirdPromise = require('bluebird');
 
-const { Logger,
+const {
+	Logger,
 	DB: {
-		sqlite3: {
-			getTableInstance,
-		},
+		sqlite3: { getTableInstance },
 	},
 } = require('lisk-service-framework');
 
@@ -37,7 +36,7 @@ const getTrxIDtoBlockIDCache = () => getTableInstance(cacheTrxIDToBlockIDSchema)
 
 const blockCacheWaitlist = [];
 
-const cacheBlocksIfEnabled = async (blocks) => {
+const cacheBlocksIfEnabled = async blocks => {
 	if (!config.cache.isBlockCachingEnabled || typeof blocks !== 'object') return;
 
 	try {
@@ -59,24 +58,32 @@ const cacheBlocksFromWaitlist = async () => {
 	const blocksCache = await getBlocksCache();
 	const trxIDToBlockIDCache = await getTrxIDtoBlockIDCache();
 
-	/* eslint-disable no-await-in-loop */
 	while (blockCacheWaitlist.length) {
 		const block = blockCacheWaitlist.shift();
-		await BluebirdPromise.map(
-			block.transactions,
-			async transaction => trxIDToBlockIDCache.upsert({
-				transactionID: transaction.id, blockID: block.header.id,
-			}),
-			{ concurrency: 1 },
-		);
-		await blocksCache.upsert({ id: block.header.id, timestamp: block.header.timestamp, block });
+		try {
+			await BluebirdPromise.map(
+				block.transactions,
+				async transaction =>
+					trxIDToBlockIDCache.upsert({
+						transactionID: transaction.id,
+						blockID: block.header.id,
+					}),
+				{ concurrency: 1 },
+			);
+			await blocksCache.upsert({ id: block.header.id, timestamp: block.header.timestamp, block });
+		} catch (err) {
+			logger.info(
+				`Caching block ID ${block.header.id} (height: ${block.header.height}) failed due to: ${err.message}. Will re-attempt caching.`,
+			);
+			logger.debug(err.stack);
+			blockCacheWaitlist.splice(0, 0, block);
+		}
 	}
-	/* eslint-enable no-await-in-loop */
 
 	setTimeout(cacheBlocksFromWaitlist, 15 * 1000);
 };
 
-const getBlockByIDFromCache = async (id) => {
+const getBlockByIDFromCache = async id => {
 	const blocksCache = await getBlocksCache();
 	const resultSet = await blocksCache.find({ id, limit: 1 }, ['block']);
 	if (!resultSet.length) return null;
@@ -86,7 +93,7 @@ const getBlockByIDFromCache = async (id) => {
 	return parsedBlock;
 };
 
-const getTransactionByIDFromCache = async (transactionID) => {
+const getTransactionByIDFromCache = async transactionID => {
 	const trxIDToBlockIDCache = await getTrxIDtoBlockIDCache();
 	const resultSet = await trxIDToBlockIDCache.find({ transactionID, limit: 1 }, ['blockID']);
 	if (!resultSet.length) return null;
@@ -99,14 +106,16 @@ const getTransactionByIDFromCache = async (transactionID) => {
 	return transaction;
 };
 
-const cacheCleanup = async (expiryInHours) => {
+const cacheCleanup = async expiryInHours => {
 	const blocksCache = await getBlocksCache();
 	const trxIDToBlockIDCache = await getTrxIDtoBlockIDCache();
 
-	const propBetweens = [{
-		property: 'timestamp',
-		to: moment().subtract(expiryInHours, 'hours').unix(),
-	}];
+	const propBetweens = [
+		{
+			property: 'timestamp',
+			to: moment().subtract(expiryInHours, 'hours').unix(),
+		},
+	];
 
 	const resultSet = await blocksCache.find({ propBetweens }, 'id');
 	const blockIDs = resultSet.map(e => e.id);

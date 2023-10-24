@@ -15,13 +15,9 @@
  */
 const config = require('../../../config');
 
-const {
-	request,
-} = require('../../../helpers/socketIoRpcRequest');
+const { request } = require('../../../helpers/socketIoRpcRequest');
 
-const {
-	invalidParamsSchema,
-} = require('../../../schemas/rpcGenerics.schema');
+const { invalidParamsSchema } = require('../../../schemas/rpcGenerics.schema');
 
 const {
 	blockchainAppsStatsSchema,
@@ -29,7 +25,8 @@ const {
 } = require('../../../schemas/api_v3/blockchainApps.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
-const getBlockchainAppsStatistics = async (params) => request(wsRpcUrl, 'get.blockchain.apps.statistics', params);
+const getBlockchainAppsStatistics = async params =>
+	request(wsRpcUrl, 'get.blockchain.apps.statistics', params);
 
 describe('get.blockchain.apps.statistics', () => {
 	it('should return blockchain apps statistics', async () => {

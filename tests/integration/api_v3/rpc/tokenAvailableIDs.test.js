@@ -15,9 +15,7 @@
  */
 const config = require('../../../config');
 
-const {
-	request,
-} = require('../../../helpers/socketIoRpcRequest');
+const { request } = require('../../../helpers/socketIoRpcRequest');
 
 const {
 	invalidParamsSchema,
@@ -30,7 +28,7 @@ const {
 const { invalidOffsets, invalidLimits } = require('../constants/invalidInputs');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
-const getTokensIDs = async (params) => request(wsRpcUrl, 'get.token.available-ids', params);
+const getTokensIDs = async params => request(wsRpcUrl, 'get.token.available-ids', params);
 
 describe('get.token.available-ids', () => {
 	it('should retrieve available token ids when called without any parameters', async () => {
@@ -101,7 +99,6 @@ describe('get.token.available-ids', () => {
 
 	it('should return invalid params when called with invalid limit', async () => {
 		for (let i = 0; i < invalidLimits.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getTokensIDs({
 				limit: invalidLimits[i],
 			});
@@ -111,7 +108,6 @@ describe('get.token.available-ids', () => {
 
 	it('should return invalid params when called with invalid offset', async () => {
 		for (let i = 0; i < invalidOffsets.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getTokensIDs({
 				offset: invalidOffsets[i],
 			});

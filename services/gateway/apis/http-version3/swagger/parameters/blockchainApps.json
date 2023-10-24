@@ -1,78 +1,78 @@
 {
-    "name": {
-        "name": "name",
-        "in": "query",
-        "description": "Blockchain application name.",
-        "type": "string",
-        "minLength": 3,
-        "maxLength": 20
-    },
-    "chainID": {
-        "name": "chainID",
-        "in": "query",
-        "description": "Chain ID to query.",
-        "type": "string",
-        "format": "id",
-        "minLength": 8,
-        "maxLength": 8
-    },
-    "chainIDCSV": {
-        "name": "chainID",
-        "in": "query",
-        "description": "Chain ID to query (can be expressed as CSV).",
-        "type": "string",
-        "format": "id",
-        "minLength": 8
-    },
-    "blockchainAppStatus": {
-        "name": "status",
-        "in": "query",
-        "description": "Status of the blockchain application. Can be expressed as CSV.\nAccepted values: 'registered', 'activated', 'terminated', 'unregistered'.",
-        "type": "string"
-    },
-    "network": {
-        "name": "network",
-        "in": "query",
-        "description": "Network for which the application metadata is to be queried (can be expressed as CSV).\n\nAccepted values: mainnet, testnet, betanet, devnet.",
-        "type": "string",
-        "minLength": 1
-    },
-    "blockchainAppSearch": {
-        "name": "search",
-        "in": "query",
-        "description": "Search by name. Supports both partial and full text search.",
-        "type": "string",
-        "minLength": 1,
-        "maxLength": 20
-    },
-    "chainName": {
-        "name": "chainName",
-        "in": "query",
-        "description": "Chain name to query. Supports case-insensitive chain name.",
-        "type": "string",
-        "minLength": 3
-    },
-    "displayName": {
-        "name": "displayName",
-        "in": "query",
-        "description": "Display name to query. Supports case-insensitive display name.",
-        "type": "string",
-        "minLength": 3
-    },
-    "searchByChainName": {
-        "name": "search",
-        "in": "query",
-        "description": "Case-insensitive search by chain name. Supports both partial and full text search.",
-        "type": "string",
-        "minLength": 1,
-        "maxLength": 20
-    },
-    "searchByChainAndDisplayName": {
-        "name": "search",
-        "in": "query",
-        "description": "Case-insensitive search by chain name or display name. Supports both partial and full text search.",
-        "type": "string",
-        "minLength": 1,
-        "maxLength": 20
-    }
+	"name": {
+		"name": "name",
+		"in": "query",
+		"description": "Blockchain application name.",
+		"type": "string",
+		"minLength": 3,
+		"maxLength": 20
+	},
+	"chainID": {
+		"name": "chainID",
+		"in": "query",
+		"description": "Chain ID to query.",
+		"type": "string",
+		"format": "id",
+		"minLength": 8,
+		"maxLength": 8
+	},
+	"chainIDCSV": {
+		"name": "chainID",
+		"in": "query",
+		"description": "Chain ID to query (can be expressed as CSV).",
+		"type": "string",
+		"format": "id",
+		"minLength": 8
+	},
+	"blockchainAppStatus": {
+		"name": "status",
+		"in": "query",
+		"description": "Status of the blockchain application. Can be expressed as CSV.\nAccepted values: 'registered', 'activated', 'terminated', 'unregistered'.",
+		"type": "string"
+	},
+	"network": {
+		"name": "network",
+		"in": "query",
+		"description": "Network for which the application metadata is to be queried (can be expressed as CSV).\n\nAccepted values: mainnet, testnet, betanet, devnet.",
+		"type": "string",
+		"minLength": 1
+	},
+	"blockchainAppSearch": {
+		"name": "search",
+		"in": "query",
+		"description": "Search by name. Supports both partial and full text search.",
+		"type": "string",
+		"minLength": 1,
+		"maxLength": 20
+	},
+	"chainName": {
+		"name": "chainName",
+		"in": "query",
+		"description": "Chain name to query. Supports case-insensitive chain name.",
+		"type": "string",
+		"minLength": 3
+	},
+	"displayName": {
+		"name": "displayName",
+		"in": "query",
+		"description": "Display name to query. Supports case-insensitive display name.",
+		"type": "string",
+		"minLength": 3
+	},
+	"searchByChainName": {
+		"name": "search",
+		"in": "query",
+		"description": "Case-insensitive search by chain name. Supports both partial and full text search.",
+		"type": "string",
+		"minLength": 1,
+		"maxLength": 20
+	},
+	"searchByChainAndDisplayName": {
+		"name": "search",
+		"in": "query",
+		"description": "Case-insensitive search by chain name or display name. Supports both partial and full text search.",
+		"type": "string",
+		"minLength": 1,
+		"maxLength": 20
+	}
 }

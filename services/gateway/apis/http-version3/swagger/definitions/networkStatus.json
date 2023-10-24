@@ -1,193 +1,186 @@
 {
-    "NetworkStatus": {
-        "type": "object",
-        "required": [
-            "data",
-            "meta"
-        ],
-        "properties": {
-            "data": {
-                "type": "object",
-                "description": "Number of items returned in the request.",
-                "properties": {
-                    "version": {
-                        "type": "string",
-                        "format": "App version",
-                        "example": "4.0.0",
-                        "description": "Current application version."
-                    },
-                    "networkVersion": {
-                        "type": "string",
-                        "format": "networkVersion",
-                        "example": "3.0",
-                        "description": "Current network version."
-                    },
-                    "chainID": {
-                        "type": "string",
-                        "example": "00000000",
-                        "description": "Chain ID of the blockchain application."
-                    },
-                    "lastBlockID": {
-                        "type": "string",
-                        "format": "id",
-                        "minLength": 64,
-                        "maxLength": 64,
-                        "example": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b",
-                        "description": "Current block ID."
-                    },
-                    "height": {
-                        "type": "integer",
-                        "example": 16550779,
-                        "minimum": 0,
-                        "description": "Current block height."
-                    },
-                    "finalizedHeight": {
-                        "type": "integer",
-                        "example": 16550609,
-                        "minimum": 0,
-                        "description": "Last finalized block height."
-                    },
-                    "syncing": {
-                        "type": "boolean",
-                        "example": "true"
-                    },
-                    "unconfirmedTransactions": {
-                        "type": "integer",
-                        "example": 0,
-                        "description": "Unconfirmed transactions count."
-                    },
-                    "genesis": {
-                        "type": "object",
-                        "properties": {
-                            "block": {
-                                "type": "object",
-                                "properties": {
-                                    "fromFile": {
-                                        "type": "string",
-                                        "example": "./config/genesis_block.blob"
-                                    }
-                                }
-                            },
-                            "blockTime": {
-                                "type": "integer",
-                                "example": 10
-                            },
-                            "chainID": {
-                                "type": "string",
-                                "minLength": 8,
-                                "maxLength": 8,
-                                "example": "00000000"
-                            },
-                            "maxTransactionsSize": {
-                                "type": "integer",
-                                "example": 15360
-                            },
-                            "bftBatchSize": {
-                                "type": "integer",
-                                "example": 10
-                            }
-                        }
-                    },
-                    "genesisHeight": {
-                        "type": "integer",
-                        "example": 0,
-                        "minimum": 0,
-                        "description": "Genesis block height."
-                    },
-                    "registeredModules": {
-                        "type": "array",
-                        "items": {
-                            "type": "string",
-                            "description": "List of all the current registered modules."
-                        },
-                        "example": [
-                            "token",
-                            "reward",
-                            "validators",
-                            "auth",
-                            "pos",
-                            "fee",
-                            "random",
-                            "legacy",
-                            "interoperability"
-                        ]
-                    },
-                    "moduleCommands": {
-                        "type": "array",
-                        "items": {
-                            "type": "string",
-                            "description": "List of all current supported transaction types."
-                        },
-                        "example": [
-                            "auth:registerMultisignature",
-                            "interoperability:submitMainchainCrossChainUpdate",
-                            "interoperability:initializeMessageRecovery",
-                            "interoperability:recoverMessage",
-                            "interoperability:registerSidechain",
-                            "interoperability:recoverState",
-                            "interoperability:terminateSidechainForLiveness",
-                            "legacy:reclaimLSK",
-                            "legacy:registerKeys",
-                            "pos:registerValidator",
-                            "pos:reportMisbehavior",
-                            "pos:unlock",
-                            "pos:updateGeneratorKey",
-                            "pos:stake",
-                            "pos:changeCommission",
-                            "pos:claimRewards",
-                            "token:transfer",
-                            "token:transferCrossChain"
-                        ]
-                    },
-                    "network": {
-                        "type": "object",
-                        "properties": {
-                            "version": {
-                                "type": "string",
-                                "example": "1.0"
-                            },
-                            "port": {
-                                "type": "integer",
-                                "example": 10
-                            },
-                            "seedPeers": {
-                                "type": "array",
-                                "items": {
-                                    "example": {
-                                        "ip": "127.0.0.1",
-                                        "port": 7667
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "meta": {
-                "type": "object",
-                "required": [
-                    "lastUpdate",
-                    "lastBlockHeight",
-                    "lastBlockID"
-                ],
-                "properties": {
-                    "lastUpdate": {
-                        "type": "string",
-                        "example": "1632471013",
-                        "description": "Current timestamp."
-                    },
-                    "lastBlockHeight": {
-                        "type": "integer",
-                        "example": 16550779,
-                        "description": "Height of the current block."
-                    },
-                    "lastBlockID": {
-                        "type": "string",
-                        "example": "6266b07d18ef072896b79110a59fab4b0635796e870dba1783b21e296aaac36f",
-                        "description": "ID of the current block."
-                    }
-                }
-            }
-        }
-    }
+	"NetworkStatus": {
+		"type": "object",
+		"required": ["data", "meta"],
+		"properties": {
+			"data": {
+				"type": "object",
+				"description": "Number of items returned in the request.",
+				"properties": {
+					"version": {
+						"type": "string",
+						"format": "App version",
+						"example": "4.0.0",
+						"description": "Current application version."
+					},
+					"networkVersion": {
+						"type": "string",
+						"format": "networkVersion",
+						"example": "3.0",
+						"description": "Current network version."
+					},
+					"chainID": {
+						"type": "string",
+						"example": "00000000",
+						"description": "Chain ID of the blockchain application."
+					},
+					"lastBlockID": {
+						"type": "string",
+						"format": "id",
+						"minLength": 64,
+						"maxLength": 64,
+						"example": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b",
+						"description": "Current block ID."
+					},
+					"height": {
+						"type": "integer",
+						"example": 16550779,
+						"minimum": 0,
+						"description": "Current block height."
+					},
+					"finalizedHeight": {
+						"type": "integer",
+						"example": 16550609,
+						"minimum": 0,
+						"description": "Last finalized block height."
+					},
+					"syncing": {
+						"type": "boolean",
+						"example": "true"
+					},
+					"unconfirmedTransactions": {
+						"type": "integer",
+						"example": 0,
+						"description": "Unconfirmed transactions count."
+					},
+					"genesis": {
+						"type": "object",
+						"properties": {
+							"block": {
+								"type": "object",
+								"properties": {
+									"fromFile": {
+										"type": "string",
+										"example": "./config/genesis_block.blob"
+									}
+								}
+							},
+							"blockTime": {
+								"type": "integer",
+								"example": 10
+							},
+							"chainID": {
+								"type": "string",
+								"minLength": 8,
+								"maxLength": 8,
+								"example": "00000000"
+							},
+							"maxTransactionsSize": {
+								"type": "integer",
+								"example": 15360
+							},
+							"bftBatchSize": {
+								"type": "integer",
+								"example": 10
+							}
+						}
+					},
+					"genesisHeight": {
+						"type": "integer",
+						"example": 0,
+						"minimum": 0,
+						"description": "Genesis block height."
+					},
+					"registeredModules": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"description": "List of all the current registered modules."
+						},
+						"example": [
+							"token",
+							"reward",
+							"validators",
+							"auth",
+							"pos",
+							"fee",
+							"random",
+							"legacy",
+							"interoperability"
+						]
+					},
+					"moduleCommands": {
+						"type": "array",
+						"items": {
+							"type": "string",
+							"description": "List of all current supported transaction types."
+						},
+						"example": [
+							"auth:registerMultisignature",
+							"interoperability:submitMainchainCrossChainUpdate",
+							"interoperability:initializeMessageRecovery",
+							"interoperability:recoverMessage",
+							"interoperability:registerSidechain",
+							"interoperability:recoverState",
+							"interoperability:terminateSidechainForLiveness",
+							"legacy:reclaimLSK",
+							"legacy:registerKeys",
+							"pos:registerValidator",
+							"pos:reportMisbehavior",
+							"pos:unlock",
+							"pos:updateGeneratorKey",
+							"pos:stake",
+							"pos:changeCommission",
+							"pos:claimRewards",
+							"token:transfer",
+							"token:transferCrossChain"
+						]
+					},
+					"network": {
+						"type": "object",
+						"properties": {
+							"version": {
+								"type": "string",
+								"example": "1.0"
+							},
+							"port": {
+								"type": "integer",
+								"example": 10
+							},
+							"seedPeers": {
+								"type": "array",
+								"items": {
+									"example": {
+										"ip": "127.0.0.1",
+										"port": 7667
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+			"meta": {
+				"type": "object",
+				"required": ["lastUpdate", "lastBlockHeight", "lastBlockID"],
+				"properties": {
+					"lastUpdate": {
+						"type": "string",
+						"example": "1632471013",
+						"description": "Current timestamp."
+					},
+					"lastBlockHeight": {
+						"type": "integer",
+						"example": 16550779,
+						"description": "Height of the current block."
+					},
+					"lastBlockID": {
+						"type": "string",
+						"example": "6266b07d18ef072896b79110a59fab4b0635796e870dba1783b21e296aaac36f",
+						"description": "ID of the current block."
+					}
+				}
+			}
+		}
+	}
 }

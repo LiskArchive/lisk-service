@@ -19,14 +19,16 @@ const { api } = require('../../../helpers/api');
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
 
-const {
-	badRequestSchema,
-} = require('../../../schemas/httpGenerics.schema');
+const { badRequestSchema } = require('../../../schemas/httpGenerics.schema');
 
+const { goodResponseSchema } = require('../../../schemas/api_v3/posClaimableRewards.schema');
 const {
-	goodResponseSchema,
-} = require('../../../schemas/api_v3/posClaimableRewards.schema');
-const { invalidAddresses, invalidNames, invalidPublicKeys, invalidLimits, invalidOffsets } = require('../constants/invalidInputs');
+	invalidAddresses,
+	invalidNames,
+	invalidPublicKeys,
+	invalidLimits,
+	invalidOffsets,
+} = require('../constants/invalidInputs');
 
 const endpoint = `${baseUrlV3}/pos/rewards/claimable`;
 
@@ -34,7 +36,6 @@ describe('Claimable rewards API', () => {
 	let refGenerator;
 	beforeAll(async () => {
 		do {
-			// eslint-disable-next-line no-await-in-loop
 			const generators = await api.get(`${baseUrlV3}/generators`);
 			if (generators.data.length) {
 				[refGenerator] = generators.data;
@@ -127,7 +128,9 @@ describe('Claimable rewards API', () => {
 
 	it('should return list of claimable rewards with known validator publicKey, offset=1 and limit=5', async () => {
 		if (refGenerator.publicKey) {
-			const response = await api.get(`${endpoint}?publicKey=${refGenerator.publicKey}&offset=1&limit=5`);
+			const response = await api.get(
+				`${endpoint}?publicKey=${refGenerator.publicKey}&offset=1&limit=5`,
+			);
 			expect(response).toMap(goodResponseSchema);
 			expect(response.data.length).toBeGreaterThanOrEqual(0);
 			expect(response.data.length).toBeLessThanOrEqual(5);
@@ -141,7 +144,6 @@ describe('Claimable rewards API', () => {
 
 	it('should return bad request if requested with invalid address', async () => {
 		for (let i = 0; i < invalidAddresses.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await api.get(`${endpoint}?address=${invalidAddresses}`, 400);
 			expect(response).toMap(badRequestSchema);
 		}
@@ -149,7 +151,6 @@ describe('Claimable rewards API', () => {
 
 	it('should return bad request if requested with invalid name', async () => {
 		for (let i = 0; i < invalidNames.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await api.get(`${endpoint}?name=${invalidNames[i]}`, 400);
 			expect(response).toMap(badRequestSchema);
 		}
@@ -157,7 +158,6 @@ describe('Claimable rewards API', () => {
 
 	it('should return bad request if requested with invalid publicKey', async () => {
 		for (let i = 0; i < invalidPublicKeys.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await api.get(`${endpoint}?publicKey=${invalidPublicKeys[i]}`, 400);
 			expect(response).toMap(badRequestSchema);
 		}
@@ -165,16 +165,20 @@ describe('Claimable rewards API', () => {
 
 	it('should return bad request if requested with invalid limit', async () => {
 		for (let i = 0; i < invalidLimits.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
-			const response = await api.get(`${endpoint}?address=${refGenerator.address}&limit=${invalidLimits[i]}`, 400);
+			const response = await api.get(
+				`${endpoint}?address=${refGenerator.address}&limit=${invalidLimits[i]}`,
+				400,
+			);
 			expect(response).toMap(badRequestSchema);
 		}
 	});
 
 	it('should return bad request if requested with invalid offset', async () => {
 		for (let i = 0; i < invalidOffsets.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
-			const response = await api.get(`${endpoint}?address=${refGenerator.address}&offset=${invalidOffsets[i]}`, 400);
+			const response = await api.get(
+				`${endpoint}?address=${refGenerator.address}&offset=${invalidOffsets[i]}`,
+				400,
+			);
 			expect(response).toMap(badRequestSchema);
 		}
 	});

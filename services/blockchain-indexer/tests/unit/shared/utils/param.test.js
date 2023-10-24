@@ -58,21 +58,27 @@ describe('Test normalizeRangeParam method', () => {
 		const params = {
 			key: 'abc:456',
 		};
-		expect(() => normalizeRangeParam(params, 'key')).toThrow(new ValidationException("Invalid (non-numeric) 'key' range values supplied: abc:456."));
+		expect(() => normalizeRangeParam(params, 'key')).toThrow(
+			new ValidationException("Invalid (non-numeric) 'key' range values supplied: abc:456."),
+		);
 	});
 
 	it('should return ValidationException when `to` is not a number', async () => {
 		const params = {
 			key: '123:abc',
 		};
-		expect(() => normalizeRangeParam(params, 'key')).toThrow(new ValidationException("Invalid (non-numeric) 'key' range values supplied: 123:abc."));
+		expect(() => normalizeRangeParam(params, 'key')).toThrow(
+			new ValidationException("Invalid (non-numeric) 'key' range values supplied: 123:abc."),
+		);
 	});
 
 	it('should return ValidationException when `from` is greater than `to`', async () => {
 		const params = {
 			key: '456:123',
 		};
-		expect(() => normalizeRangeParam(params, 'key')).toThrow(new ValidationException('From key cannot be greater than to key.'));
+		expect(() => normalizeRangeParam(params, 'key')).toThrow(
+			new ValidationException('From key cannot be greater than to key.'),
+		);
 	});
 
 	it('should return proper response when only `from` is specified', async () => {
@@ -84,10 +90,12 @@ describe('Test normalizeRangeParam method', () => {
 		const { key, ...paramsWithoutKey } = params;
 		expect(response).toEqual({
 			...paramsWithoutKey,
-			propBetweens: [{
-				property: 'key',
-				from: 123,
-			}],
+			propBetweens: [
+				{
+					property: 'key',
+					from: 123,
+				},
+			],
 		});
 	});
 
@@ -100,10 +108,12 @@ describe('Test normalizeRangeParam method', () => {
 		const { key, ...paramsWithoutKey } = params;
 		expect(response).toEqual({
 			...paramsWithoutKey,
-			propBetweens: [{
-				property: 'key',
-				to: 456,
-			}],
+			propBetweens: [
+				{
+					property: 'key',
+					to: 456,
+				},
+			],
 		});
 	});
 
@@ -114,16 +124,16 @@ describe('Test normalizeRangeParam method', () => {
 		};
 		const response = normalizeRangeParam(params, 'key');
 		const { key, ...paramsWithoutKey } = params;
-		expect(response).toEqual(
-			{
-				...paramsWithoutKey,
-				propBetweens: [{
+		expect(response).toEqual({
+			...paramsWithoutKey,
+			propBetweens: [
+				{
 					property: 'key',
 					from: 123,
 					to: 456,
 				},
-				],
-			});
+			],
+		});
 	});
 
 	it('should return proper response when multiple range params are specified', async () => {
@@ -136,24 +146,24 @@ describe('Test normalizeRangeParam method', () => {
 		// Normalize key
 		const response = normalizeRangeParam(params, 'key');
 		const { key, ...paramsWithoutKey } = params;
-		expect(response).toEqual(
-			{
-				...paramsWithoutKey,
-				propBetweens: [{
+		expect(response).toEqual({
+			...paramsWithoutKey,
+			propBetweens: [
+				{
 					property: 'key',
 					from: 123,
 					to: 456,
 				},
-				],
-			});
+			],
+		});
 
 		// Normalize key3
 		const response2 = normalizeRangeParam(response, 'key3');
 		const { key3, ...paramsWithoutKey3 } = paramsWithoutKey;
-		expect(response2).toEqual(
-			{
-				...paramsWithoutKey3,
-				propBetweens: [{
+		expect(response2).toEqual({
+			...paramsWithoutKey3,
+			propBetweens: [
+				{
 					property: 'key',
 					from: 123,
 					to: 456,
@@ -163,7 +173,7 @@ describe('Test normalizeRangeParam method', () => {
 					from: 666,
 					to: 777,
 				},
-				],
-			});
+			],
+		});
 	});
 });

@@ -33,7 +33,7 @@ const urls = readFileSync('./integration/api/http_staging_mainnet/routes.txt', '
  * contradict its usefulness though.
  */
 describe('Routes match staging server', () => {
-	urls.forEach((url) => {
+	urls.forEach(url => {
 		it(`${prodUrl}${url}`, async () => {
 			const responses = await Promise.all([
 				api.get(`${stagingUrl}${url}`),
