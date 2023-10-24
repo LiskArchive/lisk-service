@@ -366,7 +366,7 @@ const deleteIndexedBlocks = async job => {
 
 				// Skip deletion if the lisk-service has not indexed the block previously.
 				// The fork doesn't have any impact on block indexing in this case.
-				if (blockFromJob.height > lastIndexedHeight || !blockFromDB) {
+				if (!blockFromDB || blockFromJob.height > lastIndexedHeight) {
 					return;
 				}
 
