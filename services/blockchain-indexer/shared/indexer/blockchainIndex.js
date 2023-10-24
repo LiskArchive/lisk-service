@@ -522,7 +522,7 @@ const deleteIndexedBlocks = async job => {
 let isIndexingRunning = false;
 const BLOCKCHAIN_INDEX_RESCHEDULE_DELAY = 1000;
 
-const indexBlockSerializedWrapper = async (job) => {
+const indexBlockSerializedWrapper = async job => {
 	if (isIndexingRunning) {
 		logger.trace('Already indexing another block!');
 		await delay(BLOCKCHAIN_INDEX_RESCHEDULE_DELAY);
@@ -546,7 +546,7 @@ const indexBlockSerializedWrapper = async (job) => {
 	isIndexingRunning = false;
 };
 
-const deleteIndexedBlocksWrapper = async (job) => {
+const deleteIndexedBlocksWrapper = async job => {
 	try {
 		// eslint-disable-next-line no-use-before-define
 		indexBlocksQueue.pause();
