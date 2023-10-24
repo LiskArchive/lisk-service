@@ -367,11 +367,19 @@ const deleteIndexedBlocks = async job => {
 				// Skip deletion if the lisk-service has not indexed the block previously.
 				// The fork doesn't have any impact on block indexing in this case.
 				if (!blockFromDB || blockFromJob.height > lastIndexedHeight) {
+					logger.debug(
+						`Skipping block deletion as job block height: ${blockFromJob.height} is greater than max indexed height: ${lastIndexedHeight}.`,
+					);
 					return;
 				}
 
 				// Skip deletion if latest block is already stored in DB
-				if (blockFromDB.id === blockFromNode.id) return;
+				if (blockFromDB.id === blockFromNode.id) {
+					logger.debug(
+						`Skipping block deletion as latest block with id: ${blockFromDB.id} and height: ${blockFromDB.height} is already indexed.`,
+					);
+					return;
+				}
 
 				let { data: forkedTransactions } = await getTransactionsByBlockID(blockFromJob.id);
 				const transactionsTable = await getTransactionsTable();
@@ -593,6 +601,10 @@ const indexNewBlock = async block => {
 
 	// Schedule block deletion incase unprocessed fork found
 	if (blockFromDB && blockFromDB.id !== block.id) {
+		logger.info(
+			`Fork detected while scheduling indexing at height: ${block.height}. Block ID from DB: ${blockFromDB.id} node: ${block.id}.`,
+		);
+
 		const blocksToRemove = await blocksTable.find(
 			{
 				propBetweens: [

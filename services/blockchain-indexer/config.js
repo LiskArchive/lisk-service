@@ -70,9 +70,13 @@ config.debug = process.env.SERVICE_LOG_LEVEL === 'debug';
  */
 config.queue = {
 	defaultJobOptions: {
-		attempts: 5,
+		attempts: 10,
 		timeout: 5 * 60 * 1000, // millisecs
 		removeOnComplete: true,
+		backoff: {
+			type: 'exponential',
+			delay: 5 * 1000, // millisecs
+		},
 	},
 
 	// Inter-microservice message queues

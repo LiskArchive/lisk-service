@@ -87,13 +87,18 @@ const newBlockProcessor = async block => {
 
 const deleteBlockProcessor = async block => {
 	let response;
+	let error;
 	try {
-		logger.debug(
+		logger.info(
 			`Processing the delete block event for the block at height: ${block.height}, id: ${block.id}`,
 		);
 		response = await getBlocks({ blockID: block.id });
 		await scheduleBlockDeletion(block);
-	} catch (error) {
+	} catch (err) {
+		logger.warn(
+			`Failed to process delete block event for the block at height: ${block.height}, id: ${block.id}`,
+		);
+
 		const normalizedBlocks = await normalizeBlocks([
 			{
 				header: block,
@@ -102,8 +107,11 @@ const deleteBlockProcessor = async block => {
 			},
 		]);
 		response = { data: normalizedBlocks };
+		error = err;
 	}
 	Signals.get('deleteBlock').dispatch(response);
+
+	if (error) throw error;
 };
 
 const newRoundProcessor = async () => {
