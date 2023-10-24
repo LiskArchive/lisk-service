@@ -365,7 +365,7 @@ const deleteIndexedBlocks = async job => {
 				const { height: lastIndexedHeight } = lastIndexedBlock;
 
 				// Skip deletion if the lisk-service has not indexed the block previously.
-				// The fork does have any impact on block indexing in this case.
+				// The fork doesn't have any impact on block indexing in this case.
 				if (blockFromJob.height > lastIndexedHeight || !blockFromDB) {
 					return;
 				}
@@ -400,7 +400,7 @@ const deleteIndexedBlocks = async job => {
 						},
 						{ concurrency: 25 },
 					);
-					forkedTransactions = transactionsToDelete.map(e => e !== null);
+					forkedTransactions = transactionsToDelete.map(t => t !== null);
 				}
 				await transactionsTable.deleteByPrimaryKey(forkedTransactionIDs, dbTrx);
 				Signals.get('deleteTransactions').dispatch({ data: forkedTransactions });
@@ -593,20 +593,15 @@ const indexNewBlock = async block => {
 
 	// Schedule block deletion incase unprocessed fork found
 	if (blockFromDB && blockFromDB.id !== block.id) {
-		const [highestIndexedBlock] = await blocksTable.find({ sort: 'height:desc', limit: 1 }, [
-			'height',
-		]);
 		const blocksToRemove = await blocksTable.find(
 			{
 				propBetweens: [
 					{
 						property: 'height',
 						from: block.height,
-						to: highestIndexedBlock.height,
 					},
 				],
 				sort: 'height:desc',
-				limit: highestIndexedBlock.height - block.height + 1,
 			},
 			['id'],
 		);
@@ -618,7 +613,7 @@ const indexNewBlock = async block => {
 		await indexBlocksQueue.add({ height: block.height });
 	}
 
-	// Update finality status of indexed block
+	// Update finality status of indexed blocks
 	const finalizedBlockHeight = await getFinalizedHeight();
 	await blocksTable.update({
 		where: {
