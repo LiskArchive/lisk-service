@@ -349,29 +349,36 @@ const deleteIndexedBlocks = async job => {
 	try {
 		await BluebirdPromise.map(
 			blocks,
-			async block => {
-				const blockFromNode = await getBlockByHeight(block.height);
-				if (blockFromNode.id === block.id) return;
+			async blockFromJob => {
+				const blockFromNode = await getBlockByHeight(blockFromJob.height);
 
 				// Check if deleted block is indexed
-				const [deletedBlockFromDB] = await blocksTable.find({ height: block.height, limit: 1 });
+				const [blockFromDB] = await blocksTable.find({ height: blockFromJob.height, limit: 1 });
 
-				// Reschedule job if not deleted block is not indexed
-				if (!deletedBlockFromDB) {
-					// eslint-disable-next-line no-use-before-define
-					await scheduleBlockDeletion(block);
+				const [lastIndexedBlock = {}] = await blocksTable.find(
+					{
+						sort: 'height:desc',
+						limit: 1,
+					},
+					['height'],
+				);
+				const { height: lastIndexedHeight } = lastIndexedBlock;
+
+				// Skip deletion if the lisk-service has not indexed the block previously.
+				// The fork does have any impact on block indexing in this case.
+				if (blockFromJob.height > lastIndexedHeight || !blockFromDB) {
 					return;
 				}
-				// If deleted block is indexed, check for the blockID
-				// Continue only when blockID matches else skip
-				if (deletedBlockFromDB.id !== block.id) return;
 
-				let { data: forkedTransactions } = await getTransactionsByBlockID(block.id);
+				// Skip deletion if latest block is already stored in DB
+				if (blockFromDB.id === blockFromNode.id) return;
+
+				let { data: forkedTransactions } = await getTransactionsByBlockID(blockFromJob.id);
 				const transactionsTable = await getTransactionsTable();
-				const events = await getEventsByBlockID(block.id);
+				const events = await getEventsByBlockID(blockFromJob.id);
 
 				if (Array.isArray(forkedTransactions)) {
-					const { assets, ...blockHeader } = block;
+					const { assets, ...blockHeader } = blockFromJob;
 
 					await BluebirdPromise.map(
 						forkedTransactions,
@@ -383,9 +390,9 @@ const deleteIndexedBlocks = async job => {
 					);
 				}
 
-				const forkedTransactionIDs = await getTransactionIDsByBlockID(block.id);
+				const forkedTransactionIDs = await getTransactionIDsByBlockID(blockFromJob.id);
 				if (!Array.isArray(forkedTransactions)) {
-					const deletedTransactions = await BluebirdPromise.map(
+					const transactionsToDelete = await BluebirdPromise.map(
 						forkedTransactionIDs,
 						async txID => {
 							const transaction = await getTransactions({ id: txID });
@@ -393,7 +400,7 @@ const deleteIndexedBlocks = async job => {
 						},
 						{ concurrency: 25 },
 					);
-					forkedTransactions = deletedTransactions.map(e => e !== null);
+					forkedTransactions = transactionsToDelete.map(e => e !== null);
 				}
 				await transactionsTable.deleteByPrimaryKey(forkedTransactionIDs, dbTrx);
 				Signals.get('deleteTransactions').dispatch({ data: forkedTransactions });
@@ -403,9 +410,9 @@ const deleteIndexedBlocks = async job => {
 					const eventsTable = await getEventsTable();
 					const eventTopicsTable = await getEventTopicsTable();
 
-					const { eventsInfo, eventTopicsInfo } = await getEventsInfoToIndex(block, events);
-					await eventsTable.delete(eventsInfo, dbTrx);
+					const { eventsInfo, eventTopicsInfo } = await getEventsInfoToIndex(blockFromJob, events);
 					await eventTopicsTable.delete(eventTopicsInfo, dbTrx);
+					await eventsTable.delete(eventsInfo, dbTrx);
 
 					// Update the generator's rewards
 					const blockRewardEvent = events.find(
@@ -417,42 +424,42 @@ const deleteIndexedBlocks = async job => {
 
 						if (blockReward !== BigInt('0')) {
 							const commissionAmount = await calcCommissionAmount(
-								block.generatorAddress,
-								block.height,
+								blockFromJob.generatorAddress,
+								blockFromJob.height,
 								blockReward,
 							);
 							const selfStakeReward = await calcSelfStakeReward(
-								block.generatorAddress,
+								blockFromJob.generatorAddress,
 								blockReward,
 								commissionAmount,
 							);
 
 							const validatorsTable = await getValidatorsTable();
 							logger.trace(
-								`Decreasing commission for validator ${block.generatorAddress} by ${commissionAmount}.`,
+								`Decreasing commission for validator ${blockFromJob.generatorAddress} by ${commissionAmount}.`,
 							);
 							await validatorsTable.decrement(
 								{
 									decrement: { totalCommission: BigInt(commissionAmount) },
-									where: { address: block.generatorAddress },
+									where: { address: blockFromJob.generatorAddress },
 								},
 								dbTrx,
 							);
 							logger.debug(
-								`Decreased commission for validator ${block.generatorAddress} by ${commissionAmount}.`,
+								`Decreased commission for validator ${blockFromJob.generatorAddress} by ${commissionAmount}.`,
 							);
 							logger.trace(
-								`Decreasing self-stake rewards for validator ${block.generatorAddress} by ${selfStakeReward}.`,
+								`Decreasing self-stake rewards for validator ${blockFromJob.generatorAddress} by ${selfStakeReward}.`,
 							);
 							await validatorsTable.decrement(
 								{
 									decrement: { totalSelfStakeRewards: BigInt(selfStakeReward) },
-									where: { address: block.generatorAddress },
+									where: { address: blockFromJob.generatorAddress },
 								},
 								dbTrx,
 							);
 							logger.debug(
-								`Decreased self-stake rewards for validator ${block.generatorAddress} by ${selfStakeReward}.`,
+								`Decreased self-stake rewards for validator ${blockFromJob.generatorAddress} by ${selfStakeReward}.`,
 							);
 						}
 					}
@@ -484,7 +491,7 @@ const deleteIndexedBlocks = async job => {
 
 				// Invalidate cached events for this block
 				// This must be done after processing all event related calculations
-				await deleteEventsFromCacheByBlockID(block.id);
+				await deleteEventsFromCacheByBlockID(blockFromJob.id);
 			},
 			{ concurrency: 1 },
 		);
@@ -514,7 +521,7 @@ const deleteIndexedBlocks = async job => {
 let isIndexingRunning = false;
 const BLOCKCHAIN_INDEX_RESCHEDULE_DELAY = 1000;
 
-const indexBlockAtomicWrapper = async (job) => {
+const indexBlockSerializedWrapper = async (job) => {
 	if (isIndexingRunning) {
 		logger.trace('Already indexing another block!');
 		await delay(BLOCKCHAIN_INDEX_RESCHEDULE_DELAY);
@@ -536,18 +543,33 @@ const indexBlockAtomicWrapper = async (job) => {
 	isIndexingRunning = false;
 };
 
+const deleteIndexedBlocksWrapper = async (job) => {
+	try {
+		// eslint-disable-next-line no-use-before-define
+		indexBlocksQueue.pause();
+		await deleteIndexedBlocks(job);
+	} catch (err) {
+		// eslint-disable-next-line no-use-before-define
+		deleteIndexedBlocksQueue.add(job.data);
+		logger.error(`Deletion of block failed. \nError:${err.message}`);
+	}
+
+	// eslint-disable-next-line no-use-before-define
+	indexBlocksQueue.resume();
+};
+
 // Initialize queues
 const indexBlocksQueue = Queue(
 	config.endpoints.cache,
 	config.queue.indexBlocks.name,
-	indexBlockAtomicWrapper,
+	indexBlockSerializedWrapper,
 	config.queue.indexBlocks.concurrency,
 );
 
 const deleteIndexedBlocksQueue = Queue(
 	config.endpoints.cache,
 	config.queue.deleteIndexedBlocks.name,
-	deleteIndexedBlocks,
+	deleteIndexedBlocksWrapper,
 	config.queue.deleteIndexedBlocks.concurrency,
 );
 
@@ -564,50 +586,49 @@ const indexNewBlock = async block => {
 	const blocksTable = await getBlocksTable();
 	logger.info(`Indexing new block: ${block.id} at height ${block.height}.`);
 
-	const [blockInfo] = await blocksTable.find({ height: block.height, limit: 1 }, ['id', 'isFinal']);
-	// Schedule indexing of incoming block if it is not indexed before
-	// Or the indexed block is not final yet (chain fork)
-	if (!blockInfo || !blockInfo.isFinal) {
-		// Index if doesn't exist, or update if it isn't set to final
-		await indexBlocksQueue.add({ height: block.height });
+	const [blockFromDB] = await blocksTable.find({ height: block.height, limit: 1 }, ['id']);
 
-		// Update finality status for the parent blocks
-		const finalizedBlockHeight = await getFinalizedHeight();
-		await blocksTable.update({
-			where: {
-				isFinal: false,
+	// Schedule block deletion incase unprocessed fork found
+	if (blockFromDB && blockFromDB.id !== block.id) {
+		const [highestIndexedBlock] = await blocksTable.find({ sort: 'height:desc', limit: 1 }, [
+			'height',
+		]);
+		const blocksToRemove = await blocksTable.find(
+			{
 				propBetweens: [
 					{
 						property: 'height',
-						to: finalizedBlockHeight,
+						from: block.height,
+						to: highestIndexedBlock.height,
 					},
 				],
+				sort: 'height:desc',
+				limit: highestIndexedBlock.height - block.height + 1,
 			},
-			updates: { isFinal: true },
-		});
-
-		if (blockInfo && blockInfo.id !== block.id) {
-			// Fork detected
-			const [highestIndexedBlock] = await blocksTable.find({ sort: 'height:desc', limit: 1 }, [
-				'height',
-			]);
-			const blocksToRemove = await blocksTable.find(
-				{
-					propBetweens: [
-						{
-							property: 'height',
-							from: block.height + 1,
-							to: highestIndexedBlock.height,
-						},
-					],
-					sort: 'height:desc',
-					limit: highestIndexedBlock.height - block.height,
-				},
-				['id'],
-			);
-			await deleteIndexedBlocksQueue.add({ blocks: blocksToRemove });
-		}
+			['id'],
+		);
+		await deleteIndexedBlocksQueue.add({ blocks: blocksToRemove });
 	}
+
+	// Schedule indexing of incoming block if it is not indexed before or a fork found
+	if (!blockFromDB || blockFromDB.id !== block.id) {
+		await indexBlocksQueue.add({ height: block.height });
+	}
+
+	// Update finality status of indexed block
+	const finalizedBlockHeight = await getFinalizedHeight();
+	await blocksTable.update({
+		where: {
+			isFinal: false,
+			propBetweens: [
+				{
+					property: 'height',
+					to: finalizedBlockHeight,
+				},
+			],
+		},
+		updates: { isFinal: true },
+	});
 };
 
 const findMissingBlocksInRange = async (fromHeight, toHeight) => {
