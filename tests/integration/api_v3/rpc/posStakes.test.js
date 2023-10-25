@@ -44,7 +44,6 @@ describe('get.pos.stakes', () => {
 		maxNumberSentStakes = posConstants.data.maxNumberSentStakes;
 
 		do {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await request(wsRpcUrl, 'get.transactions', {
 				moduleCommand: 'pos:stake',
 				limit: 1,
@@ -168,7 +167,6 @@ describe('get.pos.stakes', () => {
 
 	it('should return invalid params for invalid address', async () => {
 		for (let i = 0; i < invalidAddresses.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getStakes({ address: invalidAddresses[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}
@@ -176,7 +174,6 @@ describe('get.pos.stakes', () => {
 
 	it('should return invalid params for invalid publicKey', async () => {
 		for (let i = 0; i < invalidPublicKeys.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getStakes({ publicKey: invalidPublicKeys[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}
@@ -184,7 +181,6 @@ describe('get.pos.stakes', () => {
 
 	it('should return invalid params for invalid name', async () => {
 		for (let i = 0; i < invalidNames.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getStakes({ name: invalidNames[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}
@@ -192,7 +188,6 @@ describe('get.pos.stakes', () => {
 
 	it('should return invalid params for invalid search', async () => {
 		for (let i = 0; i < invalidPartialSearches.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getStakes({
 				address: refStaker.address,
 				search: invalidPartialSearches[i],

@@ -189,7 +189,6 @@ describe('Rewards Locked API', () => {
 
 	it('should return invalid params if requested with invalid address', async () => {
 		for (let i = 0; i < invalidAddresses.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getPosRewardsLocked({ address: invalidAddresses[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}
@@ -197,7 +196,6 @@ describe('Rewards Locked API', () => {
 
 	it('should return invalid params if requested with invalid name', async () => {
 		for (let i = 0; i < invalidNames.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getPosRewardsLocked({ name: invalidNames[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}
@@ -205,7 +203,6 @@ describe('Rewards Locked API', () => {
 
 	it('should return invalid params if requested with invalid publicKey', async () => {
 		for (let i = 0; i < invalidPublicKeys.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getPosRewardsLocked({ publicKey: invalidPublicKeys[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}
@@ -213,7 +210,6 @@ describe('Rewards Locked API', () => {
 
 	it('should return invalid params if requested with invalid limit', async () => {
 		for (let i = 0; i < invalidLimits.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getPosRewardsLocked({
 				address: refStaker.address,
 				limit: invalidLimits[i],
@@ -224,7 +220,6 @@ describe('Rewards Locked API', () => {
 
 	it('should return invalid params if requested with invalid offset', async () => {
 		for (let i = 0; i < invalidOffsets.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getPosRewardsLocked({
 				address: refStaker.address,
 				offset: invalidOffsets[i],

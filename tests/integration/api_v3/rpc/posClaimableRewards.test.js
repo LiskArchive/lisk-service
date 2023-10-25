@@ -41,7 +41,6 @@ describe('Claimable rewards API', () => {
 	let refGenerator;
 	beforeAll(async () => {
 		do {
-			// eslint-disable-next-line no-await-in-loop
 			const { result } = await getGenerators();
 			if (result.data.length) {
 				[refGenerator] = result.data;
@@ -188,7 +187,6 @@ describe('Claimable rewards API', () => {
 
 	it('should return invalid params if requested with invalid address', async () => {
 		for (let i = 0; i < invalidAddresses.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getPosClaimableRewards({ address: invalidAddresses[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}
@@ -196,7 +194,6 @@ describe('Claimable rewards API', () => {
 
 	it('should return invalid params if requested with invalid name', async () => {
 		for (let i = 0; i < invalidNames.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getPosClaimableRewards({ name: invalidNames[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}
@@ -204,7 +201,6 @@ describe('Claimable rewards API', () => {
 
 	it('should return invalid params if requested with invalid publicKey', async () => {
 		for (let i = 0; i < invalidPublicKeys.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getPosClaimableRewards({ publicKey: invalidPublicKeys[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}
@@ -212,7 +208,6 @@ describe('Claimable rewards API', () => {
 
 	it('should return invalid params if requested with invalid limit', async () => {
 		for (let i = 0; i < invalidLimits.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getPosClaimableRewards({
 				address: refGenerator.address,
 				limit: invalidLimits[i],
@@ -223,7 +218,6 @@ describe('Claimable rewards API', () => {
 
 	it('should return invalid params if requested with invalid offset', async () => {
 		for (let i = 0; i < invalidOffsets.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getPosClaimableRewards({
 				address: refGenerator.address,
 				offset: invalidOffsets[i],

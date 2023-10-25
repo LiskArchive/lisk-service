@@ -51,7 +51,6 @@ describe('Validator API', () => {
 
 	it('should return bad request when requested with invalid address', async () => {
 		for (let i = 0; i < invalidAddresses.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await api.get(`${endpoint}?address=${invalidAddresses[i]}`, 400);
 			expect(response).toMap(badRequestSchema);
 		}

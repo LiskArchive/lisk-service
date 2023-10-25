@@ -28,7 +28,6 @@ const waitForNodeToFinishSync = async () => {
 	// eslint-disable-next-line no-constant-condition
 	while (true) {
 		try {
-			// eslint-disable-next-line no-await-in-loop
 			const networkConstants = await requestConnector('getNetworkStatus');
 			const { syncing } = networkConstants;
 			isNodeSyncComplete = !syncing;
@@ -46,7 +45,6 @@ const waitForNodeToFinishSync = async () => {
 		// Break loop when node is synchronized
 		if (isNodeSyncComplete) break;
 
-		// eslint-disable-next-line no-await-in-loop
 		await delay(NODE_SYNC_CHECK_INTERVAL);
 	}
 };

@@ -31,7 +31,6 @@ const requestAll = async (fn, method, params, limit) => {
 			for (let page = 1; page < Math.ceil(maxAmount / oneRequestLimit); page++) {
 				const curOffset = oneRequestLimit * page;
 
-				/* eslint-disable-next-line no-await-in-loop */
 				const result = await fn(method, {
 					...params,
 					...{

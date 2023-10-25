@@ -1269,47 +1269,47 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@liskhq/lisk-api-client@^6.0.0-rc.3":
-  version "6.0.0-rc.3"
-  resolved "https://registry.npmjs.org/@liskhq/lisk-api-client/-/lisk-api-client-6.0.0-rc.3.tgz#4c26f39e83ecf908d3dfb4b729b68777702481b3"
-  integrity sha512-88690dw4ADA184ul9KQZZ++5tVEuDeQNNlbUUCV2N63zVlRh5Xu78R/aFwtFGrLpts/kdXZwPEC4kdH4/as3gw==
+"@liskhq/lisk-api-client@^6.0.0-rc.4":
+  version "6.0.0-rc.4"
+  resolved "https://registry.yarnpkg.com/@liskhq/lisk-api-client/-/lisk-api-client-6.0.0-rc.4.tgz#3681fe72cf7e2b594fafa09dca629ae76e9fb69f"
+  integrity sha512-bMDiDjAAk74nWqjLeA+pdQLn3y7GMsWjhTgmVkN8bNTZptiCAFz7QITPrmpjevzBoXCUS/8ne/SpCvmrob9w6A==
   dependencies:
-    "@liskhq/lisk-codec" "^0.4.0-rc.1"
-    "@liskhq/lisk-cryptography" "^4.0.0-rc.1"
-    "@liskhq/lisk-transactions" "^6.0.0-rc.1"
-    "@liskhq/lisk-validator" "^0.8.0-rc.1"
+    "@liskhq/lisk-codec" "^0.4.0-rc.2"
+    "@liskhq/lisk-cryptography" "^4.0.0-rc.2"
+    "@liskhq/lisk-transactions" "^6.0.0-rc.2"
+    "@liskhq/lisk-validator" "^0.8.0-rc.2"
     isomorphic-ws "4.0.1"
     ws "8.11.0"
     zeromq "6.0.0-beta.6"
 
 "@liskhq/lisk-client@^6.0.0-rc.1":
-  version "6.0.0-rc.3"
-  resolved "https://registry.npmjs.org/@liskhq/lisk-client/-/lisk-client-6.0.0-rc.3.tgz#14dbbad056749a850eccea684e785f4db84b5f9f"
-  integrity sha512-0R4dMHR5qEOumsHwze11z3UAt2ujRtg1ULUatKxQ4jw/xkkXXThIgJw4j5YiWlGOQt3Xwq4P1RcXDtSGsSWgFg==
+  version "6.0.0-rc.4"
+  resolved "https://registry.yarnpkg.com/@liskhq/lisk-client/-/lisk-client-6.0.0-rc.4.tgz#e611eee3ca58d990c840a3c59cc0527ca6bf9ecf"
+  integrity sha512-1YCuVBv8lRiv09BW0x4qgrpOXNHAHEGVxpJRlOGkKc9GovgslzCVE/StOAjJx7KStYgwFAgEV1LRvLUM6hffLQ==
   dependencies:
-    "@liskhq/lisk-api-client" "^6.0.0-rc.3"
-    "@liskhq/lisk-codec" "^0.4.0-rc.1"
-    "@liskhq/lisk-cryptography" "^4.0.0-rc.1"
+    "@liskhq/lisk-api-client" "^6.0.0-rc.4"
+    "@liskhq/lisk-codec" "^0.4.0-rc.2"
+    "@liskhq/lisk-cryptography" "^4.0.0-rc.2"
     "@liskhq/lisk-passphrase" "^4.0.0-rc.0"
-    "@liskhq/lisk-transactions" "^6.0.0-rc.1"
-    "@liskhq/lisk-tree" "^0.4.0-rc.1"
+    "@liskhq/lisk-transactions" "^6.0.0-rc.2"
+    "@liskhq/lisk-tree" "^0.4.0-rc.2"
     "@liskhq/lisk-utils" "^0.4.0-rc.0"
-    "@liskhq/lisk-validator" "^0.8.0-rc.1"
+    "@liskhq/lisk-validator" "^0.8.0-rc.2"
     buffer "6.0.3"
 
-"@liskhq/lisk-codec@^0.4.0-rc.1":
-  version "0.4.0-rc.1"
-  resolved "https://registry.npmjs.org/@liskhq/lisk-codec/-/lisk-codec-0.4.0-rc.1.tgz#fbffec74bd54efb820758cc00ca9737d913b452e"
-  integrity sha512-o5vPFhh2siETT9lDWu+ZJo/Ni5/EYtvUoi3k1kWaJ/X6YF03J4L2GZoRVzZKnXPMPuUDJyT131gUjM0Z3BPgSA==
+"@liskhq/lisk-codec@^0.4.0-rc.1", "@liskhq/lisk-codec@^0.4.0-rc.2":
+  version "0.4.0-rc.2"
+  resolved "https://registry.yarnpkg.com/@liskhq/lisk-codec/-/lisk-codec-0.4.0-rc.2.tgz#f7ef7a91c94c0c5f295ece70543bfa1a14c51005"
+  integrity sha512-LoIIaXfEOi3Fa/UnuiSRLTYPu0fnFQ8S68f6WBqvOcorkB9VzcUphBDdG/a+7H6qgC+CkxlLJRHmM7pfkC/fyg==
   dependencies:
-    "@liskhq/lisk-cryptography" "^4.0.0-rc.1"
+    "@liskhq/lisk-cryptography" "^4.0.0-rc.2"
     "@liskhq/lisk-utils" "^0.4.0-rc.0"
-    "@liskhq/lisk-validator" "^0.8.0-rc.1"
+    "@liskhq/lisk-validator" "^0.8.0-rc.2"
 
-"@liskhq/lisk-cryptography@^4.0.0-rc.1":
-  version "4.0.0-rc.1"
-  resolved "https://registry.npmjs.org/@liskhq/lisk-cryptography/-/lisk-cryptography-4.0.0-rc.1.tgz#b8df408aa1a94362091eda06b0a38577e4db5ead"
-  integrity sha512-e9ubCGSi8OzOJ21i8Mlc7Zsu+b2ofMGsC0QegzhQSf9Vf5+qAk2CHUR0X/+kT8wvSIpN6krfbz81sfzDPq/PBQ==
+"@liskhq/lisk-cryptography@^4.0.0-rc.1", "@liskhq/lisk-cryptography@^4.0.0-rc.2":
+  version "4.0.0-rc.2"
+  resolved "https://registry.yarnpkg.com/@liskhq/lisk-cryptography/-/lisk-cryptography-4.0.0-rc.2.tgz#042191f8c02834388157469015b73318df097964"
+  integrity sha512-kxHQ1fGiOC5WaqRRKaJJIOI6EqljyYZuDl7zg+Ihwz36ZDTRtGNLpUCA8+1GPYBwRghp2QobRibUBZh649Hh5A==
   dependencies:
     "@liskhq/lisk-passphrase" "^4.0.0-rc.0"
     buffer-reverse "1.0.1"
@@ -1323,21 +1323,21 @@
   dependencies:
     bip39 "3.0.3"
 
-"@liskhq/lisk-transactions@^6.0.0-rc.1":
-  version "6.0.0-rc.1"
-  resolved "https://registry.npmjs.org/@liskhq/lisk-transactions/-/lisk-transactions-6.0.0-rc.1.tgz#4d4583487ae778aac8ffcb622227da99ef5940b7"
-  integrity sha512-zfgdkS0ySaiSK4j7NNcrXqatk2gViTvBqjFBgGviqA4xUlSZWFaHYIgRzxkOKvDT1EsA5YUk2Z2ARj5xMZVvzw==
+"@liskhq/lisk-transactions@^6.0.0-rc.2":
+  version "6.0.0-rc.2"
+  resolved "https://registry.yarnpkg.com/@liskhq/lisk-transactions/-/lisk-transactions-6.0.0-rc.2.tgz#14c97f87dae1fe486ca99b9e47e076eb85f4ec62"
+  integrity sha512-bZesojzU2uTX8pW0kyYyVfRk69PJZo6OJM9/gTu4sxRvcbFQKelpEFAPDLQBcLyihNL2SGwufgDyCMDyzVy73A==
   dependencies:
-    "@liskhq/lisk-codec" "^0.4.0-rc.1"
-    "@liskhq/lisk-cryptography" "^4.0.0-rc.1"
-    "@liskhq/lisk-validator" "^0.8.0-rc.1"
+    "@liskhq/lisk-codec" "^0.4.0-rc.2"
+    "@liskhq/lisk-cryptography" "^4.0.0-rc.2"
+    "@liskhq/lisk-validator" "^0.8.0-rc.2"
 
-"@liskhq/lisk-tree@^0.4.0-rc.1":
-  version "0.4.0-rc.1"
-  resolved "https://registry.npmjs.org/@liskhq/lisk-tree/-/lisk-tree-0.4.0-rc.1.tgz#3e5ae897664fd0e28847f04012633d4068058202"
-  integrity sha512-yDQushgQfAFmvyYZhaE5WpjTZ3MIa/c4ZFQhkHHZJaMJoa7EkozrxCmoKx0TFOIgTGMjGOEIKN+tTkoZpbNgug==
+"@liskhq/lisk-tree@^0.4.0-rc.2":
+  version "0.4.0-rc.2"
+  resolved "https://registry.yarnpkg.com/@liskhq/lisk-tree/-/lisk-tree-0.4.0-rc.2.tgz#5e4aeb2074050ea1658965bc72a7596a7cd3afe7"
+  integrity sha512-ym6Kz8D3jkYT+2qna3jqiHFNzKxuUeFOIb4iCn4VqSscsOqapxfGKQU9jtYt0yTciCHVh5Ogijrv+AZB4SQsgA==
   dependencies:
-    "@liskhq/lisk-cryptography" "^4.0.0-rc.1"
+    "@liskhq/lisk-cryptography" "^4.0.0-rc.2"
     "@liskhq/lisk-utils" "^0.4.0-rc.0"
 
 "@liskhq/lisk-utils@^0.4.0-rc.0":
@@ -1347,12 +1347,12 @@
   dependencies:
     lodash.clonedeep "4.5.0"
 
-"@liskhq/lisk-validator@^0.8.0-rc.1":
-  version "0.8.0-rc.1"
-  resolved "https://registry.npmjs.org/@liskhq/lisk-validator/-/lisk-validator-0.8.0-rc.1.tgz#f723bd1667e61c4c5bec680343342c1f8191ff67"
-  integrity sha512-gLFa+5scCVPWc6cZEx5cALx6gRmF51xH/Szg7YeWi6uJkcQBSlT3ephvAUEVOWcRQ4SL7XadM/vWE0wXvoqqeA==
+"@liskhq/lisk-validator@^0.8.0-rc.1", "@liskhq/lisk-validator@^0.8.0-rc.2":
+  version "0.8.0-rc.2"
+  resolved "https://registry.yarnpkg.com/@liskhq/lisk-validator/-/lisk-validator-0.8.0-rc.2.tgz#4c81e83027c5c832f7a2915ce0bdc79614387707"
+  integrity sha512-b4V0z2TlOxEosAKpxgR/lgobvpw5Lc2/ZAuBxDuwlvuXh5WSoz+VaPMf2Ry7N9TQwXtvHx3MO8chraJN+F5bEg==
   dependencies:
-    "@liskhq/lisk-cryptography" "^4.0.0-rc.1"
+    "@liskhq/lisk-cryptography" "^4.0.0-rc.2"
     ajv "8.1.0"
     ajv-formats "2.1.1"
     debug "4.3.4"
@@ -1907,12 +1907,12 @@ babel-plugin-polyfill-corejs2@^0.4.6:
     semver "^6.3.1"
 
 babel-plugin-polyfill-corejs3@^0.8.5:
-  version "0.8.5"
-  resolved "https://registry.npmjs.org/babel-plugin-polyfill-corejs3/-/babel-plugin-polyfill-corejs3-0.8.5.tgz#a75fa1b0c3fc5bd6837f9ec465c0f48031b8cab1"
-  integrity sha512-Q6CdATeAvbScWPNLB8lzSO7fgUVBkQt6zLgNlfyeCr/EQaEQR+bWiBYYPYAFyE528BMjRhL+1QBMOI4jc/c5TA==
+  version "0.8.6"
+  resolved "https://registry.yarnpkg.com/babel-plugin-polyfill-corejs3/-/babel-plugin-polyfill-corejs3-0.8.6.tgz#25c2d20002da91fe328ff89095c85a391d6856cf"
+  integrity sha512-leDIc4l4tUgU7str5BWLS2h8q2N4Nf6lGZP6UrNDxdtfF2g69eJ5L0H7S8A5Ln/arfFAfHor5InAdZuIOwZdgQ==
   dependencies:
     "@babel/helper-define-polyfill-provider" "^0.4.3"
-    core-js-compat "^3.32.2"
+    core-js-compat "^3.33.1"
 
 babel-plugin-polyfill-regenerator@^0.5.3:
   version "0.5.3"
@@ -2147,9 +2147,9 @@ camelcase@^6.2.0:
   integrity sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==
 
 caniuse-lite@^1.0.30001541:
-  version "1.0.30001551"
-  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001551.tgz#1f2cfa8820bd97c971a57349d7fd8f6e08664a3e"
-  integrity sha512-vtBAez47BoGMMzlbYhfXrMV1kvRF2WP/lqiMuDu1Sb4EE4LKEgjopFDSRtZfdVnslNRpOqV/woE+Xgrwj6VQlg==
+  version "1.0.30001553"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001553.tgz#e64e7dc8fd4885cd246bb476471420beb5e474b5"
+  integrity sha512-N0ttd6TrFfuqKNi+pMgWJTb9qrdJu4JSpgPFLe/lrD19ugC6fZgF0pUewRowDwzdDnb9V41mFcdlYgl/PyKf4A==
 
 capture-stack-trace@^1.0.0:
   version "1.0.2"
@@ -2447,7 +2447,7 @@ copy-descriptor@^0.1.0:
   resolved "https://registry.npmjs.org/copy-descriptor/-/copy-descriptor-0.1.1.tgz#676f6eb3c39997c2ee1ac3a924fd6124748f578d"
   integrity sha512-XgZ0pFcakEUlbwQEVNg3+QAis1FyTL3Qel9FYy8pSkQqoG3PNoT0bOCQtOXcOkur21r2Eq2kI+IE+gsmAEVlYw==
 
-core-js-compat@^3.31.0, core-js-compat@^3.32.2:
+core-js-compat@^3.31.0, core-js-compat@^3.33.1:
   version "3.33.1"
   resolved "https://registry.npmjs.org/core-js-compat/-/core-js-compat-3.33.1.tgz#debe80464107d75419e00c2ee29f35982118ff84"
   integrity sha512-6pYKNOgD/j/bkC5xS5IIg6bncid3rfrI42oBH1SQJbsmYPKF7rhzcFzYCcxYMmNQQ0rCEB8WqpW7QHndOggaeQ==
@@ -2786,9 +2786,9 @@ duplexer3@^0.1.4:
   integrity sha512-1A8za6ws41LQgv9HrE/66jyC5yuSjQ3L/KOpFtoBilsAK2iA2wuS5rTt1OCzIvtS2V7nVmedsUU+DGRcjBmOYA==
 
 electron-to-chromium@^1.4.535:
-  version "1.4.561"
-  resolved "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.4.561.tgz#816f31d9ae01fe58abbf469fca7e125b16befd85"
-  integrity sha512-eS5t4ulWOBfVHdq9SW2dxEaFarj1lPjvJ8PaYMOjY0DecBaj/t4ARziL2IPpDr4atyWwjLFGQ2vo/VCgQFezVQ==
+  version "1.4.563"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.563.tgz#dabb424202754c1fed2d2938ff564b23d3bbf0d3"
+  integrity sha512-dg5gj5qOgfZNkPNeyKBZQAQitIQ/xwfIDmEQJHCbXaD9ebTZxwJXUsDYcBlAvZGZLi+/354l35J1wkmP6CqYaw==
 
 emittery@^0.13.1:
   version "0.13.1"
@@ -3151,7 +3151,7 @@ fsevents@^2.3.2:
   resolved "https://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz#cac6407785d03675a2a5e1a5305c697b347d90d6"
   integrity sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==
 
-function-bind@^1.1.1, function-bind@^1.1.2:
+function-bind@^1.1.2:
   version "1.1.2"
   resolved "https://registry.npmjs.org/function-bind/-/function-bind-1.1.2.tgz#2c02d864d97f3ea6c8830c464cbd11ab6eab7a1c"
   integrity sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA==
@@ -3181,15 +3181,15 @@ get-func-name@^2.0.1, get-func-name@^2.0.2:
   resolved "https://registry.npmjs.org/get-func-name/-/get-func-name-2.0.2.tgz#0d7cf20cd13fda808669ffa88f4ffc7a3943fc41"
   integrity sha512-8vXOvuE167CtIc3OyItco7N/dpRtBbYOsPsXCz7X/PMnlGjYjSGuZJgM1Y7mmew7BKf9BqvLX2tnOVy1BBUsxQ==
 
-get-intrinsic@^1.1.1, get-intrinsic@^1.1.3, get-intrinsic@^1.2.1:
-  version "1.2.1"
-  resolved "https://registry.npmjs.org/get-intrinsic/-/get-intrinsic-1.2.1.tgz#d295644fed4505fc9cde952c37ee12b477a83d82"
-  integrity sha512-2DcsyfABl+gVHEfCOaTrWgyt+tb6MSEGmKq+kI5HwLbIYgjgmMcV8KQ41uaKz1xxUcn9tJtgFbQUEVcEbd0FYw==
+get-intrinsic@^1.1.3, get-intrinsic@^1.2.1, get-intrinsic@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/get-intrinsic/-/get-intrinsic-1.2.2.tgz#281b7622971123e1ef4b3c90fd7539306da93f3b"
+  integrity sha512-0gSo4ml/0j98Y3lngkFEot/zhiCeWsbYIlZ+uZOVgzLyLaUw7wxUL+nCTP0XJvJg1AXulJRI3UJi8GsbDuxdGA==
   dependencies:
-    function-bind "^1.1.1"
-    has "^1.0.3"
+    function-bind "^1.1.2"
     has-proto "^1.0.1"
     has-symbols "^1.0.3"
+    hasown "^2.0.0"
 
 get-package-type@^0.1.0:
   version "0.1.0"
@@ -3330,11 +3330,11 @@ has-flag@^4.0.0:
   integrity sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==
 
 has-property-descriptors@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.npmjs.org/has-property-descriptors/-/has-property-descriptors-1.0.0.tgz#610708600606d36961ed04c196193b6a607fa861"
-  integrity sha512-62DVLZGoiEBDHQyqG4w9xCuZ7eJEwNmJRWw2VY84Oedb7WFcA27fiEVe8oUQx9hAUJ4ekurquucTGwsyO1XGdQ==
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/has-property-descriptors/-/has-property-descriptors-1.0.1.tgz#52ba30b6c5ec87fd89fa574bc1c39125c6f65340"
+  integrity sha512-VsX8eaIewvas0xnvinAe9bw4WfIeODpGYikiWYLH+dma0Jw6KHYqWiWfhQlgOVK8D6PvjubK5Uc4P0iIhIcNVg==
   dependencies:
-    get-intrinsic "^1.1.1"
+    get-intrinsic "^1.2.2"
 
 has-proto@^1.0.1:
   version "1.0.1"
@@ -3384,11 +3384,6 @@ has-values@^1.0.0:
     is-number "^3.0.0"
     kind-of "^4.0.0"
 
-has@^1.0.3:
-  version "1.0.4"
-  resolved "https://registry.npmjs.org/has/-/has-1.0.4.tgz#2eb2860e000011dae4f1406a86fe80e530fb2ec6"
-  integrity sha512-qdSAmqLF6209RFj4VVItywPMbm3vWylknmB3nvNiUIs72xAimcM8nVYxYr7ncvZq5qzk9MKIZR8ijqD/1QuYjQ==
-
 hash-base@^3.0.0:
   version "3.1.0"
   resolved "https://registry.npmjs.org/hash-base/-/hash-base-3.1.0.tgz#55c381d9e06e1d2997a883b4a3fddfe7f0d3af33"
@@ -3402,6 +3397,13 @@ hash-wasm@4.9.0:
   version "4.9.0"
   resolved "https://registry.npmjs.org/hash-wasm/-/hash-wasm-4.9.0.tgz#7e9dcc9f7d6bd0cc802f2a58f24edce999744206"
   integrity sha512-7SW7ejyfnRxuOc7ptQHSf4LDoZaWOivfzqw+5rpcQku0nHfmicPKE51ra9BiRLAmT8+gGLestr1XroUkqdjL6w==
+
+hasown@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/hasown/-/hasown-2.0.0.tgz#f4c513d454a57b7c7e1650778de226b11700546c"
+  integrity sha512-vUptKVTpIJhcczKBbgnS+RtcuYMB8+oNzPK2/Hp3hanz8JmpATdmmgLgSaadVREkDm+e2giHwY3ZRkyjSIDDFA==
+  dependencies:
+    function-bind "^1.1.2"
 
 header-case-normalizer@^1.0.3:
   version "1.0.3"
@@ -3560,11 +3562,11 @@ is-ci@^2.0.0:
     ci-info "^2.0.0"
 
 is-core-module@^2.13.0:
-  version "2.13.0"
-  resolved "https://registry.npmjs.org/is-core-module/-/is-core-module-2.13.0.tgz#bb52aa6e2cbd49a30c2ba68c42bf3435ba6072db"
-  integrity sha512-Z7dk6Qo8pOCp3l4tsX2C5ZVas4V+UxwQodwZhLopL91TX8UyyHEXafPcyoeeWuLrwzHcr3igO78wNLwHJHsMCQ==
+  version "2.13.1"
+  resolved "https://registry.yarnpkg.com/is-core-module/-/is-core-module-2.13.1.tgz#ad0d7532c6fea9da1ebdc82742d74525c6273384"
+  integrity sha512-hHrIjvZsftOsvKSn2TRYl63zvxsgE0K+0mYMoH6gD4omR5IWB2KynivBQczo3+wF1cCkjzvptnI9Q0sPU66ilw==
   dependencies:
-    has "^1.0.3"
+    hasown "^2.0.0"
 
 is-data-descriptor@^0.1.4:
   version "0.1.4"

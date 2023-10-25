@@ -113,7 +113,6 @@ const getCrossChainTransferTransactionInfo = async params => {
 	for (let i = 0; i < ccmTransferEvents.length; i++) {
 		const ccmTransferEvent = ccmTransferEvents[i];
 		const [ccuTransactionID] = ccmTransferEvent.topics;
-		/* eslint-disable-next-line no-await-in-loop */
 		const [transaction] = (await requestIndexer('transactions', { id: ccuTransactionID })).data;
 		transactions.push({
 			id: ccuTransactionID,
@@ -147,7 +146,6 @@ const getRewardAssignedInfo = async params => {
 	for (let i = 0; i < rewardsAssignedEvents.length; i++) {
 		const rewardsAssignedEvent = rewardsAssignedEvents[i];
 		const [transactionID] = rewardsAssignedEvent.topics;
-		/* eslint-disable-next-line no-await-in-loop */
 		const [transaction] = (await requestIndexer('transactions', { id: transactionID })).data;
 
 		transactions.push({
@@ -394,7 +392,6 @@ const exportTransactions = async job => {
 		const arrayOfDates = Array.from(range.by('day')).map(d => d.format(DATE_FORMAT));
 
 		for (let i = 0; i < arrayOfDates.length; i++) {
-			/* eslint-disable no-await-in-loop */
 			const day = arrayOfDates[i];
 			const partialFilename = await getPartialFilenameFromParams(params, day);
 			if (await partials.fileExists(partialFilename)) {
@@ -444,7 +441,6 @@ const exportTransactions = async job => {
 					}
 				}
 			}
-			/* eslint-enable no-await-in-loop */
 		}
 	}
 

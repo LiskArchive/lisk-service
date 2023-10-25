@@ -310,7 +310,6 @@ describe('pos/validators API', () => {
 
 		it('should return bad request for invalid address', async () => {
 			for (let i = 0; i < invalidAddresses.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?address=${invalidAddresses[i]}`, 400);
 				expect(response).toMap(badRequestSchema);
 			}
@@ -318,7 +317,6 @@ describe('pos/validators API', () => {
 
 		it('should return bad request for invalid publicKey', async () => {
 			for (let i = 0; i < invalidPublicKeys.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?publicKey=${invalidPublicKeys[i]}`, 400);
 				expect(response).toMap(badRequestSchema);
 			}
@@ -326,7 +324,6 @@ describe('pos/validators API', () => {
 
 		it('should return bad request for invalid name', async () => {
 			for (let i = 0; i < invalidNamesCSV.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?name=${invalidNamesCSV[i]}`, 400);
 				expect(response).toMap(badRequestSchema);
 			}
@@ -334,7 +331,6 @@ describe('pos/validators API', () => {
 
 		it('should return bad request for invalid limit', async () => {
 			for (let i = 0; i < invalidLimits.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?limit=${invalidLimits[i]}`, 400);
 				expect(response).toMap(badRequestSchema);
 			}
@@ -342,7 +338,6 @@ describe('pos/validators API', () => {
 
 		it('should return bad request for invalid offset', async () => {
 			for (let i = 0; i < invalidOffsets.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?offset=${invalidOffsets[i]}`, 400);
 				expect(response).toMap(badRequestSchema);
 			}
@@ -350,7 +345,6 @@ describe('pos/validators API', () => {
 
 		it('should return bad request for invalid search', async () => {
 			for (let i = 0; i < invalidPartialSearches.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?search=${invalidPartialSearches[i]}`, 400);
 				expect(response).toMap(badRequestSchema);
 			}

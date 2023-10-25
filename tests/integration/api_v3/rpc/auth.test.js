@@ -60,7 +60,6 @@ describe('get.auth', () => {
 
 	it('should return invalid params for an invalid address', async () => {
 		for (let i = 0; i < invalidAddresses.length; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			const response = await getAuthAccountInfo({ address: invalidAddresses[i] });
 			expect(response).toMap(invalidParamsSchema);
 		}

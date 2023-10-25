@@ -91,7 +91,6 @@ const downloadAndValidateGenesisBlock = async (retries = 2) => {
 	const checksumFilePath = `${genesisFilePath}.SHA256`;
 
 	do {
-		/* eslint-disable no-await-in-loop */
 		try {
 			if (!(await exists(directoryPath))) await mkdir(directoryPath, { recursive: true });
 
@@ -121,7 +120,6 @@ const downloadAndValidateGenesisBlock = async (retries = 2) => {
 				throw err;
 			}
 		}
-		/* eslint-enable no-await-in-loop */
 	} while (retries-- > 0);
 
 	logger.fatal(

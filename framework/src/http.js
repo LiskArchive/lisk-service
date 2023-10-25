@@ -59,7 +59,6 @@ const performRequestUntilSuccess = async (url, params) => {
 	let response;
 
 	do {
-		/* eslint-disable no-await-in-loop */
 		response = await performRequest(url, params);
 		const firstErrorCoreDigit = response.status.toString()[0];
 		if (firstErrorCoreDigit === '1') return response;
@@ -68,7 +67,6 @@ const performRequestUntilSuccess = async (url, params) => {
 
 		--retries;
 		await delay(params.retryDelay || 100);
-		/* eslint-enable no-await-in-loop */
 	} while (retries > 0);
 
 	return response;

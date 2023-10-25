@@ -134,7 +134,6 @@ const getTransactions = async params => {
 		const BATCH_SIZE = 25;
 		for (let i = 0; i < Math.ceil(params.ids.length / BATCH_SIZE); i++) {
 			transactions.data = transactions.data.concat(
-				// eslint-disable-next-line no-await-in-loop
 				await getTransactionsByIDs(params.ids.slice(i * BATCH_SIZE, (i + 1) * BATCH_SIZE)),
 			);
 		}

@@ -46,7 +46,6 @@ describe('Blocks API', () => {
 
 		while (retries > 0 && !success) {
 			try {
-				// eslint-disable-next-line no-await-in-loop
 				[refBlock] = (await api.get(`${endpoint}?limit=1&offset=5`)).data;
 
 				if (refBlock) {
@@ -57,7 +56,6 @@ describe('Blocks API', () => {
 				retries--;
 
 				// Delay by 3 sec
-				// eslint-disable-next-line no-await-in-loop
 				await waitMs(3000);
 			}
 		}
@@ -168,7 +166,6 @@ describe('Blocks API', () => {
 
 		it('should return bad request when requested with invalid Addresse', async () => {
 			for (let i = 0; i < invalidAddresses.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?generatorAddress=${invalidAddresses[i]}`, 400);
 				expect(response).toMap(badRequestSchema);
 			}
@@ -176,7 +173,6 @@ describe('Blocks API', () => {
 
 		it('should return bad request when requested with invalid limit', async () => {
 			for (let i = 0; i < invalidLimits.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?limit=${invalidLimits[i]}`, 400);
 				expect(response).toMap(badRequestSchema);
 			}
@@ -184,7 +180,6 @@ describe('Blocks API', () => {
 
 		it('should return bad request when requested with offset', async () => {
 			for (let i = 0; i < invalidOffsets.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?offset=${invalidOffsets[i]}`, 400);
 				expect(response).toMap(badRequestSchema);
 			}
@@ -192,7 +187,6 @@ describe('Blocks API', () => {
 
 		it('should return bad request when requested with invalid block ID', async () => {
 			for (let i = 0; i < invalidBlockIDs.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await api.get(`${endpoint}?blockID=${invalidBlockIDs[i]}`, 400);
 				expect(response).toMap(badRequestSchema);
 			}

@@ -34,7 +34,6 @@ const requestAllStandard = async (fn, params, limit) => {
 
 	if (maxAmount > oneRequestLimit) {
 		for (let page = 1; page < Math.ceil(maxAmount / oneRequestLimit); page++) {
-			/* eslint-disable no-await-in-loop */
 			const result = await fn({
 				...params,
 				...{
@@ -44,7 +43,6 @@ const requestAllStandard = async (fn, params, limit) => {
 			});
 			if (!result.data.length) break;
 			data.push(...result.data);
-			/* eslint-enable no-await-in-loop */
 		}
 	}
 	return data;
@@ -66,7 +64,6 @@ const requestAllCustom = async (fn, method, params, limit) => {
 			for (let page = 1; page < Math.ceil(maxAmount / oneRequestLimit); page++) {
 				const curOffset = oneRequestLimit * page;
 
-				/* eslint-disable-next-line no-await-in-loop */
 				const result = await fn(method, {
 					...params,
 					...{

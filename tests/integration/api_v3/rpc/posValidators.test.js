@@ -380,7 +380,6 @@ describe('pos/validators API', () => {
 
 		it('should return invalid params for invalid address', async () => {
 			for (let i = 0; i < invalidAddresses.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await getValidators({ address: invalidAddresses[i] });
 				expect(response).toMap(invalidParamsSchema);
 			}
@@ -388,7 +387,6 @@ describe('pos/validators API', () => {
 
 		it('should return invalid params for invalid publicKey', async () => {
 			for (let i = 0; i < invalidPublicKeys.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await getValidators({ publicKey: invalidPublicKeys[i] });
 				expect(response).toMap(invalidParamsSchema);
 			}
@@ -396,7 +394,6 @@ describe('pos/validators API', () => {
 
 		it('should return invalid params for invalid name', async () => {
 			for (let i = 0; i < invalidNamesCSV.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await getValidators({ name: invalidNamesCSV[i] });
 				expect(response).toMap(invalidParamsSchema);
 			}
@@ -404,7 +401,6 @@ describe('pos/validators API', () => {
 
 		it('should return invalid params for invalid search', async () => {
 			for (let i = 0; i < invalidPartialSearches.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await getValidators({ search: invalidPartialSearches[i] });
 				expect(response).toMap(invalidParamsSchema);
 			}
@@ -412,7 +408,6 @@ describe('pos/validators API', () => {
 
 		it('should return invalid params for invalid limit', async () => {
 			for (let i = 0; i < invalidLimits.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await getValidators({ limit: invalidLimits[i] });
 				expect(response).toMap(invalidParamsSchema);
 			}
@@ -420,7 +415,6 @@ describe('pos/validators API', () => {
 
 		it('should return invalid params for invalid search', async () => {
 			for (let i = 0; i < invalidOffsets.length; i++) {
-				// eslint-disable-next-line no-await-in-loop
 				const response = await getValidators({ offset: invalidOffsets[i] });
 				expect(response).toMap(invalidParamsSchema);
 			}

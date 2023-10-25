@@ -20,6 +20,7 @@
 		"newIsCap": false,
 		"capIsNew": false
 		}],
+		"no-await-in-loop": "off",
 		"no-loop-func": "off",
 		"no-plusplus": "off",
 		"no-restricted-properties": "off",

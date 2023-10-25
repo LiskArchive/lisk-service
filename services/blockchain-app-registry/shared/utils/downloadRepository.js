@@ -197,7 +197,6 @@ const buildEventPayload = async allFilesModified => {
 	const numSupportedNetworks = supportedNetworks.length;
 
 	for (let index = 0; index < numSupportedNetworks; index++) {
-		/* eslint-disable no-await-in-loop */
 		const networkType = supportedNetworks[index];
 		const filesUpdated = await filterMetaConfigFilesByNetwork(networkType, allFilesModified);
 
@@ -208,7 +207,6 @@ const buildEventPayload = async allFilesModified => {
 		);
 
 		eventPayload[networkType] = appsUpdated;
-		/* eslint-enable no-await-in-loop */
 	}
 
 	return eventPayload;
@@ -320,7 +318,6 @@ const syncWithRemoteRepo = async (_dbTrx = null) => {
 						// Should process app files sequentially as nativetokens.json is dependant on app.json
 						// eslint-disable-next-line no-restricted-syntax
 						for (const modifiedFile of appFiles) {
-							/* eslint-disable no-await-in-loop */
 							const remoteFilePath = modifiedFile.filename;
 							const localFilePath = path.join(appDirPath, remoteFilePath);
 
@@ -358,7 +355,6 @@ const syncWithRemoteRepo = async (_dbTrx = null) => {
 								from: tempFilePath,
 								to: localFilePath,
 							});
-							/* eslint-enable no-await-in-loop */
 						}
 					},
 					{ concurrency: Object.keys(appsInNetwork).length },
