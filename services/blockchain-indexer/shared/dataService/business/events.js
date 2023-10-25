@@ -32,6 +32,8 @@ const eventTopicsTableSchema = require('../../database/schema/eventTopics');
 const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/param');
 const { parseToJSONCompatObj } = require('../../utils/parser');
+const { LENGTH_ID, EVENT_TOPIC_PREFIX } = require('../../constants');
+const { dropDuplicates } = require('../../utils/array');
 
 const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 
@@ -122,6 +124,7 @@ const getEvents = async params => {
 		const { transactionID, ...remParams } = params;
 		params = remParams;
 
+		// Special handling of transaction topic prefix is unnecessary here because of the handling for topic param below
 		if (!params.topic) {
 			params.topic = transactionID;
 		} else {
@@ -173,11 +176,31 @@ const getEvents = async params => {
 		const { topic, ...remParams } = params;
 		params = remParams;
 
+		const topics = topic.split(',');
+		const numUniqueTopics = dropDuplicates(topics).length;
+		topics.forEach(t => {
+			if (
+				t.startsWith(EVENT_TOPIC_PREFIX.TX_ID) &&
+				t.length === EVENT_TOPIC_PREFIX.TX_ID.length + LENGTH_ID
+			) {
+				// Check for the transaction ID both with and without the topic prefix
+				topics.push(t.slice(EVENT_TOPIC_PREFIX.TX_ID.length));
+			} else if (
+				t.startsWith(EVENT_TOPIC_PREFIX.CCM_ID) &&
+				t.length === EVENT_TOPIC_PREFIX.CCM_ID.length + LENGTH_ID
+			) {
+				// Check for CCM ID both with and without the topic prefix
+				topics.push(t.slice(EVENT_TOPIC_PREFIX.CCM_ID.length));
+			}
+		});
+
 		const response = await eventTopicsTable.find(
 			{
-				whereIn: { property: 'topic', values: topic.split(',') },
+				whereIn: { property: 'topic', values: topics },
 				groupBy: 'eventID',
-				havingRaw: `COUNT(DISTINCT topic) = ${topic.split(',').length}`,
+				// Must be the numUniqueTopics from params.topic instead of the length from the updated topics list
+				// This is to ensure that the DB response returns correct number of eventIDs
+				havingRaw: `COUNT(DISTINCT topic) = ${numUniqueTopics}`,
 			},
 			['eventID'],
 		);

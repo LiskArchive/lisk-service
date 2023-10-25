@@ -155,6 +155,7 @@ const LENGTH_NETWORK_ID = 1 * 2; // Each byte is represented with 2 nibbles
 const LENGTH_BYTE_SIGNATURE = 64;
 const LENGTH_BYTE_ID = 32;
 const DEFAULT_NUM_OF_SIGNATURES = 1;
+const LENGTH_ID = LENGTH_BYTE_ID * 2; // Each byte is represented with 2 nibbles
 
 const MAX_COMMISSION = BigInt('10000');
 
@@ -178,6 +179,11 @@ const EVENT = Object.freeze({
 	COMMAND_EXECUTION_RESULT: 'commandExecutionResult',
 	REWARD_MINTED: 'rewardMinted',
 	CCM_SEND_SUCCESS: 'ccmSendSuccess',
+});
+
+const EVENT_TOPIC_PREFIX = Object.freeze({
+	TX_ID: '04',
+	CCM_ID: '05',
 });
 
 const TRANSACTION_VERIFY_RESULT = {
@@ -221,11 +227,13 @@ module.exports = {
 	MODULE_SUB_STORE,
 	COMMAND,
 	EVENT,
+	EVENT_TOPIC_PREFIX,
 	MAX_COMMISSION,
 	KV_STORE_KEY,
 	TRANSACTION_STATUS,
 	TRANSACTION_VERIFY_RESULT,
 	LENGTH_BYTE_SIGNATURE,
 	LENGTH_BYTE_ID,
+	LENGTH_ID,
 	DEFAULT_NUM_OF_SIGNATURES,
 };
