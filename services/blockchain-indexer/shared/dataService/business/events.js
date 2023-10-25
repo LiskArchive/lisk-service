@@ -33,6 +33,7 @@ const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/param');
 const { parseToJSONCompatObj } = require('../../utils/parser');
 const { LENGTH_ID, EVENT_TOPIC_PREFIX } = require('../../constants');
+const { dropDuplicates } = require('../../utils/array');
 
 const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 
@@ -176,6 +177,7 @@ const getEvents = async params => {
 		params = remParams;
 
 		const topics = topic.split(',');
+		const numUniqueTopics = dropDuplicates(topics).length;
 		topics.forEach(t => {
 			if (
 				t.startsWith(EVENT_TOPIC_PREFIX.TX_ID) &&
@@ -196,8 +198,9 @@ const getEvents = async params => {
 			{
 				whereIn: { property: 'topic', values: topics },
 				groupBy: 'eventID',
-				// Must be the length of topic.split(',') instead of topics list to ensure that the DB response returns correct number of eventIDs
-				havingRaw: `COUNT(DISTINCT topic) = ${topic.split(',').length}`,
+				// Must be the numUniqueTopics from params.topic instead of the length from the updated topics list
+				// This is to ensure that the DB response returns correct number of eventIDs
+				havingRaw: `COUNT(DISTINCT topic) = ${numUniqueTopics}`,
 			},
 			['eventID'],
 		);
