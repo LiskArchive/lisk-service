@@ -16,7 +16,6 @@
 module.exports = {
 	tableName: 'transactions',
 	primaryKey: 'id',
-	charset: 'utf8mb4',
 	schema: {
 		id: { type: 'string', null: false },
 		height: { type: 'integer', null: false },

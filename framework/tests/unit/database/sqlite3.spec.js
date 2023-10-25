@@ -23,20 +23,29 @@ const {
 } = require('../../../src/database/sqlite3');
 
 const schema = require('../../constants/blocksSchema');
+const transactionsSchema = require('../../constants/transactionsSchema');
 
 const tableName = 'functional_test';
+const transactionsTableName = 'transactions_functional_test';
+
 const testDir = 'testDir';
+
 schema.tableName = tableName;
+transactionsSchema.tableName = transactionsTableName;
 
 const getTable = () => getTableInstance(schema, testDir);
+const getTransactionsTable = () => getTableInstance(transactionsSchema, testDir);
 
 const { blockWithoutTransaction, blockWithTransaction } = require('../../constants/blocks');
 
 describe('Test sqlite3 implementation', () => {
+	// eslint-disable-next-line no-unused-vars
+	let transactionsTable;
 	let testTable;
 
 	beforeAll(async () => {
 		// Create table
+		transactionsTable = await getTransactionsTable();
 		testTable = await getTable();
 	});
 
@@ -49,6 +58,12 @@ describe('Test sqlite3 implementation', () => {
 		it(`${tableName} exists`, async () => {
 			const result = await testTable.find();
 			expect(result.length).toBe(0);
+		});
+
+		it('should return same connection for two different table from same db', async () => {
+			const functionalTableConn = await getDBConnection(tableName, testDir);
+			const transactionsTableConn = await getDBConnection(transactionsTableName, testDir);
+			expect(functionalTableConn).toBe(transactionsTableConn);
 		});
 	});
 
