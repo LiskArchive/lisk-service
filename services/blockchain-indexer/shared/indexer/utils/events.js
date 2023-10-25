@@ -75,7 +75,7 @@ const getEventsInfoToIndex = async (block, events) => {
 			eventsInfoToIndex.eventTopicsInfo.push(eventTopicInfo);
 
 			// Add the corresponding transactionID as a topic when not present in the topics list
-			// i.e. topic starts with the CCM ID prefix
+			// i.e. only when the topic starts with the CCM ID prefix
 			// Useful to fetch the relevant events when queried by transactionID
 			if (
 				topic.startsWith(EVENT_TOPIC_PREFIX.CCM_ID) &&

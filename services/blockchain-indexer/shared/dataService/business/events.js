@@ -196,7 +196,8 @@ const getEvents = async params => {
 			{
 				whereIn: { property: 'topic', values: topics },
 				groupBy: 'eventID',
-				havingRaw: `COUNT(DISTINCT topic) = ${topics.length}`,
+				// Must be the length of topic.split(',') instead of topics list to ensure that the DB response returns correct number of eventIDs
+				havingRaw: `COUNT(DISTINCT topic) = ${topic.split(',').length}`,
 			},
 			['eventID'],
 		);
