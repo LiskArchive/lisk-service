@@ -40,7 +40,7 @@ const {
 	COMMAND,
 	EVENT,
 	LENGTH_BYTE_SIGNATURE,
-	LENGTH_BYTE_TRANSACTION_ID,
+	LENGTH_BYTE_ID,
 	DEFAULT_NUM_OF_SIGNATURES,
 } = require('../../constants');
 
@@ -74,7 +74,7 @@ const OPTIONAL_TRANSACTION_PROPERTIES = Object.freeze({
 	},
 	ID: {
 		propName: 'id',
-		defaultValue: () => getRandomBytes(LENGTH_BYTE_TRANSACTION_ID).toString('hex'),
+		defaultValue: () => getRandomBytes(LENGTH_BYTE_ID).toString('hex'),
 	},
 });
 

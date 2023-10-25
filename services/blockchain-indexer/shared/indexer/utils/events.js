@@ -27,12 +27,7 @@ const {
 	},
 } = require('lisk-service-framework');
 
-const {
-	getGenesisHeight,
-	EVENT,
-	EVENT_TOPIC_PREFIX,
-	LENGTH_TRANSACTION_ID,
-} = require('../../constants');
+const { getGenesisHeight, EVENT, EVENT_TOPIC_PREFIX, LENGTH_ID } = require('../../constants');
 
 const config = require('../../../config');
 const eventsTableSchema = require('../../database/schema/events');
@@ -84,7 +79,7 @@ const getEventsInfoToIndex = async (block, events) => {
 			// Useful to fetch the relevant events when queried by transactionID
 			if (
 				topic.startsWith(EVENT_TOPIC_PREFIX.CCM_ID) &&
-				topic.length === EVENT_TOPIC_PREFIX.CCM_ID.length + LENGTH_TRANSACTION_ID
+				topic.length === EVENT_TOPIC_PREFIX.CCM_ID.length + LENGTH_ID
 			) {
 				const commandExecResultEvent = events
 					.slice(eventIndex)
@@ -93,7 +88,7 @@ const getEventsInfoToIndex = async (block, events) => {
 				const [topicTransactionID] = commandExecResultEvent.topics;
 
 				const transactionID = // Remove the topic prefix from transactionID before indexing
-					topicTransactionID.length === EVENT_TOPIC_PREFIX.TX_ID.length + LENGTH_TRANSACTION_ID
+					topicTransactionID.length === EVENT_TOPIC_PREFIX.TX_ID.length + LENGTH_ID
 						? topicTransactionID.slice(EVENT_TOPIC_PREFIX.TX_ID.length)
 						: topicTransactionID;
 
