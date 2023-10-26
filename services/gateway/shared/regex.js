@@ -53,7 +53,7 @@ const COMMAND = MODULE;
 const MODULE_CSV = /^(?:[0-9a-zA-Z]{1,32})(?:,[0-9a-zA-Z]{1,32})*$/;
 const COMMAND_CSV = MODULE_CSV;
 const TOPIC_CSV =
-	/^\b(?:[0-9a-fA-F]{2,64}|lsk[a-hjkm-z2-9]{38})(?:,(?:[0-9a-fA-F]{2,64}|lsk[a-hjkm-z2-9]{38}))*\b$/;
+	/^\b(?:(?:04|05)?[0-9a-fA-F]{2,64}|lsk[a-hjkm-z2-9]{38})(?:,(?:(?:04|05)?[0-9a-fA-F]{2,64}|lsk[a-hjkm-z2-9]{38}))*\b$/;
 const HEX_STRING = /^\b[a-fA-F0-9]+\b$/;
 const EXCEL_EXPORT_FILENAME =
 	/^\btransactions_([a-fA-F0-9]{8})_(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\.xlsx\b$/;

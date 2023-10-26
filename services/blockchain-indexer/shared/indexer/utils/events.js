@@ -27,7 +27,7 @@ const {
 	},
 } = require('lisk-service-framework');
 
-const { getGenesisHeight } = require('../../constants');
+const { getGenesisHeight, EVENT, EVENT_TOPIC_PREFIX, LENGTH_ID } = require('../../constants');
 
 const config = require('../../../config');
 const eventsTableSchema = require('../../database/schema/events');
@@ -48,7 +48,7 @@ const getEventsInfoToIndex = async (block, events) => {
 		eventTopicsInfo: [],
 	};
 
-	events.forEach(event => {
+	events.forEach((event, eventIndex) => {
 		const eventInfo = {
 			id: event.id,
 			name: event.name,
@@ -60,7 +60,7 @@ const getEventsInfoToIndex = async (block, events) => {
 		};
 
 		// Store whole event when persistence is enabled or block is not finalized yet
-		// Storing event of non-finalized block is required to fetch events of a dropped block
+		// Storing event of non-finalized block is required to fetch events of a deleted block
 		if (!block.isFinal || config.db.isPersistEvents) {
 			eventInfo.eventStr = JSON.stringify(event);
 		}
@@ -73,6 +73,31 @@ const getEventsInfoToIndex = async (block, events) => {
 				topic,
 			};
 			eventsInfoToIndex.eventTopicsInfo.push(eventTopicInfo);
+
+			// Add the corresponding transactionID as a topic when not present in the topics list
+			// i.e. only when the topic starts with the CCM ID prefix
+			// Useful to fetch the relevant events when queried by transactionID
+			if (
+				topic.startsWith(EVENT_TOPIC_PREFIX.CCM_ID) &&
+				topic.length === EVENT_TOPIC_PREFIX.CCM_ID.length + LENGTH_ID
+			) {
+				const commandExecResultEvent = events
+					.slice(eventIndex)
+					.find(e => e.name === EVENT.COMMAND_EXECUTION_RESULT);
+
+				const [topicTransactionID] = commandExecResultEvent.topics;
+
+				const transactionID = // Remove the topic prefix from transactionID before indexing
+					topicTransactionID.length === EVENT_TOPIC_PREFIX.TX_ID.length + LENGTH_ID
+						? topicTransactionID.slice(EVENT_TOPIC_PREFIX.TX_ID.length)
+						: topicTransactionID;
+
+				const eventTopicAdditionalInfo = {
+					eventID: event.id,
+					topic: transactionID,
+				};
+				eventsInfoToIndex.eventTopicsInfo.push(eventTopicAdditionalInfo);
+			}
 		});
 	});
 

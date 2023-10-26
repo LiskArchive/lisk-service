@@ -45,9 +45,9 @@
     "@types/node" "*"
 
 "@types/node@*", "@types/node@>=10.0.0":
-  version "20.8.7"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.8.7.tgz#ad23827850843de973096edfc5abc9e922492a25"
-  integrity sha512-21TKHHh3eUHIi2MloeptJWALuCu5H7HQTdTrWIFReA8ad+aggoX+lRes3ex7/FtpC+sVUpFMQ+QTfYr74mruiQ==
+  version "20.8.8"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.8.8.tgz#adee050b422061ad5255fc38ff71b2bb96ea2a0e"
+  integrity sha512-YRsdVxq6OaLfmR9Hy816IMp33xOBjfyOgUd77ehqg96CFywxAPbDbXvAsuN2KVg2HOT8Eh6uAfU+l4WffwPVrQ==
   dependencies:
     undici-types "~5.25.1"
 
@@ -1025,9 +1025,9 @@ leven@2.1.0:
   resolved "https://registry.yarnpkg.com/leven/-/leven-2.1.0.tgz#c2e7a9f772094dee9d34202ae8acce4687875580"
   integrity sha512-nvVPLpIHUxCUoRLrFqTgSxXJ614d8AgQoWl7zPe/2VadE8+1dpU3LBhowRuBAcuwruWtOdD8oYC9jDNJjXDPyA==
 
-"lisk-service-framework@https://github.com/LiskHQ/lisk-service/raw/f84c21e6955b64ceeb006e4b685a06a9f41e5004/framework/dist/lisk-service-framework-1.6.2.tgz":
-  version "1.6.2"
-  resolved "https://github.com/LiskHQ/lisk-service/raw/f84c21e6955b64ceeb006e4b685a06a9f41e5004/framework/dist/lisk-service-framework-1.6.2.tgz#1cfec75d732778d5a1106aa9c107ba42e20e0fbf"
+"lisk-service-framework@https://github.com/LiskHQ/lisk-service/raw/b73fbbf7ff44398b0ce1e0f542b408326bb834db/framework/dist/lisk-service-framework-1.6.3.tgz":
+  version "1.6.3"
+  resolved "https://github.com/LiskHQ/lisk-service/raw/b73fbbf7ff44398b0ce1e0f542b408326bb834db/framework/dist/lisk-service-framework-1.6.3.tgz#f29759d295ee9b913213387fdb32d97985e2d6f3"
   dependencies:
     "@keyv/redis" "^2.1.2"
     "@log4js-node/gelf" "github:MichalTuleja/log4js-node-gelf#89d9933"
