@@ -29,7 +29,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const NETWORK = /^\b(?:mainnet|testnet|betanet|devnet|,)+\b$/;
+const NETWORK = /^\b(?:mainnet|testnet|devnet|,)+\b$/;
 const MAINCHAIN_ID = /^[a-fA-F0-9]{2}000000$/;
 
 module.exports = {
