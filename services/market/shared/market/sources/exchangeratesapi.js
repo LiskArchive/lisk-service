@@ -66,13 +66,14 @@ const fetchAllCurrencyConversionRates = async () => {
 };
 
 const standardizeCurrencyConversionRates = rawConversionRates => {
-	const [transformedConversionRates] = Object.entries(rawConversionRates).map(
-		([baseCur, conversionRates]) =>
+	const [transformedConversionRates] = Object.entries(rawConversionRates)
+		.filter(([, conversionRates]) => !!conversionRates)
+		.map(([baseCur, conversionRates]) =>
 			Object.getOwnPropertyNames(conversionRates).map(targetCur => ({
 				symbol: `${baseCur}_${targetCur}`,
 				price: conversionRates[targetCur],
 			})),
-	);
+		);
 	const standardizedConversionRates = Array.isArray(transformedConversionRates)
 		? transformedConversionRates.map(conversionRate => {
 				const [from, to] = conversionRate.symbol.split('_');
