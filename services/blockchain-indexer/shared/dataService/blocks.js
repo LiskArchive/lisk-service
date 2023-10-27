@@ -79,13 +79,13 @@ const getBlocksTotal = async (params, blocksResponse) => {
 	return total;
 };
 
-const formatBlock = async block => {
+const formatBlock = async header => {
 	const blocksResponse = {
 		data: [],
 		meta: {},
 	};
 
-	const response = await business.formatBlock(block);
+	const response = await business.formatBlock({ header, assets: [], transactions: [] });
 	blocksResponse.data.push(response);
 
 	return {

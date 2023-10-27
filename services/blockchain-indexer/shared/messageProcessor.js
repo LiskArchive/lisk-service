@@ -76,27 +76,27 @@ const initQueueStatus = async () => {
 	await queueStatus(eventMessageQueue);
 };
 
-const newBlockProcessor = async block => {
-	logger.debug(`New block arrived at height ${block.height}, id: ${block.id}`);
-	const response = await formatBlock(block);
+const newBlockProcessor = async header => {
+	logger.debug(`New block arrived at height ${header.height}, id: ${header.id}`);
+	const response = await formatBlock(header);
 	const [newBlock] = response.data;
 	await indexNewBlock(newBlock);
 	await performLastBlockUpdate(newBlock);
 	Signals.get('newBlock').dispatch(response);
 };
 
-const deleteBlockProcessor = async block => {
+const deleteBlockProcessor = async header => {
 	let response;
 	try {
 		logger.debug(
-			`Processing the delete block event for the block at height: ${block.height}, id: ${block.id}`,
+			`Processing the delete block event for the block at height: ${header.height}, id: ${header.id}`,
 		);
-		response = await formatBlock(block);
-		await scheduleBlockDeletion(block);
+		response = await formatBlock(header);
+		await scheduleBlockDeletion(header);
 	} catch (error) {
 		const normalizedBlocks = await normalizeBlocks([
 			{
-				header: block,
+				header,
 				transactions: [],
 				assets: [],
 			},
