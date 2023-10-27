@@ -33,12 +33,12 @@ module.exports = {
 		sqlite3: require('./src/database/sqlite3'),
 	},
 	Utils: {
+		delay: require('./src/delay'),
 		requireAllJs: require('./src/requireAllJs'),
 		waitForIt: require('./src/waitForIt'),
 		Data: require('./src/data'),
 		fs: require('./src/fs'),
 		...require('./src/data'),
-		delay: require('./src/delay'),
 	},
 	Constants: {
 		...require('./constants/ErrorCodes'),
