@@ -95,7 +95,7 @@ const DB_STATUS = Object.freeze({
 });
 
 // eslint-disable-next-line consistent-return
-const checkBlockHeightStatusInDB = async (blockHeight, status) => {
+const checkBlockHeightIndexStatusInDB = async (blockHeight, status) => {
 	const blocksTable = await getBlocksTable();
 	const [{ height } = {}] = await blocksTable.find({ height: blockHeight }, ['height']);
 
@@ -321,7 +321,7 @@ const indexBlock = async job => {
 
 		// Add safety check to ensure that the DB transaction is actually committed
 		await waitForIt(
-			checkBlockHeightStatusInDB.bind(null, block.height, DB_STATUS.COMMIT),
+			checkBlockHeightIndexStatusInDB.bind(null, block.height, DB_STATUS.COMMIT),
 			config.db.durabilityVerifyFrequency,
 		);
 
@@ -347,7 +347,7 @@ const indexBlock = async job => {
 
 			// Add safety check to ensure that the DB transaction is rolled back successfully
 			await waitForIt(
-				checkBlockHeightStatusInDB.bind(null, block.height, DB_STATUS.ROLLBACK),
+				checkBlockHeightIndexStatusInDB.bind(null, block.height, DB_STATUS.ROLLBACK),
 				config.db.durabilityVerifyFrequency,
 			);
 		}
@@ -357,8 +357,10 @@ const indexBlock = async job => {
 				error.message.includes(e),
 			)
 		) {
-			const errMessage = `Deadlock encountered while indexing block ${failedBlockInfo.id} at height ${failedBlockInfo.height}. Will retry later. sql:${error.sql}`;
+			const errMessage = `Deadlock encountered while indexing block ${failedBlockInfo.id} at height ${failedBlockInfo.height}. Will retry later.`;
 			logger.warn(errMessage);
+			logger.debug(`SQL query: ${error.sql}`);
+
 			throw new Error(errMessage);
 		}
 
@@ -389,15 +391,14 @@ const deleteIndexedBlocks = async job => {
 				const blockFromNode = await getBlockByHeight(block.height);
 				if (blockFromNode.id === block.id) return;
 
-				// Check if deleted block is indexed
+				// Check if deleted block is indexed and reschedule job if not deleted block is not indexed
 				const [deletedBlockFromDB] = await blocksTable.find({ height: block.height, limit: 1 });
-
-				// Reschedule job if not deleted block is not indexed
 				if (!deletedBlockFromDB) {
 					// eslint-disable-next-line no-use-before-define
 					await scheduleBlockDeletion(block);
 					return;
 				}
+
 				// If deleted block is indexed, check for the blockID
 				// Continue only when blockID matches else skip
 				if (deletedBlockFromDB.id !== block.id) return;
@@ -409,12 +410,10 @@ const deleteIndexedBlocks = async job => {
 				if (Array.isArray(forkedTransactions)) {
 					const { assets, ...blockHeader } = block;
 
+					// Invoke 'revertTransaction' to execute command specific reverting logic
 					await BluebirdPromise.map(
 						forkedTransactions,
-						async tx => {
-							// Invoke 'revertTransaction' to execute command specific reverting logic
-							await revertTransaction(blockHeader, tx, events, dbTrx);
-						},
+						async tx => revertTransaction(blockHeader, tx, events, dbTrx),
 						{ concurrency: 1 },
 					);
 				}
@@ -443,7 +442,7 @@ const deleteIndexedBlocks = async job => {
 					await eventsTable.delete(eventsInfo, dbTrx);
 					await eventTopicsTable.delete(eventTopicsInfo, dbTrx);
 
-					// Update the generator's rewards
+					// Update block generator's rewards
 					const blockRewardEvent = events.find(
 						e =>
 							[MODULE.REWARD, MODULE.DYNAMIC_REWARD].includes(e.module) &&
@@ -519,8 +518,7 @@ const deleteIndexedBlocks = async job => {
 					addressesToUpdateBalance = getAddressesFromTokenEvents(events);
 				}
 
-				// Invalidate cached events for this block
-				// This must be done after processing all event related calculations
+				// Invalidate cached events for this block. Must be done after processing all event related calculations
 				await deleteEventsFromCacheByBlockID(block.id);
 			},
 			{ concurrency: 1 },
@@ -581,7 +579,7 @@ const indexNewBlock = async block => {
 	// Or the indexed block is not final yet (chain fork)
 	if (!blockInfo || !blockInfo.isFinal) {
 		// Index if doesn't exist, or update if it isn't set to final
-		logger.debug(`Queueing block ${block.id} at height ${block.height} to index.`);
+		logger.info(`Queuing block ${block.id} at height ${block.height} to index.`);
 		await indexBlocksQueue.add({ height: block.height });
 
 		// Update finality status for the parent blocks
