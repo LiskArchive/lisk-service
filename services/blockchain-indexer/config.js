@@ -22,7 +22,6 @@ const config = {
 		name: packageJson.name,
 		version: packageJson.version,
 	},
-	db: {},
 };
 
 /**
@@ -148,9 +147,10 @@ config.networks = Object.freeze({
 	],
 });
 
-config.db.isPersistEvents = Boolean(
-	String(process.env.ENABLE_PERSIST_EVENTS).toLowerCase() === 'true',
-);
+config.db = {
+	isPersistEvents: Boolean(String(process.env.ENABLE_PERSIST_EVENTS).toLowerCase() === 'true'),
+	durabilityVerifyFrequency: Number(process.env.DURABILITY_VERIFY_FREQUENCY) || 20, // In millisecs
+};
 
 config.snapshot = {
 	enable: Boolean(String(process.env.ENABLE_APPLY_SNAPSHOT).toLowerCase() === 'true'), // Disabled by default

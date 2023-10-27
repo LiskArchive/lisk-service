@@ -29,7 +29,7 @@ const {
 			KVStore: { getKeyValueTable },
 		},
 	},
-	Utils: { delay },
+	Utils: { waitForIt },
 } = require('lisk-service-framework');
 
 const { applyTransaction, revertTransaction } = require('./transactionProcessor');
@@ -88,6 +88,28 @@ const getValidatorsTable = () => getTableInstance(validatorsTableSchema, MYSQL_E
 const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
 
 const validateBlock = block => !!block && block.height >= 0;
+
+const DB_STATUS = Object.freeze({
+	COMMIT: 'commit',
+	ROLLBACK: 'rollback',
+});
+
+const checkBlockHeightStatusInDB = async (blockHeight, status) => {
+	const blocksTable = await getBlocksTable();
+	const [{ height } = {}] = await blocksTable.find({ height: blockHeight }, ['height']);
+
+	const isCommit = DB_STATUS.COMMIT === status;
+	const isRollback = DB_STATUS.ROLLBACK === status;
+
+	if ((isCommit && height === blockHeight) || (isRollback && height === undefined)) {
+		logger.debug(`Block at height ${blockHeight} is ${isCommit ? 'committed' : 'rolled back'}.`);
+		return true;
+	}
+
+	logger.debug(
+		`Block at height ${blockHeight} is not yet ${isCommit ? 'committed' : 'rolled back'}.`,
+	);
+};
 
 const indexBlock = async job => {
 	const { height: blockHeightFromJobData } = job.data;
@@ -268,7 +290,7 @@ const indexBlock = async job => {
 					[EVENT.LOCK, EVENT.UNLOCK].includes(event.name) &&
 					!(eventData.tokenID in tokenIDLockedAmountChangeMap)
 				) {
-					tokenIDLockedAmountChangeMap[eventData.tokenID] = BigInt(0);
+					tokenIDLockedAmountChangeMap[eventData.tokenID] = BigInt('0');
 				}
 
 				if (event.name === EVENT.LOCK) {
@@ -292,11 +314,18 @@ const indexBlock = async job => {
 
 		await blocksTable.upsert(blockToIndex, dbTrx);
 		await commitDBTransaction(dbTrx);
-		// Only schedule address balance updates if the block is indexed successfully
-		await scheduleAddressesBalanceUpdate(addressesToUpdateBalance);
 		logger.debug(
 			`Committed MySQL transaction to index block ${block.id} at height ${block.height}.`,
 		);
+
+		// Add safety check to ensure that the DB transaction is actually committed
+		await waitForIt(
+			checkBlockHeightStatusInDB.bind(null, block.height, DB_STATUS.COMMIT),
+			config.db.durabilityVerifyFrequency,
+		);
+
+		// Only schedule address balance updates if the block is indexed successfully
+		await scheduleAddressesBalanceUpdate(addressesToUpdateBalance);
 	} catch (error) {
 		// Reschedule the block for indexing
 		// eslint-disable-next-line no-use-before-define
@@ -314,6 +343,12 @@ const indexBlock = async job => {
 			logger.debug(
 				`Rolled back MySQL transaction to index block ${failedBlockInfo.id} at height ${failedBlockInfo.height}.`,
 			);
+
+			// Add safety check to ensure that the DB transaction is rolled back successfully
+			await waitForIt(
+				checkBlockHeightStatusInDB.bind(null, block.height, DB_STATUS.ROLLBACK),
+				config.db.durabilityVerifyFrequency,
+			);
 		}
 
 		if (
@@ -329,7 +364,7 @@ const indexBlock = async job => {
 		logger.warn(
 			`Error occurred while indexing block ${failedBlockInfo.id} at height ${failedBlockInfo.height}. Will retry later.`,
 		);
-		logger.warn(error.stack);
+		logger.debug(error.stack);
 		throw error;
 	}
 };
@@ -492,6 +527,7 @@ const deleteIndexedBlocks = async job => {
 
 		await blocksTable.deleteByPrimaryKey(blockIDs, dbTrx);
 		await commitDBTransaction(dbTrx);
+
 		// Only schedule address balance updates if the block is deleted successfully
 		await scheduleAddressesBalanceUpdate(addressesToUpdateBalance);
 		logger.debug(`Committed MySQL transaction to delete block(s) with ID(s): ${blockIDs}.`);
@@ -512,38 +548,11 @@ const deleteIndexedBlocks = async job => {
 	}
 };
 
-let isIndexingRunning = false;
-const BLOCKCHAIN_INDEX_RESCHEDULE_DELAY = 1000;
-
-const indexBlockAtomicWrapper = async job => {
-	if (isIndexingRunning) {
-		logger.trace('Already indexing another block!');
-		await delay(BLOCKCHAIN_INDEX_RESCHEDULE_DELAY);
-		// eslint-disable-next-line no-use-before-define
-		await addHeightToIndexBlocksQueue(job.data.height);
-		return;
-	}
-
-	isIndexingRunning = true;
-
-	try {
-		await indexBlock(job);
-	} catch (err) {
-		isIndexingRunning = false;
-		logger.error(
-			`Error occurred during indexing block.\nError: ${err.message}\nStack:${err.stack}`,
-		);
-		throw new Error(err);
-	}
-
-	isIndexingRunning = false;
-};
-
 // Initialize queues
 const indexBlocksQueue = Queue(
 	config.endpoints.cache,
 	config.queue.indexBlocks.name,
-	indexBlockAtomicWrapper,
+	indexBlock,
 	config.queue.indexBlocks.concurrency,
 );
 
@@ -565,13 +574,13 @@ const scheduleBlockDeletion = async block => deleteIndexedBlocksQueue.add({ bloc
 
 const indexNewBlock = async block => {
 	const blocksTable = await getBlocksTable();
-	logger.info(`Indexing new block: ${block.id} at height ${block.height}.`);
-
 	const [blockInfo] = await blocksTable.find({ height: block.height, limit: 1 }, ['id', 'isFinal']);
+
 	// Schedule indexing of incoming block if it is not indexed before
 	// Or the indexed block is not final yet (chain fork)
 	if (!blockInfo || !blockInfo.isFinal) {
 		// Index if doesn't exist, or update if it isn't set to final
+		logger.debug(`Queueing block ${block.id} at height ${block.height} to index.`);
 		await indexBlocksQueue.add({ height: block.height });
 
 		// Update finality status for the parent blocks
@@ -680,7 +689,9 @@ const getMissingBlocks = async params => {
 };
 
 const addHeightToIndexBlocksQueue = async (height, priority) =>
-	priority ? indexBlocksQueue.add({ height }, { priority }) : indexBlocksQueue.add({ height });
+	typeof priority === 'number'
+		? indexBlocksQueue.add({ height }, { priority })
+		: indexBlocksQueue.add({ height });
 
 const setIndexVerifiedHeight = ({ height }) => keyValueTable.set(INDEX_VERIFIED_HEIGHT, height);
 

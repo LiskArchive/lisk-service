@@ -722,6 +722,11 @@ To accelerate the indexing process, the blockchain-indexer microservice also sup
 |Enable or disable auto-apply snapshot feature. By default, the value is false.
 |false
 
+|`DURABILITY_VERIFY_FREQUENCY`
+|number
+|Frequency in milliseconds to verify if a block is indexed or rolled-back successfully. By default, it is set to 20.
+|false
+
 |`INDEX_SNAPSHOT_URL`
 |string
 |Custom snapshot download URL (expected to end with sql.gz).
@@ -756,6 +761,7 @@ module.exports = {
         ENABLE_INDEXING_MODE: 'true',
         ENABLE_PERSIST_EVENTS: 'false',
         // ENABLE_APPLY_SNAPSHOT: 'false',
+        // DURABILITY_VERIFY_FREQUENCY: 20,
         // INDEX_SNAPSHOT_URL: '',
         // ENABLE_SNAPSHOT_ALLOW_INSECURE_HTTP: 'true',
         // SERVICE_INDEXER_MYSQL_READ_REPLICA: 'mysql://lisk:password@127.0.0.1:3306/lisk',

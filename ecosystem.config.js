@@ -156,6 +156,7 @@ module.exports = {
 				ENABLE_INDEXING_MODE: true,
 				ENABLE_PERSIST_EVENTS: false,
 				// ENABLE_APPLY_SNAPSHOT: false,
+				// DURABILITY_VERIFY_FREQUENCY: 20,
 				// INDEX_SNAPSHOT_URL: '',
 				// ENABLE_SNAPSHOT_ALLOW_INSECURE_HTTP: true,
 				// SERVICE_INDEXER_MYSQL_READ_REPLICA: 'mysql://lisk:password@127.0.0.1:3306/lisk',
