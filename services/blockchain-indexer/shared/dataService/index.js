@@ -38,6 +38,7 @@ const {
 } = require('./business');
 
 const {
+	formatBlock,
 	getBlocks,
 	getBlocksAssets,
 	setLastBlock,
@@ -109,6 +110,7 @@ const { invokeEndpoint } = require('./invoke');
 
 module.exports = {
 	// Blocks
+	formatBlock,
 	getBlocks,
 	getBlocksAssets,
 	setLastBlock,

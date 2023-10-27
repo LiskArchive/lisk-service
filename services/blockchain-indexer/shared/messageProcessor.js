@@ -30,7 +30,7 @@ const {
 } = require('./indexer/blockchainIndex');
 
 const {
-	getBlocks,
+	formatBlock,
 	performLastBlockUpdate,
 	reloadGeneratorsCache,
 	reloadValidatorCache,
@@ -53,7 +53,7 @@ const blockMessageQueue = new MessageQueue(config.queue.block.name, config.endpo
 	defaultJobOptions: config.queue.defaultJobOptions,
 });
 
-// Newly mined blocks
+// Newly generated blocks
 const eventMessageQueue = new MessageQueue(config.queue.event.name, config.endpoints.messageQueue, {
 	defaultJobOptions: config.queue.defaultJobOptions,
 });
@@ -78,7 +78,7 @@ const initQueueStatus = async () => {
 
 const newBlockProcessor = async block => {
 	logger.debug(`New block arrived at height ${block.height}, id: ${block.id}`);
-	const response = await getBlocks({ height: block.height });
+	const response = await formatBlock(block);
 	const [newBlock] = response.data;
 	await indexNewBlock(newBlock);
 	await performLastBlockUpdate(newBlock);
@@ -91,7 +91,7 @@ const deleteBlockProcessor = async block => {
 		logger.debug(
 			`Processing the delete block event for the block at height: ${block.height}, id: ${block.id}`,
 		);
-		response = await getBlocks({ blockID: block.id });
+		response = await formatBlock(block);
 		await scheduleBlockDeletion(block);
 	} catch (error) {
 		const normalizedBlocks = await normalizeBlocks([

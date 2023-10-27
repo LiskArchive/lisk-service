@@ -20,6 +20,7 @@ const logger = Logger();
 const waitForIt = (fn, intervalMs = 1000, resolveUndefined = false) =>
 	// eslint-disable-next-line implicit-arrow-linebreak
 	new Promise(resolve => {
+		// eslint-disable-next-line consistent-return
 		const timeout = setInterval(async () => {
 			try {
 				const result = await fn();

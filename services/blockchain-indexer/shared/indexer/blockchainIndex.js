@@ -94,6 +94,7 @@ const DB_STATUS = Object.freeze({
 	ROLLBACK: 'rollback',
 });
 
+// eslint-disable-next-line consistent-return
 const checkBlockHeightStatusInDB = async (blockHeight, status) => {
 	const blocksTable = await getBlocksTable();
 	const [{ height } = {}] = await blocksTable.find({ height: blockHeight }, ['height']);

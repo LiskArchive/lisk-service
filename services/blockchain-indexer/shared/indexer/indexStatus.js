@@ -23,7 +23,7 @@ const {
 
 const { indexValidatorCommissionInfo, indexStakersInfo } = require('./validatorIndex');
 
-const { getCurrentHeight, getGenesisHeight, updateFinalizedHeight } = require('../constants');
+const { getCurrentHeight, getGenesisHeight } = require('../constants');
 
 const logger = Logger();
 
@@ -115,7 +115,6 @@ const init = async () => {
 
 	// Register event listeners
 	Signals.get('newBlock').add(checkIndexReadiness);
-	Signals.get('chainNewBlock').add(updateFinalizedHeight);
 
 	// Index stakers and commission information available in genesis block
 	await indexValidatorCommissionInfo();

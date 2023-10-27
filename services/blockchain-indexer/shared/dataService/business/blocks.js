@@ -189,6 +189,8 @@ const isQueryFromIndex = params => {
 	return !isDirectQuery && !isLatestBlockFetch;
 };
 
+const formatBlock = async block => normalizeBlock(block);
+
 const getBlocks = async params => {
 	const blocksTable = await getBlocksTable();
 	const blocks = {
@@ -318,6 +320,7 @@ const getBlocksAssets = async params => {
 };
 
 module.exports = {
+	formatBlock,
 	getBlocks,
 	getFinalizedHeight,
 	normalizeBlocks,
