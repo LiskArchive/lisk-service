@@ -185,4 +185,4 @@ yarn run test
 
 It is now possible to use your preferred editor to make changes in the source files. Take a look at the [template](../services/template) project in order to find some suitable examples.
 
-Once completed, it is also possible to build Docker images with `make build` and run them using the method from the main [README](../README.md).
+Once completed, it is also possible to build Docker images with `make build-images` and run them using the method from the main [README](../README.md).

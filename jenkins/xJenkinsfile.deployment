@@ -8,7 +8,7 @@ pipeline {
 			agent { node { label 'lisk-service-dev' } }
 			when { branch 'development' }
 			steps {
-				sh 'make build'
+				sh 'make build-images'
 			}
 		}
 		stage('Deploy lisk-service') {

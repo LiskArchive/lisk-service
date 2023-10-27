@@ -95,7 +95,7 @@ cd lisk-service
 If you wish to build the local version of Lisk Service execute the following command below:
 
 ```bash
-make build
+make build-images
 ```
 
 > This step is only necessary if you wish to build a custom or pre-release version of Lisk Service that does not have a pre-built Docker image published on the Docker Hub. The installation script chooses the last available stable version on Docker Hub, **unless** there is no local image. If you are unsure about any local builds, use the `make clean` command to remove all locally built docker images.

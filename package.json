@@ -27,8 +27,8 @@
 		"start": "pm2 start ecosystem.config.js",
 		"stop": "pm2 delete ecosystem.config.js",
 		"format": "prettier --write '**/*'",
-		"eslint": "eslint \"./framework/**/*.js\" \"./services/**/*.js\" \"./tests/**/*.js\"",
-		"eslint-fix": "eslint --fix \"./framework/**/*.js\" \"./services/**/*.js\" \"./tests/**/*.js\"",
+		"lint": "eslint \"./framework/**/*.js\" \"./services/**/*.js\" \"./tests/**/*.js\"",
+		"lint:fix": "eslint --fix \"./framework/**/*.js\" \"./services/**/*.js\" \"./tests/**/*.js\"",
 		"test:coverage": "jest --config=jest.config.unit.js --coverage=true --verbose --forceExit"
 	},
 	"devDependencies": {
