@@ -91,7 +91,7 @@ const formatBlock = async header => {
 	return {
 		data: blocksResponse.data,
 		meta: {
-			count: 1,
+			count: blocksResponse.data.length,
 			offset: 0,
 			total: await getBlocksTotal({}, blocksResponse),
 		},
