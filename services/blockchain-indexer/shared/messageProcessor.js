@@ -140,11 +140,11 @@ const initMessageProcessors = async () => {
 		const { isNewBlock, isDeleteBlock, isNewRound } = job.data;
 
 		if (isNewBlock) {
-			const { blockHeader } = job.data;
-			await newBlockProcessor(blockHeader);
+			const { header } = job.data;
+			await newBlockProcessor(header);
 		} else if (isDeleteBlock) {
-			const { blockHeader } = job.data;
-			await deleteBlockProcessor(blockHeader);
+			const { header } = job.data;
+			await deleteBlockProcessor(header);
 		} else if (isNewRound) {
 			await newRoundProcessor();
 		}
