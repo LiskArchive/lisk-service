@@ -33,7 +33,7 @@
 	},
 	"dependencies": {
 		"bluebird": "^3.7.2",
-		"lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/b73fbbf7ff44398b0ce1e0f542b408326bb834db/framework/dist/lisk-service-framework-1.6.3.tgz",
+		"lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/bd875d7fd0b87680a8bfb10a217bc88adebf6aec/framework/dist/lisk-service-framework-1.6.4.tgz",
 		"lodash": "^4.17.21",
 		"octokit": "^2.0.4",
 		"tar": "^6.1.11"
