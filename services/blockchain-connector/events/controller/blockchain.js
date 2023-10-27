@@ -14,7 +14,7 @@
  *
  */
 const { Signals } = require('lisk-service-framework');
-const { formatBlock } = require('../../shared/sdk/formatter');
+const { formatBlock: formatBlockFromFormatter } = require('../../shared/sdk/formatter');
 
 const appReadyController = async cb => {
 	const appReadyListener = async payload => cb(payload);
@@ -50,6 +50,13 @@ const chainValidatorsChangeController = async cb => {
 	const chainValidatorsChangeListener = async payload => cb(payload);
 	Signals.get('chainValidatorsChanged').add(chainValidatorsChangeListener);
 };
+
+const formatBlock = payload =>
+	formatBlockFromFormatter({
+		header: payload.blockHeader,
+		assets: [],
+		transactions: [],
+	});
 
 const chainNewBlockController = async cb => {
 	const chainNewBlockListener = async payload => cb(formatBlock(payload));
