@@ -27,6 +27,7 @@ module.exports = {
 	transactionRoot: '=,string',
 	assetRoot: '=,string',
 	stateRoot: '=,string',
+	eventRoot: '=,string',
 	maxHeightPrevoted: '=,number',
 	maxHeightGenerated: '=,number',
 	validatorsHash: '=,string',
