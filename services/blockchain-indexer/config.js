@@ -110,6 +110,13 @@ config.queue = {
 	},
 };
 
+config.set = {
+	accountBalanceUpdate: {
+		name: 'AccountBalanceUpdate',
+		batchSize: Number(process.env.ACCOUNT_BALANCE_UPDATE_BATCH_SIZE) || 1000,
+	},
+};
+
 config.operations = {
 	isDataRetrievalModeEnabled: Boolean(
 		String(process.env.ENABLE_DATA_RETRIEVAL_MODE).toLowerCase() !== 'false',

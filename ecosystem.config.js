@@ -171,6 +171,7 @@ module.exports = {
 				// LISK_STATIC: 'https://static-data.lisk.com',
 				// DEVNET_MAINCHAIN_URL: 'http://devnet-service.liskdev.net:9901',
 				// ESTIMATES_BUFFER_BYTES_LENGTH: 0,
+				// ACCOUNT_BALANCE_UPDATE_BATCH_SIZE: 1000,
 				// JOB_INTERVAL_DELETE_SERIALIZED_EVENTS: 0,
 				// JOB_SCHEDULE_DELETE_SERIALIZED_EVENTS: '*/5 * * * *',
 				// JOB_INTERVAL_REFRESH_VALIDATORS: 0,

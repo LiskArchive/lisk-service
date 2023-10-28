@@ -18,18 +18,21 @@ const {
 		MySQL: { getTableInstance },
 	},
 	Signals,
+	Logger,
 } = require('lisk-service-framework');
 
 const { MODULE, MODULE_SUB_STORE, getGenesisHeight } = require('../constants');
 const { updateTotalStake, updateTotalSelfStake } = require('./transactionProcessor/pos/stake');
 const { requestConnector } = require('../utils/request');
-const { accountBalanceIndexQueue } = require('./accountBalanceIndex');
+const { updateAccountBalances } = require('./accountBalanceIndex');
 const { updateTotalLockedAmounts } = require('./utils/blockchainIndex');
 
 const requestAll = require('../utils/requestAll');
 const config = require('../../config');
 const commissionsTableSchema = require('../database/schema/commissions');
 const { getIndexStats } = require('./indexStatus');
+
+const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
@@ -144,7 +147,16 @@ const indexGenesisBlockAssets = async dbTrx => {
 };
 
 const indexTokenBalances = async () => {
-	allAccountsAddresses.forEach(async address => accountBalanceIndexQueue.add({ address }));
+	// eslint-disable-next-line no-restricted-syntax
+	for (const address of allAccountsAddresses) {
+		await updateAccountBalances(address).catch(err => {
+			const errorMessage = `Updating account balance for ${address} failed. Retrying.\nError: ${err.message}.`;
+			logger.warn(errorMessage);
+			logger.debug(err.stack);
+
+			allAccountsAddresses.push(address);
+		});
+	}
 	isTokensBalanceIndexed = true;
 };
 
