@@ -52,7 +52,7 @@ const getStakeIndexingInfo = async tx => {
 
 			stakeEntry.stakerAddress = getLisk32AddressFromPublicKey(tx.senderPublicKey);
 			stakeEntry.validatorAddress = stake.validatorAddress;
-			stakeEntry.amount = stake.amount;
+			stakeEntry.amount = BigInt(stake.amount);
 			return stakeEntry;
 		},
 		{ concurrency: tx.params.stakes.length },
@@ -158,6 +158,7 @@ const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 		stakes,
 		async stake => {
 			await decrementStakeTrx(stake, dbTrx);
+
 			// Subtract to reverse the impact
 			if (stake.stakerAddress === stake.validatorAddress) {
 				totalSelfStakeChange -= BigInt(stake.amount);

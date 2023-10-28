@@ -347,6 +347,8 @@ const mockEventTopicsQueryParams = {
 			'03',
 			'c8ee3933cc841287d834f74f278ac12f145f320d0593a612e11b67b4a58cd17b',
 			'lskw68y3kyus7ota9mykr726aby44mw574m8dkngu',
+			'04c8ee3933cc841287d834f74f278ac12f145f320d0593a612e11b67b4a58cd17b',
+			'05c8ee3933cc841287d834f74f278ac12f145f320d0593a612e11b67b4a58cd17b',
 		],
 	},
 	groupBy: 'eventID',

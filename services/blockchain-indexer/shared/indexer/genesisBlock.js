@@ -29,6 +29,7 @@ const { updateTotalLockedAmounts } = require('./utils/blockchainIndex');
 
 const requestAll = require('../utils/requestAll');
 const config = require('../../config');
+const stakesTableSchema = require('../database/schema/stakes');
 const commissionsTableSchema = require('../database/schema/commissions');
 const { getIndexStats } = require('./indexStatus');
 
@@ -36,6 +37,7 @@ const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
+const getStakesTable = () => getTableInstance(stakesTableSchema, MYSQL_ENDPOINT);
 const getCommissionsTable = () => getTableInstance(commissionsTableSchema, MYSQL_ENDPOINT);
 
 const allAccountsAddresses = [];
@@ -101,10 +103,12 @@ const indexPosValidatorsInfo = async (numValidators, dbTrx) => {
 };
 
 const indexPosStakesInfo = async (numStakers, dbTrx) => {
-	let totalStakeChange = BigInt(0);
-	let totalSelfStakeChange = BigInt(0);
+	let totalStake = BigInt(0);
+	let totalSelfStake = BigInt(0);
 
 	if (numStakers > 0) {
+		const stakesTable = await getStakesTable();
+
 		const posModuleData = await requestAll(
 			requestConnector,
 			'getGenesisAssetByModule',
@@ -113,21 +117,34 @@ const indexPosStakesInfo = async (numStakers, dbTrx) => {
 		);
 		const stakers = posModuleData[MODULE_SUB_STORE.POS.STAKERS];
 
+		const allStakes = [];
 		stakers.forEach(staker => {
 			const { address: stakerAddress, stakes } = staker;
-
 			stakes.forEach(stake => {
 				const { validatorAddress, amount } = stake;
-				totalStakeChange += BigInt(amount);
+
+				allStakes.push({
+					stakerAddress,
+					validatorAddress,
+					amount: BigInt(amount),
+				});
+
+				totalStake += BigInt(amount);
 				if (stakerAddress === validatorAddress) {
-					totalSelfStakeChange += BigInt(amount);
+					totalSelfStake += BigInt(amount);
 				}
 			});
 		});
+
+		await stakesTable.upsert(allStakes, dbTrx);
+		logger.info(`Updated ${allStakes.length} stakes from the genesis block.`);
 	}
 
-	await updateTotalStake(totalStakeChange, dbTrx);
-	await updateTotalSelfStake(totalSelfStakeChange, dbTrx);
+	await updateTotalStake(totalStake, dbTrx);
+	logger.info(`Updated total stakes at genesis: ${totalStake.toString()}.`);
+
+	await updateTotalSelfStake(totalSelfStake, dbTrx);
+	logger.info(`Updated total self-stakes information at genesis: ${totalSelfStake.toString()}.`);
 };
 
 const indexPosModuleAssets = async dbTrx => {

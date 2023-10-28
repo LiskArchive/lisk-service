@@ -21,8 +21,6 @@ const {
 	Signals,
 } = require('lisk-service-framework');
 
-const { indexValidatorCommissionInfo, indexStakersInfo } = require('./validatorIndex');
-
 const { getCurrentHeight, getGenesisHeight } = require('../constants');
 
 const logger = Logger();
@@ -115,10 +113,6 @@ const init = async () => {
 
 	// Register event listeners
 	Signals.get('newBlock').add(checkIndexReadiness);
-
-	// Index stakers and commission information available in genesis block
-	await indexValidatorCommissionInfo();
-	await indexStakersInfo();
 };
 
 module.exports = {
