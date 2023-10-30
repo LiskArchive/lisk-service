@@ -25,17 +25,17 @@ const eventMessageQueue = new MessageQueue(config.queue.event.name, config.endpo
 });
 
 const scheduleUpdatesOnNewBlock = async payload => {
-	const { blockHeader } = payload;
-	logger.debug(`Scheduling indexing new block at height: ${blockHeader.height}.`);
-	await eventMessageQueue.add({ blockHeader, isNewBlock: true });
-	logger.info(`Finished scheduling indexing new block at height: ${blockHeader.height}.`);
+	const { header } = payload;
+	logger.debug(`Scheduling indexing new block at height: ${header.height}.`);
+	await eventMessageQueue.add({ header, isNewBlock: true });
+	logger.info(`Finished scheduling indexing new block at height: ${header.height}.`);
 };
 
 const scheduleDeleteBlock = async payload => {
-	const { blockHeader } = payload;
-	logger.debug(`Scheduling updates for the delete block at height: ${blockHeader.height}.`);
-	await eventMessageQueue.add({ blockHeader, isDeleteBlock: true });
-	logger.info(`Finished scheduling updates for the delete block at height: ${blockHeader.height}.`);
+	const { header } = payload;
+	logger.debug(`Scheduling updates for the delete block at height: ${header.height}.`);
+	await eventMessageQueue.add({ header, isDeleteBlock: true });
+	logger.info(`Finished scheduling updates for the delete block at height: ${header.height}.`);
 };
 
 const scheduleUpdatesOnNewRound = async payload => {

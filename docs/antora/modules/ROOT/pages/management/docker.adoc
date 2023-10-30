@@ -18,7 +18,7 @@ Mona Bärenfänger <mona@lightcurve.io>
 
 .Inside the lisk-service root folder
 ----
-make build
+make build-images
 ----
 This creates the necessary Docker images to start Lisk Service in the containers.
 
@@ -348,7 +348,7 @@ git checkout v0.7.0
 . Build the required updated Docker images
 +
 ----
-make build
+make build-images
 ----
 
 . Start Lisk Service in the containers

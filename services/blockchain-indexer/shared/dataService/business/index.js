@@ -16,6 +16,7 @@
 const { getGenerators, getNumberOfGenerators, reloadGeneratorsCache } = require('./generators');
 
 const {
+	formatBlock,
 	getBlocks,
 	getFinalizedHeight,
 	normalizeBlocks,
@@ -108,6 +109,7 @@ module.exports = {
 	reloadGeneratorsCache,
 
 	// Blocks
+	formatBlock,
 	getBlocks,
 	getFinalizedHeight,
 	normalizeBlocks,

@@ -18,21 +18,26 @@ const {
 		MySQL: { getTableInstance },
 	},
 	Signals,
+	Logger,
 } = require('lisk-service-framework');
 
 const { MODULE, MODULE_SUB_STORE, getGenesisHeight } = require('../constants');
 const { updateTotalStake, updateTotalSelfStake } = require('./transactionProcessor/pos/stake');
 const { requestConnector } = require('../utils/request');
-const { accountBalanceIndexQueue } = require('./accountBalanceIndex');
+const { updateAccountBalances } = require('./accountBalanceIndex');
 const { updateTotalLockedAmounts } = require('./utils/blockchainIndex');
 
 const requestAll = require('../utils/requestAll');
 const config = require('../../config');
+const stakesTableSchema = require('../database/schema/stakes');
 const commissionsTableSchema = require('../database/schema/commissions');
 const { getIndexStats } = require('./indexStatus');
 
+const logger = Logger();
+
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
+const getStakesTable = () => getTableInstance(stakesTableSchema, MYSQL_ENDPOINT);
 const getCommissionsTable = () => getTableInstance(commissionsTableSchema, MYSQL_ENDPOINT);
 
 const allAccountsAddresses = [];
@@ -98,10 +103,12 @@ const indexPosValidatorsInfo = async (numValidators, dbTrx) => {
 };
 
 const indexPosStakesInfo = async (numStakers, dbTrx) => {
-	let totalStakeChange = BigInt(0);
-	let totalSelfStakeChange = BigInt(0);
+	let totalStake = BigInt(0);
+	let totalSelfStake = BigInt(0);
 
 	if (numStakers > 0) {
+		const stakesTable = await getStakesTable();
+
 		const posModuleData = await requestAll(
 			requestConnector,
 			'getGenesisAssetByModule',
@@ -110,21 +117,34 @@ const indexPosStakesInfo = async (numStakers, dbTrx) => {
 		);
 		const stakers = posModuleData[MODULE_SUB_STORE.POS.STAKERS];
 
+		const allStakes = [];
 		stakers.forEach(staker => {
 			const { address: stakerAddress, stakes } = staker;
-
 			stakes.forEach(stake => {
 				const { validatorAddress, amount } = stake;
-				totalStakeChange += BigInt(amount);
+
+				allStakes.push({
+					stakerAddress,
+					validatorAddress,
+					amount: BigInt(amount),
+				});
+
+				totalStake += BigInt(amount);
 				if (stakerAddress === validatorAddress) {
-					totalSelfStakeChange += BigInt(amount);
+					totalSelfStake += BigInt(amount);
 				}
 			});
 		});
+
+		await stakesTable.upsert(allStakes, dbTrx);
+		logger.info(`Updated ${allStakes.length} stakes from the genesis block.`);
 	}
 
-	await updateTotalStake(totalStakeChange, dbTrx);
-	await updateTotalSelfStake(totalSelfStakeChange, dbTrx);
+	await updateTotalStake(totalStake, dbTrx);
+	logger.info(`Updated total stakes at genesis: ${totalStake.toString()}.`);
+
+	await updateTotalSelfStake(totalSelfStake, dbTrx);
+	logger.info(`Updated total self-stakes information at genesis: ${totalSelfStake.toString()}.`);
 };
 
 const indexPosModuleAssets = async dbTrx => {
@@ -144,7 +164,16 @@ const indexGenesisBlockAssets = async dbTrx => {
 };
 
 const indexTokenBalances = async () => {
-	allAccountsAddresses.forEach(async address => accountBalanceIndexQueue.add({ address }));
+	// eslint-disable-next-line no-restricted-syntax
+	for (const address of allAccountsAddresses) {
+		await updateAccountBalances(address).catch(err => {
+			const errorMessage = `Updating account balance for ${address} failed. Retrying.\nError: ${err.message}.`;
+			logger.warn(errorMessage);
+			logger.debug(err.stack);
+
+			allAccountsAddresses.push(address);
+		});
+	}
 	isTokensBalanceIndexed = true;
 };
 

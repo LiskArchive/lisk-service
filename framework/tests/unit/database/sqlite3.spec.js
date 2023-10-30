@@ -23,29 +23,22 @@ const {
 } = require('../../../src/database/sqlite3');
 
 const schema = require('../../constants/blocksSchema');
-const transactionsSchema = require('../../constants/transactionsSchema');
 
 const tableName = 'functional_test';
-const transactionsTableName = 'transactions_functional_test';
 
 const testDir = 'testDir';
 
 schema.tableName = tableName;
-transactionsSchema.tableName = transactionsTableName;
 
 const getTable = () => getTableInstance(schema, testDir);
-const getTransactionsTable = () => getTableInstance(transactionsSchema, testDir);
 
 const { blockWithoutTransaction, blockWithTransaction } = require('../../constants/blocks');
 
 describe('Test sqlite3 implementation', () => {
-	// eslint-disable-next-line no-unused-vars
-	let transactionsTable;
 	let testTable;
 
 	beforeAll(async () => {
 		// Create table
-		transactionsTable = await getTransactionsTable();
 		testTable = await getTable();
 	});
 
@@ -58,12 +51,6 @@ describe('Test sqlite3 implementation', () => {
 		it(`${tableName} exists`, async () => {
 			const result = await testTable.find();
 			expect(result.length).toBe(0);
-		});
-
-		it('should return same connection for two different table from same db', async () => {
-			const functionalTableConn = await getDBConnection(tableName, testDir);
-			const transactionsTableConn = await getDBConnection(transactionsTableName, testDir);
-			expect(functionalTableConn).toBe(transactionsTableConn);
 		});
 	});
 
@@ -291,7 +278,7 @@ describe('Test sqlite3 implementation', () => {
 		it('should insert row', async () => {
 			const preUpsertResult = await testTable.find();
 			expect(preUpsertResult.length).toBe(0);
-			const connection = await getDBConnection(tableName, testDir);
+			const connection = await getDBConnection(tableName);
 			const trx = await startDBTransaction(connection);
 			await testTable.upsert([blockWithoutTransaction.header], trx);
 			await commitDBTransaction(trx);
@@ -309,7 +296,7 @@ describe('Test sqlite3 implementation', () => {
 		});
 
 		it('should update row', async () => {
-			const connection = await getDBConnection(tableName, testDir);
+			const connection = await getDBConnection(tableName);
 			const trx = await startDBTransaction(connection);
 			const { id } = blockWithTransaction.header;
 			await testTable.upsert([{ ...blockWithTransaction.header, height: 20 }], trx);
@@ -332,7 +319,7 @@ describe('Test sqlite3 implementation', () => {
 		});
 
 		it('should increment column value', async () => {
-			const connection = await getDBConnection(tableName, testDir);
+			const connection = await getDBConnection(tableName);
 			const trx = await startDBTransaction(connection);
 			const { id } = blockWithoutTransaction.header;
 			await testTable.increment(
@@ -349,7 +336,7 @@ describe('Test sqlite3 implementation', () => {
 		});
 
 		it('should delete row by primary key', async () => {
-			const connection = await getDBConnection(tableName, testDir);
+			const connection = await getDBConnection(tableName);
 			const trx = await startDBTransaction(connection);
 			const [existingBlock] = await testTable.find();
 			const existingBlockId = existingBlock[`${schema.primaryKey}`];
@@ -364,7 +351,7 @@ describe('Test sqlite3 implementation', () => {
 		});
 
 		it('should delete rows', async () => {
-			const connection = await getDBConnection(tableName, testDir);
+			const connection = await getDBConnection(tableName);
 			const trx = await startDBTransaction(connection);
 
 			await testTable.upsert([blockWithoutTransaction.header, blockWithTransaction.header]);
@@ -385,7 +372,7 @@ describe('Test sqlite3 implementation', () => {
 		});
 
 		it('should delete row', async () => {
-			const connection = await getDBConnection(tableName, testDir);
+			const connection = await getDBConnection(tableName);
 			const trx = await startDBTransaction(connection);
 
 			await testTable.upsert([blockWithoutTransaction.header]);
@@ -406,7 +393,7 @@ describe('Test sqlite3 implementation', () => {
 		});
 
 		it('should insert rows in a batch', async () => {
-			const connection = await getDBConnection(tableName, testDir);
+			const connection = await getDBConnection(tableName);
 			const trx = await startDBTransaction(connection);
 			const preUpsertResult = await testTable.find();
 			expect(preUpsertResult.length).toBe(0);

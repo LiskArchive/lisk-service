@@ -179,7 +179,9 @@ const getEvents = async params => {
 		const topics = topic.split(',');
 		const numUniqueTopics = dropDuplicates(topics).length;
 		topics.forEach(t => {
-			if (
+			if (t.length === LENGTH_ID) {
+				topics.push(EVENT_TOPIC_PREFIX.TX_ID.concat(t), EVENT_TOPIC_PREFIX.CCM_ID.concat(t));
+			} else if (
 				t.startsWith(EVENT_TOPIC_PREFIX.TX_ID) &&
 				t.length === EVENT_TOPIC_PREFIX.TX_ID.length + LENGTH_ID
 			) {

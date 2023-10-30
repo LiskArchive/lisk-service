@@ -10,6 +10,7 @@
 			"transactionRoot",
 			"assetsRoot",
 			"stateRoot",
+			"eventRoot",
 			"maxHeightPrevoted",
 			"maxHeightGenerated",
 			"validatorsHash",
@@ -85,6 +86,11 @@
 				"type": "string",
 				"example": "95d9b1773b78034b8df9ac741c903b881da761d8ba002a939de28a4b86982c04",
 				"description": "The root of the Sparse Merkle Tree that is computed from the state of the blockchain."
+			},
+			"eventRoot": {
+				"type": "string",
+				"example": "7dee8ae1899582aabb0c4b967ceda6874329dba57b5eb23d7c62890917a55cbd",
+				"description": "Merkle root of the events array."
 			},
 			"maxHeightGenerated": {
 				"type": "integer",

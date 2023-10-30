@@ -38,6 +38,7 @@ const blockSchema = {
 	generator: Joi.object(generator).required(),
 	assetRoot: Joi.string().pattern(regex.HASH_SHA256).required(),
 	stateRoot: Joi.string().pattern(regex.HASH_SHA256).required(),
+	eventRoot: Joi.string().pattern(regex.HASH_SHA256).required(),
 	transactionRoot: Joi.string().pattern(regex.HASH_SHA256).required(),
 	previousBlockID: Joi.string().pattern(regex.HASH_SHA256).required(),
 	signature: Joi.string().allow(EMPTY_STRING).pattern(regex.HASH_SHA512).required(),

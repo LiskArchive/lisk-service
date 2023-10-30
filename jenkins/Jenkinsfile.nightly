@@ -80,7 +80,6 @@ pipeline {
 					nvm(readFile('.nvmrc').trim()) {
 						sh '''
 							make build
-							make build-local
 							make down
 							make up
 						'''
@@ -176,7 +175,7 @@ pipeline {
 						script { echoBanner(STAGE_NAME) }
 						dir('lisk-service') {
 							nvm(readFile('.nvmrc').trim()) {
-								sh 'yarn run eslint'
+								sh 'yarn lint'
 							}
 						}
 					}
@@ -249,6 +248,7 @@ pipeline {
 							pm2 stop jenkins/lisk-core/pm2.config.json
 							pm2 delete jenkins/lisk-core/pm2.config.json
 							pm2 flush
+							make clean
 						'''
 						dir('./jenkins/mysql') { sh "make down" }
 						dir('./jenkins/redis') { sh "make down" }

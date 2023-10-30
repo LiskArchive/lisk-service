@@ -66,4 +66,9 @@ describe('Test waitForIt method', () => {
 	it('should throw error when passing function as empty string', async () => {
 		expect(waitForIt('')).rejects.toThrow();
 	});
+
+	// Unable to add test for 'resolveUndefined = false' as jest complaints of long running test
+	it('should resolve undefined with resolveUndefined = true', async () => {
+		expect(waitForIt(() => undefined, 1000, true)).resolves.toBe(undefined);
+	});
 });

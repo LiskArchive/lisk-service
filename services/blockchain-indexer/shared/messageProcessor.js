@@ -30,7 +30,7 @@ const {
 } = require('./indexer/blockchainIndex');
 
 const {
-	getBlocks,
+	formatBlock,
 	performLastBlockUpdate,
 	reloadGeneratorsCache,
 	reloadValidatorCache,
@@ -53,7 +53,7 @@ const blockMessageQueue = new MessageQueue(config.queue.block.name, config.endpo
 	defaultJobOptions: config.queue.defaultJobOptions,
 });
 
-// Newly mined blocks
+// Newly generated blocks
 const eventMessageQueue = new MessageQueue(config.queue.event.name, config.endpoints.messageQueue, {
 	defaultJobOptions: config.queue.defaultJobOptions,
 });
@@ -76,32 +76,28 @@ const initQueueStatus = async () => {
 	await queueStatus(eventMessageQueue);
 };
 
-const newBlockProcessor = async block => {
-	logger.debug(`New block arrived at height ${block.height}, id: ${block.id}`);
-	const response = await getBlocks({ height: block.height });
+const newBlockProcessor = async header => {
+	logger.debug(`New block arrived at height ${header.height}, id: ${header.id}`);
+	const response = await formatBlock(header);
 	const [newBlock] = response.data;
 	await indexNewBlock(newBlock);
 	await performLastBlockUpdate(newBlock);
 	Signals.get('newBlock').dispatch(response);
 };
 
-const deleteBlockProcessor = async block => {
+const deleteBlockProcessor = async header => {
 	let response;
 	let error;
 	try {
 		logger.info(
-			`Processing the delete block event for the block at height: ${block.height}, id: ${block.id}`,
+			`Scheduling the delete block event for the block at height: ${header.height}, id: ${header.id}`,
 		);
-		response = await getBlocks({ blockID: block.id });
-		await scheduleBlockDeletion(block);
+		response = await formatBlock(header);
+		await scheduleBlockDeletion(header);
 	} catch (err) {
-		logger.warn(
-			`Failed to process delete block event for the block at height: ${block.height}, id: ${block.id}`,
-		);
-
 		const normalizedBlocks = await normalizeBlocks([
 			{
-				header: block,
+				header,
 				transactions: [],
 				assets: [],
 			},
@@ -148,11 +144,11 @@ const initMessageProcessors = async () => {
 		const { isNewBlock, isDeleteBlock, isNewRound } = job.data;
 
 		if (isNewBlock) {
-			const { blockHeader } = job.data;
-			await newBlockProcessor(blockHeader);
+			const { header } = job.data;
+			await newBlockProcessor(header);
 		} else if (isDeleteBlock) {
-			const { blockHeader } = job.data;
-			await deleteBlockProcessor(blockHeader);
+			const { header } = job.data;
+			await deleteBlockProcessor(header);
 		} else if (isNewRound) {
 			await newRoundProcessor();
 		}

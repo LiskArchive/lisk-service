@@ -22,7 +22,6 @@ const config = {
 		name: packageJson.name,
 		version: packageJson.version,
 	},
-	db: {},
 };
 
 /**
@@ -115,6 +114,13 @@ config.queue = {
 	},
 };
 
+config.set = {
+	accountBalanceUpdate: {
+		name: 'AccountBalanceUpdate',
+		batchSize: Number(process.env.ACCOUNT_BALANCE_UPDATE_BATCH_SIZE) || 1000,
+	},
+};
+
 config.operations = {
 	isDataRetrievalModeEnabled: Boolean(
 		String(process.env.ENABLE_DATA_RETRIEVAL_MODE).toLowerCase() !== 'false',
@@ -152,9 +158,10 @@ config.networks = Object.freeze({
 	],
 });
 
-config.db.isPersistEvents = Boolean(
-	String(process.env.ENABLE_PERSIST_EVENTS).toLowerCase() === 'true',
-);
+config.db = {
+	isPersistEvents: Boolean(String(process.env.ENABLE_PERSIST_EVENTS).toLowerCase() === 'true'),
+	durabilityVerifyFrequency: Number(process.env.DURABILITY_VERIFY_FREQUENCY) || 20, // In millisecs
+};
 
 config.snapshot = {
 	enable: Boolean(String(process.env.ENABLE_APPLY_SNAPSHOT).toLowerCase() === 'true'), // Disabled by default

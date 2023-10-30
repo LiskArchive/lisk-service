@@ -172,12 +172,12 @@ To build Lisk Service from local files, first, navigate to the `lisk-service` re
 
 .Working directory: lisk-service/
 ----
-make build
+make build-images
 ----
 
 Lisk Service is now ready to use on your machine.
 
-TIP: If you skipped the step to configure Docker to run without `*sudo*` rights, you need to prepend `*sudo*` with aforementioned command: `*sudo make build*`
+TIP: If you skipped the step to configure Docker to run without `*sudo*` rights, you need to prepend `*sudo*` with aforementioned command: `*sudo make build-images*`
 
 == Connecting Lisk Service to a blockchain node
 

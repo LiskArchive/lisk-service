@@ -34,6 +34,6 @@ Please follow the official [documentation](https://docs.docker.com/compose/insta
 
 ## Next steps
 
-When all of the dependencies are correctly installed, it will then be possible to run pre-build Docker images with Lisk Service. It is also possible to build those images locally by executing the `make build` command from within the `lisk-service` directory.
+When all of the dependencies are correctly installed, it will then be possible to run pre-build Docker images with Lisk Service. It is also possible to build those images locally by executing the `make build-images` command from within the `lisk-service` directory.
 
 Refer to the main [README](../README.md) file regarding the next steps.
