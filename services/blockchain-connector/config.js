@@ -93,9 +93,7 @@ config.enableTestingMode = Boolean(
 );
 
 config.cache = {
-	isBlockCachingEnabled: Boolean(
-		String(process.env.ENABLE_BLOCK_CACHING).toLowerCase() !== 'false',
-	), // Enabled by default
+	isBlockCachingEnabled: Boolean(String(process.env.ENABLE_BLOCK_CACHING).toLowerCase() === 'true'), // Disabled by default
 	expiryInHours: process.env.EXPIRY_IN_HOURS || 12,
 	dbDataDir: 'data/db_cache',
 };

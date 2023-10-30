@@ -21,7 +21,8 @@ jobs:
 
     container:
       # A Docker image with Semgrep installed. Do not change this.
-      image: returntocorp/semgrep
+      # TODO: Remove version pinning after https://github.com/returntocorp/semgrep/issues/9091 is resolved
+      image: returntocorp/semgrep:1.45.0
 
     # Skip any PR created by dependabot to avoid permission issues:
     if: (github.actor != 'dependabot[bot]')

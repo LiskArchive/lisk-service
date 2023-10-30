@@ -39,6 +39,6 @@ The most recent version of Docker Desktop already contains docker-compose tool. 
 
 ## Next steps
 
-If you have all dependencies installed properly, it is possible to run pre-build Docker images with Lisk Service. It is also possible to build those images locally by using the `make build` command.
+If you have all dependencies installed properly, it is possible to run pre-build Docker images with Lisk Service. It is also possible to build those images locally by using the `make build-images` command.
 
 Refer to the main [README](../README.md) file regarding the next steps.

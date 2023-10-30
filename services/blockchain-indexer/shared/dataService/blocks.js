@@ -60,17 +60,9 @@ const getBlocksFromServer = async params => {
 	return blocks;
 };
 
-const getBlocks = async (params = {}) => {
-	const blocksResponse = {
-		data: [],
-		meta: {},
-	};
-
-	const response = await getBlocksFromServer(params);
-	if (response.data) blocksResponse.data = response.data;
-	if (response.meta) blocksResponse.meta = response.meta;
-
+const getBlocksTotal = async (params, blocksResponse) => {
 	let total;
+
 	if (params.generatorAddress) {
 		total = blocksResponse.meta.total || null;
 	} else if (params.blockID || !Number.isNaN(Number(params.height))) {
@@ -84,12 +76,44 @@ const getBlocks = async (params = {}) => {
 		total = await getTotalNumberOfBlocks();
 	}
 
+	return total;
+};
+
+const formatBlock = async header => {
+	const blocksResponse = {
+		data: [],
+		meta: {},
+	};
+
+	const response = await business.formatBlock({ header, assets: [], transactions: [] });
+	blocksResponse.data.push(response);
+
+	return {
+		data: blocksResponse.data,
+		meta: {
+			count: blocksResponse.data.length,
+			offset: 0,
+			total: await getBlocksTotal({}, blocksResponse),
+		},
+	};
+};
+
+const getBlocks = async (params = {}) => {
+	const blocksResponse = {
+		data: [],
+		meta: {},
+	};
+
+	const response = await getBlocksFromServer(params);
+	if (response.data) blocksResponse.data = response.data;
+	if (response.meta) blocksResponse.meta = response.meta;
+
 	return {
 		data: blocksResponse.data,
 		meta: {
 			count: blocksResponse.data.length,
 			offset: parseInt(params.offset, 10) || 0,
-			total,
+			total: await getBlocksTotal(params, blocksResponse),
 		},
 	};
 };
@@ -117,6 +141,7 @@ const performLastBlockUpdate = async newBlock => {
 };
 
 module.exports = {
+	formatBlock,
 	getBlocks,
 	getBlocksAssets,
 	setLastBlock,

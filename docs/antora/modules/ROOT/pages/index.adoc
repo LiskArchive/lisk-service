@@ -220,7 +220,7 @@ The Gateway service provides the following APIs, which all users of Lisk Service
 
 // [source,bash]
 // ----
-// make build
+// make build-images
 // ----
 // Please note, this step is only necessary if you wish to build a custom or pre-release version of Lisk Service that does not have a pre-built Docker image published on the Docker Hub.
 // The installation script chooses the last available stable version on the Docker Hub, *unless* there is no local image.

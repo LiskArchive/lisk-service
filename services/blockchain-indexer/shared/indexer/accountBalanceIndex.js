@@ -32,9 +32,6 @@ const redis = new Redis(config.endpoints.cache);
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const ACCOUNTS_BALANCE_UPDATE_SET_NAME = 'AccountsBalanceUpdate';
-const MAX_ACCOUNT_COUNT_IN_ONE_EXECUTION = 1000; // 1e3
-
 const getAccountBalancesTable = () => getTableInstance(accountBalancesTableSchema, MYSQL_ENDPOINT);
 
 const updateAccountBalances = async address => {
@@ -53,7 +50,7 @@ const updateAccountBalances = async address => {
 
 const scheduleAddressesBalanceUpdate = async addresses => {
 	if (addresses.length) {
-		redis.sadd(ACCOUNTS_BALANCE_UPDATE_SET_NAME, addresses);
+		redis.sadd(config.set.accountBalanceUpdate.name, addresses);
 	}
 };
 
@@ -79,8 +76,8 @@ const getAddressesFromTokenEvents = events => {
 
 const triggerAccountsBalanceUpdate = async () => {
 	const addresses = await redis.spop(
-		ACCOUNTS_BALANCE_UPDATE_SET_NAME,
-		MAX_ACCOUNT_COUNT_IN_ONE_EXECUTION,
+		config.set.accountBalanceUpdate.name,
+		config.set.accountBalanceUpdate.batchSize,
 	);
 
 	try {

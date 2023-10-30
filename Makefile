@@ -70,7 +70,9 @@ logs-live-%:
 print-config:
 	$(compose) config
 
-build: build-app-registry build-connector build-indexer build-coordinator build-statistics build-fees build-market build-export build-gateway
+build: build-local build-images
+
+build-images: build-app-registry build-connector build-indexer build-coordinator build-statistics build-fees build-market build-export build-gateway
 
 build-all: build build-template build-tests
 

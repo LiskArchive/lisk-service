@@ -193,6 +193,9 @@ const TRANSACTION_VERIFY_RESULT = {
 };
 
 const initNodeConstants = async () => {
+	// Initialize the finalizedHeight at init
+	await updateFinalizedHeight();
+
 	const nodeInfoListener = async payload => {
 		// Caching all node constants
 		genesisHeight = payload.genesisHeight;
