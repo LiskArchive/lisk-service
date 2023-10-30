@@ -31,9 +31,13 @@ A list of the most commonly used environment variables is presented below:
 - `USE_LISK_IPC_CLIENT`: Boolean flag to enable IPC-based connection to the Lisk SDK-based application node. Not applicable to a docker-based setup.
 - `LISK_APP_DATA_PATH`: Data path to connect with the Lisk SDK-based application node over IPC. Not applicable to a docker-based setup.
 - `GENESIS_BLOCK_URL`: URL of the Lisk SDK-based application' genesis block. Only to be used when the genesis block is large enough to be transmitted over API calls within the timeout.
-- `GEOIP_JSON`: URL of GeoIP server
+- `GEOIP_JSON`: URL of GeoIP server.
 - `ENABLE_BLOCK_CACHING`: Boolean flag to enable the block caching. Disabled by default. To enable, set it to `true`.
 - `EXPIRY_IN_HOURS`: Expiry time (in hours) for block cache. By default, it is set to 12.
+- `CLIENT_INSTANTIATION_MAX_WAIT_TIME`: Maximum wait time (in milliseconds) for the API client instantiation before forcefully instantiating a new client when getApiClient is invoked. By default, it is set to 100.
+- `CLIENT_INSTANTIATION_RETRY_INTERVAL`: Retry interval (in milliseconds) to invoke instantiate API client when getApiClient is invoked. By default, it is set to 5.
+- `ENDPOINT_INVOKE_MAX_RETRIES`: Maximum number of endpoint invocation request retries to the node. By default, it is set to 5.
+- `ENDPOINT_INVOKE_RETRY_DELAY`: Delay (in milliseconds) between each endpoint invocation request retry. By default, it is set to 10.
 - `JOB_INTERVAL_CACHE_CLEANUP`: Job run interval to cleanup block cache. By default, it is set to 0.
 - `JOB_SCHEDULE_CACHE_CLEANUP`: Job run cron schedule to cleanup block cache. By default, it is set to run every 12 hours (`0 */12 * * *`).
 - `JOB_INTERVAL_REFRESH_PEERS`: Job run interval to refresh the peers list. By default, it is set to run every 60 seconds.

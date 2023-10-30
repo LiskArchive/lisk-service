@@ -248,7 +248,7 @@ const indexBlock = async job => {
 			const eventsTable = await getEventsTable();
 			const eventTopicsTable = await getEventTopicsTable();
 
-			const { eventsInfo, eventTopicsInfo } = await getEventsInfoToIndex(block, events);
+			const { eventsInfo, eventTopicsInfo } = getEventsInfoToIndex(block, events);
 			await eventsTable.upsert(eventsInfo, dbTrx);
 			await eventTopicsTable.upsert(eventTopicsInfo, dbTrx);
 
@@ -459,7 +459,7 @@ const deleteIndexedBlocks = async job => {
 					const eventsTable = await getEventsTable();
 					const eventTopicsTable = await getEventTopicsTable();
 
-					const { eventsInfo, eventTopicsInfo } = await getEventsInfoToIndex(block, events);
+					const { eventsInfo, eventTopicsInfo } = getEventsInfoToIndex(block, events);
 					await eventsTable.delete(eventsInfo, dbTrx);
 					await eventTopicsTable.delete(eventTopicsInfo, dbTrx);
 
@@ -663,13 +663,7 @@ const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 	);
 
 	const blocksTable = await getBlocksTable();
-	const propBetweens = [
-		{
-			property: 'height',
-			from: fromHeight,
-			to: toHeight,
-		},
-	];
+	const propBetweens = [{ property: 'height', from: fromHeight, to: toHeight }];
 	const indexedBlockCount = await blocksTable.count({ propBetweens });
 
 	// This block helps determine empty index

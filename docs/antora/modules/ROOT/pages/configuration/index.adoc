@@ -401,6 +401,30 @@ To enable it, set it to `true`.
 By default, it is set to `12` hours.
 | 12
 
+| `CLIENT_INSTANTIATION_MAX_WAIT_TIME`
+| number
+| Maximum wait time (in milliseconds) for the API client instantiation before forcefully instantiating a new client when getApiClient is invoked.
+By default, it is set to `100`.
+| 100
+
+| `CLIENT_INSTANTIATION_RETRY_INTERVAL`
+| number
+| Retry interval (in milliseconds) to invoke instantiate API client when getApiClient is invoked.
+By default, it is set to `5`.
+| 5
+
+| `ENDPOINT_INVOKE_MAX_RETRIES`
+| number
+| Maximum number of endpoint invocation request retries to the node.
+By default, it is set to `5`.
+| 5
+
+| `ENDPOINT_INVOKE_RETRY_DELAY`
+| number
+| Delay (in milliseconds) between each endpoint invocation request retry.
+By default, it is set to `10`.
+| 10
+
 | `JOB_INTERVAL_CACHE_CLEANUP`
 | number
 | Job run interval to clean up block cache.
@@ -730,7 +754,7 @@ To accelerate the indexing process, the blockchain-indexer microservice also sup
 
 |`DURABILITY_VERIFY_FREQUENCY`
 |number
-|Frequency in milliseconds to verify if a block is indexed or rolled-back successfully. By default, it is set to 20.
+|Frequency in milliseconds to verify if a block is indexed or rolled-back successfully. By default, it is set to 10.
 |false
 
 |`INDEX_SNAPSHOT_URL`
@@ -767,7 +791,7 @@ module.exports = {
         ENABLE_INDEXING_MODE: 'true',
         ENABLE_PERSIST_EVENTS: 'false',
         // ENABLE_APPLY_SNAPSHOT: 'false',
-        // DURABILITY_VERIFY_FREQUENCY: 20,
+        // DURABILITY_VERIFY_FREQUENCY: 10,
         // INDEX_SNAPSHOT_URL: '',
         // ENABLE_SNAPSHOT_ALLOW_INSECURE_HTTP: 'true',
         // SERVICE_INDEXER_MYSQL_READ_REPLICA: 'mysql://lisk:password@127.0.0.1:3306/lisk',
