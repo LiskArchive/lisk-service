@@ -195,7 +195,11 @@ const getBlocks = async params => {
 	const blocksTable = await getBlocksTable();
 	const blocks = {
 		data: [],
-		meta: {},
+		meta: {
+			count: 0,
+			offset: params.offset,
+			total: 0,
+		},
 	};
 
 	if (params.blockID) {
