@@ -29,8 +29,9 @@ const IP =
 	/^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 const LIMIT = /^\b(?:(?:[1-9][0-9]?)|100)\b$/;
 const OFFSET = /^\b([0-9][0-9]*)\b$/;
-const NAME = /^[\w!@$&._]{3,20}$/;
+const NAME = /^[a-z0-9!@$&_.]{1,20}$/;
 const NAME_CSV = /^\b[\w!@$&.,]{3,}\b$/;
+
 const NETWORK_VERSION = /^\d+\.\d+((\.\d+)?(?:-[a-zA-Z\d]+(?:\.\d+)?)?)?(?:\+[a-zA-Z\d]+)?$/;
 const TRANSACTION = /^\b[0-9a-fA-F]+\b$/;
 const TRANSACTION_EXECUTION_STATUS = /^\b(?:pending|successful|failed|,){0,5}\b$/;
@@ -44,6 +45,7 @@ const APPLICATION_STATUS = /^\b(?:registered|activated|terminated|unregistered|,
 const MODULE_COMMAND = /^[0-9a-zA-Z]{0,32}:[0-9a-zA-Z]{0,32}$/;
 const CHAIN_ID = /^\b[a-fA-F0-9]{8}\b$/;
 const CHAIN_ID_CSV = /^\b(?:[a-fA-F0-9]{8}|,)+\b$/;
+const CHAIN_NAME = /^[a-z0-9!@$&_.]{1,32}$/;
 const TOKEN_ID = /^\b[a-fA-F0-9]{16}\b$/;
 const TOKEN_ID_CSV = /^\b(?:[a-fA-F0-9]{16}|,)+\b$/;
 const BLS_KEY = /^\b[a-fA-F0-9]{96}\b$/;
@@ -87,6 +89,7 @@ module.exports = {
 	MODULE_COMMAND,
 	CHAIN_ID,
 	CHAIN_ID_CSV,
+	CHAIN_NAME,
 	TOKEN_ID,
 	TOKEN_ID_CSV,
 	BLS_KEY,

@@ -24,7 +24,7 @@ module.exports = {
 	rpcMethod: 'get.blockchain.apps.meta.list',
 	tags: ['Application Off-Chain Metadata'],
 	params: {
-		chainName: { optional: true, type: 'string', min: 3, max: 20, pattern: regex.NAME },
+		chainName: { optional: true, type: 'string', pattern: regex.CHAIN_NAME },
 		network: { optional: true, type: 'string', pattern: regex.NETWORK_CSV },
 		search: {
 			optional: true,

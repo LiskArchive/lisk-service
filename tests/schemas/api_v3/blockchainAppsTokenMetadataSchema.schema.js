@@ -30,7 +30,7 @@ const denomUnit = {
 };
 
 const blockchainAppsTokenMetadataSchema = {
-	chainName: Joi.string().pattern(regex.NAME).required(),
+	chainName: Joi.string().pattern(regex.CHAIN_NAME).required(),
 	chainID: Joi.string().required(),
 	tokenName: Joi.string().pattern(regex.NAME).required(),
 	tokenID: Joi.string().required(),

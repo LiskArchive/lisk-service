@@ -22,7 +22,7 @@ const SEMVER =
 	/^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$/;
 const PUBLIC_KEY = HASH_SHA256;
 const EVENT_NAME = /^[\w!@$&. ]+$/;
-const NAME = /^[\w!@$&.]{1,20}$/;
+const NAME = /^[a-z0-9!@$&_.]{1,20}$/;
 const DATE_INTERVAL =
 	/^\b((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))(:((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31)))?\b$/;
 const FILE_NAME =
@@ -33,6 +33,7 @@ const NETWORK = /^\b(?:mainnet|testnet|betanet|devnet){1}\b$/;
 const MODULE = /^[0-9a-zA-Z]{1,32}$/;
 const MODULE_COMMAND = /^[0-9a-zA-Z]{1,32}:[0-9a-zA-Z]{1,32}$/;
 const CHAIN_ID = /^\b[a-fA-F0-9]{8}\b$/;
+const CHAIN_NAME = /^[a-z0-9!@$&_.]{1,32}$/;
 const TOKEN_ID = /^\b[a-fA-F0-9]{16}\b$/;
 const TOKEN_ID_PATTERN = /^[a-fA-F0-9]{8}[*]{8}$/;
 const DURATION = /^\d{4}-\d{2}(?:-\d{2})?$/;
@@ -66,6 +67,7 @@ module.exports = {
 	TOKEN_ID,
 	TOKEN_ID_PATTERN,
 	CHAIN_ID,
+	CHAIN_NAME,
 	DURATION,
 	DIGITS,
 	FLOATING_POINT,
