@@ -42,7 +42,7 @@ const keyValueTable = getKeyValueTable();
 
 const getEventsTable = () => getTableInstance(eventsTableSchema, MYSQL_ENDPOINT);
 
-const getEventsInfoToIndex = async (block, events) => {
+const getEventsInfoToIndex = (block, events) => {
 	const eventsInfoToIndex = {
 		eventsInfo: [],
 		eventTopicsInfo: [],
