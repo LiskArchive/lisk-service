@@ -40,7 +40,7 @@ A list of the most commonly used environment variables is presented below:
 - `ENABLE_INDEXING_MODE`: Boolean flag to enable the Data Indexing mode.
 - `ENABLE_PERSIST_EVENTS`: Boolean flag to permanently maintain the events in the MySQL database.
 - `ENABLE_APPLY_SNAPSHOT`: Boolean flag to enable initialization of the index with the Lisk Service DB snapshot.
-- `DURABILITY_VERIFY_FREQUENCY`: Frequency in milliseconds to verify if a block is indexed or rolled-back successfully. By default, it is set to 20.
+- `DURABILITY_VERIFY_FREQUENCY`: Frequency in milliseconds to verify if a block is indexed or rolled-back successfully. By default, it is set to 10.
 - `INDEX_SNAPSHOT_URL`: URL from where the Lisk Service DB snapshot will be downloaded.
 - `ENABLE_SNAPSHOT_ALLOW_INSECURE_HTTP`: Boolean flag to enable downloading snapshot from an (unsecured) HTTP URL.
 - `LISK_STATIC`: URL of Lisk static assets.

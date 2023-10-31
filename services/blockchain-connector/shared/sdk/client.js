@@ -28,9 +28,10 @@ const logger = Logger();
 // Constants
 const timeoutMessage = 'Response not received in';
 const liskAddress = config.endpoints.liskWs;
-const NUM_REQUEST_RETRIES = 5;
-const RETRY_INTERVAL = 500; // ms
-const MAX_INSTANTIATION_WAIT_TIME = 100; // in ms
+const RETRY_INTERVAL = config.apiClient.instantiation.retryInterval;
+const MAX_INSTANTIATION_WAIT_TIME = config.apiClient.instantiation.maxWaitTime;
+const NUM_REQUEST_RETRIES = config.apiClient.request.maxRetries;
+const ENDPOINT_INVOKE_RETRY_DELAY = config.apiClient.request.retryDelay;
 
 // Caching and flags
 let clientCache;
@@ -101,7 +102,7 @@ const invokeEndpoint = async (endpoint, params = {}, numRetries = NUM_REQUEST_RE
 			return response;
 		} catch (err) {
 			if (retries && err.message.includes(timeoutMessage)) {
-				await delay(10);
+				await delay(ENDPOINT_INVOKE_RETRY_DELAY);
 			} else {
 				throw err;
 			}

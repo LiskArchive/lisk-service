@@ -113,4 +113,15 @@ config.job = {
 // Every n number of blocks, verify if client connection is alive
 config.connectionVerifyBlockInterval = process.env.CONN_VERIFY_BLOCK_INTERVAL || 10;
 
+config.apiClient = {
+	instantiation: {
+		maxWaitTime: Number(process.env.CLIENT_INSTANTIATION_MAX_WAIT_TIME || 100), // in millisecs
+		retryInterval: Number(process.env.CLIENT_INSTANTIATION_RETRY_INTERVAL || 5), // in millisecs
+	},
+	request: {
+		maxRetries: Number(process.env.ENDPOINT_INVOKE_MAX_RETRIES || 5),
+		retryDelay: Number(process.env.ENDPOINT_INVOKE_RETRY_DELAY || 10), // in millisecs
+	},
+};
+
 module.exports = config;
