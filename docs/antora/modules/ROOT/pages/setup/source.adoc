@@ -333,11 +333,6 @@ npm install -g pm2
 
 == Installation
 
-[IMPORTANT]
-====
-It is strongly recommended that you synchronize your Lisk Core node with the network **before** starting the Lisk Service.
-====
-
 If you have not already done so, clone the {url_github_service}[lisk-service^] GitHub repository and then navigate into the project folder and check out the latest release.
 
 .Clone Lisk Service repository
