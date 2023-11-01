@@ -27,7 +27,19 @@ Mona Bärenfänger <mona@lightcurve.io>
 :url_config: configuration/source.adoc
 :url_management_pm2: management/source.adoc
 :url_references_config: configuration/index.adoc
+:url_core_setup_npm: v4@lisk-core::setup/npm.adoc
 
+[NOTE]
+====
+*Pre-requisite*
+
+Lisk Service is a web application middleware that allows interaction with various blockchain networks based on the Lisk protocol.
+It is recommended to set up a blockchain node first, before setting up Lisk Service.
+
+* To set up a Lisk-Core node, see any of our setup guides, such as xref:{url_core_setup_npm}[].
+* Alternatively, you can set up a sidechain node to connect to Lisk Service.
+* Please make sure to set `system.keepEventsForHeights: -1` in the node config before synchronizing the node with the network.
+====
 
 TIP: Install from source code if you want to customize the codebase of Lisk Service, e.g. if you want to adjust the API to be fully compatible with your blockchain application.
 
