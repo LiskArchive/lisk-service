@@ -29,6 +29,8 @@ Mona Bärenfänger <mona@lightcurve.io>
 :url_references_config: configuration/index.adoc
 :url_core_setup_npm: v4@lisk-core::setup/npm.adoc
 
+TIP: Install from source code if you want to customize the codebase of Lisk Service, e.g. if you want to adjust the API to be fully compatible with your blockchain application.
+
 [NOTE]
 ====
 *Pre-requisite*
@@ -40,8 +42,6 @@ It is recommended to set up a blockchain node first, before setting up Lisk Serv
 * Alternatively, you can set up a sidechain node to connect to Lisk Service.
 * Please make sure to set `system.keepEventsForHeights: -1` in the node config before synchronizing the node with the network.
 ====
-
-TIP: Install from source code if you want to customize the codebase of Lisk Service, e.g. if you want to adjust the API to be fully compatible with your blockchain application.
 
 As an alternative to the Docker image setup, it is also possible to install Lisk Service from source code.
 
