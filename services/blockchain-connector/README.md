@@ -32,7 +32,7 @@ A list of the most commonly used environment variables is presented below:
 - `LISK_APP_DATA_PATH`: Data path to connect with the Lisk SDK-based application node over IPC. Not applicable to a docker-based setup.
 - `GENESIS_BLOCK_URL`: URL of the Lisk SDK-based application' genesis block. Only to be used when the genesis block is large enough to be transmitted over API calls within the timeout.
 - `GEOIP_JSON`: URL of GeoIP server.
-- `ENABLE_BLOCK_CACHING`: Boolean flag to enable the block caching. Disabled by default. To enable, set it to `true`.
+- `ENABLE_BLOCK_CACHING`: Boolean flag to enable the block caching. Enabled by default. To disable, set it to `false`.
 - `EXPIRY_IN_HOURS`: Expiry time (in hours) for block cache. By default, it is set to 12.
 - `CLIENT_INSTANTIATION_MAX_WAIT_TIME`: Maximum wait time (in milliseconds) for the API client instantiation before forcefully instantiating a new client when getApiClient is invoked. By default, it is set to 100.
 - `CLIENT_INSTANTIATION_RETRY_INTERVAL`: Retry interval (in milliseconds) to invoke instantiate API client when getApiClient is invoked. By default, it is set to 5.

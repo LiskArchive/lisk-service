@@ -391,9 +391,9 @@ Only to be used when the genesis block is large enough to be transmitted over AP
 | `ENABLE_BLOCK_CACHING`
 | boolean
 | Boolean flag to enable block caching.
-Disabled by default.
-To enable it, set it to `true`.
-| false
+Enabled by default.
+To disable it, set it to `false`.
+| true
 
 | `EXPIRY_IN_HOURS`
 | number
