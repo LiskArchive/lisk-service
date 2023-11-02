@@ -121,6 +121,9 @@ const init = async () => {
 	await cacheRegisteredRewardModule();
 	await cacheFeeConstants();
 	await updateTokenInfo();
+	await getTokenInitializationFees();
+	await getRewardTokenID();
+	await getPosConstants();
 
 	// Download the genesis block, if applicable
 	await getGenesisBlock();
