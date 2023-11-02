@@ -36,7 +36,7 @@ A list of the most commonly used environment variables is presented below:
 - `EXPIRY_IN_HOURS`: Expiry time (in hours) for block cache. By default, it is set to 12.
 - `CLIENT_INSTANTIATION_MAX_WAIT_TIME`: Maximum wait time (in milliseconds) for the API client instantiation before forcefully instantiating a new client when getApiClient is invoked. By default, it is set to 100.
 - `CLIENT_INSTANTIATION_RETRY_INTERVAL`: Retry interval (in milliseconds) to invoke instantiate API client when getApiClient is invoked. By default, it is set to 5.
-- `ENDPOINT_INVOKE_MAX_RETRIES`: Maximum number of endpoint invocation request retries to the node. By default, it is set to 5.
+- `ENDPOINT_INVOKE_MAX_RETRIES`: Maximum number of endpoint invocation request retries to the node. By default, it is set to 1.
 - `ENDPOINT_INVOKE_RETRY_DELAY`: Delay (in milliseconds) between each endpoint invocation request retry. By default, it is set to 10.
 - `JOB_INTERVAL_CACHE_CLEANUP`: Job run interval to cleanup block cache. By default, it is set to 0.
 - `JOB_SCHEDULE_CACHE_CLEANUP`: Job run cron schedule to cleanup block cache. By default, it is set to run every 12 hours (`0 */12 * * *`).

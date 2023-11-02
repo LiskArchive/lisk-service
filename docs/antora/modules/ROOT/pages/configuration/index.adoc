@@ -410,8 +410,8 @@ By default, it is set to `100`.
 | `CLIENT_INSTANTIATION_RETRY_INTERVAL`
 | number
 | Retry interval (in milliseconds) to invoke instantiate API client when getApiClient is invoked.
-By default, it is set to `5`.
-| 5
+By default, it is set to `1`.
+| 1
 
 | `ENDPOINT_INVOKE_MAX_RETRIES`
 | number
@@ -754,8 +754,8 @@ To accelerate the indexing process, the blockchain-indexer microservice also sup
 
 |`DURABILITY_VERIFY_FREQUENCY`
 |number
-|Frequency in milliseconds to verify if a block is indexed or rolled-back successfully. By default, it is set to 10.
-|false
+|Frequency in milliseconds to verify if a block is indexed or rolled-back successfully. By default, it is set to 1.
+|1
 
 |`INDEX_SNAPSHOT_URL`
 |string
@@ -791,7 +791,7 @@ module.exports = {
         ENABLE_INDEXING_MODE: 'true',
         ENABLE_PERSIST_EVENTS: 'false',
         // ENABLE_APPLY_SNAPSHOT: 'false',
-        // DURABILITY_VERIFY_FREQUENCY: 10,
+        // DURABILITY_VERIFY_FREQUENCY: 1,
         // INDEX_SNAPSHOT_URL: '',
         // ENABLE_SNAPSHOT_ALLOW_INSECURE_HTTP: 'true',
         // SERVICE_INDEXER_MYSQL_READ_REPLICA: 'mysql://lisk:password@127.0.0.1:3306/lisk',

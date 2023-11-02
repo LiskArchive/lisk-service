@@ -378,7 +378,7 @@ const indexBlock = async job => {
 				error.message.includes(e),
 			)
 		) {
-			const errMessage = `Deadlock encountered while indexing block ${failedBlockInfo.id} at height ${failedBlockInfo.height}. Will retry later.`;
+			const errMessage = `Deadlock encountered while indexing block ${failedBlockInfo.id} at height ${failedBlockInfo.height}. Will retry.`;
 			logger.warn(errMessage);
 			logger.debug(`SQL query: ${error.sql}`);
 
@@ -386,7 +386,7 @@ const indexBlock = async job => {
 		}
 
 		logger.warn(
-			`Error occurred while indexing block ${failedBlockInfo.id} at height ${failedBlockInfo.height}. Will retry later.`,
+			`Error occurred while indexing block ${failedBlockInfo.id} at height ${failedBlockInfo.height}. Will retry.`,
 		);
 		logger.debug(error.stack);
 		throw error;
