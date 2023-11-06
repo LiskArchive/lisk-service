@@ -49,11 +49,10 @@ const indexTokenModuleAssets = async dbTrx => {
 		subStore: MODULE_SUB_STORE.TOKEN.USER,
 	});
 	const totalUsers = genesisBlockAssetsLength[MODULE.TOKEN][MODULE_SUB_STORE.TOKEN.USER];
-
 	const tokenModuleData = await requestAll(
 		requestConnector,
 		'getGenesisAssetByModule',
-		{ module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER },
+		{ module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER, limit: 1000 },
 		totalUsers,
 	);
 	const userSubStoreInfos = tokenModuleData[MODULE_SUB_STORE.TOKEN.USER];
@@ -85,7 +84,7 @@ const indexPosValidatorsInfo = async (numValidators, dbTrx) => {
 		const posModuleData = await requestAll(
 			requestConnector,
 			'getGenesisAssetByModule',
-			{ module: MODULE.POS, subStore: MODULE_SUB_STORE.POS.VALIDATORS },
+			{ module: MODULE.POS, subStore: MODULE_SUB_STORE.POS.VALIDATORS, limit: 1000 },
 			numValidators,
 		);
 
@@ -112,7 +111,7 @@ const indexPosStakesInfo = async (numStakers, dbTrx) => {
 		const posModuleData = await requestAll(
 			requestConnector,
 			'getGenesisAssetByModule',
-			{ module: MODULE.POS, subStore: MODULE_SUB_STORE.POS.STAKERS },
+			{ module: MODULE.POS, subStore: MODULE_SUB_STORE.POS.STAKERS, limit: 1000 },
 			numStakers,
 		);
 		const stakers = posModuleData[MODULE_SUB_STORE.POS.STAKERS];
