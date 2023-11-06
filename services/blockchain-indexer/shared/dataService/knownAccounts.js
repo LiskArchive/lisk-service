@@ -62,10 +62,10 @@ const reloadAccountKnowledge = async () => {
 				}
 			} else {
 				logger.warn('Lisk static URL did not respond with valid data.');
-				logger.debug(`Recieved: ${util.inspect(res)}.`);
+				logger.debug(`Received: ${util.inspect(res)}.`);
 			}
 		} else {
-			logger.warn(`Static information anavailable for the current chainID: ${chainID}.`);
+			logger.warn(`Static information unavailable for the current chainID: ${chainID}.`);
 		}
 	} catch (err) {
 		logger.error(`Could not reload known accounts: ${err.message}.`);

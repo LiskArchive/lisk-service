@@ -149,7 +149,7 @@ describe('reloadAccountKnowledge', () => {
 					info: jest.fn(),
 					warn: async data =>
 						expect(data).toEqual(
-							'Static information anavailable for the current chainID: invalidChainID.',
+							'Static information unavailable for the current chainID: invalidChainID.',
 						),
 					error: jest.fn(),
 				}),
