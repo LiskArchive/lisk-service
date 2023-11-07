@@ -42,7 +42,12 @@ const exportAllEvents = async () => {
 		const genericController = regEvent => cb => {
 			const eventListener = async payload => {
 				const signalName = toCamelCase(regEvent.split('_'));
-				logger.info(`Received ${regEvent} event, dispatching ${signalName} signal.`);
+
+				const logMessage = regEvent.endsWith('Block')
+					? `Received ${regEvent} event, dispatching ${signalName} signal (id: ${payload.blockHeader.id}, height: ${payload.blockHeader.height}).`
+					: `Received ${regEvent} event, dispatching ${signalName} signal.`;
+
+				logger.info(logMessage);
 				logger.debug(`Payload: ${JSON.stringify(payload)}`);
 
 				Signals.get(signalName).dispatch(payload);
