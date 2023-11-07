@@ -24,7 +24,7 @@ const logger = Logger();
 let escrowedAmounts;
 let supportedTokens;
 let totalSupply;
-let initializationFees;;
+let initializationFees;
 
 const getTokenBalances = async address => {
 	try {
