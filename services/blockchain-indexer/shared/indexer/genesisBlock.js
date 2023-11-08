@@ -171,8 +171,13 @@ const indexPosModuleAssets = async dbTrx => {
 
 const indexGenesisBlockAssets = async dbTrx => {
 	logger.info('Starting to index the genesis assets.');
+	const IntervalTimeout = setInterval(
+		() => logger.info('Genesis assets indexing still in progress...'),
+		5000,
+	);
 	await indexTokenModuleAssets(dbTrx);
 	await indexPosModuleAssets(dbTrx);
+	clearInterval(IntervalTimeout);
 	logger.info('Finished indexing all the genesis assets.');
 };
 
