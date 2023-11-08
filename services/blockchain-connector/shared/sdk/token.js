@@ -24,6 +24,7 @@ const logger = Logger();
 let escrowedAmounts;
 let supportedTokens;
 let totalSupply;
+let initializationFees;
 
 const getTokenBalances = async address => {
 	try {
@@ -98,9 +99,12 @@ const getTotalSupply = async (isForceUpdate = false) => {
 
 const getTokenInitializationFees = async () => {
 	try {
-		const response = await invokeEndpoint('token_getInitializationFees');
-		if (response.error) throw new Error(response.error);
-		return response;
+		if (!initializationFees) {
+			const response = await invokeEndpoint('token_getInitializationFees');
+			if (response.error) throw new Error(response.error);
+			initializationFees = response;
+		}
+		return initializationFees;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException("Request timed out when calling 'getTokenInitializationFees'.");

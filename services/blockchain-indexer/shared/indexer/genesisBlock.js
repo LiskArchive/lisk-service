@@ -44,16 +44,16 @@ const allAccountsAddresses = [];
 let isTokensBalanceIndexed = false;
 
 const indexTokenModuleAssets = async dbTrx => {
+	logger.info('Starting to index the genesis assets from the Token module.');
 	const genesisBlockAssetsLength = await requestConnector('getGenesisAssetsLength', {
 		module: MODULE.TOKEN,
 		subStore: MODULE_SUB_STORE.TOKEN.USER,
 	});
 	const totalUsers = genesisBlockAssetsLength[MODULE.TOKEN][MODULE_SUB_STORE.TOKEN.USER];
-
 	const tokenModuleData = await requestAll(
 		requestConnector,
 		'getGenesisAssetByModule',
-		{ module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER },
+		{ module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER, limit: 1000 },
 		totalUsers,
 	);
 	const userSubStoreInfos = tokenModuleData[MODULE_SUB_STORE.TOKEN.USER];
@@ -76,16 +76,20 @@ const indexTokenModuleAssets = async dbTrx => {
 	}
 
 	await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
+	logger.info('Finished indexing all the genesis assets from the Token module.');
 };
 
 const indexPosValidatorsInfo = async (numValidators, dbTrx) => {
+	logger.debug(
+		'Starting to index the PoS Validators information from the genesis PoS module assets.',
+	);
 	if (numValidators > 0) {
 		const commissionsTable = await getCommissionsTable();
 
 		const posModuleData = await requestAll(
 			requestConnector,
 			'getGenesisAssetByModule',
-			{ module: MODULE.POS, subStore: MODULE_SUB_STORE.POS.VALIDATORS },
+			{ module: MODULE.POS, subStore: MODULE_SUB_STORE.POS.VALIDATORS, limit: 1000 },
 			numValidators,
 		);
 
@@ -100,9 +104,13 @@ const indexPosValidatorsInfo = async (numValidators, dbTrx) => {
 
 		await commissionsTable.upsert(commissionEntries, dbTrx);
 	}
+	logger.debug(
+		'Finished indexing the PoS Validators information from the genesis PoS module assets.',
+	);
 };
 
 const indexPosStakesInfo = async (numStakers, dbTrx) => {
+	logger.debug('Starting to index the PoS stakes information from the genesis PoS module assets.');
 	let totalStake = BigInt(0);
 	let totalSelfStake = BigInt(0);
 
@@ -112,7 +120,7 @@ const indexPosStakesInfo = async (numStakers, dbTrx) => {
 		const posModuleData = await requestAll(
 			requestConnector,
 			'getGenesisAssetByModule',
-			{ module: MODULE.POS, subStore: MODULE_SUB_STORE.POS.STAKERS },
+			{ module: MODULE.POS, subStore: MODULE_SUB_STORE.POS.STAKERS, limit: 1000 },
 			numStakers,
 		);
 		const stakers = posModuleData[MODULE_SUB_STORE.POS.STAKERS];
@@ -145,9 +153,11 @@ const indexPosStakesInfo = async (numStakers, dbTrx) => {
 
 	await updateTotalSelfStake(totalSelfStake, dbTrx);
 	logger.info(`Updated total self-stakes information at genesis: ${totalSelfStake.toString()}.`);
+	logger.debug('Finished indexing the PoS stakes information from the genesis PoS module assets.');
 };
 
 const indexPosModuleAssets = async dbTrx => {
+	logger.info('Starting to index the genesis assets from the PoS module.');
 	const genesisBlockAssetsLength = await requestConnector('getGenesisAssetsLength', {
 		module: MODULE.POS,
 	});
@@ -156,11 +166,19 @@ const indexPosModuleAssets = async dbTrx => {
 
 	await indexPosValidatorsInfo(numValidators, dbTrx);
 	await indexPosStakesInfo(numStakers, dbTrx);
+	logger.info('Finished indexing all the genesis assets from the PoS module.');
 };
 
 const indexGenesisBlockAssets = async dbTrx => {
+	logger.info('Starting to index the genesis assets.');
+	const IntervalTimeout = setInterval(
+		() => logger.info('Genesis assets indexing still in progress...'),
+		5000,
+	);
 	await indexTokenModuleAssets(dbTrx);
 	await indexPosModuleAssets(dbTrx);
+	clearInterval(IntervalTimeout);
+	logger.info('Finished indexing all the genesis assets.');
 };
 
 const indexTokenBalances = async () => {
