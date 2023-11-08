@@ -93,7 +93,9 @@ config.enableTestingMode = Boolean(
 );
 
 config.cache = {
-	isBlockCachingEnabled: Boolean(String(process.env.ENABLE_BLOCK_CACHING).toLowerCase() === 'true'), // Disabled by default
+	isBlockCachingEnabled: Boolean(
+		String(process.env.ENABLE_BLOCK_CACHING).toLowerCase() !== 'false',
+	), // Enabled by default
 	expiryInHours: process.env.EXPIRY_IN_HOURS || 12,
 	dbDataDir: 'data/db_cache',
 };
@@ -116,7 +118,7 @@ config.connectionVerifyBlockInterval = process.env.CONN_VERIFY_BLOCK_INTERVAL ||
 config.apiClient = {
 	instantiation: {
 		maxWaitTime: Number(process.env.CLIENT_INSTANTIATION_MAX_WAIT_TIME || 100), // in millisecs
-		retryInterval: Number(process.env.CLIENT_INSTANTIATION_RETRY_INTERVAL || 5), // in millisecs
+		retryInterval: Number(process.env.CLIENT_INSTANTIATION_RETRY_INTERVAL || 1), // in millisecs
 	},
 	request: {
 		maxRetries: Number(process.env.ENDPOINT_INVOKE_MAX_RETRIES || 5),

@@ -42,11 +42,6 @@ It is recommended to set up a blockchain node first, before setting up Lisk Serv
 
 == Setting up Lisk Service
 
-[IMPORTANT]
-====
-It is strongly recommended to synchronize your blockchain node with the network **before** starting the Lisk Service.
-====
-
 === Prerequisites
 
 ==== Requirements
