@@ -396,7 +396,7 @@ const indexBlock = async job => {
 const deleteIndexedBlocks = async job => {
 	let addressesToUpdateBalance = [];
 	const { blocks } = job.data;
-	const blockIDs = blocks.map(b => b.id).join(', ');
+	const blockIDs = blocks.map(b => b.id);
 
 	const blocksTable = await getBlocksTable();
 	const connection = await getDBConnection(MYSQL_ENDPOINT);
@@ -409,33 +409,21 @@ const deleteIndexedBlocks = async job => {
 		await BluebirdPromise.map(
 			blocks,
 			async blockFromJob => {
-				const blockFromNode = await getBlockByHeight(blockFromJob.height);
-
-				// Check if deleted block is indexed
+				// Check if the deleted block is indexed
 				const [blockFromDB] = await blocksTable.find({ height: blockFromJob.height, limit: 1 });
 
-				const [lastIndexedBlock = {}] = await blocksTable.find(
+				const [{ height: lastIndexedHeight } = {}] = await blocksTable.find(
 					{
 						sort: 'height:desc',
 						limit: 1,
 					},
 					['height'],
 				);
-				const { height: lastIndexedHeight } = lastIndexedBlock;
 
-				// Skip deletion if the lisk-service has not indexed the block previously.
-				// The fork doesn't have any impact on block indexing in this case.
+				// Skip deletion if the block was not indexed previously. The fork doesn't have any impact on block indexing in this case.
 				if (!blockFromDB || blockFromJob.height > lastIndexedHeight) {
-					logger.debug(
-						`Skipping block deletion as job block height: ${blockFromJob.height} is greater than max indexed height: ${lastIndexedHeight}.`,
-					);
-					return;
-				}
-
-				// Skip deletion if latest block is already stored in DB
-				if (blockFromDB.id === blockFromNode.id) {
-					logger.debug(
-						`Skipping block deletion as latest block with id: ${blockFromDB.id} and height: ${blockFromDB.height} is already indexed.`,
+					logger.info(
+						`Deleted block ${blockFromJob.id} at height ${blockFromJob.height} was not previously indexed. Nothing to update.`,
 					);
 					return;
 				}
@@ -591,7 +579,7 @@ const deleteIndexedBlocks = async job => {
 		}
 
 		logger.warn(
-			`Error occurred while deleting block(s) with ID(s): ${blockIDs}. Will retry later.`,
+			`Deleting block(s) with ID(s): ${blockIDs} failed due to: ${error.message}. Will retry.`,
 		);
 		throw error;
 	}
@@ -600,16 +588,24 @@ const deleteIndexedBlocks = async job => {
 const deleteIndexedBlocksWrapper = async job => {
 	try {
 		// eslint-disable-next-line no-use-before-define
-		indexBlocksQueue.pause();
+		if (!indexBlocksQueue.queue.isPaused()) {
+			// eslint-disable-next-line no-use-before-define
+			await indexBlocksQueue.pause();
+		}
 		await deleteIndexedBlocks(job);
 	} catch (err) {
-		// eslint-disable-next-line no-use-before-define
-		deleteIndexedBlocksQueue.add(job.data);
-		logger.error(`Deletion of block failed. \nError:${err.message}`);
+		if (job.attemptsMade === job.opts.attempts - 1) {
+			// eslint-disable-next-line no-use-before-define
+			await deleteIndexedBlocksQueue.add(job.data);
+		}
 	}
 
+	// Resume indexing once all deletion jobs are processed
 	// eslint-disable-next-line no-use-before-define
-	indexBlocksQueue.resume();
+	if (await getPendingDeleteJobCount() === 0){
+		// eslint-disable-next-line no-use-before-define
+		await indexBlocksQueue.resume();
+	}
 };
 
 // Initialize queues
@@ -632,6 +628,12 @@ const getLiveIndexingJobCount = async () => {
 	const jobCount = await bullQueue.getJobCounts();
 	const count = jobCount.active + jobCount.waiting;
 	return count;
+};
+
+const getPendingDeleteJobCount = async () => {
+	const { queue: bullQueue } = deleteIndexedBlocksQueue;
+	const jobCount = await bullQueue.getJobCounts();
+	return jobCount.waiting;
 };
 
 const scheduleBlockDeletion = async block => deleteIndexedBlocksQueue.add({ blocks: [block] });

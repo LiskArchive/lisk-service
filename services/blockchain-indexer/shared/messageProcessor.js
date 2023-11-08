@@ -36,7 +36,6 @@ const {
 	reloadValidatorCache,
 	getGenerators,
 	getNumberOfGenerators,
-	normalizeBlocks,
 } = require('./dataService');
 const { accountAddrUpdateQueue } = require('./indexer/accountIndex');
 
@@ -86,28 +85,17 @@ const newBlockProcessor = async header => {
 };
 
 const deleteBlockProcessor = async header => {
-	let response;
-	let error;
 	try {
 		logger.info(
 			`Scheduling the delete block event for the block at height: ${header.height}, id: ${header.id}`,
 		);
-		response = await formatBlock(header);
+		const response = await formatBlock(header);
 		await scheduleBlockDeletion(header);
+		Signals.get('deleteBlock').dispatch(response);
 	} catch (err) {
-		const normalizedBlocks = await normalizeBlocks([
-			{
-				header,
-				transactions: [],
-				assets: [],
-			},
-		]);
-		response = { data: normalizedBlocks };
-		error = err;
+		logger.warn(`Processing delete block event for ID ${header.id} at height ${header.height} failed due to: ${err.message}. Will retry.`);
+		throw err;
 	}
-	Signals.get('deleteBlock').dispatch(response);
-
-	if (error) throw error;
 };
 
 const newRoundProcessor = async () => {
@@ -147,8 +135,14 @@ const initMessageProcessors = async () => {
 			const { header } = job.data;
 			await newBlockProcessor(header);
 		} else if (isDeleteBlock) {
-			const { header } = job.data;
-			await deleteBlockProcessor(header);
+			try {
+				const { header } = job.data;
+				await deleteBlockProcessor(header);
+			} catch (err) {
+				if (job.attemptsMade === job.opts.attempts - 1) {
+					await eventMessageQueue.add(job.data);
+				}
+			}
 		} else if (isNewRound) {
 			await newRoundProcessor();
 		}
