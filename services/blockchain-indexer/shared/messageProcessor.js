@@ -93,7 +93,9 @@ const deleteBlockProcessor = async header => {
 		await scheduleBlockDeletion(header);
 		Signals.get('deleteBlock').dispatch(response);
 	} catch (err) {
-		logger.warn(`Processing delete block event for ID ${header.id} at height ${header.height} failed due to: ${err.message}. Will retry.`);
+		logger.warn(
+			`Processing delete block event for ID ${header.id} at height ${header.height} failed due to: ${err.message}. Will retry.`,
+		);
 		throw err;
 	}
 };

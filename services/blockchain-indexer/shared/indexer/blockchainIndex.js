@@ -602,7 +602,7 @@ const deleteIndexedBlocksWrapper = async job => {
 
 	// Resume indexing once all deletion jobs are processed
 	// eslint-disable-next-line no-use-before-define
-	if (await getPendingDeleteJobCount() === 0){
+	if ((await getPendingDeleteJobCount()) === 0) {
 		// eslint-disable-next-line no-use-before-define
 		await indexBlocksQueue.resume();
 	}

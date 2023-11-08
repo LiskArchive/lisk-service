@@ -90,7 +90,9 @@ const normalizeBlock = async (originalBlock, isBlockDeleted = false) => {
 				};
 			}
 
-			const events = isBlockDeleted ? await getEventsByBlockID(block.id) : await getEventsByHeight(block.height);
+			const events = isBlockDeleted
+				? await getEventsByBlockID(block.id)
+				: await getEventsByHeight(block.height);
 			const blockRewardEvent = events.find(
 				e =>
 					[MODULE.REWARD, MODULE.DYNAMIC_REWARD].includes(e.module) &&
