@@ -394,12 +394,15 @@ const indexBlock = async job => {
 };
 
 // Returns a list of all indexed blocks since the minimum block height from job
-const getBlocksToDelete = async (blocksFromJob) => {
+const getBlocksToDelete = async blocksFromJob => {
 	if (!blocksFromJob.length) {
 		return blocksFromJob;
 	}
 	const blocksTable = await getBlocksTable();
-	const minBlockHeight = blocksFromJob.reduce((minHeight, block) => Math.min(minHeight, block.height), blocksFromJob[0].height);
+	const minBlockHeight = blocksFromJob.reduce(
+		(minHeight, block) => Math.min(minHeight, block.height),
+		blocksFromJob[0].height,
+	);
 
 	const blocksToRemove = await blocksTable.find(
 		{
@@ -568,7 +571,10 @@ const deleteIndexedBlocks = async job => {
 			{ concurrency: 1 },
 		);
 
-		await blocksTable.delete(blockIDs.map(blockID => ({ id: blockID })), dbTrx);
+		await blocksTable.delete(
+			blockIDs.map(blockID => ({ id: blockID })),
+			dbTrx,
+		);
 		await commitDBTransaction(dbTrx);
 
 		// Add safety check to ensure that the DB transaction is actually committed
@@ -654,13 +660,17 @@ const getPendingDeleteJobCount = async () => {
 const scheduleBlockDeletion = async block => {
 	block = Array.isArray(block) ? block : [block];
 	deleteIndexedBlocksQueue.add({ blocks: [...block] });
-}
+};
 
 const indexNewBlock = async block => {
 	const blocksTable = await getBlocksTable();
 	logger.info(`Scheduling indexing of new block: ${block.id} at height ${block.height}.`);
 
-	const [blockFromDB] = await blocksTable.find({ height: block.height, limit: 1 }, ['id', 'height', 'generatorAddress']);
+	const [blockFromDB] = await blocksTable.find({ height: block.height, limit: 1 }, [
+		'id',
+		'height',
+		'generatorAddress',
+	]);
 
 	// Schedule block deletion incase unprocessed fork found
 	if (blockFromDB && blockFromDB.id !== block.id) {
