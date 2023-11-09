@@ -576,7 +576,7 @@ const deleteIndexedBlocks = async job => {
 				whereIn: {
 					property: 'id',
 					values: blockIDs,
-				}
+				},
 			},
 			dbTrx,
 		);
