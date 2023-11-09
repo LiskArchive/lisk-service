@@ -64,7 +64,7 @@ const getBlocksTotal = async (params, blocksResponse) => {
 	let total;
 
 	if (params.generatorAddress) {
-		total = typeof blocksResponse.meta.total === 'undefined' ? null : blocksResponse.meta.total;
+		total = 'total' in blocksResponse.meta ? blocksResponse.meta.total : null;
 	} else if (params.blockID || !Number.isNaN(Number(params.height))) {
 		total = blocksResponse.data.length;
 	} else if (
@@ -79,13 +79,16 @@ const getBlocksTotal = async (params, blocksResponse) => {
 	return total;
 };
 
-const formatBlock = async header => {
+const formatBlock = async (header, isDeletedBlock = false) => {
 	const blocksResponse = {
 		data: [],
 		meta: {},
 	};
 
-	const response = await business.formatBlock({ header, assets: [], transactions: [] });
+	const response = await business.formatBlock(
+		{ header, assets: [], transactions: [] },
+		isDeletedBlock,
+	);
 	blocksResponse.data.push(response);
 
 	return {

@@ -586,26 +586,23 @@ const deleteIndexedBlocks = async job => {
 };
 
 const deleteIndexedBlocksWrapper = async job => {
+	/* eslint-disable no-use-before-define */
 	try {
-		// eslint-disable-next-line no-use-before-define
 		if (!indexBlocksQueue.queue.isPaused()) {
-			// eslint-disable-next-line no-use-before-define
 			await indexBlocksQueue.pause();
 		}
 		await deleteIndexedBlocks(job);
 	} catch (err) {
 		if (job.attemptsMade === job.opts.attempts - 1) {
-			// eslint-disable-next-line no-use-before-define
 			await deleteIndexedBlocksQueue.add(job.data);
 		}
+	} finally {
+		// Resume indexing once all deletion jobs are processed
+		if ((await getPendingDeleteJobCount()) === 0) {
+			await indexBlocksQueue.resume();
+		}
 	}
-
-	// Resume indexing once all deletion jobs are processed
-	// eslint-disable-next-line no-use-before-define
-	if ((await getPendingDeleteJobCount()) === 0) {
-		// eslint-disable-next-line no-use-before-define
-		await indexBlocksQueue.resume();
-	}
+	/* eslint-enable no-use-before-define */
 };
 
 // Initialize queues
@@ -632,8 +629,8 @@ const getLiveIndexingJobCount = async () => {
 
 const getPendingDeleteJobCount = async () => {
 	const { queue: bullQueue } = deleteIndexedBlocksQueue;
-	const jobCount = await bullQueue.getJobCounts();
-	return jobCount.waiting;
+	const jobCount = await bullQueue.getWaitingCount();
+	return jobCount;
 };
 
 const scheduleBlockDeletion = async block => deleteIndexedBlocksQueue.add({ blocks: [block] });

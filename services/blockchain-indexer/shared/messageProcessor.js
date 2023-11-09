@@ -76,22 +76,28 @@ const initQueueStatus = async () => {
 };
 
 const newBlockProcessor = async header => {
-	logger.debug(`New block arrived at height ${header.height}, id: ${header.id}`);
+	logger.debug(`New block (${header.id}) received at height ${header.height}.`);
 	const response = await formatBlock(header);
 	const [newBlock] = response.data;
 	await indexNewBlock(newBlock);
 	await performLastBlockUpdate(newBlock);
 	Signals.get('newBlock').dispatch(response);
+	logger.info(
+		`Finished scheduling new block (${header.id}) event for the block at height ${header.height}.`,
+	);
 };
 
 const deleteBlockProcessor = async header => {
 	try {
-		logger.info(
-			`Scheduling the delete block event for the block at height: ${header.height}, id: ${header.id}`,
+		logger.debug(
+			`Scheduling the delete block (${header.id}) event for the block at height ${header.height}.`,
 		);
-		const response = await formatBlock(header);
+		const response = await formatBlock(header, false);
 		await scheduleBlockDeletion(header);
 		Signals.get('deleteBlock').dispatch(response);
+		logger.info(
+			`Finished scheduling the delete block (${header.id}) event for the block at height ${header.height}.`,
+		);
 	} catch (err) {
 		logger.warn(
 			`Processing delete block event for ID ${header.id} at height ${header.height} failed due to: ${err.message}. Will retry.`,
@@ -108,6 +114,7 @@ const newRoundProcessor = async () => {
 	const generators = await getGenerators({ limit, offset: 0 });
 	const response = { generators: generators.data.map(generator => generator.address) };
 	Signals.get('newRound').dispatch(response);
+	logger.info(`Finished performing all updates on new round.`);
 };
 
 const initMessageProcessors = async () => {

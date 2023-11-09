@@ -47,7 +47,7 @@ const latestBlockCache = CacheRedis('latestBlock', config.endpoints.cache);
 
 let latestBlock;
 
-const normalizeBlock = async (originalBlock, isBlockDeleted = false) => {
+const normalizeBlock = async (originalBlock, isDeletedBlock = false) => {
 	try {
 		const blocksTable = await getBlocksTable();
 
@@ -90,7 +90,7 @@ const normalizeBlock = async (originalBlock, isBlockDeleted = false) => {
 				};
 			}
 
-			const events = isBlockDeleted
+			const events = isDeletedBlock
 				? await getEventsByBlockID(block.id)
 				: await getEventsByHeight(block.height);
 			const blockRewardEvent = events.find(
@@ -191,17 +191,13 @@ const isQueryFromIndex = params => {
 	return !isDirectQuery && !isLatestBlockFetch;
 };
 
-const formatBlock = async block => normalizeBlock(block);
+const formatBlock = async (block, isDeletedBlock = false) => normalizeBlock(block, isDeletedBlock);
 
 const getBlocks = async params => {
 	const blocksTable = await getBlocksTable();
 	const blocks = {
 		data: [],
-		meta: {
-			count: 0,
-			offset: params.offset,
-			total: 0,
-		},
+		meta: {},
 	};
 
 	if (params.blockID) {
@@ -226,10 +222,9 @@ const getBlocks = async params => {
 
 	try {
 		if (params.ids) {
-			if (Array.isArray(params.ids) && !params.ids.length) {
-				return blocks;
+			if (Array.isArray(params.ids) && params.ids.length) {
+				blocks.data = await getBlocksByIDs(params.ids);
 			}
-			blocks.data = await getBlocksByIDs(params.ids);
 		} else if (params.id) {
 			blocks.data.push(await getBlockByID(params.id));
 			if ('offset' in params && params.limit)
