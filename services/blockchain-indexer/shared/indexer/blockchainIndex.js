@@ -572,7 +572,12 @@ const deleteIndexedBlocks = async job => {
 		);
 
 		await blocksTable.delete(
-			blockIDs.map(blockID => ({ id: blockID })),
+			{
+				whereIn: {
+					property: 'id',
+					values: blockIDs,
+				}
+			},
 			dbTrx,
 		);
 		await commitDBTransaction(dbTrx);
