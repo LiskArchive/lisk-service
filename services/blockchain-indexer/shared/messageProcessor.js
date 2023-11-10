@@ -92,7 +92,7 @@ const deleteBlockProcessor = async header => {
 		logger.debug(
 			`Scheduling the delete block (${header.id}) event for the block at height ${header.height}.`,
 		);
-		const response = await formatBlock(header, false);
+		const response = await formatBlock(header, true);
 		await scheduleBlockDeletion(header);
 		Signals.get('deleteBlock').dispatch(response);
 		logger.info(
