@@ -42,7 +42,7 @@ const escrow = {
 };
 
 const dataSchema = {
-	chainName: Joi.string().pattern(regex.NAME).required(),
+	chainName: Joi.string().pattern(regex.CHAIN_NAME).required(),
 	chainID: Joi.string().pattern(regex.CHAIN_ID).required(),
 	status: Joi.string()
 		.valid(...validStatuses)

@@ -26,7 +26,7 @@ const {
 
 const logger = Logger();
 
-const { getEventsByHeight } = require('./events');
+const { getEventsByHeight, getEventsByBlockID } = require('./events');
 const { getFinalizedHeight, MODULE, EVENT } = require('../../constants');
 const blocksTableSchema = require('../../database/schema/blocks');
 
@@ -47,7 +47,7 @@ const latestBlockCache = CacheRedis('latestBlock', config.endpoints.cache);
 
 let latestBlock;
 
-const normalizeBlock = async originalBlock => {
+const normalizeBlock = async (originalBlock, isDeletedBlock = false) => {
 	try {
 		const blocksTable = await getBlocksTable();
 
@@ -90,7 +90,9 @@ const normalizeBlock = async originalBlock => {
 				};
 			}
 
-			const events = await getEventsByHeight(block.height);
+			const events = isDeletedBlock
+				? await getEventsByBlockID(block.id)
+				: await getEventsByHeight(block.height);
 			const blockRewardEvent = events.find(
 				e =>
 					[MODULE.REWARD, MODULE.DYNAMIC_REWARD].includes(e.module) &&
@@ -189,7 +191,7 @@ const isQueryFromIndex = params => {
 	return !isDirectQuery && !isLatestBlockFetch;
 };
 
-const formatBlock = async block => normalizeBlock(block);
+const formatBlock = async (block, isDeletedBlock = false) => normalizeBlock(block, isDeletedBlock);
 
 const getBlocks = async params => {
 	const blocksTable = await getBlocksTable();
@@ -220,8 +222,9 @@ const getBlocks = async params => {
 
 	try {
 		if (params.ids) {
-			if (Array.isArray(params.ids) && !params.ids.length) return blocks;
-			blocks.data = await getBlocksByIDs(params.ids);
+			if (Array.isArray(params.ids) && params.ids.length) {
+				blocks.data = await getBlocksByIDs(params.ids);
+			}
 		} else if (params.id) {
 			blocks.data.push(await getBlockByID(params.id));
 			if ('offset' in params && params.limit)

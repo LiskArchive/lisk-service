@@ -899,7 +899,7 @@ Retrieves user-specific details from the Auth module.
 | --------- | ---- | ---------- | ------- | ------- |
 | address | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | Required. |
 <!-- | publicKey | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  | -->
-<!-- | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  | -->
+<!-- | name | String | `/^[a-z0-9!@$&_.]{1,20}$/` | *(empty)* |  | -->
 
 #### Response example
 
@@ -957,7 +957,7 @@ Retrieves user-specific details from the Validator module.
 | --------- | ---- | ---------- | ------- | ------- |
 | address | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | Required. |
 <!-- | publicKey | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  | -->
-<!-- | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  | -->
+<!-- | name | String | `/^[a-z0-9!@$&_.]{1,20}$/` | *(empty)* |  | -->
 
 #### Response example
 
@@ -1056,7 +1056,7 @@ Validates if an entry exists in the Token sub-store for the specified address.
 | tokenID | String | `/^\b[a-fA-F0-9]{16}\b$/` | *(empty)* | Required. |
 | address | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | One of address, publicKey or name required. |
 | publicKey | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  |
-| name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| name | String | `/^[a-z0-9!@$&_.]{1,20}$/` | *(empty)* |  |
 
 #### Response example
 
@@ -1104,14 +1104,14 @@ Retrieves the balances from the Token sub-store for the specified address.
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
 <!-- | publicKey | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  | -->
-<!-- | name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  | -->
+<!-- | name | String | `/^[a-z0-9!@$&_.]{1,20}$/` | *(empty)* |  | -->
 
 #### Response example
 
 200 OK
 
 ```jsonc
-{
+{   
   "data": {
     "tokenID": "0000000000000000",
     "availableBalance": "1000000000",
@@ -1445,7 +1445,7 @@ _Supports pagination._
 | --------- | ---- | ---------- | ------- | ------- |
 | address   | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | One of address, publicKey or name required. |
 | publicKey | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  |
-| name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| name | String | `/^[a-z0-9!@$&_.]{1,20}$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
 
@@ -1500,7 +1500,7 @@ _Supports pagination._
 | --------- | ---- | ---------- | ------- | ------- |
 | address   | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | One of address, publicKey or name required. |
 | publicKey | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  |
-| name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| name | String | `/^[a-z0-9!@$&_.]{1,20}$/` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
 
@@ -1619,7 +1619,7 @@ _Supports pagination._
 | --------- | ---- | ---------- | ------- | ------- |
 | address   | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | One of address, publicKey or name required. |
 | publicKey | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  |
-| name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| name | String | `/^[a-z0-9!@$&_.]{1,20}$/` | *(empty)* |  |
 | search | String | `/^[\w!@$&.]{1,64}$/` | *(empty)* | Case-insensitive search by name, address or publicKey. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
@@ -1681,7 +1681,7 @@ Retrieves the list of stakes sent by the specified user by their address, public
 | --------- | ---- | ---------- | ------- | ------- |
 | address   | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | One of address, publicKey or name required. |
 | publicKey | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  |
-| name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| name | String | `/^[a-z0-9!@$&_.]{1,20}$/` | *(empty)* |  |
 | search | String | `/^[\w!@$&.]{1,64}$/` | *(empty)* | Case-insensitive search by name, address or publicKey. Supports both partial and full text search. |
 
 #### Response example
@@ -1741,7 +1741,7 @@ _Supports pagination._
 | --------- | ---- | ---------- | ------- | ------- |
 | address   | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | One of address, publicKey or name required. |
 | publicKey | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  |
-| name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| name | String | `/^[a-z0-9!@$&_.]{1,20}$/` | *(empty)* |  |
 | isLocked | Boolean | `[true, false]` | *(empty)* |  |
 | limit | Number | `[1,100]` | 10 |  |
 | offset | Number | `[0,Inf)` | 0 |  |
@@ -1809,7 +1809,7 @@ _Supports pagination._
 | --------- | ---- | ---------- | ------- | ------- |
 | address   | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* | One of address, publicKey or name required. |
 | publicKey | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  |
-| name | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* |  |
+| name | String | `/^[a-z0-9!@$&_.]{1,20}$/` | *(empty)* |  |
 | status | String | `/^\b(?:active\|standby\|banned\|punished\|ineligible\|,){0,9}\b$/` | *(empty)* | Can be expressed as a CSV. |
 | search | String | `/^[\w!@$&.]{1,64}$/` | *(empty)* | Case-insensitive search by name, address or publicKey. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
@@ -5639,7 +5639,7 @@ _Supports pagination._
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
 | chainID | String | `/^\b(?:[a-fA-F0-9]{8}\|,)+\b$/` | *(empty)* | Can be expressed as a CSV. |
-| chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* | Supports case-insensitive chain name. |
+| chainName | String | `/^[a-z0-9!@$&_.]{1,32}$/` | *(empty)* | Supports case-insensitive chain name. |
 | status | String | `/^\b(?:registered\|activated\|terminated\|unregistered\|,){1,7}\b$/` | *(empty)* | Can be expressed as a CSV. |
 | search | String | `/^[\w!@$&.]{1,20}$/` | *(empty)* | Case-insensitive search by chain name. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
@@ -5910,7 +5910,7 @@ _Supports pagination._
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* | Supports case-insensitive chain name. |
+| chainName | String | `/^[a-z0-9!@$&_.]{1,32}$/` | *(empty)* | Supports case-insensitive chain name. |
 | network | String | `/^\b(?:mainnet\|testnet\|betanet\|devnet\|,){0,7}\b$/` | *(empty)* | Can be expressed as a CSV. |
 | search | String | `/^[\w!@$&.]{1,20}$/` | *(empty)* | Case-insensitive search by chain name. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
@@ -5967,8 +5967,8 @@ _Supports pagination._
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* | Supports case-insensitive chain name. |
-| displayName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* | Supports case-insensitive display name. |
+| chainName | String | `/^[a-z0-9!@$&_.]{1,32}$/` | *(empty)* | Supports case-insensitive chain name. |
+| displayName | String | `/^[a-z0-9!@$&_.]{1,20}$/` | *(empty)* | Supports case-insensitive display name. |
 | chainID | String | `/^\b(?:[a-fA-F0-9]{8}\|,)+\b$/` | *(empty)* | Can be expressed as a CSV. |
 | isDefault | Boolean | `[true, false]` | *(empty)* |  |
 | network | String | `/^\b(?:mainnet\|testnet\|betanet\|devnet\|,){0,7}\b$/` | *(empty)* | Can be expressed as a CSV. |
@@ -6060,7 +6060,7 @@ _Supports pagination._
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| chainName | String | `/^[\w!@$&.]{3,20}$/` | *(empty)* | Supports case-insensitive chain name. |
+| chainName | String | `/^[a-z0-9!@$&_.]{1,32}$/` | *(empty)* | Supports case-insensitive chain name. |
 | chainID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* | |
 | tokenName | String | `/^[\w!@$&.,]{3,}$/` | *(empty)* | Supports case-insensitive token name. |
 | tokenID | String | `/^\b([a-fA-F0-9]{16})(,[a-fA-F0-9]{16})*\b$/` | *(empty)* | Can be expressed as a CSV. |

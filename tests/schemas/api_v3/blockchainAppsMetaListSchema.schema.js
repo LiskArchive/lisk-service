@@ -17,7 +17,7 @@ import Joi from 'joi';
 import regex from './regex';
 
 const blockchainAppMetaListSchema = {
-	chainName: Joi.string().pattern(regex.NAME).required(),
+	chainName: Joi.string().pattern(regex.CHAIN_NAME).required(),
 	chainID: Joi.string().required(),
 	networkType: Joi.string().required(),
 };

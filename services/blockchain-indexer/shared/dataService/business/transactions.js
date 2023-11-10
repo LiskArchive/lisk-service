@@ -44,7 +44,7 @@ const getTransactionIDsByBlockID = async blockID => {
 	const transactions = await transactionsTable.find(
 		{
 			whereIn: {
-				property: 'blockId',
+				property: 'blockID',
 				values: [blockID],
 			},
 		},
