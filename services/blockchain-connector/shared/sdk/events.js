@@ -77,15 +77,13 @@ const getEventsByHeightFormatted = async height => {
 };
 
 // To ensure API Client is alive and receiving chain events
-getNodeInfo().then(nodeInfo => {
-	setInterval(() => {
-		if (eventsCounter === 0) {
-			Signals.get('resetApiClient').dispatch();
-		} else if (eventsCounter > 0) {
-			eventsCounter = 0;
-		}
-	}, config.connectionVerifyBlockInterval * nodeInfo.genesis.blockTime * 1000);
-});
+setInterval(() => {
+	if (eventsCounter === 0) {
+		Signals.get('resetApiClient').dispatch();
+	} else if (eventsCounter > 0) {
+		eventsCounter = 0;
+	}
+}, config.clientConnVerifyInterval);
 
 module.exports = {
 	events,
