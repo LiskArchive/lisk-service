@@ -67,4 +67,7 @@ module.exports = {
 	reloadGeneratorsCache,
 	getGenerators,
 	getNumberOfGenerators,
+
+	// For unit tests
+	getGeneratorsInfo,
 };
