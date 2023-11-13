@@ -44,6 +44,6 @@
 		"node-xlsx": "^0.23.0"
 	},
 	"devDependencies": {
-		"jest": "^27.3.0"
+		"jest": "^29.7.0"
 	}
 }
