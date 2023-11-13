@@ -1053,9 +1053,9 @@ leven@2.1.0:
   resolved "https://registry.yarnpkg.com/leven/-/leven-2.1.0.tgz#c2e7a9f772094dee9d34202ae8acce4687875580"
   integrity sha512-nvVPLpIHUxCUoRLrFqTgSxXJ614d8AgQoWl7zPe/2VadE8+1dpU3LBhowRuBAcuwruWtOdD8oYC9jDNJjXDPyA==
 
-"lisk-service-framework@https://github.com/LiskHQ/lisk-service/raw/7da10982283266907f4e5c8705d79498091e6ef4/framework/dist/lisk-service-framework-1.6.6.tgz":
+"lisk-service-framework@https://github.com/LiskHQ/lisk-service/raw/14b3f0b281b9c5af57085677d66b6c83f6fc3cd8/framework/dist/lisk-service-framework-1.6.6.tgz":
   version "1.6.6"
-  resolved "https://github.com/LiskHQ/lisk-service/raw/7da10982283266907f4e5c8705d79498091e6ef4/framework/dist/lisk-service-framework-1.6.6.tgz#2f29573f87dfc9e43356fe09df7d749791d65397"
+  resolved "https://github.com/LiskHQ/lisk-service/raw/14b3f0b281b9c5af57085677d66b6c83f6fc3cd8/framework/dist/lisk-service-framework-1.6.6.tgz#f5f78c7bdf0bef99ab4b28e295b0b4c6aaa0801f"
   dependencies:
     "@keyv/redis" "^2.1.2"
     "@log4js-node/gelf" "github:MichalTuleja/log4js-node-gelf#89d9933"
@@ -1186,9 +1186,9 @@ mkdirp-classic@^0.5.2, mkdirp-classic@^0.5.3:
   integrity sha512-gKLcREMhtuZRwRAfqP3RFW+TK4JqApVBtOIftVgjuABpAtpxhPGaDcfvbhNvD0B8iD1oUr/txX35NjcaY6Ns/A==
 
 moleculer-web@^0.10.4:
-  version "0.10.6"
-  resolved "https://registry.yarnpkg.com/moleculer-web/-/moleculer-web-0.10.6.tgz#a8bc99b7f153b882018aec9fa553496a86b864f5"
-  integrity sha512-MGNIH6mXLU2Wj63bAgoVzdhMKXALp99F5UHuiBgS2ywakdWEUl/q7GlMblvscioCCkXuUWezId85J0yioYxedg==
+  version "0.10.7"
+  resolved "https://registry.yarnpkg.com/moleculer-web/-/moleculer-web-0.10.7.tgz#f9fe712b4cc277627af08b3587d6d3b6fb4e1685"
+  integrity sha512-/UJtV+O7iQ3aSg/xi/sw3ZswhvzkigzGPjKOR5R97sm2FSihKuLTftUpXlk4dYls7/8c8WSz6H/M/40BenEx9Q==
   dependencies:
     "@fastify/busboy" "^1.0.0"
     body-parser "^1.19.0"
@@ -1203,9 +1203,9 @@ moleculer-web@^0.10.4:
     serve-static "^1.14.1"
 
 moleculer@^0.14.21:
-  version "0.14.31"
-  resolved "https://registry.yarnpkg.com/moleculer/-/moleculer-0.14.31.tgz#55d7e24ba162673b47f150007eeb77d44c5c3529"
-  integrity sha512-EbcafGr4KWfltjwrV+k8xLA7majB7g8RvsD6aQ2bwzYpBo5e8xp9jYlJPpfScoORXAwT75puAqQTrFmAaBpYqA==
+  version "0.14.32"
+  resolved "https://registry.yarnpkg.com/moleculer/-/moleculer-0.14.32.tgz#93abe48d79f989fe4104d56534ff40d60c91318b"
+  integrity sha512-N5RXKS9Z01Gl6gLkf3snLgYbzU0bLci1WNEIuy2D+cjEg7i3XEArsiFHKnmNYWF6L5DajVrT8dw9EqGgvmjmOw==
   dependencies:
     args "^5.0.3"
     eventemitter2 "^6.4.9"
