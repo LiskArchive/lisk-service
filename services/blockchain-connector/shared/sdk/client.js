@@ -38,7 +38,8 @@ let clientCache;
 let instantiationBeginTime;
 let isInstantiating = false;
 
-const checkIsClientAlive = () => clientCache && clientCache._channel.isAlive;
+const checkIsClientAlive = () =>
+	clientCache && clientCache._channel && clientCache._channel.isAlive;
 
 // eslint-disable-next-line consistent-return
 const instantiateClient = async (isForceUpdate = false) => {
@@ -80,10 +81,7 @@ const instantiateClient = async (isForceUpdate = false) => {
 		if (err.code === 'ECONNREFUSED')
 			throw new Error('ECONNREFUSED: Unable to reach a network node.');
 
-		return {
-			data: { error: 'Action not supported' },
-			status: 'METHOD_NOT_ALLOWED',
-		};
+		return clientCache;
 	}
 };
 
