@@ -6,8 +6,9 @@ services:
   mysql:
     image: mysql:8
     platform: linux/amd64
-    command: mysqld --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --max_connections=500
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --max_connections=500
     volumes:
+      - ../../docker/mysql/primary/conf/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
       - db-data:/var/lib/mysql
       - ./mysql-healthcheck.sh:/healthcheck.sh
     restart: always

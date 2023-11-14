@@ -1,5 +1,8 @@
 [mysqld]
 
+# Default authentication plugin
+default-authentication-plugin=caching_sha2_password 
+
 # Unique identifying number of the server.
 server_id = 2
 

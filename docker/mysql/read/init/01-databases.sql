@@ -1,5 +1,5 @@
 -- Create `reader` user for read queries and grant read privilages.
-CREATE USER 'reader'@'%' IDENTIFIED WITH mysql_native_password BY 'password';
+CREATE USER 'reader'@'%' IDENTIFIED WITH caching_sha2_password BY 'password';
 GRANT SELECT ON *.* TO 'reader'@'%';
 FLUSH PRIVILEGES;
 
