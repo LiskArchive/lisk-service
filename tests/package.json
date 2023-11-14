@@ -34,10 +34,10 @@
 		"start": "node app.js"
 	},
 	"dependencies": {
-		"@liskhq/lisk-client": "^6.0.0-rc.1",
-		"@liskhq/lisk-codec": "^0.4.0-rc.1",
-		"@liskhq/lisk-cryptography": "^4.0.0-rc.1",
-		"@liskhq/lisk-validator": "^0.8.0-rc.1",
+		"@liskhq/lisk-client": "^6.0.0",
+		"@liskhq/lisk-codec": "^0.4.0",
+		"@liskhq/lisk-cryptography": "^4.0.0",
+		"@liskhq/lisk-validator": "^0.8.0",
 		"async": "^3.2.3",
 		"chai": "^4.3.6",
 		"csv-parse": "^5.0.4",
@@ -47,7 +47,7 @@
 		"log4js": "^6.4.7",
 		"mockserver": "^3.1.1",
 		"popsicle": "^12.1.0",
-		"semver": "^7.3.7",
+		"semver": "^7.5.4",
 		"socket.io": "^4.5.3",
 		"socket.io-client": "^4.5.3"
 	},
@@ -58,7 +58,7 @@
 		"artillery": "^2.0.0-38",
 		"artillery-engine-socketio-v3": "^1.2.0",
 		"await-to-js": "=2.1.1",
-		"axios": "^0.21.4",
+		"axios": "^1.6.0",
 		"jest": "^29.7.0",
 		"jest-circus": "^29.7.0",
 		"jest-extended": "^0.11.5",
