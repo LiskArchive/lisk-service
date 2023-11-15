@@ -32,7 +32,7 @@ const {
 	getCurrentChainID,
 } = require('./interoperability');
 const { dryRunTransactions } = require('./transactionsDryRun');
-const { tokenHasUserAccount, getTokenConstants } = require('./token');
+const { tokenHasUserAccount, getTokenConstants, getTokenBalances } = require('./token');
 const { getSchemas } = require('./schemas');
 
 const {
@@ -157,11 +157,13 @@ const getCcmBuffer = async transaction => {
 	if (transaction.module !== MODULE.TOKEN || transaction.command !== COMMAND.TRANSFER_CROSS_CHAIN)
 		return null;
 
-	// TODO: Add error handling
 	const {
 		data: { events },
 	} = await dryRunTransactions({ transaction, skipVerify: true });
 	const ccmSendSuccess = events.find(event => event.name === EVENT.CCM_SEND_SUCCESS);
+
+	// TODO: Add error handling
+	// if (!ccmSendSuccess) { Handle based on events }
 
 	// Encode CCM (required to calculate CCM length)
 	const { ccm } = ccmSendSuccess.data;
@@ -297,6 +299,20 @@ const validateTransactionParams = async transaction => {
 		}
 	}
 
+	if (transaction.params.tokenID) {
+		const senderAddress = getLisk32AddressFromPublicKey(transaction.senderPublicKey);
+		const {data: [balanceInfo]} = await getTokenBalances({ address: senderAddress, tokenID: transaction.params.tokenID });
+		const {
+			data: { extraCommandFees },
+		} = await getTokenConstants();
+
+		if (BigInt(balanceInfo.availableBalance) < BigInt(transaction.params.amount) + BigInt(extraCommandFees.userAccountInitializationFee)) {
+			throw new ValidationException(
+				`${senderAddress} has insufficient balance for ${transaction.params.tokenID} to send the transaction.`,
+			);
+		}
+	}
+
 	const allSchemas = await getSchemas();
 	const txCommand = allSchemas.data.commands.find(
 		e => e.moduleCommand === `${transaction.module}:${transaction.command}`,
@@ -318,6 +334,16 @@ const validateTransactionParams = async transaction => {
 	}
 };
 
+const validateUserTokenIDBalance = async (tokenID, address) => {
+	const response = await tokenHasUserAccount({ tokenID, address });
+
+	if (!response.data.isExists) {
+		throw new ValidationException(
+			`${address} has insufficient balance for ${tokenID} to send the transaction.`,
+		);
+	}
+};
+
 const estimateTransactionFees = async params => {
 	const estimateTransactionFeesRes = {
 		data: {
@@ -326,9 +352,13 @@ const estimateTransactionFees = async params => {
 		meta: {},
 	};
 
+	const senderAddress = getLisk32AddressFromPublicKey(params.transaction.senderPublicKey);
+	const feeEstimatePerByte = getFeeEstimates();
+
+	// Validate if the sender has balance for transaction fee
+	await validateUserTokenIDBalance(feeEstimatePerByte.feeTokenID, senderAddress);
 	await validateTransactionParams(params.transaction);
 
-	const senderAddress = getLisk32AddressFromPublicKey(params.transaction.senderPublicKey);
 	const numberOfSignatures = await getNumberOfSignatures(senderAddress);
 
 	const trxWithMockProps = await mockTransaction(params.transaction, numberOfSignatures);
@@ -337,7 +367,6 @@ const estimateTransactionFees = async params => {
 		transaction: trxWithMockProps,
 		additionalFee: additionalFees.total.toString(),
 	});
-	const feeEstimatePerByte = getFeeEstimates();
 
 	// Calculate message fee for cross-chain transfers
 	if (
@@ -351,6 +380,8 @@ const estimateTransactionFees = async params => {
 		});
 		const ccmLength = ccmBuffer.length;
 		const channelInfo = await resolveChannelInfo(params.transaction.params.receivingChainID);
+
+		await validateUserTokenIDBalance(channelInfo.messageFeeTokenID, senderAddress);
 
 		const ccmByteFee = BigInt(ccmLength) * BigInt(channelInfo.minReturnFeePerByte);
 		const totalMessageFee = additionalFees.params.messageFee
