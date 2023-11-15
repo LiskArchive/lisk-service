@@ -667,8 +667,8 @@ const getPendingDeleteJobCount = async () => {
 };
 
 const scheduleBlockDeletion = async block => {
-	block = Array.isArray(block) ? block : [block];
-	deleteIndexedBlocksQueue.add({ blocks: [...block] });
+	const blocks = Array.isArray(block) ? block : [block];
+	await deleteIndexedBlocksQueue.add({ blocks });
 };
 
 const indexNewBlock = async block => {
