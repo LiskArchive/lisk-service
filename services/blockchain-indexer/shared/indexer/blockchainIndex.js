@@ -164,190 +164,233 @@ const indexBlock = async job => {
 				where: { height: blockHeightToIndex },
 				limit: 1,
 			},
-			['height'],
+			['id', 'height'],
 		);
 
-		// If current block is already indexed, then index the highest indexed block height + 1
-		if (Object.keys(currentBlockInDB).length) {
-			// Skip indexing if the blockchain is fully indexed.
-			const currentBlockchainHeight = await getCurrentHeight();
-			if (lastIndexedHeight >= currentBlockchainHeight) return;
-
-			blockHeightToIndex = lastIndexedHeight + 1;
-		}
-
+		// Get block from node
 		block = await getBlockByHeight(blockHeightToIndex);
 		if (!validateBlock(block)) {
 			throw new Error(`Invalid block ${block.id} at height ${block.height}.`);
 		}
 
-		// Create DB transaction. Queries from here sees a snapshot of the database
-		const connection = await getDBConnection(MYSQL_ENDPOINT);
-		dbTrx = await startDBTransaction(connection);
-		logger.debug(
-			`Created new MySQL transaction to index block ${block.id} at height ${block.height}.`,
-		);
+		// If current index block is incorrectly indexed then schedule for deletion
+		if (Object.keys(currentBlockInDB).length && block.id !== currentBlockInDB.id) {
+			// eslint-disable-next-line no-use-before-define
+			await scheduleBlockDeletion(currentBlockInDB);
 
-		let blockReward = BigInt('0');
+			let currentBlockHeight = blockHeightToIndex - 1;
+			let blockFromDB;
+			let blockFromNode;
 
-		if (block.height === (await getGenesisHeight())) {
-			await indexGenesisBlockAssets(dbTrx);
-		}
+			do {
+				// Get node from database
+				[blockFromDB] = await blocksTable.find({ height: currentBlockHeight, limit: 1 }, [
+					'id',
+					'height',
+					'generatorAddress',
+					'timestamp',
+					'isFinal',
+				]);
 
-		const events = await getEventsByHeight(block.height);
-		cacheEventsByBlockID(block.id, events);
+				// Get node from connector
+				[blockFromNode] = await getBlockByHeight(currentBlockHeight);
 
-		if (block.transactions.length) {
-			const { transactions, assets, ...blockHeader } = block;
+				// Schedule block deletion in case of an unprocessed fork detection
+				if (!blockFromNode || (blockFromDB && blockFromDB.id !== blockFromNode.id)) {
+					logger.info(
+						`Fork detected while scheduling indexing at height: ${block.height}. Actual blockID: ${block.id}, indexed blockID: ${blockFromDB.id}.`,
+					);
 
-			const transactionsTable = await getTransactionsTable();
-			await BluebirdPromise.map(
-				block.transactions,
-				async (tx, index) => {
-					// Apply default transformations and index with minimal information by default
-					tx.index = index;
-					tx.moduleCommand = `${tx.module}:${tx.command}`;
-					tx.blockID = block.id;
-					tx.height = block.height;
-					tx.senderAddress = getLisk32AddressFromPublicKey(tx.senderPublicKey);
-					tx.timestamp = block.timestamp;
-					tx.executionStatus = getTransactionExecutionStatus(tx, events);
+					// eslint-disable-next-line no-use-before-define
+					await scheduleBlockDeletion(blockFromDB);
+				}
 
-					// Store address -> publicKey mapping
-					indexAccountPublicKey(tx.senderPublicKey);
+				// Schedule indexing of the incoming block if not already indexed or a fork was detected
+				if (!blockFromDB || blockFromDB.id !== blockFromNode.id) {
+					// eslint-disable-next-line no-use-before-define
+					await indexBlocksQueue.add({ height: block.height });
+				}
 
-					await transactionsTable.upsert(tx, dbTrx);
+				currentBlockHeight--;
+			} while (!blockFromNode || (blockFromDB && blockFromDB.id !== blockFromNode.id));
+		} else {
+			// If current block is already indexed, then index the highest indexed block height + 1
+			if (Object.keys(currentBlockInDB).length) {
+				// Skip indexing if the blockchain is fully indexed.
+				const currentBlockchainHeight = await getCurrentHeight();
+				if (lastIndexedHeight >= currentBlockchainHeight) return;
 
-					// Invoke 'applyTransaction' to execute command specific processing logic
-					await applyTransaction(blockHeader, tx, events, dbTrx);
-				},
-				{ concurrency: block.transactions.length },
+				blockHeightToIndex = lastIndexedHeight + 1;
+			}
+
+			// Create DB transaction. Queries from here sees a snapshot of the database
+			const connection = await getDBConnection(MYSQL_ENDPOINT);
+			dbTrx = await startDBTransaction(connection);
+			logger.debug(
+				`Created new MySQL transaction to index block ${block.id} at height ${block.height}.`,
 			);
-		}
 
-		// Update generatedBlocks count for the block generator
-		const validatorsTable = await getValidatorsTable();
-		const numRowsAffected = await validatorsTable.increment(
-			{
-				increment: { generatedBlocks: 1 },
-				where: { address: block.generatorAddress },
-			},
-			dbTrx,
-		);
-		if (numRowsAffected === 0) {
-			await validatorsTable.upsert(
+			let blockReward = BigInt('0');
+
+			if (block.height === (await getGenesisHeight())) {
+				await indexGenesisBlockAssets(dbTrx);
+			}
+
+			const events = await getEventsByHeight(block.height);
+			cacheEventsByBlockID(block.id, events);
+
+			if (block.transactions.length) {
+				const { transactions, assets, ...blockHeader } = block;
+
+				const transactionsTable = await getTransactionsTable();
+				await BluebirdPromise.map(
+					block.transactions,
+					async (tx, index) => {
+						// Apply default transformations and index with minimal information by default
+						tx.index = index;
+						tx.moduleCommand = `${tx.module}:${tx.command}`;
+						tx.blockID = block.id;
+						tx.height = block.height;
+						tx.senderAddress = getLisk32AddressFromPublicKey(tx.senderPublicKey);
+						tx.timestamp = block.timestamp;
+						tx.executionStatus = getTransactionExecutionStatus(tx, events);
+
+						// Store address -> publicKey mapping
+						indexAccountPublicKey(tx.senderPublicKey);
+
+						await transactionsTable.upsert(tx, dbTrx);
+
+						// Invoke 'applyTransaction' to execute command specific processing logic
+						await applyTransaction(blockHeader, tx, events, dbTrx);
+					},
+					{ concurrency: block.transactions.length },
+				);
+			}
+
+			// Update generatedBlocks count for the block generator
+			const validatorsTable = await getValidatorsTable();
+			const numRowsAffected = await validatorsTable.increment(
 				{
-					address: block.generatorAddress,
-					generatedBlocks: 1,
+					increment: { generatedBlocks: 1 },
+					where: { address: block.generatorAddress },
 				},
 				dbTrx,
 			);
-		}
-
-		if (events.length) {
-			const eventsTable = await getEventsTable();
-			const eventTopicsTable = await getEventTopicsTable();
-
-			const { eventsInfo, eventTopicsInfo } = getEventsInfoToIndex(block, events);
-			await eventsTable.upsert(eventsInfo, dbTrx);
-			await eventTopicsTable.upsert(eventTopicsInfo, dbTrx);
-
-			// Update block generator's rewards
-			const blockRewardEvent = events.find(
-				e =>
-					[MODULE.REWARD, MODULE.DYNAMIC_REWARD].includes(e.module) &&
-					e.name === EVENT.REWARD_MINTED,
-			);
-			if (blockRewardEvent) {
-				blockReward = BigInt(blockRewardEvent.data.amount || '0');
-
-				if (blockReward !== BigInt('0')) {
-					const commissionAmount = await calcCommissionAmount(
-						block.generatorAddress,
-						block.height,
-						blockReward,
-					);
-					const selfStakeReward = await calcSelfStakeReward(
-						block.generatorAddress,
-						blockReward,
-						commissionAmount,
-					);
-
-					logger.trace(
-						`Increasing commission for validator ${block.generatorAddress} by ${commissionAmount}.`,
-					);
-					await validatorsTable.increment(
-						{
-							increment: { totalCommission: BigInt(commissionAmount) },
-							where: { address: block.generatorAddress },
-						},
-						dbTrx,
-					);
-					logger.debug(
-						`Increased commission for validator ${block.generatorAddress} by ${commissionAmount}.`,
-					);
-					logger.trace(
-						`Increasing self-stake rewards for validator ${block.generatorAddress} by ${selfStakeReward}.`,
-					);
-					await validatorsTable.increment(
-						{
-							increment: { totalSelfStakeRewards: BigInt(selfStakeReward) },
-							where: { address: block.generatorAddress },
-						},
-						dbTrx,
-					);
-					logger.debug(
-						`Increased self-stake rewards for validator ${block.generatorAddress} by ${selfStakeReward}.`,
-					);
-				}
+			if (numRowsAffected === 0) {
+				await validatorsTable.upsert(
+					{
+						address: block.generatorAddress,
+						generatedBlocks: 1,
+					},
+					dbTrx,
+				);
 			}
 
-			// Calculate locked amount change and update in key_value_store table for affected tokens
-			const tokenIDLockedAmountChangeMap = {};
-			events.forEach(event => {
-				const { data: eventData } = event;
-				// Initialize map entry with BigInt
-				if (
-					[EVENT.LOCK, EVENT.UNLOCK].includes(event.name) &&
-					!(eventData.tokenID in tokenIDLockedAmountChangeMap)
-				) {
-					tokenIDLockedAmountChangeMap[eventData.tokenID] = BigInt('0');
+			if (events.length) {
+				const eventsTable = await getEventsTable();
+				const eventTopicsTable = await getEventTopicsTable();
+
+				const { eventsInfo, eventTopicsInfo } = getEventsInfoToIndex(block, events);
+				await eventsTable.upsert(eventsInfo, dbTrx);
+				await eventTopicsTable.upsert(eventTopicsInfo, dbTrx);
+
+				// Update block generator's rewards
+				const blockRewardEvent = events.find(
+					e =>
+						[MODULE.REWARD, MODULE.DYNAMIC_REWARD].includes(e.module) &&
+						e.name === EVENT.REWARD_MINTED,
+				);
+				if (blockRewardEvent) {
+					blockReward = BigInt(blockRewardEvent.data.amount || '0');
+
+					if (blockReward !== BigInt('0')) {
+						const commissionAmount = await calcCommissionAmount(
+							block.generatorAddress,
+							block.height,
+							blockReward,
+						);
+						const selfStakeReward = await calcSelfStakeReward(
+							block.generatorAddress,
+							blockReward,
+							commissionAmount,
+						);
+
+						logger.trace(
+							`Increasing commission for validator ${block.generatorAddress} by ${commissionAmount}.`,
+						);
+						await validatorsTable.increment(
+							{
+								increment: { totalCommission: BigInt(commissionAmount) },
+								where: { address: block.generatorAddress },
+							},
+							dbTrx,
+						);
+						logger.debug(
+							`Increased commission for validator ${block.generatorAddress} by ${commissionAmount}.`,
+						);
+						logger.trace(
+							`Increasing self-stake rewards for validator ${block.generatorAddress} by ${selfStakeReward}.`,
+						);
+						await validatorsTable.increment(
+							{
+								increment: { totalSelfStakeRewards: BigInt(selfStakeReward) },
+								where: { address: block.generatorAddress },
+							},
+							dbTrx,
+						);
+						logger.debug(
+							`Increased self-stake rewards for validator ${block.generatorAddress} by ${selfStakeReward}.`,
+						);
+					}
 				}
 
-				if (event.name === EVENT.LOCK) {
-					tokenIDLockedAmountChangeMap[eventData.tokenID] += BigInt(eventData.amount);
-				} else if (event.name === EVENT.UNLOCK) {
-					tokenIDLockedAmountChangeMap[eventData.tokenID] -= BigInt(eventData.amount);
-				}
-			});
-			await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
+				// Calculate locked amount change and update in key_value_store table for affected tokens
+				const tokenIDLockedAmountChangeMap = {};
+				events.forEach(event => {
+					const { data: eventData } = event;
+					// Initialize map entry with BigInt
+					if (
+						[EVENT.LOCK, EVENT.UNLOCK].includes(event.name) &&
+						!(eventData.tokenID in tokenIDLockedAmountChangeMap)
+					) {
+						tokenIDLockedAmountChangeMap[eventData.tokenID] = BigInt('0');
+					}
 
-			// Get addresses to schedule account balance updates from token module events
-			addressesToUpdateBalance = getAddressesFromTokenEvents(events);
+					if (event.name === EVENT.LOCK) {
+						tokenIDLockedAmountChangeMap[eventData.tokenID] += BigInt(eventData.amount);
+					} else if (event.name === EVENT.UNLOCK) {
+						tokenIDLockedAmountChangeMap[eventData.tokenID] -= BigInt(eventData.amount);
+					}
+				});
+				await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
+
+				// Get addresses to schedule account balance updates from token module events
+				addressesToUpdateBalance = getAddressesFromTokenEvents(events);
+			}
+
+			const blockToIndex = {
+				...block,
+				assetsModules: block.assets.map(asset => asset.module),
+				numberOfEvents: events.length,
+				reward: blockReward,
+			};
+
+			await blocksTable.upsert(blockToIndex, dbTrx);
+			await commitDBTransaction(dbTrx);
+			logger.debug(
+				`Committed MySQL transaction to index block ${block.id} at height ${block.height}.`,
+			);
+
+			// Add safety check to ensure that the DB transaction is actually committed
+			await waitForIt(
+				checkBlockHeightIndexStatusInDB.bind(null, block.height, DB_STATUS.COMMIT),
+				config.db.durabilityVerifyFrequency,
+			);
+
+			// Only schedule address balance updates if the block is indexed successfully
+			await scheduleAddressesBalanceUpdate(addressesToUpdateBalance);
+			logger.info(`Successfully indexed block ${block.id} at height ${block.height}.`);
 		}
-
-		const blockToIndex = {
-			...block,
-			assetsModules: block.assets.map(asset => asset.module),
-			numberOfEvents: events.length,
-			reward: blockReward,
-		};
-
-		await blocksTable.upsert(blockToIndex, dbTrx);
-		await commitDBTransaction(dbTrx);
-		logger.debug(
-			`Committed MySQL transaction to index block ${block.id} at height ${block.height}.`,
-		);
-
-		// Add safety check to ensure that the DB transaction is actually committed
-		await waitForIt(
-			checkBlockHeightIndexStatusInDB.bind(null, block.height, DB_STATUS.COMMIT),
-			config.db.durabilityVerifyFrequency,
-		);
-
-		// Only schedule address balance updates if the block is indexed successfully
-		await scheduleAddressesBalanceUpdate(addressesToUpdateBalance);
-		logger.info(`Successfully indexed block ${block.id} at height ${block.height}.`);
 	} catch (error) {
 		// Reschedule the block for indexing
 		// eslint-disable-next-line no-use-before-define
@@ -646,9 +689,15 @@ const deleteIndexedBlocksQueue = Queue(
 );
 
 const getLiveIndexingJobCount = async () => {
-	const { queue: bullQueue } = indexBlocksQueue;
-	const jobCount = await bullQueue.getJobCounts();
-	const count = jobCount.active + jobCount.waiting;
+	const { queue: indexBlocksBullQueue } = indexBlocksQueue;
+	const { queue: deleteIndexedBlocksBullQueue } = deleteIndexedBlocksQueue;
+	const jcIndexBlocksQueue = await indexBlocksBullQueue.getJobCounts();
+	const jcDeleteIndexBlocksQueue = await deleteIndexedBlocksBullQueue.getJobCounts();
+	const count =
+		jcIndexBlocksQueue.active +
+		jcIndexBlocksQueue.waiting +
+		jcDeleteIndexBlocksQueue.active +
+		jcDeleteIndexBlocksQueue.waiting;
 	return count;
 };
 
@@ -659,35 +708,47 @@ const getPendingDeleteJobCount = async () => {
 };
 
 const scheduleBlockDeletion = async block => {
-	block = Array.isArray(block) ? block : [block];
-	deleteIndexedBlocksQueue.add({ blocks: [...block] });
+	const blocks = Array.isArray(block) ? block : [block];
+	await deleteIndexedBlocksQueue.add({ blocks });
 };
 
 const indexNewBlock = async block => {
 	const blocksTable = await getBlocksTable();
 	logger.info(`Scheduling indexing of new block: ${block.id} at height ${block.height}.`);
 
-	const [blockFromDB] = await blocksTable.find({ height: block.height, limit: 1 }, [
-		'id',
-		'height',
-		'generatorAddress',
-		'timestamp',
-		'isFinal',
-	]);
+	let currentBlockHeight = block.height;
+	let blockFromDB;
+	let blockFromNode;
 
-	// Schedule block deletion in case of an unprocessed fork detection
-	if (blockFromDB && blockFromDB.id !== block.id) {
-		logger.info(
-			`Fork detected while scheduling indexing at height: ${block.height}. Actual blockID: ${block.id}, indexed blockID: ${blockFromDB.id}.`,
-		);
+	do {
+		// Get node from database
+		[blockFromDB] = await blocksTable.find({ height: currentBlockHeight, limit: 1 }, [
+			'id',
+			'height',
+			'generatorAddress',
+			'timestamp',
+			'isFinal',
+		]);
 
-		await scheduleBlockDeletion(blockFromDB);
-	}
+		// Get node from connector
+		[blockFromNode] = await getBlockByHeight(currentBlockHeight);
 
-	// Schedule indexing of the incoming block if not already indexed or a fork was detected
-	if (!blockFromDB || blockFromDB.id !== block.id) {
-		await indexBlocksQueue.add({ height: block.height });
-	}
+		// Schedule block deletion in case of an unprocessed fork detection
+		if (!blockFromNode || (blockFromDB && blockFromDB.id !== blockFromNode.id)) {
+			logger.info(
+				`Fork detected while scheduling indexing at height: ${block.height}. Actual blockID: ${block.id}, indexed blockID: ${blockFromDB.id}.`,
+			);
+
+			await scheduleBlockDeletion(blockFromDB);
+		}
+
+		// Schedule indexing of the incoming block if not already indexed or a fork was detected
+		if (!blockFromDB || blockFromDB.id !== blockFromNode.id) {
+			await indexBlocksQueue.add({ height: block.height });
+		}
+
+		currentBlockHeight--;
+	} while (!blockFromNode || (blockFromDB && blockFromDB.id !== blockFromNode.id));
 
 	// Update finality status of indexed blocks
 	const finalizedBlockHeight = await getFinalizedHeight();
