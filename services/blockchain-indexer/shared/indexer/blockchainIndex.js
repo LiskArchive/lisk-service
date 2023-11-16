@@ -167,6 +167,19 @@ const indexBlock = async job => {
 			['id', 'height'],
 		);
 
+		const genesisHeight = await getGenesisHeight();
+
+		let prevBlockInDB = {};
+		if (blockHeightToIndex > genesisHeight + 1) {
+			[prevBlockInDB] = await blocksTable.find(
+				{
+					where: { height: blockHeightToIndex - 1 },
+					limit: 1,
+				},
+				['id', 'height'],
+			);
+		}
+
 		// Get block from node
 		block = await getBlockByHeight(blockHeightToIndex);
 		if (!validateBlock(block)) {
@@ -177,43 +190,17 @@ const indexBlock = async job => {
 		if (Object.keys(currentBlockInDB).length && block.id !== currentBlockInDB.id) {
 			// eslint-disable-next-line no-use-before-define
 			await scheduleBlockDeletion(currentBlockInDB);
-
-			let currentBlockHeight = blockHeightToIndex - 1;
-			let blockFromDB;
-			let blockFromNode;
-
-			do {
-				// Get node from database
-				[blockFromDB] = await blocksTable.find({ height: currentBlockHeight, limit: 1 }, [
-					'id',
-					'height',
-					'generatorAddress',
-					'timestamp',
-					'isFinal',
-				]);
-
-				// Get node from connector
-				[blockFromNode] = await getBlockByHeight(currentBlockHeight);
-
-				// Schedule block deletion in case of an unprocessed fork detection
-				if (!blockFromNode || (blockFromDB && blockFromDB.id !== blockFromNode.id)) {
-					logger.info(
-						`Fork detected while scheduling indexing at height: ${block.height}. Actual blockID: ${block.id}, indexed blockID: ${blockFromDB.id}.`,
-					);
-
-					// eslint-disable-next-line no-use-before-define
-					await scheduleBlockDeletion(blockFromDB);
-				}
-
-				// Schedule indexing of the incoming block if not already indexed or a fork was detected
-				if (!blockFromDB || blockFromDB.id !== blockFromNode.id) {
-					// eslint-disable-next-line no-use-before-define
-					await indexBlocksQueue.add({ height: block.height });
-				}
-
-				currentBlockHeight--;
-			} while (!blockFromNode || (blockFromDB && blockFromDB.id !== blockFromNode.id));
+			// eslint-disable-next-line no-use-before-define
+			await addHeightToIndexBlocksQueue(currentBlockInDB.height);
 		} else {
+			// Incase prev block is incorrect schedule that for deletion
+			if (Object.keys(prevBlockInDB).length && prevBlockInDB.id !== block.previousBlockID) {
+				// eslint-disable-next-line no-use-before-define
+				await scheduleBlockDeletion(prevBlockInDB);
+				// eslint-disable-next-line no-use-before-define
+				await addHeightToIndexBlocksQueue(prevBlockInDB.height);
+			}
+
 			// If current block is already indexed, then index the highest indexed block height + 1
 			if (Object.keys(currentBlockInDB).length) {
 				// Skip indexing if the blockchain is fully indexed.
@@ -232,7 +219,7 @@ const indexBlock = async job => {
 
 			let blockReward = BigInt('0');
 
-			if (block.height === (await getGenesisHeight())) {
+			if (block.height === genesisHeight) {
 				await indexGenesisBlockAssets(dbTrx);
 			}
 
@@ -649,6 +636,7 @@ const deleteIndexedBlocks = async job => {
 		logger.warn(
 			`Deleting block(s) with ID(s): ${blockIDs} failed due to: ${error.message}. Will retry.`,
 		);
+		logger.warn(error.stack);
 		throw error;
 	}
 };
@@ -731,7 +719,7 @@ const indexNewBlock = async block => {
 		]);
 
 		// Get node from connector
-		[blockFromNode] = await getBlockByHeight(currentBlockHeight);
+		blockFromNode = await getBlockByHeight(currentBlockHeight);
 
 		// Schedule block deletion in case of an unprocessed fork detection
 		if (!blockFromNode || (blockFromDB && blockFromDB.id !== blockFromNode.id)) {
