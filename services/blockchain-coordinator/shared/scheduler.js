@@ -232,7 +232,9 @@ const scheduleMissingBlocksIndexing = async () => {
 	// Skip job scheduling when the jobCount is greater than the threshold
 	const jobCount = await getLiveIndexingJobCount();
 	if (jobCount > config.job.indexMissingBlocks.skipThreshold) {
-		logger.info(`Skipping missing blocks job run. ${jobCount} indexing jobs already in the queue.`);
+		logger.info(
+			`Skipping missing blocks job run. ${jobCount} indexing jobs (current threshold: ${config.job.indexMissingBlocks.skipThreshold}) already in the queue.`,
+		);
 		return;
 	}
 
@@ -263,9 +265,9 @@ const scheduleMissingBlocksIndexing = async () => {
 
 				if (result.length === 0) {
 					const lastIndexVerifiedHeight = await getIndexVerifiedHeight();
-					if (batchEndHeight === lastIndexVerifiedHeight + MAX_QUERY_RANGE) {
+					if (batchEndHeight <= lastIndexVerifiedHeight + MAX_QUERY_RANGE) {
 						await setIndexVerifiedHeight(batchEndHeight);
-						logger.debug(
+						logger.info(
 							`No missing blocks found in range ${batchStartHeight} - ${batchEndHeight}. Setting index verified height to ${batchEndHeight}.`,
 						);
 					}
