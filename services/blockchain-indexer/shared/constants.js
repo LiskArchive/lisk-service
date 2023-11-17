@@ -179,6 +179,15 @@ const EVENT = Object.freeze({
 	COMMAND_EXECUTION_RESULT: 'commandExecutionResult',
 	REWARD_MINTED: 'rewardMinted',
 	CCM_SEND_SUCCESS: 'ccmSendSuccess',
+	CCM_SENT_FAILED: 'ccmSentFailed',
+});
+
+const CCM_SENT_FAILED_ERROR_MESSAGE = Object.freeze({
+	1: 'Receiving chain is not active.',
+	11: 'Failed to pay message fee.',
+	12: 'Invalid params provided.',
+	13: 'Invalid CCM format.',
+	14: 'Sending chain cannot be the receiving chain.',
 });
 
 const EVENT_TOPIC_PREFIX = Object.freeze({
@@ -239,4 +248,5 @@ module.exports = {
 	LENGTH_BYTE_ID,
 	LENGTH_ID,
 	DEFAULT_NUM_OF_SIGNATURES,
+	CCM_SENT_FAILED_ERROR_MESSAGE,
 };

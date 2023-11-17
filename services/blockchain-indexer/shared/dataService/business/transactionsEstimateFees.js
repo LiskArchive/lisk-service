@@ -32,7 +32,7 @@ const {
 	getCurrentChainID,
 } = require('./interoperability');
 const { dryRunTransactions } = require('./transactionsDryRun');
-const { tokenHasUserAccount, getTokenConstants } = require('./token');
+const { tokenHasUserAccount, getTokenConstants, getTokenBalances } = require('./token');
 const { getSchemas } = require('./schemas');
 
 const {
@@ -42,6 +42,7 @@ const {
 	LENGTH_BYTE_SIGNATURE,
 	LENGTH_BYTE_ID,
 	DEFAULT_NUM_OF_SIGNATURES,
+	CCM_SENT_FAILED_ERROR_MESSAGE,
 } = require('../../constants');
 
 const { getLisk32AddressFromPublicKey } = require('../../utils/account');
@@ -157,11 +158,27 @@ const getCcmBuffer = async transaction => {
 	if (transaction.module !== MODULE.TOKEN || transaction.command !== COMMAND.TRANSFER_CROSS_CHAIN)
 		return null;
 
-	// TODO: Add error handling
 	const {
 		data: { events },
 	} = await dryRunTransactions({ transaction, skipVerify: true });
 	const ccmSendSuccess = events.find(event => event.name === EVENT.CCM_SEND_SUCCESS);
+
+	if (!ccmSendSuccess) {
+		const { data: dryRunResult } = await dryRunTransactions({ transaction, skipVerify: false });
+		if (dryRunResult.errorMessage) {
+			throw new ValidationException(dryRunResult.errorMessage);
+		}
+
+		const ccmSentFailed = dryRunResult.events.find(event => event.name === EVENT.CCM_SENT_FAILED);
+		if (ccmSentFailed) {
+			throw new ValidationException(CCM_SENT_FAILED_ERROR_MESSAGE[ccmSentFailed.code]);
+		}
+
+		// If none of the known reasons are matched, do not assign messageFee
+		// No messageFee will result in not bouncing the failed CCM
+		logger.warn(JSON.stringify({ transaction, dryRunResult }, null, '\t'));
+		return Buffer.from('', 'hex');
+	}
 
 	// Encode CCM (required to calculate CCM length)
 	const { ccm } = ccmSendSuccess.data;
@@ -297,6 +314,25 @@ const validateTransactionParams = async transaction => {
 		}
 	}
 
+	if (transaction.params.tokenID) {
+		const senderAddress = getLisk32AddressFromPublicKey(transaction.senderPublicKey);
+		const {
+			data: { extraCommandFees },
+		} = await getTokenConstants();
+		const {
+			data: [balanceInfo],
+		} = await getTokenBalances({ address: senderAddress, tokenID: transaction.params.tokenID });
+
+		if (
+			BigInt(balanceInfo.availableBalance) <
+			BigInt(transaction.params.amount) + BigInt(extraCommandFees.userAccountInitializationFee)
+		) {
+			throw new ValidationException(
+				`${senderAddress} has insufficient balance for ${transaction.params.tokenID} to send the transaction.`,
+			);
+		}
+	}
+
 	const allSchemas = await getSchemas();
 	const txCommand = allSchemas.data.commands.find(
 		e => e.moduleCommand === `${transaction.module}:${transaction.command}`,
@@ -318,6 +354,16 @@ const validateTransactionParams = async transaction => {
 	}
 };
 
+const validateUserHasTokenAccount = async (tokenID, address) => {
+	const response = await tokenHasUserAccount({ tokenID, address });
+
+	if (!response.data.isExists) {
+		throw new ValidationException(
+			`${address} has no balance for tokenID: ${tokenID}, necessary to make this transaction. Please top-up the account with some balance and retry.`,
+		);
+	}
+};
+
 const estimateTransactionFees = async params => {
 	const estimateTransactionFeesRes = {
 		data: {
@@ -326,9 +372,13 @@ const estimateTransactionFees = async params => {
 		meta: {},
 	};
 
+	const senderAddress = getLisk32AddressFromPublicKey(params.transaction.senderPublicKey);
+	const feeEstimatePerByte = getFeeEstimates();
+
+	// Validate if the sender has balance for transaction fee
+	await validateUserHasTokenAccount(feeEstimatePerByte.feeTokenID, senderAddress);
 	await validateTransactionParams(params.transaction);
 
-	const senderAddress = getLisk32AddressFromPublicKey(params.transaction.senderPublicKey);
 	const numberOfSignatures = await getNumberOfSignatures(senderAddress);
 
 	const trxWithMockProps = await mockTransaction(params.transaction, numberOfSignatures);
@@ -337,20 +387,21 @@ const estimateTransactionFees = async params => {
 		transaction: trxWithMockProps,
 		additionalFee: additionalFees.total.toString(),
 	});
-	const feeEstimatePerByte = getFeeEstimates();
 
 	// Calculate message fee for cross-chain transfers
 	if (
 		params.transaction.module === MODULE.TOKEN &&
 		params.transaction.command === COMMAND.TRANSFER_CROSS_CHAIN
 	) {
+		const channelInfo = await resolveChannelInfo(params.transaction.params.receivingChainID);
+		await validateUserHasTokenAccount(channelInfo.messageFeeTokenID, senderAddress);
+
 		// Calculate message fee
 		const ccmBuffer = await getCcmBuffer({
 			...formattedTransaction,
 			fee: formattedTransaction.minFee,
 		});
 		const ccmLength = ccmBuffer.length;
-		const channelInfo = await resolveChannelInfo(params.transaction.params.receivingChainID);
 
 		const ccmByteFee = BigInt(ccmLength) * BigInt(channelInfo.minReturnFeePerByte);
 		const totalMessageFee = additionalFees.params.messageFee
@@ -398,7 +449,6 @@ const estimateTransactionFees = async params => {
 
 	const { minFee, size } = formattedTransaction;
 
-	// TODO: Remove BUFFER_BYTES_LENGTH support after RC is tagged
 	const estimatedMinFee =
 		BigInt(minFee) + BigInt(BUFFER_BYTES_LENGTH * feeEstimatePerByte.minFeePerByte);
 
@@ -446,10 +496,12 @@ module.exports = {
 	estimateTransactionFees,
 
 	// Export for the unit tests
+	getCcmBuffer,
 	calcDynamicFeeEstimates,
 	mockTransaction,
 	calcAdditionalFees,
 	filterOptionalProps,
 	getNumberOfSignatures,
 	validateTransactionParams,
+	validateUserHasTokenAccount,
 };

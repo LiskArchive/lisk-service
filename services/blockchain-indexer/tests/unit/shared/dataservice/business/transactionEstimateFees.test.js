@@ -46,13 +46,13 @@ const mockedNetworkFilePath = resolve(
 const {
 	mockTxRequest,
 	mockTxResult,
-	mockTxsenderAddress,
+	mockTxSenderAddress,
 	mockTxAuthAccountInfo,
-	mockTxrequestConnector,
+	mockTxRequestConnector,
 	posConstants,
 	mockTxFeeEstimate,
 	mockTransferCrossChainTxRequest,
-	mockTransferCrossChainTxrequestConnector,
+	mockTransferCrossChainTxRequestConnector,
 	mockTransferCrossChainTxResult,
 	mockEscrowAccountExistsRequestConnector,
 	mockInteroperabilitySubmitMainchainCrossChainUpdateTxRequest,
@@ -61,7 +61,7 @@ const {
 	mockInteroperabilityRegisterSidechainTxResult,
 	mockAuthAccountInfo,
 	mockAuthInfoForMultisigAccount,
-	mockRegisterValidatorTxrequestConnector,
+	mockRegisterValidatorTxRequestConnector,
 	mockRegisterValidatorTxResult,
 } = require('../../constants/transactionEstimateFees');
 
@@ -134,6 +134,68 @@ jest.mock('../../../../../shared/dataService/business/schemas', () => {
 	};
 });
 
+jest.mock('../../../../../shared/dataService/business/token', () => ({
+	tokenHasUserAccount() {
+		return {
+			data: { isExists: true },
+			meta: {},
+		};
+	},
+	getTokenConstants() {
+		return {
+			data: {
+				extraCommandFees: {
+					userAccountInitializationFee: '5000000',
+					escrowAccountInitializationFee: '5000000',
+				},
+			},
+			meta: {},
+		};
+	},
+	getTokenBalances() {
+		return {
+			data: [{ availableBalance: '500000000000' }],
+			meta: {},
+		};
+	},
+}));
+
+describe('getCcmBuffer', () => {
+	it('should return null if the transaction is not token transferCrossChain', () => {
+		const { getCcmBuffer } = require(mockedTransactionFeeEstimatesFilePath);
+		expect(getCcmBuffer(mockRegisterValidatorTxRequestConnector.transaction)).resolves.toBeNull();
+	});
+
+	it.todo("Add test cases for 'if (!ccmSendSuccess)' scenarios");
+});
+
+describe('validateUserHasTokenAccount', () => {
+	it.todo('Fix the mocks for validateUserHasTokenAccount dependencies and enable the tests');
+
+	it('should return undefined if user has token account initialized', () => {
+		const { validateUserHasTokenAccount } = require(mockedTransactionFeeEstimatesFilePath);
+		const { tokenID, recipientAddress } = mockTransferCrossChainTxRequest.transaction.params;
+
+		expect(validateUserHasTokenAccount(tokenID, recipientAddress)).resolves.toBeUndefined();
+	});
+
+	xit("should throw an error if user doesn't have token account initialized", async () => {
+		jest.mock('../../../../../shared/dataService/business/token', () => ({
+			async tokenHasUserAccount() {
+				return {
+					data: { isExists: false },
+					meta: {},
+				};
+			},
+		}));
+
+		const { validateUserHasTokenAccount } = require(mockedTransactionFeeEstimatesFilePath);
+		const { tokenID, recipientAddress } = mockTransferCrossChainTxRequest.transaction.params;
+
+		await expect(validateUserHasTokenAccount(tokenID, recipientAddress)).rejects.toThrow();
+	});
+});
+
 describe('validateTransactionParams', () => {
 	it('should validate a valid token and register validator transaction', () => {
 		const { validateTransactionParams } = require(mockedTransactionFeeEstimatesFilePath);
@@ -143,7 +205,7 @@ describe('validateTransactionParams', () => {
 		).not.toThrow();
 
 		expect(() =>
-			validateTransactionParams(mockRegisterValidatorTxrequestConnector.transaction),
+			validateTransactionParams(mockRegisterValidatorTxRequestConnector.transaction),
 		).not.toThrow();
 	});
 
@@ -201,13 +263,13 @@ describe('validateTransactionParams', () => {
 
 	it('should throw an error for incorrect blsKey in register validator transaction', () => {
 		const { blsKey, proofOfPossession, generatorKey, ...remParams } =
-			mockRegisterValidatorTxrequestConnector.transaction.params;
+			mockRegisterValidatorTxRequestConnector.transaction.params;
 
 		const { validateTransactionParams } = require(mockedTransactionFeeEstimatesFilePath);
 
 		expect(() =>
 			validateTransactionParams({
-				...mockRegisterValidatorTxrequestConnector.transaction,
+				...mockRegisterValidatorTxRequestConnector.transaction,
 				params: {
 					...remParams,
 					blsKey: 'invalidBLSKey',
@@ -220,13 +282,13 @@ describe('validateTransactionParams', () => {
 
 	it('should throw an error for incorrect proofOfPossession in register validator transaction', () => {
 		const { blsKey, proofOfPossession, generatorKey, ...remParams } =
-			mockRegisterValidatorTxrequestConnector.transaction.params;
+			mockRegisterValidatorTxRequestConnector.transaction.params;
 
 		const { validateTransactionParams } = require(mockedTransactionFeeEstimatesFilePath);
 
 		expect(() =>
 			validateTransactionParams({
-				...mockRegisterValidatorTxrequestConnector.transaction,
+				...mockRegisterValidatorTxRequestConnector.transaction,
 				params: {
 					...remParams,
 					blsKey,
@@ -239,13 +301,13 @@ describe('validateTransactionParams', () => {
 
 	it('should throw an error for incorrect generatorKey in register validator transaction', () => {
 		const { blsKey, proofOfPossession, generatorKey, ...remParams } =
-			mockRegisterValidatorTxrequestConnector.transaction.params;
+			mockRegisterValidatorTxRequestConnector.transaction.params;
 
 		const { validateTransactionParams } = require(mockedTransactionFeeEstimatesFilePath);
 
 		expect(() =>
 			validateTransactionParams({
-				...mockRegisterValidatorTxrequestConnector.transaction,
+				...mockRegisterValidatorTxRequestConnector.transaction,
 				params: {
 					...remParams,
 					blsKey,
@@ -268,6 +330,23 @@ describe('validateTransactionParams', () => {
 				params: {
 					...remParams,
 					sendingChainID: 'invalidSendingChainID',
+				},
+			}),
+		).rejects.toThrow();
+	});
+
+	it('should throw an error if user has insufficient balance transaction', () => {
+		const { sendingChainID, ...remParams } =
+			mockInteroperabilitySubmitMainchainCrossChainUpdateTxRequest.transaction.params;
+
+		const { validateTransactionParams } = require(mockedTransactionFeeEstimatesFilePath);
+
+		expect(() =>
+			validateTransactionParams({
+				...mockInteroperabilitySubmitMainchainCrossChainUpdateTxRequest.transaction,
+				params: {
+					...remParams,
+					amount: Number.MAX_SAFE_INTEGER.toString(),
 				},
 			}),
 		).rejects.toThrow();
@@ -551,10 +630,10 @@ describe('Test transaction fees estimates', () => {
 
 		it('should calculate transaction fees correctly', async () => {
 			// Mock the return values of the functions
-			getLisk32AddressFromPublicKey.mockReturnValue(mockTxsenderAddress);
+			getLisk32AddressFromPublicKey.mockReturnValue(mockTxSenderAddress);
 			getAuthAccountInfo.mockResolvedValue(mockTxAuthAccountInfo);
 			requestConnector
-				.mockReturnValueOnce(mockTxrequestConnector)
+				.mockReturnValueOnce(mockTxRequestConnector)
 				.mockReturnValue({ userAccount: '1', escrowAccount: '0', minFee: '130000', size: 160 });
 			getFeeEstimates.mockReturnValue(mockTxFeeEstimate);
 			calcAdditionalFees.mockResolvedValue({});
@@ -573,14 +652,14 @@ describe('Test transaction fees estimates', () => {
 			dryRunTransactions.mockReturnValue({
 				data: { events: [{ name: 'ccmSendSuccess', data: { ccm: 'hello' } }] },
 			});
-			getLisk32AddressFromPublicKey.mockReturnValue(mockTxsenderAddress);
+			getLisk32AddressFromPublicKey.mockReturnValue(mockTxSenderAddress);
 			getAuthAccountInfo.mockResolvedValue(mockTxAuthAccountInfo);
 			requestConnector
 				.mockReturnValueOnce(mockAuthAccountInfo)
 				.mockReturnValueOnce(mockEscrowAccountExistsRequestConnector)
-				.mockReturnValueOnce(mockTransferCrossChainTxrequestConnector)
+				.mockReturnValueOnce(mockTransferCrossChainTxRequestConnector)
 				.mockReturnValueOnce('encoded CCM Object')
-				.mockReturnValueOnce(mockTransferCrossChainTxrequestConnector);
+				.mockReturnValueOnce(mockTransferCrossChainTxRequestConnector);
 			getFeeEstimates.mockReturnValue(mockTxFeeEstimate);
 			calcAdditionalFees.mockResolvedValue({});
 			calcMessageFee.mockResolvedValue({});
@@ -596,7 +675,7 @@ describe('Test transaction fees estimates', () => {
 
 		it('should calculate transaction fees correctly for register validator transaction', async () => {
 			// Mock the return values of the functions
-			getLisk32AddressFromPublicKey.mockReturnValue(mockTxsenderAddress);
+			getLisk32AddressFromPublicKey.mockReturnValue(mockTxSenderAddress);
 			getAuthAccountInfo.mockResolvedValue(mockTxAuthAccountInfo);
 			requestConnector
 				.mockReturnValueOnce(mockAuthAccountInfo)
@@ -610,15 +689,15 @@ describe('Test transaction fees estimates', () => {
 			const { estimateTransactionFees } = require(mockedTransactionFeeEstimatesFilePath);
 
 			// Call the function
-			const result = await estimateTransactionFees(mockRegisterValidatorTxrequestConnector);
+			const result = await estimateTransactionFees(mockRegisterValidatorTxRequestConnector);
 			expect(result).toEqual(mockRegisterValidatorTxResult);
 		});
 
 		it('should throw if empty, undefined or null object is passed', async () => {
 			// Mock the return values of the functions
-			getLisk32AddressFromPublicKey.mockReturnValue(mockTxsenderAddress);
+			getLisk32AddressFromPublicKey.mockReturnValue(mockTxSenderAddress);
 			getAuthAccountInfo.mockResolvedValue(mockTxAuthAccountInfo);
-			requestConnector.mockResolvedValue(mockTxrequestConnector);
+			requestConnector.mockResolvedValue(mockTxRequestConnector);
 			getFeeEstimates.mockReturnValue(mockTxFeeEstimate);
 			calcAdditionalFees.mockResolvedValue({});
 			calcMessageFee.mockResolvedValue({});
@@ -634,7 +713,7 @@ describe('Test transaction fees estimates', () => {
 
 		it('should throw when getAuthAccountInfo fails', async () => {
 			// Mock the return values of the functions
-			getLisk32AddressFromPublicKey.mockReturnValue(mockTxsenderAddress);
+			getLisk32AddressFromPublicKey.mockReturnValue(mockTxSenderAddress);
 			requestConnector.mockRejectedValue('Error');
 			getFeeEstimates.mockReturnValue(mockTxFeeEstimate);
 			calcAdditionalFees.mockResolvedValue({});
@@ -649,7 +728,7 @@ describe('Test transaction fees estimates', () => {
 			requestConnector.mockRejectedValue('Error');
 
 			// Mock the return values of the functions
-			getLisk32AddressFromPublicKey.mockReturnValue(mockTxsenderAddress);
+			getLisk32AddressFromPublicKey.mockReturnValue(mockTxSenderAddress);
 			getAuthAccountInfo.mockResolvedValue(mockTxAuthAccountInfo);
 			getFeeEstimates.mockReturnValue(mockTxFeeEstimate);
 			calcAdditionalFees.mockResolvedValue({});
@@ -664,9 +743,9 @@ describe('Test transaction fees estimates', () => {
 			getFeeEstimates.mockReturnValue(new Error('Error'));
 
 			// Mock the return values of the functions
-			getLisk32AddressFromPublicKey.mockReturnValue(mockTxsenderAddress);
+			getLisk32AddressFromPublicKey.mockReturnValue(mockTxSenderAddress);
 			getAuthAccountInfo.mockResolvedValue(mockTxAuthAccountInfo);
-			requestConnector.mockResolvedValue(mockTxrequestConnector);
+			requestConnector.mockResolvedValue(mockTxRequestConnector);
 			calcAdditionalFees.mockResolvedValue({});
 			calcMessageFee.mockResolvedValue({});
 			getPosConstants.mockResolvedValue(posConstants);
@@ -677,10 +756,10 @@ describe('Test transaction fees estimates', () => {
 
 		it('should throw Validation Exception when TOKEN_ID specified are incorrect', async () => {
 			// Mock the return values of the functions
-			getLisk32AddressFromPublicKey.mockReturnValue(mockTxsenderAddress);
+			getLisk32AddressFromPublicKey.mockReturnValue(mockTxSenderAddress);
 			getAuthAccountInfo.mockResolvedValue(mockTxAuthAccountInfo);
 			requestConnector
-				.mockReturnValueOnce(mockTxrequestConnector)
+				.mockReturnValueOnce(mockTxRequestConnector)
 				.mockReturnValue({ userAccount: '1', escrowAccount: '0', minFee: '130000', size: 160 });
 			getFeeEstimates.mockReturnValue(mockTxFeeEstimate);
 			calcAdditionalFees.mockResolvedValue({});
@@ -697,10 +776,10 @@ describe('Test transaction fees estimates', () => {
 
 		it('should throw Validation Exception when address specified are incorrect', async () => {
 			// Mock the return values of the functions
-			getLisk32AddressFromPublicKey.mockReturnValue(mockTxsenderAddress);
+			getLisk32AddressFromPublicKey.mockReturnValue(mockTxSenderAddress);
 			getAuthAccountInfo.mockResolvedValue(mockTxAuthAccountInfo);
 			requestConnector
-				.mockReturnValueOnce(mockTxrequestConnector)
+				.mockReturnValueOnce(mockTxRequestConnector)
 				.mockReturnValue({ userAccount: '1', escrowAccount: '0', minFee: '130000', size: 160 });
 			getFeeEstimates.mockReturnValue(mockTxFeeEstimate);
 			calcAdditionalFees.mockResolvedValue({});
@@ -730,9 +809,9 @@ describe('Test transaction fees estimates', () => {
 			Object.entries(transactionsMap).forEach(([transactionType, transactionInfo]) => {
 				it(`should calculate transaction fees correctly for ${transactionType} transaction`, async () => {
 					// Mock the return values of the functions
-					getLisk32AddressFromPublicKey.mockReturnValue(mockTxsenderAddress);
+					getLisk32AddressFromPublicKey.mockReturnValue(mockTxSenderAddress);
 					getAuthAccountInfo.mockResolvedValue(mockTxAuthAccountInfo);
-					requestConnector.mockReturnValueOnce(mockTxrequestConnector).mockReturnValue({
+					requestConnector.mockReturnValueOnce(mockTxRequestConnector).mockReturnValue({
 						userAccount: '1',
 						escrowAccount: '0',
 						fee: '100000000',
@@ -813,7 +892,7 @@ describe('Test transaction fees estimates', () => {
 			const { getNumberOfSignatures } = require(mockedTransactionFeeEstimatesFilePath);
 
 			// Call the function
-			const result = await getNumberOfSignatures(mockTxsenderAddress);
+			const result = await getNumberOfSignatures(mockTxSenderAddress);
 			expect(result).toEqual(1);
 		});
 
@@ -824,7 +903,7 @@ describe('Test transaction fees estimates', () => {
 			const { getNumberOfSignatures } = require(mockedTransactionFeeEstimatesFilePath);
 
 			// Call the function
-			const result = await getNumberOfSignatures(mockTxsenderAddress);
+			const result = await getNumberOfSignatures(mockTxSenderAddress);
 			expect(result).toEqual(2);
 		});
 	});
