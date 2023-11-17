@@ -134,7 +134,13 @@ jest.mock('../../../../../shared/dataService/business/schemas', () => {
 	};
 });
 
-jest.mock('../../../../../shared/dataService/business/token/constants', () => ({
+jest.mock('../../../../../shared/dataService/business/token', () => ({
+	tokenHasUserAccount() {
+		return {
+			data: { isExists: true },
+			meta: {},
+		};
+	},
 	getTokenConstants() {
 		return {
 			data: {
@@ -143,6 +149,12 @@ jest.mock('../../../../../shared/dataService/business/token/constants', () => ({
 					escrowAccountInitializationFee: '5000000',
 				},
 			},
+			meta: {},
+		};
+	},
+	getTokenBalances() {
+		return {
+			data: [{ availableBalance: '500000000000' }],
 			meta: {},
 		};
 	},

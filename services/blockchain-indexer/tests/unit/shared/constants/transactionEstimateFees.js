@@ -174,9 +174,7 @@ const mockTxResult = {
 			fee: {
 				minimum: {
 					byteFee: '160000',
-					additionalFees: {
-						userAccountInitializationFee: '1',
-					},
+					additionalFees: {},
 				},
 			},
 		},
