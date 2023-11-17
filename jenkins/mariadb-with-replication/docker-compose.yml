@@ -1,14 +1,13 @@
 version: '3.3'
 services:
   mysql-primary:
-    image: mysql:8
+    image: mariadb:10.7
     container_name: mysql-primary
-    platform: linux/amd64
     command: mysqld
     volumes:
-      - ../../docker/mysql/primary/conf/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
+      - ../../docker/mariadb/primary/conf/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
       - mysql-primary-data:/var/lib/mysql
-      - ../../docker/mysql/primary/init:/docker-entrypoint-initdb.d
+      - ../../docker/mariadb/primary/init:/docker-entrypoint-initdb.d
     restart: always
     networks:
       - services_network
@@ -22,15 +21,14 @@ services:
       test: ['CMD', 'mysqladmin', 'ping', '-hlocalhost', '-ppassword']
 
   mysql-read-replica:
-    image: mysql:8
+    image: mariadb:10.7
     depends_on:
       mysql-primary:
         condition: service_healthy
-    platform: linux/amd64
     command: mysqld
     volumes:
-      - ../../docker/mysql/read/conf/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
-      - ../../docker/mysql/read/init:/docker-entrypoint-initdb.d
+      - ../../docker/mariadb/read/conf/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
+      - ../../docker/mariadb/read/init:/docker-entrypoint-initdb.d
     restart: always
     expose:
       - '3306'
@@ -38,7 +36,7 @@ services:
       - services_network
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 1
       endpoint_mode: vip
     environment:
       - MYSQL_ROOT_PASSWORD=password

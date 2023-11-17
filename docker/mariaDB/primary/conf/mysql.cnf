@@ -10,7 +10,7 @@ character-set-server=utf8mb4
 collation-server=utf8mb4_unicode_ci
 
 # Unique identifying number of the server.
-server_id = 1
+server-id = 1
 
 # Set binary log file base name.
 log_bin=mysql-bin.log
