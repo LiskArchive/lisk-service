@@ -3,6 +3,12 @@
 # Default authentication plugin
 default-authentication-plugin=caching_sha2_password 
 
+# Default character charset
+character-set-server=utf8mb4
+
+# Default collation server
+collation-server=utf8mb4_unicode_ci
+
 # Unique identifying number of the server.
 server_id = 2
 

@@ -5,8 +5,9 @@ version: '3.3'
 services:
   mariadb:
     image: mariadb:10.7
-    command: mysqld --default-authentication-plugin=caching_sha2_password
+    command: mysqld --max_connections=500
     volumes:
+      - ../../docker/mysql/standalone/conf/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
       - db-data:/var/lib/mysql
       - ./mysql-healthcheck.sh:/healthcheck.sh
     restart: always
