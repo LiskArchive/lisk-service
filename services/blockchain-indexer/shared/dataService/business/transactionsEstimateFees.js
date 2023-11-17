@@ -42,6 +42,7 @@ const {
 	LENGTH_BYTE_SIGNATURE,
 	LENGTH_BYTE_ID,
 	DEFAULT_NUM_OF_SIGNATURES,
+	CCM_SENT_FAILED_ERROR_MESSAGE,
 } = require('../../constants');
 
 const { getLisk32AddressFromPublicKey } = require('../../utils/account');
@@ -162,8 +163,22 @@ const getCcmBuffer = async transaction => {
 	} = await dryRunTransactions({ transaction, skipVerify: true });
 	const ccmSendSuccess = events.find(event => event.name === EVENT.CCM_SEND_SUCCESS);
 
-	// TODO: Add error handling
-	// if (!ccmSendSuccess) { Handle based on events }
+	if (!ccmSendSuccess) {
+		const { data: dryRunResult } = await dryRunTransactions({ transaction, skipVerify: false });
+		if (dryRunResult.errorMessage) {
+			throw new ValidationException(dryRunResult.errorMessage);
+		}
+
+		const ccmSentFailed = dryRunResult.events.find(event => event.name === EVENT.CCM_SENT_FAILED);
+		if (ccmSentFailed) {
+			throw new ValidationException(CCM_SENT_FAILED_ERROR_MESSAGE[ccmSentFailed.code]);
+		}
+
+		// If none of the known reasons are matched, do not assign messageFee
+		// No messageFee will result in not bouncing the failed CCM
+		logger.warn(JSON.stringify({ transaction, dryRunResult }, null, '\t'));
+		return Buffer.from('', 'hex');
+	}
 
 	// Encode CCM (required to calculate CCM length)
 	const { ccm } = ccmSendSuccess.data;
@@ -378,15 +393,15 @@ const estimateTransactionFees = async params => {
 		params.transaction.module === MODULE.TOKEN &&
 		params.transaction.command === COMMAND.TRANSFER_CROSS_CHAIN
 	) {
+		const channelInfo = await resolveChannelInfo(params.transaction.params.receivingChainID);
+		await validateUserHasTokenAccount(channelInfo.messageFeeTokenID, senderAddress);
+
 		// Calculate message fee
 		const ccmBuffer = await getCcmBuffer({
 			...formattedTransaction,
 			fee: formattedTransaction.minFee,
 		});
 		const ccmLength = ccmBuffer.length;
-		const channelInfo = await resolveChannelInfo(params.transaction.params.receivingChainID);
-
-		await validateUserHasTokenAccount(channelInfo.messageFeeTokenID, senderAddress);
 
 		const ccmByteFee = BigInt(ccmLength) * BigInt(channelInfo.minReturnFeePerByte);
 		const totalMessageFee = additionalFees.params.messageFee

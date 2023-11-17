@@ -242,7 +242,7 @@ const mockRegisterValidatorTxResult = {
 	},
 };
 
-const mockTxsenderAddress = 'lskguo9kqnea2zsfo3a6qppozsxsg92nuuma3p7ad';
+const mockTxSenderAddress = 'lskguo9kqnea2zsfo3a6qppozsxsg92nuuma3p7ad';
 
 const mockTxAuthAccountInfo = {
 	data: {
@@ -253,7 +253,7 @@ const mockTxAuthAccountInfo = {
 	},
 };
 
-const mockTxrequestConnector = {
+const mockTxRequestConnector = {
 	module: 'token',
 	command: 'transfer',
 	fee: '100000000',
@@ -273,7 +273,7 @@ const mockTxrequestConnector = {
 	minFee: '166000',
 };
 
-const mockTransferCrossChainTxrequestConnector = {
+const mockTransferCrossChainTxRequestConnector = {
 	module: 'token',
 	command: 'transferCrossChain',
 	fee: '100000000',
@@ -296,7 +296,7 @@ const mockTransferCrossChainTxrequestConnector = {
 	minFee: '166000',
 };
 
-const mockRegisterValidatorTxrequestConnector = {
+const mockRegisterValidatorTxRequestConnector = {
 	transaction: {
 		module: 'pos',
 		command: 'registerValidator',
@@ -400,17 +400,17 @@ module.exports = {
 	mockTxRequest,
 	mockTransferCrossChainTxRequest,
 	mockTxResult,
-	mockTxsenderAddress,
+	mockTxSenderAddress,
 	mockTxAuthAccountInfo,
-	mockTxrequestConnector,
+	mockTxRequestConnector,
 	mockTxFeeEstimate,
 	posConstants,
 	mockEscrowAccountExistsRequestConnector,
-	mockTransferCrossChainTxrequestConnector,
+	mockTransferCrossChainTxRequestConnector,
 	mockTransferCrossChainTxResult,
 	mockAuthAccountInfo,
 	mockAuthInfoForMultisigAccount,
-	mockRegisterValidatorTxrequestConnector,
+	mockRegisterValidatorTxRequestConnector,
 	mockRegisterValidatorTxResult,
 
 	mockInteroperabilitySubmitMainchainCrossChainUpdateTxRequest,
