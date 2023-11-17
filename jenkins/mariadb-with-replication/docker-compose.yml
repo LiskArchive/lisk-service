@@ -1,7 +1,7 @@
 version: '3.3'
 services:
   mysql-primary:
-    image: mariadb:10.7
+    image: mariadb:10
     container_name: mysql-primary
     command: mysqld
     volumes:
@@ -21,7 +21,7 @@ services:
       test: ['CMD', 'mysqladmin', 'ping', '-hlocalhost', '-ppassword']
 
   mysql-read-replica:
-    image: mariadb:10.7
+    image: mariadb:10
     depends_on:
       mysql-primary:
         condition: service_healthy

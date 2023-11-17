@@ -4,7 +4,7 @@
 version: '3.3'
 services:
   mariadb:
-    image: mariadb:10.7
+    image: mariadb:10
     command: mysqld --max_connections=500
     volumes:
       - ../../docker/mariadb/primary/conf/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
