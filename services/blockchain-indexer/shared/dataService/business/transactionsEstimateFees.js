@@ -496,10 +496,12 @@ module.exports = {
 	estimateTransactionFees,
 
 	// Export for the unit tests
+	getCcmBuffer,
 	calcDynamicFeeEstimates,
 	mockTransaction,
 	calcAdditionalFees,
 	filterOptionalProps,
 	getNumberOfSignatures,
 	validateTransactionParams,
+	validateUserHasTokenAccount,
 };

@@ -160,6 +160,42 @@ jest.mock('../../../../../shared/dataService/business/token', () => ({
 	},
 }));
 
+describe('getCcmBuffer', () => {
+	it('should return null if the transaction is not token transferCrossChain', () => {
+		const { getCcmBuffer } = require(mockedTransactionFeeEstimatesFilePath);
+		expect(getCcmBuffer(mockRegisterValidatorTxRequestConnector.transaction)).resolves.toBeNull();
+	});
+
+	it.todo("Add test cases for 'if (!ccmSendSuccess)' scenarios");
+});
+
+describe('validateUserHasTokenAccount', () => {
+	it.todo('Fix the mocks for validateUserHasTokenAccount dependencies and enable the tests');
+
+	it('should return undefined if user has token account initialized', () => {
+		const { validateUserHasTokenAccount } = require(mockedTransactionFeeEstimatesFilePath);
+		const { tokenID, recipientAddress } = mockTransferCrossChainTxRequest.transaction.params;
+
+		expect(validateUserHasTokenAccount(tokenID, recipientAddress)).resolves.toBeUndefined();
+	});
+
+	xit("should throw an error if user doesn't have token account initialized", async () => {
+		jest.mock('../../../../../shared/dataService/business/token', () => ({
+			async tokenHasUserAccount() {
+				return {
+					data: { isExists: false },
+					meta: {},
+				};
+			},
+		}));
+
+		const { validateUserHasTokenAccount } = require(mockedTransactionFeeEstimatesFilePath);
+		const { tokenID, recipientAddress } = mockTransferCrossChainTxRequest.transaction.params;
+
+		await expect(validateUserHasTokenAccount(tokenID, recipientAddress)).rejects.toThrow();
+	});
+});
+
 describe('validateTransactionParams', () => {
 	it('should validate a valid token and register validator transaction', () => {
 		const { validateTransactionParams } = require(mockedTransactionFeeEstimatesFilePath);
@@ -294,6 +330,23 @@ describe('validateTransactionParams', () => {
 				params: {
 					...remParams,
 					sendingChainID: 'invalidSendingChainID',
+				},
+			}),
+		).rejects.toThrow();
+	});
+
+	it('should throw an error if user has insufficient balance transaction', () => {
+		const { sendingChainID, ...remParams } =
+			mockInteroperabilitySubmitMainchainCrossChainUpdateTxRequest.transaction.params;
+
+		const { validateTransactionParams } = require(mockedTransactionFeeEstimatesFilePath);
+
+		expect(() =>
+			validateTransactionParams({
+				...mockInteroperabilitySubmitMainchainCrossChainUpdateTxRequest.transaction,
+				params: {
+					...remParams,
+					amount: Number.MAX_SAFE_INTEGER.toString(),
 				},
 			}),
 		).rejects.toThrow();
