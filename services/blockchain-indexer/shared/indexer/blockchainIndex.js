@@ -379,10 +379,6 @@ const indexBlock = async job => {
 			logger.info(`Successfully indexed block ${block.id} at height ${block.height}.`);
 		}
 	} catch (error) {
-		// Reschedule the block for indexing
-		// eslint-disable-next-line no-use-before-define
-		await addHeightToIndexBlocksQueue(blockHeightToIndex);
-
 		// Block may not have been initialized when error occurred
 		const failedBlockInfo = {
 			id: typeof block === 'undefined' ? undefined : block.id,
@@ -509,6 +505,22 @@ const deleteIndexedBlocks = async job => {
 					meta: { offset: 0, count: forkedTransactions.length, total: forkedTransactions.length },
 				});
 
+				// Update generatedBlocks count for the block generator
+				const validatorsTable = await getValidatorsTable();
+				logger.trace(
+					`Decreasing generatedBlocks for validator ${blockFromJob.generatorAddress} by 1.`,
+				);
+				await validatorsTable.decrement(
+					{
+						decrement: { generatedBlocks: 1 },
+						where: { address: blockFromJob.generatorAddress },
+					},
+					dbTrx,
+				);
+				logger.debug(
+					`Decreased generatedBlocks for validator ${blockFromJob.generatorAddress} by 1.`,
+				);
+
 				// Calculate locked amount change from events and update in key_value_store table
 				if (events.length) {
 					const eventsTable = await getEventsTable();
@@ -544,7 +556,6 @@ const deleteIndexedBlocks = async job => {
 								commissionAmount,
 							);
 
-							const validatorsTable = await getValidatorsTable();
 							logger.trace(
 								`Decreasing commission for validator ${blockFromJob.generatorAddress} by ${commissionAmount}.`,
 							);
@@ -679,13 +690,15 @@ const deleteIndexedBlocksQueue = Queue(
 const getLiveIndexingJobCount = async () => {
 	const { queue: indexBlocksBullQueue } = indexBlocksQueue;
 	const { queue: deleteIndexedBlocksBullQueue } = deleteIndexedBlocksQueue;
+
 	const jcIndexBlocksQueue = await indexBlocksBullQueue.getJobCounts();
-	const jcDeleteIndexBlocksQueue = await deleteIndexedBlocksBullQueue.getJobCounts();
+	const jcDeleteIndexedBlocksQueue = await deleteIndexedBlocksBullQueue.getJobCounts();
+
 	const count =
 		jcIndexBlocksQueue.active +
 		jcIndexBlocksQueue.waiting +
-		jcDeleteIndexBlocksQueue.active +
-		jcDeleteIndexBlocksQueue.waiting;
+		jcDeleteIndexedBlocksQueue.active +
+		jcDeleteIndexedBlocksQueue.waiting;
 	return count;
 };
 
