@@ -42,10 +42,10 @@ const checkIsClientAlive = () =>
 	clientCache && clientCache._channel && clientCache._channel.isAlive;
 
 // eslint-disable-next-line consistent-return
-const instantiateClient = async (isForceUpdate = false) => {
+const instantiateClient = async (isForceReInstantiate = false) => {
 	try {
-		if (!isInstantiating || isForceUpdate) {
-			if (!checkIsClientAlive() || isForceUpdate) {
+		if (!isInstantiating || isForceReInstantiate) {
+			if (!checkIsClientAlive() || isForceReInstantiate) {
 				isInstantiating = true;
 				instantiationBeginTime = Date.now();
 				if (clientCache) await clientCache.disconnect();
@@ -54,7 +54,7 @@ const instantiateClient = async (isForceUpdate = false) => {
 					? await createIPCClient(config.liskAppDataPath)
 					: await createWSClient(`${liskAddress}/rpc-ws`);
 
-				if (isForceUpdate) logger.info('Re-instantiated the API client forcefully.');
+				if (isForceReInstantiate) logger.info('Re-instantiated the API client forcefully.');
 
 				// Inform listeners about the newly instantiated ApiClient
 				Signals.get('newApiClient').dispatch();
@@ -78,10 +78,11 @@ const instantiateClient = async (isForceUpdate = false) => {
 
 		logger.error(errMessage);
 		logger.error(err.message);
-		if (err.code === 'ECONNREFUSED')
+		if (err.message.includes('ECONNREFUSED')) {
 			throw new Error('ECONNREFUSED: Unable to reach a network node.');
+		}
 
-		return clientCache;
+		return null;
 	}
 };
 
@@ -92,10 +93,10 @@ const getApiClient = async () => {
 
 // eslint-disable-next-line consistent-return
 const invokeEndpoint = async (endpoint, params = {}, numRetries = NUM_REQUEST_RETRIES) => {
-	const apiClient = await getApiClient();
 	let retries = numRetries;
 	do {
 		try {
+			const apiClient = await getApiClient();
 			const response = await apiClient._channel.invoke(endpoint, params);
 			return response;
 		} catch (err) {
@@ -108,7 +109,7 @@ const invokeEndpoint = async (endpoint, params = {}, numRetries = NUM_REQUEST_RE
 	} while (retries--);
 };
 
-const resetApiClientListener = () => instantiateClient(true);
+const resetApiClientListener = async () => instantiateClient(true);
 Signals.get('resetApiClient').add(resetApiClientListener);
 
 module.exports = {
