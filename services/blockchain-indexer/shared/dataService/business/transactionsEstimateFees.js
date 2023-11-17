@@ -301,12 +301,17 @@ const validateTransactionParams = async transaction => {
 
 	if (transaction.params.tokenID) {
 		const senderAddress = getLisk32AddressFromPublicKey(transaction.senderPublicKey);
-		const {data: [balanceInfo]} = await getTokenBalances({ address: senderAddress, tokenID: transaction.params.tokenID });
 		const {
 			data: { extraCommandFees },
 		} = await getTokenConstants();
+		const {
+			data: [balanceInfo],
+		} = await getTokenBalances({ address: senderAddress, tokenID: transaction.params.tokenID });
 
-		if (BigInt(balanceInfo.availableBalance) < BigInt(transaction.params.amount) + BigInt(extraCommandFees.userAccountInitializationFee)) {
+		if (
+			BigInt(balanceInfo.availableBalance) <
+			BigInt(transaction.params.amount) + BigInt(extraCommandFees.userAccountInitializationFee)
+		) {
 			throw new ValidationException(
 				`${senderAddress} has insufficient balance for ${transaction.params.tokenID} to send the transaction.`,
 			);
@@ -334,12 +339,12 @@ const validateTransactionParams = async transaction => {
 	}
 };
 
-const validateUserTokenIDBalance = async (tokenID, address) => {
+const validateUserHasTokenAccount = async (tokenID, address) => {
 	const response = await tokenHasUserAccount({ tokenID, address });
 
 	if (!response.data.isExists) {
 		throw new ValidationException(
-			`${address} has insufficient balance for ${tokenID} to send the transaction.`,
+			`${address} has no balance for tokenID: ${tokenID}, necessary to make this transaction. Please top-up the account with some balance and retry.`,
 		);
 	}
 };
@@ -356,7 +361,7 @@ const estimateTransactionFees = async params => {
 	const feeEstimatePerByte = getFeeEstimates();
 
 	// Validate if the sender has balance for transaction fee
-	await validateUserTokenIDBalance(feeEstimatePerByte.feeTokenID, senderAddress);
+	await validateUserHasTokenAccount(feeEstimatePerByte.feeTokenID, senderAddress);
 	await validateTransactionParams(params.transaction);
 
 	const numberOfSignatures = await getNumberOfSignatures(senderAddress);
@@ -381,7 +386,7 @@ const estimateTransactionFees = async params => {
 		const ccmLength = ccmBuffer.length;
 		const channelInfo = await resolveChannelInfo(params.transaction.params.receivingChainID);
 
-		await validateUserTokenIDBalance(channelInfo.messageFeeTokenID, senderAddress);
+		await validateUserHasTokenAccount(channelInfo.messageFeeTokenID, senderAddress);
 
 		const ccmByteFee = BigInt(ccmLength) * BigInt(channelInfo.minReturnFeePerByte);
 		const totalMessageFee = additionalFees.params.messageFee
@@ -429,7 +434,6 @@ const estimateTransactionFees = async params => {
 
 	const { minFee, size } = formattedTransaction;
 
-	// TODO: Remove BUFFER_BYTES_LENGTH support after RC is tagged
 	const estimatedMinFee =
 		BigInt(minFee) + BigInt(BUFFER_BYTES_LENGTH * feeEstimatePerByte.minFeePerByte);
 
