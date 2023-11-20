@@ -33,6 +33,7 @@ module.exports = [
 			address: { optional: true, type: 'string' },
 			senderAddress: { optional: true, type: 'string' },
 			recipientAddress: { optional: true, type: 'string' },
+			receivingChainID: { optional: true, type: 'string' },
 			timestamp: { optional: true, type: 'string' },
 			nonce: { optional: true, type: 'string' },
 			blockID: { optional: true, type: 'string' },

@@ -36,9 +36,6 @@ const mockedPOSConstantsFilePath = resolve(
 const mockedFeeEstimateFilePath = resolve(
 	`${__dirname}/../../../../../shared/dataService/business/feeEstimates`,
 );
-const mockedRTransactionsDryRunFilePath = resolve(
-	`${__dirname}../../../../../../shared/dataService/business/transactionsDryRun`,
-);
 const mockedNetworkFilePath = resolve(
 	`${__dirname}/../../../../../shared/dataService/business/network`,
 );
@@ -64,6 +61,12 @@ const {
 	mockRegisterValidatorTxRequestConnector,
 	mockRegisterValidatorTxResult,
 } = require('../../constants/transactionEstimateFees');
+
+const {
+	tokenHasUserAccount,
+	getTokenConstants,
+	getTokenBalances,
+} = require('../../../../../shared/dataService/business/token');
 
 jest.mock('lisk-service-framework', () => {
 	const actual = jest.requireActual('lisk-service-framework');
@@ -135,43 +138,110 @@ jest.mock('../../../../../shared/dataService/business/schemas', () => {
 });
 
 jest.mock('../../../../../shared/dataService/business/token', () => ({
-	tokenHasUserAccount() {
-		return {
-			data: { isExists: true },
-			meta: {},
-		};
+	tokenHasUserAccount: jest.fn(),
+	getTokenConstants: jest.fn(),
+	getTokenBalances: jest.fn(),
+}));
+
+tokenHasUserAccount.mockImplementation(() => ({
+	data: { isExists: true },
+	meta: {},
+}));
+
+getTokenConstants.mockImplementation(() => ({
+	data: {
+		extraCommandFees: {
+			userAccountInitializationFee: '5000000',
+			escrowAccountInitializationFee: '5000000',
+		},
 	},
-	getTokenConstants() {
-		return {
-			data: {
-				extraCommandFees: {
-					userAccountInitializationFee: '5000000',
-					escrowAccountInitializationFee: '5000000',
-				},
-			},
-			meta: {},
-		};
-	},
-	getTokenBalances() {
-		return {
-			data: [{ availableBalance: '500000000000' }],
-			meta: {},
-		};
-	},
+	meta: {},
+}));
+
+getTokenBalances.mockImplementation(() => ({
+	data: [{ availableBalance: '500000000000' }],
+	meta: {},
+}));
+
+const {
+	dryRunTransactions,
+} = require('../../../../../shared/dataService/business/transactionsDryRun');
+
+jest.mock('../../../../../shared/dataService/business/transactionsDryRun', () => ({
+	dryRunTransactions: jest.fn(),
+}));
+
+const { requestConnector } = require('../../../../../shared/utils/request');
+
+jest.mock('../../../../../shared/utils/request', () => ({
+	requestConnector: jest.fn(),
 }));
 
 describe('getCcmBuffer', () => {
-	it('should return null if the transaction is not token transferCrossChain', () => {
+	it('should return null if the transaction is not token transferCrossChain', async () => {
 		const { getCcmBuffer } = require(mockedTransactionFeeEstimatesFilePath);
 		expect(getCcmBuffer(mockRegisterValidatorTxRequestConnector.transaction)).resolves.toBeNull();
 	});
 
-	it.todo("Add test cases for 'if (!ccmSendSuccess)' scenarios");
+	it('should return ccmbuffer if the transaction is transferCrossChain with CCM success event', async () => {
+		requestConnector.mockResolvedValue('CCM buffer');
+		dryRunTransactions.mockReturnValueOnce({
+			data: { events: [{ name: 'ccmSendSuccess', data: { ccm: 'hello' } }] },
+		});
+
+		const { getCcmBuffer } = require(mockedTransactionFeeEstimatesFilePath);
+		expect(() => getCcmBuffer(mockTransferCrossChainTxRequestConnector)).not.toThrow();
+	});
+
+	it('should throw validation error if the transaction is transferCrossChain without CCM success event', async () => {
+		const mockErrorMessage = 'validation Error';
+		requestConnector.mockResolvedValue('CCM buffer');
+		dryRunTransactions
+			.mockReturnValueOnce({
+				data: { events: [] },
+			})
+			.mockReturnValueOnce({
+				data: { errorMessage: mockErrorMessage },
+			});
+
+		const { getCcmBuffer } = require(mockedTransactionFeeEstimatesFilePath);
+		expect(() => getCcmBuffer(mockTransferCrossChainTxRequestConnector)).rejects.toThrow(
+			mockErrorMessage,
+		);
+	});
+
+	it('should throw validation error if the transaction is transferCrossChain with CCM success failed', async () => {
+		requestConnector.mockResolvedValue('CCM buffer');
+		dryRunTransactions
+			.mockReturnValueOnce({
+				data: { events: [{ name: 'ccmSentFailed', code: 1 }] },
+			})
+			.mockReturnValueOnce({
+				data: { events: [{ name: 'ccmSentFailed', code: 1 }] },
+			});
+
+		const { getCcmBuffer } = require(mockedTransactionFeeEstimatesFilePath);
+		expect(() => getCcmBuffer(mockTransferCrossChainTxRequestConnector)).rejects.toThrow();
+	});
+
+	it('should return empty buffer if the transaction is transferCrossChain without CCM success failed', async () => {
+		requestConnector.mockResolvedValue('CCM buffer');
+		dryRunTransactions
+			.mockReturnValueOnce({
+				data: { events: [] },
+			})
+			.mockReturnValueOnce({
+				data: { events: [] },
+			});
+
+		const { getCcmBuffer } = require(mockedTransactionFeeEstimatesFilePath);
+		await expect(getCcmBuffer(mockTransferCrossChainTxRequestConnector)).resolves.toStrictEqual(
+			Buffer.from('', 'hex'),
+		);
+	});
 });
 
 describe('validateUserHasTokenAccount', () => {
-	it.todo('Fix the mocks for validateUserHasTokenAccount dependencies and enable the tests');
-
 	it('should return undefined if user has token account initialized', () => {
 		const { validateUserHasTokenAccount } = require(mockedTransactionFeeEstimatesFilePath);
 		const { tokenID, recipientAddress } = mockTransferCrossChainTxRequest.transaction.params;
@@ -179,15 +249,11 @@ describe('validateUserHasTokenAccount', () => {
 		expect(validateUserHasTokenAccount(tokenID, recipientAddress)).resolves.toBeUndefined();
 	});
 
-	xit("should throw an error if user doesn't have token account initialized", async () => {
-		jest.mock('../../../../../shared/dataService/business/token', () => ({
-			async tokenHasUserAccount() {
-				return {
-					data: { isExists: false },
-					meta: {},
-				};
-			},
-		}));
+	it("should throw an error if user doesn't have token account initialized", async () => {
+		tokenHasUserAccount.mockReturnValueOnce({
+			data: { isExists: false },
+			meta: {},
+		});
 
 		const { validateUserHasTokenAccount } = require(mockedTransactionFeeEstimatesFilePath);
 		const { tokenID, recipientAddress } = mockTransferCrossChainTxRequest.transaction.params;
@@ -571,23 +637,14 @@ describe('Test transaction fees estimates', () => {
 	});
 
 	describe('Test estimateTransactionFees method', () => {
-		afterEach(() => jest.clearAllMocks());
-		jest.resetModules();
-
 		// Mock the dependencies
 		const { calcAdditionalFees } = require(mockedTransactionFeeEstimatesFilePath);
 		const { calcMessageFee } = require(mockedTransactionFeeEstimatesFilePath);
 		const { getAuthAccountInfo } = require(mockedAuthFilePath);
 		const { getLisk32AddressFromPublicKey } = require(mockedAccountFilePath);
-		const { requestConnector } = require(mockedRequestFilePath);
 		const { getPosConstants } = require(mockedPOSConstantsFilePath);
 		const { getFeeEstimates } = require(mockedFeeEstimateFilePath);
-		const { dryRunTransactions } = require(mockedRTransactionsDryRunFilePath);
 		const { getNetworkStatus } = require(mockedNetworkFilePath);
-
-		jest.mock(mockedRTransactionsDryRunFilePath, () => ({
-			dryRunTransactions: jest.fn(),
-		}));
 
 		jest.mock(mockedAuthFilePath, () => ({
 			getAuthAccountInfo: jest.fn(),
@@ -614,11 +671,6 @@ describe('Test transaction fees estimates', () => {
 				calcMessageFee: jest.fn(),
 			};
 		});
-
-		jest.mock(mockedRequestFilePath, () => ({
-			requestConnector: jest.fn(),
-			requestFeeEstimator: jest.fn(),
-		}));
 
 		jest.mock(mockedPOSConstantsFilePath, () => ({
 			getPosConstants: jest.fn(),
@@ -878,9 +930,6 @@ describe('Test transaction fees estimates', () => {
 	});
 
 	describe('Test getNumberOfSignatures method', () => {
-		// Mock the dependencies
-		const { requestConnector } = require(mockedRequestFilePath);
-
 		jest.mock(mockedRequestFilePath, () => ({
 			requestConnector: jest.fn(),
 		}));

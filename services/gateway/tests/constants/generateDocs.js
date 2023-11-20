@@ -690,6 +690,9 @@ const createApiDocsExpectedResponse = {
 					$ref: '#/parameters/recipientAddress',
 				},
 				{
+					$ref: '#/parameters/receivingChainID',
+				},
+				{
 					$ref: '#/parameters/blockID',
 				},
 				{

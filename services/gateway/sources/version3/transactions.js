@@ -23,6 +23,7 @@ module.exports = {
 		moduleCommand: '=,string',
 		senderAddress: '=,string',
 		recipientAddress: '=,string',
+		receivingChainID: '=,string',
 		address: '=,string',
 		blockID: '=,string',
 		height: '=,string',

@@ -132,7 +132,9 @@ const getPendingTransactions = async params => {
 					transaction.sender.address === validatedParams.address ||
 					transaction.params.recipientAddress === validatedParams.address) &&
 				(!validatedParams.moduleCommand ||
-					transaction.moduleCommand === validatedParams.moduleCommand),
+					transaction.moduleCommand === validatedParams.moduleCommand) &&
+				(!validatedParams.receivingChainID ||
+					transaction.params.receivingChainID === validatedParams.receivingChainID),
 		);
 
 		pendingTransactions.data = filteredPendingTxs
