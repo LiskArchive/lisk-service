@@ -36,6 +36,7 @@ const {
 	reloadValidatorCache,
 	getGenerators,
 	getNumberOfGenerators,
+	getTransactionsByBlockID,
 } = require('./dataService');
 const { accountAddrUpdateQueue } = require('./indexer/accountIndex');
 
@@ -77,8 +78,10 @@ const initQueueStatus = async () => {
 
 const newBlockProcessor = async header => {
 	logger.debug(`New block (${header.id}) received at height ${header.height}.`);
-	const response = await formatBlock(header);
+	const { data: transactions } = await getTransactionsByBlockID(header.id);
+	const response = await formatBlock({ header, transactions });
 	const [newBlock] = response.data;
+
 	await indexNewBlock(newBlock);
 	await performLastBlockUpdate(newBlock);
 	Signals.get('newBlock').dispatch(response);
@@ -92,7 +95,7 @@ const deleteBlockProcessor = async header => {
 		logger.debug(
 			`Scheduling the delete block (${header.id}) event for the block at height ${header.height}.`,
 		);
-		const response = await formatBlock(header, true);
+		const response = await formatBlock({ header }, true);
 		await scheduleBlockDeletion(header);
 		Signals.get('deleteBlock').dispatch(response);
 		logger.info(

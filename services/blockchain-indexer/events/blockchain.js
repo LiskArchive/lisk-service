@@ -17,7 +17,6 @@ const { Logger, Signals } = require('lisk-service-framework');
 
 const {
 	reloadAllPendingTransactions,
-	getTransactionsByBlockID,
 	reloadGeneratorsCache,
 	getGenerators,
 } = require('../shared/dataService');
@@ -64,12 +63,21 @@ module.exports = [
 				try {
 					if (payload && Array.isArray(payload.data)) {
 						const [block] = payload.data;
-						if (block.numberOfTransactions > 0) {
+						const { numberOfTransactions } = block;
+
+						if (numberOfTransactions > 0) {
 							logger.debug(
 								`Block (${block.id}) arrived containing ${block.numberOfTransactions} new transactions`,
 							);
-							const transactionData = await getTransactionsByBlockID(block.id);
-							callback(transactionData);
+							const transactionsPayload = {
+								data: block.transactions,
+								meta: {
+									count: numberOfTransactions,
+									offset: 0,
+									total: numberOfTransactions,
+								},
+							};
+							callback(transactionsPayload);
 						}
 					} else {
 						const payloadStr = JSON.stringify(payload);
