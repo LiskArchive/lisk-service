@@ -21,7 +21,7 @@ const config = require('../config');
 
 const logger = Logger();
 
-const { initNodeConstants } = require('./constants');
+const { initNodeConstants, EMPTY_TREE_ROOT } = require('./constants');
 
 const {
 	addHeightToIndexBlocksQueue,
@@ -36,7 +36,7 @@ const {
 	reloadValidatorCache,
 	getGenerators,
 	getNumberOfGenerators,
-	getTransactionsByBlockID,
+	getBlockByID,
 } = require('./dataService');
 const { accountAddrUpdateQueue } = require('./indexer/accountIndex');
 
@@ -78,8 +78,16 @@ const initQueueStatus = async () => {
 
 const newBlockProcessor = async header => {
 	logger.debug(`New block (${header.id}) received at height ${header.height}.`);
-	const { data: transactions } = await getTransactionsByBlockID(header.id);
-	const response = await formatBlock({ header, transactions });
+	let transactions = [];
+	let assets = [];
+
+	if (header.transactionRoot !== EMPTY_TREE_ROOT || header.assetRoot !== EMPTY_TREE_ROOT) {
+		const block = await getBlockByID(header.id);
+		transactions = block.transactions;
+		assets = block.assets;
+	}
+
+	const response = await formatBlock({ header, assets, transactions });
 	const [newBlock] = response.data;
 
 	await indexNewBlock(newBlock);
