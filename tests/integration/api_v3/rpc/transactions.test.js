@@ -18,10 +18,13 @@ import { TRANSACTION_EXECUTION_STATUSES } from '../../../schemas/api_v3/constant
 import {
 	invalidAddresses,
 	invalidBlockIDs,
+	invalidChainIDs,
 	invalidLimits,
 	invalidOffsets,
 } from '../constants/invalidInputs';
 import { waitMs } from '../../../helpers/utils';
+
+jest.setTimeout(1200000);
 
 const config = require('../../../config');
 const { request } = require('../../../helpers/socketIoRpcRequest');
@@ -44,32 +47,51 @@ const {
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getTransactions = async params => request(wsRpcUrl, 'get.transactions', params);
 
+const fetchTxWithRetry = async params => {
+	let retries = 10;
+
+	while (retries > 0) {
+		try {
+			const response = await getTransactions({ limit: 1, ...params });
+			const [tx] = response.result.data;
+
+			if (tx) {
+				return {
+					success: true,
+					data: tx,
+				};
+			}
+		} catch (error) {
+			console.error(`Error fetching transactions. Retries left: ${retries}`);
+
+			// Delay by 3 sec
+			await waitMs(3000);
+		}
+		retries--;
+	}
+
+	return {
+		success: false,
+	};
+};
+
 describe('Method get.transactions', () => {
 	let refTransaction;
 
 	beforeAll(async () => {
-		let retries = 10;
-		let success = false;
+		const crossChainTxRes = await fetchTxWithRetry({ moduleCommand: 'token:transferCrossChain' });
 
-		while (retries > 0 && !success) {
-			try {
-				const response = await getTransactions({ moduleCommand: 'token:transfer', limit: 1 });
-				[refTransaction] = response.result.data;
+		// Try to fetch transfer transaction on same chain, incase no transactions with transfer cross chain
+		if (!crossChainTxRes.success) {
+			const sameChainTxRes = await fetchTxWithRetry({ moduleCommand: 'token:transfer' });
 
-				if (refTransaction) {
-					success = true;
-				}
-			} catch (error) {
-				console.error(`Error fetching transactions. Retries left: ${retries}`);
-				retries--;
-
-				// Delay by 3 sec
-				await waitMs(3000);
+			if (!sameChainTxRes.success) {
+				throw new Error('Failed to fetch transactions after 10 retries');
+			} else {
+				refTransaction = sameChainTxRes.data;
 			}
-		}
-
-		if (!success) {
-			throw new Error('Failed to fetch transactions after 10 retries');
+		} else {
+			refTransaction = crossChainTxRes.data;
 		}
 	});
 
@@ -271,6 +293,41 @@ describe('Method get.transactions', () => {
 		it('should throw error when called with invalid recipientAddress', async () => {
 			for (let i = 0; i < invalidAddresses.length; i++) {
 				const response = await getTransactions({ recipientAddress: invalidAddresses[i] });
+				expect(response).toMap(invalidParamsSchema);
+			}
+		});
+	});
+
+	describe('is able to retrieve list of transactions using receivingChainID', () => {
+		it('should return transactions when called with known receivingChainID', async () => {
+			if (refTransaction.params.receivingChainID) {
+				const response = await getTransactions({
+					receivingChainID: refTransaction.params.receivingChainID,
+				});
+				expect(response).toMap(jsonRpcEnvelopeSchema);
+				const { result } = response;
+				expect(result.data).toBeInstanceOf(Array);
+				expect(result.data.length).toBeGreaterThanOrEqual(1);
+				expect(result.data.length).toBeLessThanOrEqual(10);
+				expect(response.result).toMap(resultEnvelopeSchema);
+				result.data.forEach((transaction, i) => {
+					expect(transaction).toMap(transactionSchema);
+					expect(transaction.params.receivingChainID).toEqual(
+						refTransaction.params.receivingChainID,
+					);
+					if (i > 0) {
+						const prevTx = result.data[i];
+						const prevTxTimestamp = prevTx.block.timestamp;
+						expect(prevTxTimestamp).toBeGreaterThanOrEqual(transaction.block.timestamp);
+					}
+				});
+				expect(result.meta).toMap(metaSchema);
+			}
+		});
+
+		it('should throw error when called with invalid receivingChainID', async () => {
+			for (let i = 0; i < invalidChainIDs.length; i++) {
+				const response = await getTransactions({ receivingChainID: invalidChainIDs[i] });
 				expect(response).toMap(invalidParamsSchema);
 			}
 		});

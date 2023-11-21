@@ -43,6 +43,12 @@ const invalidNames = [
 	'______%',
 ];
 
+const invalidChainIDs = [
+	'0000000G', // contains invalid character 'G'
+	'0000000?', // contains invalid character '?'
+	'0 OR 1=1', // SQL injection
+];
+
 const invalidTokenIDs = [
 	'0123456789abcdefG', // contains invalid character 'G'
 	'0123456789abcdef?', // contains invalid character '?'
@@ -75,6 +81,7 @@ module.exports = {
 	invalidNames,
 	invalidNamesCSV,
 	invalidTokenIDs,
+	invalidChainIDs,
 	invalidTokenIDCSV,
 	invalidChainIDCSV,
 	invalidPartialSearches,

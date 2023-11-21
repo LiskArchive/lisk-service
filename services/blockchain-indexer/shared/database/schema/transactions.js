@@ -46,6 +46,7 @@ module.exports = {
 		amount: { type: 'range' },
 		data: { type: 'key' },
 		senderAddress: { type: 'key' },
+		receivingChainID: { type: 'key' },
 		executionStatus: { type: 'key' },
 	},
 	purge: {},
