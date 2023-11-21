@@ -24,6 +24,8 @@ import {
 } from '../constants/invalidInputs';
 import { waitMs } from '../../../helpers/utils';
 
+jest.setTimeout(1200000);
+
 const config = require('../../../config');
 const { request } = require('../../../helpers/socketIoRpcRequest');
 
@@ -61,11 +63,11 @@ const fetchTxWithRetry = async params => {
 			}
 		} catch (error) {
 			console.error(`Error fetching transactions. Retries left: ${retries}`);
-			retries--;
 
 			// Delay by 3 sec
 			await waitMs(3000);
 		}
+		retries--;
 	}
 
 	return {
@@ -77,7 +79,6 @@ describe('Method get.transactions', () => {
 	let refTransaction;
 
 	beforeAll(async () => {
-		jest.setTimeout(Number.MAX_SAFE_INTEGER);
 		const crossChainTxRes = await fetchTxWithRetry({ moduleCommand: 'token:transferCrossChain' });
 
 		// Try to fetch transfer transaction on same chain, incase no transactions with transfer cross chain
