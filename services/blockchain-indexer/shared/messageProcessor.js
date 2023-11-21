@@ -21,7 +21,7 @@ const config = require('../config');
 
 const logger = Logger();
 
-const { initNodeConstants, EMPTY_TREE_ROOT } = require('./constants');
+const { initNodeConstants, EMPTY_TREE_ROOT_HASH } = require('./constants');
 
 const {
 	addHeightToIndexBlocksQueue,
@@ -81,7 +81,10 @@ const newBlockProcessor = async header => {
 	let transactions = [];
 	let assets = [];
 
-	if (header.transactionRoot !== EMPTY_TREE_ROOT || header.assetRoot !== EMPTY_TREE_ROOT) {
+	if (
+		header.transactionRoot !== EMPTY_TREE_ROOT_HASH ||
+		header.assetRoot !== EMPTY_TREE_ROOT_HASH
+	) {
 		const block = await getBlockByID(header.id);
 		transactions = block.transactions;
 		assets = block.assets;
