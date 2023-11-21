@@ -62,11 +62,13 @@ const {
 	mockRegisterValidatorTxResult,
 } = require('../../constants/transactionEstimateFees');
 
+const { tokenHasUserAccount } = require('../../../../../shared/dataService/business/token');
+
 const {
-	tokenHasUserAccount,
-	getTokenConstants,
-	getTokenBalances,
-} = require('../../../../../shared/dataService/business/token');
+	dryRunTransactions,
+} = require('../../../../../shared/dataService/business/transactionsDryRun');
+
+const { requestConnector } = require('../../../../../shared/utils/request');
 
 jest.mock('lisk-service-framework', () => {
 	const actual = jest.requireActual('lisk-service-framework');
@@ -138,40 +140,28 @@ jest.mock('../../../../../shared/dataService/business/schemas', () => {
 });
 
 jest.mock('../../../../../shared/dataService/business/token', () => ({
-	tokenHasUserAccount: jest.fn(),
-	getTokenConstants: jest.fn(),
-	getTokenBalances: jest.fn(),
-}));
-
-tokenHasUserAccount.mockImplementation(() => ({
-	data: { isExists: true },
-	meta: {},
-}));
-
-getTokenConstants.mockImplementation(() => ({
-	data: {
-		extraCommandFees: {
-			userAccountInitializationFee: '5000000',
-			escrowAccountInitializationFee: '5000000',
+	tokenHasUserAccount: jest.fn().mockImplementation(() => ({
+		data: { isExists: true },
+		meta: {},
+	})),
+	getTokenConstants: jest.fn().mockImplementation(() => ({
+		data: {
+			extraCommandFees: {
+				userAccountInitializationFee: '5000000',
+				escrowAccountInitializationFee: '5000000',
+			},
 		},
-	},
-	meta: {},
+		meta: {},
+	})),
+	getTokenBalances: jest.fn().mockImplementation(() => ({
+		data: [{ availableBalance: '500000000000' }],
+		meta: {},
+	})),
 }));
-
-getTokenBalances.mockImplementation(() => ({
-	data: [{ availableBalance: '500000000000' }],
-	meta: {},
-}));
-
-const {
-	dryRunTransactions,
-} = require('../../../../../shared/dataService/business/transactionsDryRun');
 
 jest.mock('../../../../../shared/dataService/business/transactionsDryRun', () => ({
 	dryRunTransactions: jest.fn(),
 }));
-
-const { requestConnector } = require('../../../../../shared/utils/request');
 
 jest.mock('../../../../../shared/utils/request', () => ({
 	requestConnector: jest.fn(),
