@@ -18,10 +18,13 @@ import { TRANSACTION_EXECUTION_STATUSES } from '../../../schemas/api_v3/constant
 import {
 	invalidAddresses,
 	invalidBlockIDs,
+	invalidChainIDs,
 	invalidLimits,
 	invalidOffsets,
 } from '../constants/invalidInputs';
 import { waitMs } from '../../../helpers/utils';
+
+jest.setTimeout(1200000);
 
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
@@ -41,32 +44,55 @@ const baseAddress = config.SERVICE_ENDPOINT;
 const baseUrl = `${baseAddress}/api/v3`;
 const endpoint = `${baseUrl}/transactions`;
 
+const fetchTxWithRetry = async txEndpoint => {
+	let retries = 10;
+
+	while (retries > 0) {
+		try {
+			const response = await api.get(txEndpoint);
+			const [tx] = response.data;
+
+			if (tx) {
+				return {
+					success: true,
+					data: tx,
+				};
+			}
+		} catch (error) {
+			console.error(`Error fetching transactions. Retries left: ${retries}`);
+
+			// Delay by 3 sec
+			await waitMs(3000);
+		}
+		retries--;
+	}
+
+	return {
+		success: false,
+	};
+};
+
 describe('Transactions API', () => {
 	let refTransaction;
 
 	beforeAll(async () => {
-		let retries = 10;
-		let success = false;
+		const crossChainTxRes = await fetchTxWithRetry(
+			`${endpoint}?limit=1&moduleCommand=token:transferCrossChain`,
+		);
 
-		while (retries > 0 && !success) {
-			try {
-				const response = await api.get(`${endpoint}?limit=1&moduleCommand=token:transfer`);
-				[refTransaction] = response.data;
+		// Try to fetch transfer transaction on same chain, incase no transactions with transfer cross chain
+		if (!crossChainTxRes.success) {
+			const sameChainTxRes = await fetchTxWithRetry(
+				`${endpoint}?limit=1&moduleCommand=token:transfer`,
+			);
 
-				if (refTransaction) {
-					success = true;
-				}
-			} catch (error) {
-				console.error(`Error fetching transactions. Retries left: ${retries}`);
-				retries--;
-
-				// Delay by 3 sec
-				await waitMs(3000);
+			if (!sameChainTxRes.success) {
+				throw new Error('Failed to fetch transactions after 10 retries');
+			} else {
+				refTransaction = sameChainTxRes.data;
 			}
-		}
-
-		if (!success) {
-			throw new Error('Failed to fetch transactions after 10 retries');
+		} else {
+			refTransaction = crossChainTxRes.data;
 		}
 	});
 
@@ -341,6 +367,39 @@ describe('Transactions API', () => {
 		it('should throw error when called with invalid recipientAddress', async () => {
 			for (let i = 0; i < invalidAddresses.length; i++) {
 				const response = await api.get(`${endpoint}?recipientAddress=${invalidAddresses[i]}`, 400);
+				expect(response).toMap(badRequestSchema);
+			}
+		});
+	});
+
+	describe('Retrieve transaction list by receivingChainID', () => {
+		it('should return transactions when called with receivingChainID', async () => {
+			if (refTransaction.params.receivingChainID) {
+				const response = await api.get(
+					`${endpoint}?receivingChainID=${refTransaction.params.receivingChainID}`,
+				);
+				expect(response).toMap(goodRequestSchema);
+				expect(response.data).toBeInstanceOf(Array);
+				expect(response.data.length).toBeGreaterThanOrEqual(1);
+				expect(response.data.length).toBeLessThanOrEqual(10);
+				response.data.forEach((transaction, i) => {
+					expect(transaction).toMap(transactionSchema);
+					expect(transaction.params.receivingChainID).toEqual(
+						refTransaction.params.receivingChainID,
+					);
+					if (i > 0) {
+						const prevTx = response.data[i];
+						const prevTxTimestamp = prevTx.block.timestamp;
+						expect(prevTxTimestamp).toBeGreaterThanOrEqual(transaction.block.timestamp);
+					}
+				});
+				expect(response.meta).toMap(metaSchema);
+			}
+		});
+
+		it('should throw error when called with invalid receivingChainID', async () => {
+			for (let i = 0; i < invalidChainIDs.length; i++) {
+				const response = await api.get(`${endpoint}?receivingChainID=${invalidChainIDs[i]}`, 400);
 				expect(response).toMap(badRequestSchema);
 			}
 		});

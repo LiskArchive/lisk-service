@@ -40,6 +40,14 @@
 		"minLength": 41,
 		"maxLength": 41
 	},
+	"receivingChainID": {
+		"name": "receivingChainID",
+		"in": "query",
+		"description": "Chain ID for the receiving chain in the case of cross-chain token transfers.",
+		"type": "string",
+		"minLength": 8,
+		"maxLength": 8
+	},
 	"senderAddress": {
 		"name": "senderAddress",
 		"in": "query",

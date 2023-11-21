@@ -92,6 +92,7 @@ const validateParams = async params => {
 	if (params.senderAddress) validatedParams.senderAddress = params.senderAddress;
 	if (params.recipientAddress) validatedParams.recipientAddress = params.recipientAddress;
 	if (params.moduleCommand) validatedParams.moduleCommand = params.moduleCommand;
+	if (params.receivingChainID) validatedParams.receivingChainID = params.receivingChainID;
 	if (params.sort) validatedParams.sort = params.sort;
 
 	return validatedParams;
@@ -132,7 +133,9 @@ const getPendingTransactions = async params => {
 					transaction.sender.address === validatedParams.address ||
 					transaction.params.recipientAddress === validatedParams.address) &&
 				(!validatedParams.moduleCommand ||
-					transaction.moduleCommand === validatedParams.moduleCommand),
+					transaction.moduleCommand === validatedParams.moduleCommand) &&
+				(!validatedParams.receivingChainID ||
+					transaction.params.receivingChainID === validatedParams.receivingChainID),
 		);
 
 		pendingTransactions.data = filteredPendingTxs
