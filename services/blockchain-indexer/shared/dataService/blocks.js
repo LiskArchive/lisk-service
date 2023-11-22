@@ -88,9 +88,8 @@ const formatBlock = async (blockInfo, isDeletedBlock = false) => {
 	const response = await business.formatBlock(
 		{
 			header: {},
-			assets: [],
-			transactions: [],
-			...blockInfo,
+			assets: blockInfo.assets || [],
+			transactions: blockInfo.transactions || [],
 		},
 		isDeletedBlock,
 	);
