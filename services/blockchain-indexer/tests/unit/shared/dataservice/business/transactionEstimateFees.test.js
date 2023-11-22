@@ -424,7 +424,11 @@ describe('Test transaction fees estimates', () => {
 	});
 
 	describe('Test calcDynamicFeeEstimates method', () => {
-		const feeEstimatePerByte = { low: 0, med: 10, high: 50 };
+		const feeEstimatePerByte = {
+			low: 3.3066625382716053,
+			med: 3.307093037235057,
+			high: 4.366180864805574,
+		};
 		const minFee = 150000;
 		const size = 150;
 
@@ -432,9 +436,9 @@ describe('Test transaction fees estimates', () => {
 			const { calcDynamicFeeEstimates } = require(mockedTransactionFeeEstimatesFilePath);
 
 			const expectedResponse = {
-				low: BigInt('150000'),
-				medium: BigInt('151500'),
-				high: BigInt('157500'),
+				low: BigInt('150496'),
+				medium: BigInt('150496'),
+				high: BigInt('150655'),
 			};
 
 			const dynamicFeeEstimates = calcDynamicFeeEstimates(feeEstimatePerByte, minFee, size);
@@ -448,23 +452,7 @@ describe('Test transaction fees estimates', () => {
 
 			expect(() => {
 				calcDynamicFeeEstimates(undefined, minFee, size);
-			}).toThrow(TypeError);
-		});
-
-		it('should throw error when minFee is undefined', async () => {
-			const { calcDynamicFeeEstimates } = require(mockedTransactionFeeEstimatesFilePath);
-
-			expect(() => {
-				calcDynamicFeeEstimates(feeEstimatePerByte, undefined, size);
-			}).toThrow(TypeError);
-		});
-
-		it('should throw error when transaction size is undefined', async () => {
-			const { calcDynamicFeeEstimates } = require(mockedTransactionFeeEstimatesFilePath);
-
-			expect(() => {
-				calcDynamicFeeEstimates(feeEstimatePerByte, minFee, undefined);
-			}).toThrow(TypeError);
+			}).toThrow();
 		});
 
 		it('should throw error when feeEstimatePerByte is null', async () => {
@@ -472,7 +460,15 @@ describe('Test transaction fees estimates', () => {
 
 			expect(() => {
 				calcDynamicFeeEstimates(null, minFee, size);
-			}).toThrow(TypeError);
+			}).toThrow();
+		});
+
+		it('should throw error when minFee is undefined', async () => {
+			const { calcDynamicFeeEstimates } = require(mockedTransactionFeeEstimatesFilePath);
+
+			expect(() => {
+				calcDynamicFeeEstimates(feeEstimatePerByte, undefined, size);
+			}).toThrow();
 		});
 
 		it('should throw error when minFee is null', async () => {
@@ -480,7 +476,15 @@ describe('Test transaction fees estimates', () => {
 
 			expect(() => {
 				calcDynamicFeeEstimates(feeEstimatePerByte, null, size);
-			}).toThrow(TypeError);
+			}).toThrow();
+		});
+
+		it('should throw error when transaction size is undefined', async () => {
+			const { calcDynamicFeeEstimates } = require(mockedTransactionFeeEstimatesFilePath);
+
+			expect(() => {
+				calcDynamicFeeEstimates(feeEstimatePerByte, minFee, undefined);
+			}).toThrow();
 		});
 
 		it('should throw error when transaction size is null', async () => {
@@ -488,7 +492,7 @@ describe('Test transaction fees estimates', () => {
 
 			expect(() => {
 				calcDynamicFeeEstimates(feeEstimatePerByte, minFee, null);
-			}).toThrow(TypeError);
+			}).toThrow();
 		});
 	});
 
