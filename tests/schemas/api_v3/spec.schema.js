@@ -14,7 +14,7 @@
  *
  */
 import Joi from 'joi';
-// import regex from './regex';
+import regex from './regex';
 
 const SWAGGER_VERSION = ['2.0'];
 const SWAGGER_PARAMETER_BODY = ['body'];
@@ -224,9 +224,7 @@ const nonBodyParameter = Joi.alternatives(
 
 const parameter = Joi.alternatives(bodyParameter, nonBodyParameter.optional()).optional();
 
-// TODO: Enable when swagger response key is mapped as per schema
-// const responseKey = Joi.string().pattern(regex.SWAGGER_RESPONSE_KEY).min(1).required();
-const responseKey = Joi.string().min(1).required();
+const responseKey = Joi.string().pattern(regex.SWAGGER_RESPONSE_KEY).min(1).required();
 const responseEntry = Joi.alternatives(
 	Joi.object(response).optional(),
 	Joi.object(jsonReference).optional(),
