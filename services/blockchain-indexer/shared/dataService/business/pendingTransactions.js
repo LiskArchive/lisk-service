@@ -99,7 +99,9 @@ const validateParams = async params => {
 		const currentChainID = await getCurrentChainID();
 
 		if (params.receivingChainID === currentChainID) {
-			params.receivingChainID = null;
+			validatedParams.currentChainTransactions = true;
+		} else {
+			validatedParams.receivingChainID = params.receivingChainID;
 		}
 	}
 
@@ -145,7 +147,8 @@ const getPendingTransactions = async params => {
 				(!validatedParams.moduleCommand ||
 					transaction.moduleCommand === validatedParams.moduleCommand) &&
 				(!validatedParams.receivingChainID ||
-					transaction.params.receivingChainID === validatedParams.receivingChainID),
+					transaction.params.receivingChainID === validatedParams.receivingChainID) &&
+				(!validatedParams.currentChainTransactions || !transaction.params.receivingChainID),
 		);
 
 		pendingTransactions.data = filteredPendingTxs

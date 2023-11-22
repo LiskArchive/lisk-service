@@ -20,6 +20,10 @@ const {
 	mockRecipientAddress,
 } = require('../../constants/pendingTransactions');
 
+const {
+	getCurrentChainID,
+} = require('../../../../../shared/dataService/business/interoperability/chain');
+
 jest.mock('lisk-service-framework', () => {
 	const actual = jest.requireActual('lisk-service-framework');
 	return {
@@ -49,6 +53,10 @@ jest.mock('../../../../../shared/utils/account', () => ({
 
 jest.mock('../../../../../shared/dataService/utils/account', () => ({
 	getIndexedAccountInfo: jest.fn(() => mockSenderAccountDetails),
+}));
+
+jest.mock('../../../../../shared/dataService/business/interoperability/chain', () => ({
+	getCurrentChainID: jest.fn(),
 }));
 
 const {
@@ -86,6 +94,10 @@ describe('Test validateParams method', () => {
 describe('Test getPendingTransactions method', () => {
 	beforeAll(async () => {
 		await loadAllPendingTransactions();
+	});
+
+	beforeEach(async () => {
+		jest.resetModules();
 	});
 
 	it('should return all pending transactions without any filters', async () => {
@@ -131,7 +143,7 @@ describe('Test getPendingTransactions method', () => {
 		expect(result.data.length).toBe(txCountWithParams);
 	});
 
-	it('should return pending transactions with receivingChainID', async () => {
+	it('should return pending transactions with receivingChainID and receivingChainID is not currentChainID', async () => {
 		const params = {
 			receivingChainID: '02000000',
 			sort: 'id:asc',
@@ -139,11 +151,35 @@ describe('Test getPendingTransactions method', () => {
 			limit: 10,
 		};
 
+		getCurrentChainID.mockResolvedValue('02000001');
+
 		const result = await getPendingTransactions(params);
 
 		let txCountWithParams = 0;
 		mockPendingTransactions.forEach(transaction => {
 			if (transaction.params && transaction.params.receivingChainID === '02000000') {
+				txCountWithParams++;
+			}
+		});
+
+		expect(result.data.length).toBe(txCountWithParams);
+	});
+
+	it('should return pending transactions with receivingChainID and receivingChainID is currentChainID', async () => {
+		const params = {
+			receivingChainID: '02000000',
+			sort: 'id:asc',
+			offset: 0,
+			limit: 10,
+		};
+
+		getCurrentChainID.mockResolvedValue('02000000');
+
+		const result = await getPendingTransactions(params);
+
+		let txCountWithParams = 0;
+		mockPendingTransactions.forEach(transaction => {
+			if (transaction.params && !transaction.params.receivingChainID) {
 				txCountWithParams++;
 			}
 		});
