@@ -48,7 +48,8 @@ const instantiateClient = async (isForceReInstantiate = false) => {
 			if (!checkIsClientAlive() || isForceReInstantiate) {
 				isInstantiating = true;
 				instantiationBeginTime = Date.now();
-				if (clientCache) await clientCache.disconnect();
+
+				if (checkIsClientAlive()) await clientCache.disconnect();
 
 				clientCache = config.isUseLiskIPCClient
 					? await createIPCClient(config.liskAppDataPath)
@@ -82,7 +83,7 @@ const instantiateClient = async (isForceReInstantiate = false) => {
 			throw new Error('ECONNREFUSED: Unable to reach a network node.');
 		}
 
-		return null;
+		return instantiateClient(true);
 	}
 };
 
