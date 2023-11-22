@@ -94,7 +94,7 @@ const validateParams = async params => {
 	if (params.recipientAddress) validatedParams.recipientAddress = params.recipientAddress;
 	if (params.moduleCommand) validatedParams.moduleCommand = params.moduleCommand;
 
-	// If recieving chainID is current chain ID then return all transactions with receivingChainID = null
+	// If receivingChainID is currentChainID then return all the transactions where receivingChainID = null
 	if (params.receivingChainID) {
 		const currentChainID = await getCurrentChainID();
 

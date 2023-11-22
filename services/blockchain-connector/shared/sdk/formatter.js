@@ -25,7 +25,7 @@ const {
 	getBlockAssetDataSchemaByModule,
 	getTransactionSchema,
 	getTransactionParamsSchema,
-	getDataSchemaByEventName,
+	getDataSchemaByEvent,
 	getEventSchema,
 } = require('./schema');
 
@@ -146,7 +146,7 @@ const formatEvent = (event, skipDecode) => {
 	if (skipDecode) {
 		eventData = event.data;
 	} else {
-		const eventDataSchema = getDataSchemaByEventName(event.name);
+		const eventDataSchema = getDataSchemaByEvent(event);
 		try {
 			eventData = eventDataSchema
 				? codec.decodeJSON(eventDataSchema, Buffer.from(event.data, 'hex'))

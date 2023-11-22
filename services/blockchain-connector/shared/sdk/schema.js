@@ -49,19 +49,19 @@ const getBlockAssetDataSchemaByModule = _module => {
 	return schema;
 };
 
-const getDataSchemaByEventName = eventName => {
-	if (EVENT_NAME_COMMAND_EXECUTION_RESULT === eventName) return schemas.standardEvent;
+const getDataSchemaByEvent = event => {
+	if (EVENT_NAME_COMMAND_EXECUTION_RESULT === event.name) return schemas.standardEvent;
 
 	// Populate the eventSchemaLookup map with module events if not exists
 	if (Object.keys(eventSchemaLookup).length === 0) {
 		metadata.modules.forEach(module => {
 			module.events.forEach(moduleEvent => {
-				eventSchemaLookup[moduleEvent.name] = moduleEvent.data;
+				eventSchemaLookup[`${module.name}_${moduleEvent.name}`] = moduleEvent.data;
 			});
 		});
 	}
 
-	return eventSchemaLookup[eventName] || null;
+	return eventSchemaLookup[`${event.module}_${event.name}`] || null;
 };
 
 module.exports = {
@@ -76,6 +76,6 @@ module.exports = {
 	getEventSchema,
 	getTransactionSchema,
 	getTransactionParamsSchema,
-	getDataSchemaByEventName,
+	getDataSchemaByEvent,
 	getCCMSchema,
 };
