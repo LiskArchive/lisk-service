@@ -73,7 +73,7 @@ const getBlocksTotal = async (params, blocksResponse) => {
 	) {
 		total = blocksResponse.meta.total;
 	} else {
-		total = await getTotalNumberOfBlocks();
+		total = (await getTotalNumberOfBlocks()) || blocksResponse.data.length;
 	}
 
 	return total;
