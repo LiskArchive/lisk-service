@@ -21,7 +21,7 @@ const config = require('../config');
 
 const logger = Logger();
 
-const { initNodeConstants, EMPTY_TREE_ROOT_HASH } = require('./constants');
+const { initNodeConstants } = require('./constants');
 
 const {
 	addHeightToIndexBlocksQueue,
@@ -36,7 +36,6 @@ const {
 	reloadValidatorCache,
 	getGenerators,
 	getNumberOfGenerators,
-	getBlockByID,
 } = require('./dataService');
 const { accountAddrUpdateQueue } = require('./indexer/accountIndex');
 
@@ -76,28 +75,16 @@ const initQueueStatus = async () => {
 	await queueStatus(eventMessageQueue);
 };
 
-const newBlockProcessor = async header => {
-	logger.debug(`New block (${header.id}) received at height ${header.height}.`);
-	let transactions = [];
-	let assets = [];
-
-	if (
-		header.transactionRoot !== EMPTY_TREE_ROOT_HASH ||
-		header.assetRoot !== EMPTY_TREE_ROOT_HASH
-	) {
-		const block = await getBlockByID(header.id);
-		transactions = block.transactions;
-		assets = block.assets;
-	}
-
-	const response = await formatBlock({ header, assets, transactions });
+const newBlockProcessor = async block => {
+	logger.debug(`New block (${block.id}) received at height ${block.height}.`);
+	const response = await formatBlock(block);
 	const [newBlock] = response.data;
 
 	await indexNewBlock(newBlock);
 	await performLastBlockUpdate(newBlock);
 	Signals.get('newBlock').dispatch(response);
 	logger.info(
-		`Finished scheduling new block (${header.id}) event for the block at height ${header.height}.`,
+		`Finished scheduling new block (${block.id}) event for the block at height ${block.height}.`,
 	);
 };
 
@@ -155,8 +142,8 @@ const initMessageProcessors = async () => {
 		const { isNewBlock, isDeleteBlock, isNewRound } = job.data;
 
 		if (isNewBlock) {
-			const { header } = job.data;
-			await newBlockProcessor(header);
+			const { block } = job.data;
+			await newBlockProcessor(block);
 		} else if (isDeleteBlock) {
 			try {
 				const { header } = job.data;
