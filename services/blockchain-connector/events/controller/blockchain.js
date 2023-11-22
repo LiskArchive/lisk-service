@@ -14,7 +14,10 @@
  *
  */
 const { Signals } = require('lisk-service-framework');
+const { getBlockByID } = require('../../shared/sdk/endpoints');
 const { formatBlock: formatBlockFromFormatter } = require('../../shared/sdk/formatter');
+
+const EMPTY_TREE_ROOT_HASH = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
 
 const appReadyController = async cb => {
 	const appReadyListener = async payload => cb(payload);
@@ -54,12 +57,33 @@ const chainValidatorsChangeController = async cb => {
 const formatBlock = payload =>
 	formatBlockFromFormatter({
 		header: payload.blockHeader,
-		assets: [],
-		transactions: [],
+		assets: payload.assets || [],
+		transactions: payload.transactions || [],
 	});
 
 const chainNewBlockController = async cb => {
-	const chainNewBlockListener = async payload => cb(formatBlock(payload));
+	const chainNewBlockListener = async payload => {
+		const { blockHeader } = payload;
+		let transactions = [];
+		let assets = [];
+
+		if (
+			blockHeader.transactionRoot !== EMPTY_TREE_ROOT_HASH ||
+			blockHeader.assetRoot !== EMPTY_TREE_ROOT_HASH
+		) {
+			const block = await getBlockByID(blockHeader.id);
+			transactions = block.transactions;
+			assets = block.assets;
+		}
+
+		cb(
+			formatBlock({
+				blockHeader,
+				assets,
+				transactions,
+			}),
+		);
+	};
 	Signals.get('chainNewBlock').add(chainNewBlockListener);
 };
 

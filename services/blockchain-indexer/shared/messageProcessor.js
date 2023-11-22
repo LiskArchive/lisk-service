@@ -75,15 +75,16 @@ const initQueueStatus = async () => {
 	await queueStatus(eventMessageQueue);
 };
 
-const newBlockProcessor = async header => {
-	logger.debug(`New block (${header.id}) received at height ${header.height}.`);
-	const response = await formatBlock(header);
+const newBlockProcessor = async block => {
+	logger.debug(`New block (${block.id}) received at height ${block.height}.`);
+	const response = await formatBlock(block);
 	const [newBlock] = response.data;
+
 	await indexNewBlock(newBlock);
 	await performLastBlockUpdate(newBlock);
 	Signals.get('newBlock').dispatch(response);
 	logger.info(
-		`Finished scheduling new block (${header.id}) event for the block at height ${header.height}.`,
+		`Finished scheduling new block (${block.id}) event for the block at height ${block.height}.`,
 	);
 };
 
@@ -92,7 +93,7 @@ const deleteBlockProcessor = async header => {
 		logger.debug(
 			`Scheduling the delete block (${header.id}) event for the block at height ${header.height}.`,
 		);
-		const response = await formatBlock(header, true);
+		const response = await formatBlock({ header }, true);
 		await scheduleBlockDeletion(header);
 		Signals.get('deleteBlock').dispatch(response);
 		logger.info(
@@ -141,8 +142,8 @@ const initMessageProcessors = async () => {
 		const { isNewBlock, isDeleteBlock, isNewRound } = job.data;
 
 		if (isNewBlock) {
-			const { header } = job.data;
-			await newBlockProcessor(header);
+			const { block } = job.data;
+			await newBlockProcessor(block);
 		} else if (isDeleteBlock) {
 			try {
 				const { header } = job.data;

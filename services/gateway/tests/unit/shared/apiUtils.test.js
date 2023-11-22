@@ -96,6 +96,7 @@ describe('Test API utilities', () => {
 		});
 
 		it('should return string when called to convert array to string', async () => {
+			// eslint-disable-next-line no-array-constructor
 			const response = convertType(new Array(...[1, 2, 3]), 'string');
 			expect(typeof response).toEqual('string');
 			expect(response).toEqual('1,2,3');

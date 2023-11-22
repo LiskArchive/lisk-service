@@ -72,8 +72,8 @@ const cacheBlocksFromWaitlist = async () => {
 			);
 			await blocksCache.upsert({ id: block.header.id, timestamp: block.header.timestamp, block });
 		} catch (err) {
-			logger.info(
-				`Caching block ID ${block.header.id} (height: ${block.header.height}) failed due to: ${err.message}. Will re-attempt caching.`,
+			logger.warn(
+				`Caching block ${block.header.id} (height: ${block.header.height}) failed. Will re-attempt. Error:\n${err.message}.`,
 			);
 			logger.debug(err.stack);
 			blockCacheWaitlist.splice(0, 0, block);

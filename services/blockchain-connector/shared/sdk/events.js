@@ -78,10 +78,22 @@ const getEventsByHeightFormatted = async height => {
 
 // To ensure API Client is alive and receiving chain events
 setInterval(() => {
-	if (eventsCounter === 0) {
-		Signals.get('resetApiClient').dispatch();
-	} else if (eventsCounter > 0) {
+	if (typeof eventsCounter === 'number' && eventsCounter > 0) {
 		eventsCounter = 0;
+	} else {
+		if (typeof eventsCounter !== 'number') {
+			logger.warn(
+				`eventsCounter ended up with non-numeric value: ${JSON.stringify(
+					eventsCounter,
+					null,
+					'\t',
+				)}.`,
+			);
+			eventsCounter = 0;
+		}
+
+		Signals.get('resetApiClient').dispatch();
+		logger.info("Dispatched 'resetApiClient' signal to re-instantiate the API client.");
 	}
 }, config.clientConnVerifyInterval);
 
