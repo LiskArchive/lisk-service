@@ -188,12 +188,10 @@ const indexBlock = async job => {
 		}
 
 		// If current index block is incorrectly indexed then schedule for deletion
+		/* eslint-disable no-use-before-define */
 		if (Object.keys(currentBlockInDB).length && blockToIndexFromNode.id !== currentBlockInDB.id) {
-			// eslint-disable-next-line no-use-before-define
 			await scheduleBlockDeletion(currentBlockInDB);
-			// eslint-disable-next-line no-use-before-define
 			await addHeightToIndexBlocksQueue(currentBlockInDB.height);
-
 			return;
 		}
 
@@ -202,13 +200,11 @@ const indexBlock = async job => {
 			Object.keys(prevBlockInDB).length &&
 			prevBlockInDB.id !== blockToIndexFromNode.previousBlockID
 		) {
-			// eslint-disable-next-line no-use-before-define
 			await scheduleBlockDeletion(prevBlockInDB);
-			// eslint-disable-next-line no-use-before-define
 			await addHeightToIndexBlocksQueue(prevBlockInDB.height);
-
 			return;
 		}
+		/* eslint-enable no-use-before-define */
 
 		// If current block is already indexed, then index the highest indexed block height + 1
 		if (Object.keys(currentBlockInDB).length) {
@@ -828,10 +824,19 @@ const getMissingBlocks = async params => {
 	return listOfMissingBlocks;
 };
 
-const addHeightToIndexBlocksQueue = async (height, priority) =>
-	typeof priority === 'number'
+const addHeightToIndexBlocksQueue = async (height, priority) => {
+	const liveIndexingJobCount = await getLiveIndexingJobCount();
+	if (liveIndexingJobCount > 100000) {
+		logger.trace(
+			`Skipping adding new job to the queue. Current liveIndexingJobCount: ${liveIndexingJobCount}.`,
+		);
+		return null;
+	}
+
+	return typeof priority === 'number'
 		? indexBlocksQueue.add({ height }, { priority })
 		: indexBlocksQueue.add({ height });
+};
 
 const setIndexVerifiedHeight = ({ height }) => keyValueTable.set(INDEX_VERIFIED_HEIGHT, height);
 

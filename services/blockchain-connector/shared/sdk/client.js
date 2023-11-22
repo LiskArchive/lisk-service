@@ -70,8 +70,9 @@ const instantiateClient = async (isForceReInstantiate = false) => {
 			isInstantiating = false;
 		}
 	} catch (err) {
-		// Nullify the apiClient cache, so that it can be re-instantiated properly
+		// Nullify the apiClient cache and unset isInstantiating, so that it can be re-instantiated properly
 		clientCache = null;
+		isInstantiating = false;
 
 		const errMessage = config.isUseLiskIPCClient
 			? `Error instantiating IPC client at ${config.liskAppDataPath}.`
