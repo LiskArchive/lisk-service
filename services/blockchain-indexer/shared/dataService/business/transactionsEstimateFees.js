@@ -189,9 +189,9 @@ const getCcmBuffer = async transaction => {
 };
 
 const calcDynamicFeeEstimates = (estimatePerByte, minFee, size) => ({
-	low: BigInt(minFee) + BigInt(estimatePerByte.low) * BigInt(size),
-	medium: BigInt(minFee) + BigInt(estimatePerByte.med) * BigInt(size),
-	high: BigInt(minFee) + BigInt(estimatePerByte.high) * BigInt(size),
+	low: BigInt(minFee) + BigInt(Math.round(Number(estimatePerByte.low) * Number(BigInt(size)))),
+	medium: BigInt(minFee) + BigInt(Math.round(Number(estimatePerByte.med) * Number(BigInt(size)))),
+	high: BigInt(minFee) + BigInt(Math.round(Number(estimatePerByte.high) * Number(BigInt(size)))),
 });
 
 const calcAdditionalFees = async transaction => {

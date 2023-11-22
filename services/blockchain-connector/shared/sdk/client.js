@@ -48,7 +48,8 @@ const instantiateClient = async (isForceReInstantiate = false) => {
 			if (!checkIsClientAlive() || isForceReInstantiate) {
 				isInstantiating = true;
 				instantiationBeginTime = Date.now();
-				if (clientCache) await clientCache.disconnect();
+
+				if (checkIsClientAlive()) await clientCache.disconnect();
 
 				clientCache = config.isUseLiskIPCClient
 					? await createIPCClient(config.liskAppDataPath)
@@ -69,8 +70,9 @@ const instantiateClient = async (isForceReInstantiate = false) => {
 			isInstantiating = false;
 		}
 	} catch (err) {
-		// Nullify the apiClient cache, so that it can be re-instantiated properly
+		// Nullify the apiClient cache and unset isInstantiating, so that it can be re-instantiated properly
 		clientCache = null;
+		isInstantiating = false;
 
 		const errMessage = config.isUseLiskIPCClient
 			? `Error instantiating IPC client at ${config.liskAppDataPath}.`
@@ -82,7 +84,7 @@ const instantiateClient = async (isForceReInstantiate = false) => {
 			throw new Error('ECONNREFUSED: Unable to reach a network node.');
 		}
 
-		return null;
+		return instantiateClient(true);
 	}
 };
 
