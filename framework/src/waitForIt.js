@@ -24,8 +24,8 @@ const waitForIt = (fn, intervalMs = 1000, resolveUndefined = false) =>
 		const timeout = setInterval(async () => {
 			try {
 				const result = await fn();
-				clearInterval(timeout);
 				if (resolveUndefined || result !== undefined) {
+					clearInterval(timeout);
 					return resolve(result);
 				}
 			} catch (err) {
