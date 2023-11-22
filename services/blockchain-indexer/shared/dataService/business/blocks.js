@@ -27,7 +27,7 @@ const {
 const logger = Logger();
 
 const { getEventsByHeight, getEventsByBlockID } = require('./events');
-const { getFinalizedHeight, MODULE, EVENT } = require('../../constants');
+const { getFinalizedHeight, MODULE, EVENT, getGenesisHeight } = require('../../constants');
 const blocksTableSchema = require('../../database/schema/blocks');
 
 const { getIndexedAccountInfo } = require('../utils/account');
@@ -75,7 +75,13 @@ const normalizeBlock = async (originalBlock, isDeletedBlock = false) => {
 
 		block.isFinal = block.height <= (await getFinalizedHeight());
 		block.numberOfTransactions = block.transactions.length;
-		block.numberOfAssets = block.assets.length;
+		block.numberOfAssets =
+			block.height !== (await getGenesisHeight())
+				? block.assets.length
+				: await (async () => {
+						const response = await requestConnector('getGenesisAssetsLength');
+						return Object.entries(response).length;
+				  })();
 
 		const { numberOfEvents, reward } = await (async () => {
 			const [dbResponse] = await blocksTable.find({ height: block.height, limit: 1 }, [

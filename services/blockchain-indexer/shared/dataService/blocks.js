@@ -73,20 +73,24 @@ const getBlocksTotal = async (params, blocksResponse) => {
 	) {
 		total = blocksResponse.meta.total;
 	} else {
-		total = await getTotalNumberOfBlocks();
+		total = (await getTotalNumberOfBlocks()) || blocksResponse.data.length;
 	}
 
 	return total;
 };
 
-const formatBlock = async (header, isDeletedBlock = false) => {
+const formatBlock = async (blockInfo, isDeletedBlock = false) => {
 	const blocksResponse = {
 		data: [],
 		meta: {},
 	};
 
 	const response = await business.formatBlock(
-		{ header, assets: [], transactions: [] },
+		{
+			header: {},
+			assets: blockInfo.assets || [],
+			transactions: blockInfo.transactions || [],
+		},
 		isDeletedBlock,
 	);
 	blocksResponse.data.push(response);
