@@ -21,6 +21,7 @@ const {
 
 const logger = Logger();
 
+const { getCurrentChainID } = require('./interoperability/chain');
 const { normalizeTransaction } = require('./transactions');
 const { getIndexedAccountInfo } = require('../utils/account');
 const { requestConnector } = require('../../utils/request');
@@ -92,7 +93,16 @@ const validateParams = async params => {
 	if (params.senderAddress) validatedParams.senderAddress = params.senderAddress;
 	if (params.recipientAddress) validatedParams.recipientAddress = params.recipientAddress;
 	if (params.moduleCommand) validatedParams.moduleCommand = params.moduleCommand;
-	if (params.receivingChainID) validatedParams.receivingChainID = params.receivingChainID;
+
+	// If recieving chainID is current chain ID then return all transactions with receivingChainID = null
+	if (params.receivingChainID) {
+		const currentChainID = await getCurrentChainID();
+
+		if (params.receivingChainID === currentChainID) {
+			params.receivingChainID = null;
+		}
+	}
+
 	if (params.sort) validatedParams.sort = params.sort;
 
 	return validatedParams;

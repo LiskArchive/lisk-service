@@ -51,14 +51,15 @@ const getBlockAssetDataSchemaByModule = _module => {
 const getDataSchemaByEventName = eventName => {
 	if (EVENT_NAME_COMMAND_EXECUTION_RESULT === eventName) return schemas.standardEvent;
 
-	// TODO: Optimize
-	for (let i = 0; i < metadata.modules.length; i++) {
-		const module = metadata.modules[i];
+	// Find the module that contains the event
+	const moduleWithEvent = metadata.modules.find(module =>
+		module.events.some(moduleEvent => moduleEvent.name === eventName),
+	);
 
-		for (let eventIndex = 0; eventIndex < module.events.length; eventIndex++) {
-			const moduleEvent = module.events[eventIndex];
-			if (moduleEvent.name === eventName) return module.events[eventIndex].data;
-		}
+	if (moduleWithEvent) {
+		// Find the event and return its data schema
+		const moduleEvent = moduleWithEvent.events.find(event => event.name === eventName);
+		return moduleEvent ? moduleEvent.data : null;
 	}
 
 	return null;

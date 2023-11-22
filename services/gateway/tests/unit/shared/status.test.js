@@ -22,43 +22,28 @@ const {
 	},
 } = require('lisk-service-framework');
 
-const { getBuildTimestamp } = require('../../../shared/status');
-
 describe('Test getBuildTimestamp method', () => {
 	const dateStr = '2999-03-21T11:15:59.337Z';
 	const jsonStr = `{"timestamp": "${dateStr}"}`;
 	const filePath = path.resolve(__dirname, '../../../build.json');
-	let fileExistBefore = false;
 
-	beforeAll(
-		async () =>
-			new Promise((resolve, reject) => {
-				exists(filePath).then(isExists => {
-					fileExistBefore = isExists;
-					if (!isExists) {
-						return fs.writeFile(filePath, jsonStr, err => {
-							if (err) return reject(err);
-							return resolve();
-						});
-					}
+	it('should return current time from the file when build.json file exists', async () => {
+		const isExists = await exists(filePath);
 
-					return resolve();
-				});
-			}),
-	);
+		if (!isExists) {
+			await fs.promises.writeFile(filePath, jsonStr);
+		}
 
-	afterAll(async () => {
-		if (!fileExistBefore) await rmdir(filePath);
-	});
-
-	// TODO: Test is executed before file creation. This needs to be fixed before enabling the tests
-	xit('should return current time from the file when build.json file exists', async () => {
+		const { getBuildTimestamp } = require('../../../shared/status');
 		const response = await getBuildTimestamp();
 		expect(response).toEqual(dateStr);
+
+		if (!isExists) await rmdir(filePath);
 	});
 
 	it('should return current time when build.json file does not exists', async () => {
 		const curDate = new Date();
+		const { getBuildTimestamp } = require('../../../shared/status');
 		const response = await getBuildTimestamp();
 		expect(new Date(response).getTime()).toBeGreaterThanOrEqual(curDate.getTime());
 	});
