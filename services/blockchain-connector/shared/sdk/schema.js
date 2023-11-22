@@ -17,6 +17,7 @@ const { EVENT_NAME_COMMAND_EXECUTION_RESULT } = require('./constants/names');
 
 let schemas;
 let metadata;
+const eventSchemaLookup = {};
 
 const setSchemas = _schemas => (schemas = _schemas);
 
@@ -51,18 +52,16 @@ const getBlockAssetDataSchemaByModule = _module => {
 const getDataSchemaByEventName = eventName => {
 	if (EVENT_NAME_COMMAND_EXECUTION_RESULT === eventName) return schemas.standardEvent;
 
-	// Find the module that contains the event
-	const moduleWithEvent = metadata.modules.find(module =>
-		module.events.some(moduleEvent => moduleEvent.name === eventName),
-	);
-
-	if (moduleWithEvent) {
-		// Find the event and return its data schema
-		const moduleEvent = moduleWithEvent.events.find(event => event.name === eventName);
-		return moduleEvent ? moduleEvent.data : null;
+	// Populate the eventSchemaLookup map with module events if not exists
+	if (Object.keys(eventSchemaLookup).length === 0) {
+		metadata.modules.forEach(module => {
+			module.events.forEach(moduleEvent => {
+				eventSchemaLookup[moduleEvent.name] = moduleEvent.data;
+			});
+		});
 	}
 
-	return null;
+	return eventSchemaLookup[eventName] || null;
 };
 
 module.exports = {

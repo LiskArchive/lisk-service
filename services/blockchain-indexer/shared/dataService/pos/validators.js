@@ -255,7 +255,6 @@ const getPosValidators = async params => {
 	return parseToJSONCompatObj(validators);
 };
 
-// TODO: Test
 // Keep the validator cache up-to-date
 const updateValidatorListEveryBlock = () => {
 	const EVENT_NEW_BLOCK = 'newBlock';
@@ -271,7 +270,6 @@ const updateValidatorListEveryBlock = () => {
 						if ([COMMAND.REGISTER_VALIDATOR, COMMAND.CHANGE_COMMISSION].includes(tx.command)) {
 							updatedValidatorAddresses.push(getLisk32AddressFromPublicKey(tx.senderPublicKey));
 						} else if (tx.command === COMMAND.STAKE) {
-							// TODO: Verify
 							tx.params.stakes.forEach(stake =>
 								updatedValidatorAddresses.push(stake.validatorAddress),
 							);
@@ -279,7 +277,6 @@ const updateValidatorListEveryBlock = () => {
 					}
 				});
 
-				// TODO: Validate the logic if there is need to update validator cache on (un-)stake tx
 				if (updatedValidatorAddresses.length) {
 					const updatedValidatorAccounts = await business.getPosValidators({
 						addresses: updatedValidatorAddresses,
@@ -317,7 +314,6 @@ const updateValidatorListEveryBlock = () => {
 					validatorList[validatorIndex] &&
 					Object.getOwnPropertyNames(validatorList[validatorIndex]).length
 				) {
-					// TODO: Update
 					if (
 						validatorList[validatorIndex].generatedBlocks &&
 						validatorList[validatorIndex].rewards

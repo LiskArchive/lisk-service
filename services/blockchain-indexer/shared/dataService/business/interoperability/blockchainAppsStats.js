@@ -49,7 +49,6 @@ const getBlockchainAppsStatistics = async () => {
 
 const reloadBlockchainAppsStats = async () => {
 	try {
-		// TODO: Update implementation once interoperability_getOwnChainAccount is available
 		const blockchainAppsTable = await getBlockchainAppsTable();
 
 		const numActivatedChains = await blockchainAppsTable.count({ status: APP_STATUS.ACTIVATED });

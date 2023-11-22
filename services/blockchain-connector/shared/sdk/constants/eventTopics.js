@@ -79,7 +79,6 @@ const {
 
 const COMMAND_EXECUTION_RESULT_TOPICS = ['transactionID'];
 
-// TODO: Remove when SDK exposes topics information in metadata
 const EVENT_TOPIC_MAPPINGS_BY_MODULE = {
 	[MODULE_NAME_AUTH]: {
 		[EVENT_NAME_MULTISIGNATURE_REGISTERED]: ['transactionID', 'senderAddress'],
