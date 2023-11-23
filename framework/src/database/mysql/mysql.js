@@ -101,7 +101,6 @@ const createTableIfNotExists = async (tableConfig, connEndpoint = CONN_ENDPOINT_
 	const connPoolKeyTable = `${connPoolKey}/${tableName}`;
 
 	if (!tablePool[connPoolKeyTable]) {
-		logger.info(`Creating schema for ${tableName}.`);
 		const knex = await getDBConnection(connEndpoint);
 		await util.loadSchema(knex, tableName, tableConfig);
 		tablePool[connPoolKeyTable] = true;
