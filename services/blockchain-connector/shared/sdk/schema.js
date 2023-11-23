@@ -17,6 +17,7 @@ const { EVENT_NAME_COMMAND_EXECUTION_RESULT } = require('./constants/names');
 
 let schemas;
 let metadata;
+const eventSchemaLookup = {};
 
 const setSchemas = _schemas => (schemas = _schemas);
 
@@ -48,20 +49,19 @@ const getBlockAssetDataSchemaByModule = _module => {
 	return schema;
 };
 
-const getDataSchemaByEventName = eventName => {
-	if (EVENT_NAME_COMMAND_EXECUTION_RESULT === eventName) return schemas.standardEvent;
+const getDataSchemaByEvent = event => {
+	if (EVENT_NAME_COMMAND_EXECUTION_RESULT === event.name) return schemas.standardEvent;
 
-	// TODO: Optimize
-	for (let i = 0; i < metadata.modules.length; i++) {
-		const module = metadata.modules[i];
-
-		for (let eventIndex = 0; eventIndex < module.events.length; eventIndex++) {
-			const moduleEvent = module.events[eventIndex];
-			if (moduleEvent.name === eventName) return module.events[eventIndex].data;
-		}
+	// Populate the eventSchemaLookup map with module events if not exists
+	if (Object.keys(eventSchemaLookup).length === 0) {
+		metadata.modules.forEach(module => {
+			module.events.forEach(moduleEvent => {
+				eventSchemaLookup[`${module.name}_${moduleEvent.name}`] = moduleEvent.data;
+			});
+		});
 	}
 
-	return null;
+	return eventSchemaLookup[`${event.module}_${event.name}`] || null;
 };
 
 module.exports = {
@@ -76,6 +76,6 @@ module.exports = {
 	getEventSchema,
 	getTransactionSchema,
 	getTransactionParamsSchema,
-	getDataSchemaByEventName,
+	getDataSchemaByEvent,
 	getCCMSchema,
 };

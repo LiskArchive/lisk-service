@@ -138,7 +138,9 @@ const buildAPIConfig = (
 
 		if (paramReport.required.length) {
 			throw new ValidationException(
-				`Require one of the following parameter combination(s): ${paramReport.required.join('; ')}`,
+				`Require only one of the following parameter combination(s): ${paramReport.required.join(
+					'; ',
+				)}`,
 			);
 		}
 

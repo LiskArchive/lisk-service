@@ -30,7 +30,6 @@ const verifyIfPunished = async validator => {
 	const latestBlockString = await lastBlockCache.get(LAST_BLOCK_KEY);
 	const latestBlock = latestBlockString ? JSON.parse(latestBlockString) : {};
 
-	// TODO: Get this information from SDK directly once available
 	const isPunished = validator.reportMisbehaviorHeights.some(
 		reportMisbehaviorHeight =>
 			reportMisbehaviorHeight.start <= latestBlock.height &&
@@ -47,9 +46,6 @@ const getPosValidators = async params => {
 		validatorAddressList,
 		async validatorAddress => {
 			const validator = await requestConnector('getPosValidator', { address: validatorAddress });
-			// TODO: Add error handling
-			// TODO: Verify
-			// TODO: Check if it is possible to move this logic to the connector
 			if (validator.isBanned || (await verifyIfPunished(validator))) {
 				validator.validatorWeight = BigInt('0');
 			} else {

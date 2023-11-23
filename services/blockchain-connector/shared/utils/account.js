@@ -32,7 +32,7 @@ const getLisk32AddressFromPublicKey = publicKey =>
 const getLisk32AddressFromHexAddress = address =>
 	getLisk32AddressFromAddress(Buffer.from(address, 'hex'));
 
-// TODO: Remove once SDK returns address in Lisk32 format
+// TODO: Remove once SDK returns address in Lisk32 format (https://github.com/LiskHQ/lisk-sdk/issues/7629)
 const getLisk32Address = address =>
 	address.startsWith('lsk') ? address : getLisk32AddressFromHexAddress(address);
 

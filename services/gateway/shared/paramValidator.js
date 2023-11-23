@@ -65,20 +65,23 @@ const parseParams = p => {
 	};
 };
 
-// Returns empty array if inputParamKeys matches with one of the schema paramPairings.
+// Returns empty array if inputParamKeys matches with only one of the schema paramPairings.
 // Otherwise, returns the schema paramPairings
 const validateFromParamPairings = (paramsRequired = false, inputParamKeys, paramPairings) => {
 	if (!paramsRequired) return [];
 
-	const relevantPairings = paramPairings.filter(pairing =>
-		inputParamKeys.some(key => pairing.includes(key)),
+	// Remove elements not part of paramPairings
+	const filteredInputParamKeys = inputParamKeys.filter(element =>
+		paramPairings.some(subArray => subArray.includes(element)),
 	);
-	if (relevantPairings.length === 0) return paramPairings;
 
-	const result = relevantPairings.some(pairing =>
-		pairing.every(param => inputParamKeys.includes(param)),
-	);
-	return result ? [] : paramPairings;
+	return paramPairings.find(
+		arr =>
+			arr.length === filteredInputParamKeys.length &&
+			arr.every(el => filteredInputParamKeys.includes(el)),
+	)
+		? []
+		: paramPairings;
 };
 
 // Returns a list of required routeParams which are not present in requestParams
@@ -114,7 +117,6 @@ const looseSpecParams = specPar =>
 		return acc;
 	}, {});
 
-// TODO: Add check so that only one pair is accepted among the validParamPairings
 const validateInputParams = (rawInputParams = {}, specs) => {
 	const specParams = specs.params || {};
 	const inputParams = rawInputParams;

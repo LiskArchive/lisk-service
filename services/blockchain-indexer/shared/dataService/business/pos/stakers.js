@@ -59,8 +59,6 @@ const getStakers = async params => {
 		params = remParams;
 
 		const address = getLisk32AddressFromPublicKey(publicKey);
-		// TODO: Remove once gateway param pairings check is updated
-		if (params.validatorAddress && params.validatorAddress !== address) return stakersResponse;
 
 		params.validatorAddress = address;
 		stakersResponse.meta.validator.address = params.validatorAddress;
@@ -75,8 +73,6 @@ const getStakers = async params => {
 		params = remParams;
 
 		const { address } = await getIndexedAccountInfo({ name }, ['address']);
-		// TODO: Remove once gateway param pairings check is updated
-		if (params.validatorAddress && params.validatorAddress !== address) return stakersResponse;
 
 		params.validatorAddress = address;
 		stakersResponse.meta.validator.name = name;

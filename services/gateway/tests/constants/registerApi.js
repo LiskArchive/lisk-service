@@ -13,7 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-// TODO: Expected response for registerApi method should be dynamically constructed
 const expectedResponseForRegisterHttpApi = [
 	{
 		whitelist: [
@@ -116,7 +115,6 @@ const expectedResponseForRegisterHttpApi = [
 	},
 ];
 
-// TODO: Expected response for registerApi method should be dynamically constructed
 const expectedResponseForRegisterRpcApi = {
 	events: {
 		request: {
