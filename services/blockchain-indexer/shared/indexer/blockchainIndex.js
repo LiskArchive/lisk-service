@@ -86,6 +86,7 @@ const getTransactionsTable = () => getTableInstance(transactionsTableSchema, MYS
 const getValidatorsTable = () => getTableInstance(validatorsTableSchema, MYSQL_ENDPOINT);
 
 const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
+const BLOCK_PROCESS_QUEUES_MAX_JOB_COUNT = 100000;
 
 const validateBlock = block => !!block && block.height >= 0;
 
@@ -152,13 +153,6 @@ const indexBlock = async job => {
 		);
 
 		const { height: lastIndexedHeight } = lastIndexedBlock;
-
-		// Index last indexed block height + 1 and schedule the next block if there is a gap
-		if (lastIndexedHeight && lastIndexedHeight < blockHeightFromJobData - 1) {
-			blockHeightToIndex = lastIndexedHeight + 1;
-			// eslint-disable-next-line no-use-before-define
-			await addHeightToIndexBlocksQueue(blockHeightToIndex + 1);
-		}
 
 		const [currentBlockInDB = {}] = await blocksTable.find(
 			{
@@ -688,21 +682,28 @@ const deleteIndexedBlocksWrapper = async job => {
 };
 
 // Initialize queues
-const indexBlocksQueue = Queue(
-	config.endpoints.cache,
-	config.queue.indexBlocks.name,
-	indexBlock,
-	config.queue.indexBlocks.concurrency,
-);
+let indexBlocksQueue;
+let deleteIndexedBlocksQueue;
 
-const deleteIndexedBlocksQueue = Queue(
-	config.endpoints.cache,
-	config.queue.deleteIndexedBlocks.name,
-	deleteIndexedBlocksWrapper,
-	config.queue.deleteIndexedBlocks.concurrency,
-);
+const initBlockProcessingQueues = async () => {
+	indexBlocksQueue = Queue(
+		config.endpoints.cache,
+		config.queue.indexBlocks.name,
+		indexBlock,
+		config.queue.indexBlocks.concurrency,
+	);
+
+	deleteIndexedBlocksQueue = Queue(
+		config.endpoints.cache,
+		config.queue.deleteIndexedBlocks.name,
+		deleteIndexedBlocksWrapper,
+		config.queue.deleteIndexedBlocks.concurrency,
+	);
+};
 
 const getLiveIndexingJobCount = async () => {
+	if(!indexBlocksQueue || !deleteIndexedBlocksQueue) return 0;
+
 	const { queue: indexBlocksBullQueue } = indexBlocksQueue;
 	const { queue: deleteIndexedBlocksBullQueue } = deleteIndexedBlocksQueue;
 
@@ -832,7 +833,7 @@ const getMissingBlocks = async params => {
 
 const addHeightToIndexBlocksQueue = async (height, priority) => {
 	const liveIndexingJobCount = await getLiveIndexingJobCount();
-	if (liveIndexingJobCount > 100000) {
+	if (liveIndexingJobCount > BLOCK_PROCESS_QUEUES_MAX_JOB_COUNT) {
 		logger.trace(
 			`Skipping adding new job to the queue. Current liveIndexingJobCount: ${liveIndexingJobCount}.`,
 		);
@@ -866,4 +867,5 @@ module.exports = {
 	getIndexVerifiedHeight,
 	getLiveIndexingJobCount,
 	isGenesisBlockIndexed,
+	initBlockProcessingQueues,
 };
