@@ -702,7 +702,7 @@ const initBlockProcessingQueues = async () => {
 };
 
 const getLiveIndexingJobCount = async () => {
-	if(!indexBlocksQueue || !deleteIndexedBlocksQueue) return 0;
+	if (!indexBlocksQueue || !deleteIndexedBlocksQueue) return 0;
 
 	const { queue: indexBlocksBullQueue } = indexBlocksQueue;
 	const { queue: deleteIndexedBlocksBullQueue } = deleteIndexedBlocksQueue;

@@ -550,7 +550,7 @@ module.exports = {
         // SERVICE_LOG_FILE: false,
         // DOCKER_HOST: 'local',
         // JOB_INTERVAL_INDEX_MISSING_BLOCKS: 0,
-        // JOB_SCHEDULE_INDEX_MISSING_BLOCKS: '*/15 * * * *',
+        // JOB_SCHEDULE_INDEX_MISSING_BLOCKS: '*/5 * * * *',
       },
     },
     // Configuration for other microservices.
