@@ -443,7 +443,9 @@ function makeHandler(svc, handlerItem) {
 				});
 				svc.logger.info(`   <= ${chalk.green.bold('Success')} ${action}`);
 
-				return addJsonRpcEnvelope(id, res);
+				const output = addJsonRpcEnvelope(id, res);
+				if (respond !== undefined) respond(output);
+				return output;
 			} catch (err) {
 				if (
 					svc.settings.log4XXResponses ||
