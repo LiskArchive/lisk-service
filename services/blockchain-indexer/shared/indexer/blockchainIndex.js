@@ -154,6 +154,11 @@ const indexBlock = async job => {
 
 		const { height: lastIndexedHeight } = lastIndexedBlock;
 
+		// Index last indexed block height + 1 if there is a gap
+		if (lastIndexedHeight && lastIndexedHeight < blockHeightFromJobData - 1) {
+			blockHeightToIndex = lastIndexedHeight + 1;
+		}
+
 		const [currentBlockInDB = {}] = await blocksTable.find(
 			{
 				where: { height: blockHeightToIndex },
