@@ -25,6 +25,7 @@ const {
 const { getBlockByID } = require('./blocks');
 const { getEventsByHeight } = require('./events');
 
+const { getCurrentChainID } = require('./interoperability/chain');
 const { getIndexedAccountInfo } = require('../utils/account');
 const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/param');
@@ -86,6 +87,15 @@ const validateParams = async params => {
 		throw new InvalidParamsException(
 			'Nonce based retrieval is only possible along with senderAddress',
 		);
+	}
+
+	// If recieving chainID is current chain ID then return all transactions with receivingChainID = null
+	if (params.receivingChainID) {
+		const currentChainID = await getCurrentChainID();
+
+		if (params.receivingChainID === currentChainID) {
+			params.receivingChainID = null;
+		}
 	}
 
 	if (params.executionStatus) {

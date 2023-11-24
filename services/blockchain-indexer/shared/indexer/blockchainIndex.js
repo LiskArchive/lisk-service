@@ -801,7 +801,7 @@ const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 
 			const missingBlocksQueryStatement = `
 				SELECT
-					(SELECT COALESCE(MAX(b0.height), ${batchStartHeight}) FROM blocks b0 WHERE b0.height < b1.height) AS 'from',
+					(SELECT COALESCE(MAX(b0.height + 1), ${batchStartHeight}) FROM blocks b0 WHERE b0.height < b1.height) AS 'from',
 					(b1.height - 1) AS 'to'
 				FROM blocks b1
 				WHERE b1.height BETWEEN ${batchStartHeight} + 1 AND ${batchEndHeight}

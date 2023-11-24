@@ -46,6 +46,7 @@ const loadSchema = async (knex, tableName, tableConfig) => {
 			});
 			table.primary(primaryKey);
 		})
+		.then(() => logger.info(`Successfully created table: ${tableName}.`))
 		.catch(err => {
 			if (err.message.includes(`Table '${tableName}' already exists`)) return;
 			throw err;

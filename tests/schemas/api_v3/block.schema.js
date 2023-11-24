@@ -52,8 +52,8 @@ const blockSchema = {
 	maxHeightPrevoted: Joi.number().required(),
 	validatorsHash: Joi.string().pattern(regex.HASH_SHA256).required(),
 	numberOfTransactions: Joi.number().integer().min(0).required(),
-	numberOfAssets: Joi.number().integer().min(1).required(),
-	numberOfEvents: Joi.number().integer().min(1).required(),
+	numberOfAssets: Joi.number().integer().min(0).required(),
+	numberOfEvents: Joi.number().integer().min(0).required(),
 };
 
 const block = {

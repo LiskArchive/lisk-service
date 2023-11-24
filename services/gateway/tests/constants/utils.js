@@ -240,13 +240,13 @@ const requireAllJsonExpectedResponse = {
 		paths: {},
 	},
 	responses: {
-		badParameter: {
+		400: {
 			description: 'Bad request',
 			schema: {
 				$ref: '#/definitions/badRequest',
 			},
 		},
-		notFound: {
+		404: {
 			description: 'Not found',
 			schema: {
 				$ref: '#/definitions/notFound',

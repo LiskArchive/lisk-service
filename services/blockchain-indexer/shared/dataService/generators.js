@@ -30,7 +30,6 @@ const getGenerators = async params => {
 	const generatorsList = await business.getGenerators();
 	const validatorList = await getAllValidators();
 
-	// TODO: Optimize. Generate the map with every 'chain_*' event and maintain in the memory
 	const validatorMap = new Map(validatorList.map(validator => [validator.address, validator]));
 	generatorsList.forEach(generator => {
 		if (

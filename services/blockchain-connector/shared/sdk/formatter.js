@@ -25,7 +25,7 @@ const {
 	getBlockAssetDataSchemaByModule,
 	getTransactionSchema,
 	getTransactionParamsSchema,
-	getDataSchemaByEventName,
+	getDataSchemaByEvent,
 	getEventSchema,
 } = require('./schema');
 
@@ -146,7 +146,7 @@ const formatEvent = (event, skipDecode) => {
 	if (skipDecode) {
 		eventData = event.data;
 	} else {
-		const eventDataSchema = getDataSchemaByEventName(event.name);
+		const eventDataSchema = getDataSchemaByEvent(event);
 		try {
 			eventData = eventDataSchema
 				? codec.decodeJSON(eventDataSchema, Buffer.from(event.data, 'hex'))
@@ -157,13 +157,11 @@ const formatEvent = (event, skipDecode) => {
 		}
 
 		if (!eventDataSchema) {
-			// TODO: Remove this after SDK exposes all event schemas (before tagging rc.0)
-			console.error(`Event data schema missing for ${event.module}:${event.name}.`);
 			logger.error(
 				`Unable to decode event data. Event data schema missing for ${event.module}:${event.name}.`,
 			);
 		} else {
-			// TODO: Remove after SDK fixes the address format (before tagging rc.0)
+			// TODO: Remove after SDK fixes the address format (https://github.com/LiskHQ/lisk-sdk/issues/7629)
 			Object.keys(eventDataSchema.properties).forEach(prop => {
 				if (prop.endsWith('Address')) {
 					eventData[prop] = getLisk32Address(eventData[prop].toString('hex'));
@@ -173,10 +171,9 @@ const formatEvent = (event, skipDecode) => {
 	}
 
 	const eventTopicMappings = EVENT_TOPIC_MAPPINGS_BY_MODULE[event.module] || {};
-	// TODO: Remove after all transaction types are tested (before tagging rc.0)
 	if (!(event.module in EVENT_TOPIC_MAPPINGS_BY_MODULE)) {
-		console.error(`EVENT_TOPIC_MAPPINGS_BY_MODULE missing for module: ${event.module}.`);
-		console.info(inspect(event));
+		logger.error(`EVENT_TOPIC_MAPPINGS_BY_MODULE missing for module: ${event.module}.`);
+		logger.info(inspect(event));
 	}
 
 	const topics =
@@ -184,13 +181,12 @@ const formatEvent = (event, skipDecode) => {
 			? COMMAND_EXECUTION_RESULT_TOPICS
 			: eventTopicMappings[event.name];
 
-	// TODO: Remove after all transaction types are tested (before tagging rc.0)
 	if (!topics || topics.length === 0) {
-		console.error(`EVENT_TOPIC_MAPPINGS_BY_MODULE undefined for event: ${event.name}.`);
-		console.info(inspect(event));
+		logger.error(`EVENT_TOPIC_MAPPINGS_BY_MODULE undefined for event: ${event.name}.`);
+		logger.info(inspect(event));
 	} else if (topics.length !== event.topics.length) {
-		console.error(`EVENT_TOPIC_MAPPINGS_BY_MODULE defined incorrectly for event: ${event.name}.`);
-		console.info(inspect(event));
+		logger.error(`EVENT_TOPIC_MAPPINGS_BY_MODULE defined incorrectly for event: ${event.name}.`);
+		logger.info(inspect(event));
 	}
 
 	let eventTopics;

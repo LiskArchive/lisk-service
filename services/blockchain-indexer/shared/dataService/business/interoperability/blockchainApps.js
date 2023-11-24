@@ -44,7 +44,6 @@ const getLSKTokenID = async () => {
 };
 
 const getBlockchainApps = async params => {
-	// TODO: Update implementation when interoperability_getOwnChainAccount is available
 	const blockchainAppsTable = await getBlockchainAppsTable();
 
 	const blockchainAppsInfo = {
