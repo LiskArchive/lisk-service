@@ -156,8 +156,6 @@ const indexBlock = async job => {
 		// Index last indexed block height + 1 and schedule the next block if there is a gap
 		if (lastIndexedHeight && lastIndexedHeight < blockHeightFromJobData - 1) {
 			blockHeightToIndex = lastIndexedHeight + 1;
-			// eslint-disable-next-line no-use-before-define
-			await addHeightToIndexBlocksQueue(blockHeightToIndex + 1);
 		}
 
 		const [currentBlockInDB = {}] = await blocksTable.find(
