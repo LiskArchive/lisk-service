@@ -156,8 +156,6 @@ const indexBlock = async job => {
 		// Index last indexed block height + 1 and schedule the next block if there is a gap
 		if (lastIndexedHeight && lastIndexedHeight < blockHeightFromJobData - 1) {
 			blockHeightToIndex = lastIndexedHeight + 1;
-			// eslint-disable-next-line no-use-before-define
-			await addHeightToIndexBlocksQueue(blockHeightToIndex + 1);
 		}
 
 		const [currentBlockInDB = {}] = await blocksTable.find(
@@ -398,7 +396,9 @@ const indexBlock = async job => {
 		if (dbTrx) {
 			await rollbackDBTransaction(dbTrx);
 			logger.debug(
-				`Rolled back MySQL transaction to index block ${failedBlockInfo.id} at height ${failedBlockInfo.height}.`,
+				failedBlockInfo.id
+					? `Rolled back MySQL transaction to index block ${failedBlockInfo.id} at height ${failedBlockInfo.height}.`
+					: `Rolled back MySQL transaction to index block at height ${failedBlockInfo.height}.`,
 			);
 
 			// Add safety check to ensure that the DB transaction is rolled back successfully
@@ -413,7 +413,9 @@ const indexBlock = async job => {
 				error.message.includes(e),
 			)
 		) {
-			const errMessage = `Deadlock encountered while indexing block ${failedBlockInfo.id} at height ${failedBlockInfo.height}. Will retry.`;
+			const errMessage = failedBlockInfo.id
+				? `Deadlock encountered while indexing block ${failedBlockInfo.id} at height ${failedBlockInfo.height}. Will retry.`
+				: `Deadlock encountered while indexing block at height ${failedBlockInfo.height}. Will retry.`;
 			logger.warn(errMessage);
 			logger.debug(`SQL query: ${error.sql}`);
 
@@ -421,7 +423,9 @@ const indexBlock = async job => {
 		}
 
 		logger.warn(
-			`Error occurred while indexing block ${failedBlockInfo.id} at height ${failedBlockInfo.height}. Will retry.`,
+			failedBlockInfo.id
+				? `Error occurred while indexing block ${failedBlockInfo.id} at height ${failedBlockInfo.height}. Will retry.`
+				: `Error occurred while indexing block at height ${failedBlockInfo.height}. Will retry.`,
 		);
 		logger.debug(error.stack);
 		throw error;
@@ -789,7 +793,7 @@ const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 
 			const missingBlocksQueryStatement = `
 				SELECT
-					(SELECT COALESCE(MAX(b0.height), ${batchStartHeight}) FROM blocks b0 WHERE b0.height < b1.height) AS 'from',
+					(SELECT COALESCE(MAX(b0.height + 1), ${batchStartHeight}) FROM blocks b0 WHERE b0.height < b1.height) AS 'from',
 					(b1.height - 1) AS 'to'
 				FROM blocks b1
 				WHERE b1.height BETWEEN ${batchStartHeight} + 1 AND ${batchEndHeight}

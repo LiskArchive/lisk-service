@@ -76,7 +76,7 @@ const initQueueStatus = async () => {
 };
 
 const newBlockProcessor = async block => {
-	logger.debug(`New block (${block.id}) received at height ${block.height}.`);
+	logger.debug(`New block (${block.header.id}) received at height ${block.header.height}.`);
 	const response = await formatBlock(block);
 	const [newBlock] = response.data;
 
@@ -84,7 +84,7 @@ const newBlockProcessor = async block => {
 	await performLastBlockUpdate(newBlock);
 	Signals.get('newBlock').dispatch(response);
 	logger.info(
-		`Finished scheduling new block (${block.id}) event for the block at height ${block.height}.`,
+		`Finished scheduling new block (${block.header.id}) event for the block at height ${block.header.height}.`,
 	);
 };
 
