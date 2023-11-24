@@ -250,7 +250,7 @@ const scheduleMissingBlocksIndexing = async () => {
 
 	try {
 		const missingBlocksByHeight = [];
-		const MAX_QUERY_RANGE = 25000;
+		const MAX_QUERY_RANGE = 10000;
 		const NUM_BATCHES = Math.ceil((blockIndexHigherRange - blockIndexLowerRange) / MAX_QUERY_RANGE);
 
 		// Batch into smaller ranges to avoid microservice/DB query timeouts
@@ -266,9 +266,11 @@ const scheduleMissingBlocksIndexing = async () => {
 					const lastIndexVerifiedHeight = await getIndexVerifiedHeight();
 					if (batchEndHeight <= lastIndexVerifiedHeight + MAX_QUERY_RANGE) {
 						await setIndexVerifiedHeight(batchEndHeight);
-						logger.debug(
-							`No missing blocks found in range ${batchStartHeight} - ${batchEndHeight}. Setting index verified height to ${batchEndHeight}.`,
-						);
+						if (NUM_BATCHES > 1 && i < NUM_BATCHES - 1) {
+							logger.info(
+								`No missing blocks found in range ${batchStartHeight} - ${batchEndHeight}. Setting index verified height to ${batchEndHeight}.`,
+							);
+						}
 					}
 				}
 			}
