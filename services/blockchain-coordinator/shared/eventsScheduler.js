@@ -25,9 +25,10 @@ const eventMessageQueue = new MessageQueue(config.queue.event.name, config.endpo
 });
 
 const scheduleUpdatesOnNewBlock = async block => {
-	logger.debug(`Scheduling indexing new block at height: ${block.height}.`);
+	const { header } = block;
+	logger.debug(`Scheduling indexing new block at height: ${header.height}.`);
 	await eventMessageQueue.add({ block, isNewBlock: true });
-	logger.info(`Finished scheduling indexing new block at height: ${block.height}.`);
+	logger.info(`Finished scheduling indexing new block at height: ${header.height}.`);
 };
 
 const scheduleDeleteBlock = async payload => {

@@ -86,7 +86,6 @@ const createTableIfNotExists = async tableConfig => {
 	const { tableName } = tableConfig;
 
 	if (!tablePool[tableName]) {
-		logger.info(`Creating schema for ${tableName}`);
 		const knex = await getDBConnection(tableName);
 		await util.loadSchema(knex, tableName, tableConfig);
 		tablePool[tableName] = true;
