@@ -24,7 +24,6 @@ const { initEventsScheduler } = require('./eventsScheduler');
 const {
 	getMissingBlocks,
 	getIndexVerifiedHeight,
-	setIndexVerifiedHeight,
 	isGenesisBlockIndexed,
 	getLiveIndexingJobCount: getLiveIndexingJobCountFromIndexer,
 } = require('./sources/indexer');
@@ -94,7 +93,7 @@ const waitForGenesisBlockIndexing = resolve =>
 				return resolve(true);
 			}
 
-			if (jobCount <= 1) {
+			if (jobCount >= 1) {
 				logger.info(
 					`Genesis block indexing is still in progress. Waiting for ${REFRESH_INTERVAL}ms to re-check the genesis block indexing status.`,
 				);
@@ -121,6 +120,8 @@ const scheduleBlocksIndexing = async heights => {
 
 	const isMultiBatch = numBatches > 1;
 	for (let i = 0; i < numBatches; i++) {
+		await waitForJobCountToFallBelowThreshold();
+
 		if (isMultiBatch) logger.debug(`Scheduling batch ${i + 1}/${numBatches}.`);
 		const blockHeightsBatch = blockHeights.slice(i * MAX_BATCH_SIZE, (i + 1) * MAX_BATCH_SIZE);
 
@@ -137,7 +138,6 @@ const scheduleBlocksIndexing = async heights => {
 					0,
 				)} - ${blockHeightsBatch.at(-1)}, ${blockHeightsBatch.length} blocks).`,
 			);
-		await waitForJobCountToFallBelowThreshold();
 	}
 };
 
@@ -265,7 +265,6 @@ const scheduleMissingBlocksIndexing = async () => {
 				if (result.length === 0) {
 					const lastIndexVerifiedHeight = await getIndexVerifiedHeight();
 					if (batchEndHeight <= lastIndexVerifiedHeight + MAX_QUERY_RANGE) {
-						await setIndexVerifiedHeight(batchEndHeight);
 						if (NUM_BATCHES > 1 && i < NUM_BATCHES - 1) {
 							logger.info(
 								`No missing blocks found in range ${batchStartHeight} - ${batchEndHeight}. Setting index verified height to ${batchEndHeight}.`,
@@ -277,8 +276,6 @@ const scheduleMissingBlocksIndexing = async () => {
 		}
 
 		if (missingBlocksByHeight.length === 0) {
-			// Update 'indexVerifiedHeight' when no missing blocks are found
-			await setIndexVerifiedHeight(blockIndexHigherRange);
 			logger.info(
 				`No missing blocks found in range ${blockIndexLowerRange} - ${blockIndexHigherRange}. Setting index verified height to ${blockIndexHigherRange}.`,
 			);

@@ -28,14 +28,11 @@ const getMissingBlocks = async (from, to) => requestIndexer('getMissingBlocks', 
 
 const getIndexVerifiedHeight = async () => requestIndexer('getIndexVerifiedHeight');
 
-const setIndexVerifiedHeight = async height => requestIndexer('setIndexVerifiedHeight', { height });
-
 const getLiveIndexingJobCount = async () => requestIndexer('getLiveIndexingJobCount');
 
 module.exports = {
 	isGenesisBlockIndexed,
 	getMissingBlocks,
 	getIndexVerifiedHeight,
-	setIndexVerifiedHeight,
 	getLiveIndexingJobCount,
 };

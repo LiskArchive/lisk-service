@@ -85,7 +85,6 @@ const getEventTopicsTable = () => getTableInstance(eventTopicsTableSchema, MYSQL
 const getTransactionsTable = () => getTableInstance(transactionsTableSchema, MYSQL_ENDPOINT);
 const getValidatorsTable = () => getTableInstance(validatorsTableSchema, MYSQL_ENDPOINT);
 
-const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
 const BLOCK_PROCESS_QUEUES_MAX_JOB_COUNT = 100000;
 
 const validateBlock = block => !!block && block.height >= 0;
@@ -850,9 +849,19 @@ const addHeightToIndexBlocksQueue = async (height, priority) => {
 		: indexBlocksQueue.add({ height });
 };
 
-const setIndexVerifiedHeight = ({ height }) => keyValueTable.set(INDEX_VERIFIED_HEIGHT, height);
+const getIndexVerifiedHeight = async () => {
+	const blocksTable = await getBlocksTable();
+	const [lastIndexedFinalBlock = {}] = await blocksTable.find(
+		{
+			isFinal: true,
+			sort: 'height:desc',
+			limit: 1,
+		},
+		['height'],
+	);
 
-const getIndexVerifiedHeight = () => keyValueTable.get(INDEX_VERIFIED_HEIGHT);
+	 return lastIndexedFinalBlock.height || getGenesisHeight();
+};
 
 const isGenesisBlockIndexed = async () => {
 	const blocksTable = await getBlocksTable();
@@ -868,7 +877,6 @@ module.exports = {
 	addHeightToIndexBlocksQueue,
 	getMissingBlocks,
 	scheduleBlockDeletion,
-	setIndexVerifiedHeight,
 	getIndexVerifiedHeight,
 	getLiveIndexingJobCount,
 	isGenesisBlockIndexed,
