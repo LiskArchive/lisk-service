@@ -26,7 +26,6 @@ const {
 			startDBTransaction,
 			commitDBTransaction,
 			rollbackDBTransaction,
-			KVStore: { getKeyValueTable },
 		},
 	},
 	Utils: { waitForIt },
@@ -75,7 +74,6 @@ const transactionsTableSchema = require('../database/schema/transactions');
 const validatorsTableSchema = require('../database/schema/validators');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
-const keyValueTable = getKeyValueTable();
 
 const logger = Logger();
 
@@ -154,7 +152,7 @@ const indexBlock = async job => {
 		const { height: lastIndexedHeight } = lastIndexedBlock;
 
 		// Always index the last indexed blockHeight + 1 (sequential indexing)
-		if (lastIndexedHeight && lastIndexedHeight < blockHeightFromJobData - 1) {
+		if (typeof lastIndexedHeight !== 'undefined') {
 			blockHeightToIndex = lastIndexedHeight + 1;
 		}
 
@@ -860,7 +858,7 @@ const getIndexVerifiedHeight = async () => {
 		['height'],
 	);
 
-	 return lastIndexedFinalBlock.height || getGenesisHeight();
+	return lastIndexedFinalBlock.height || getGenesisHeight();
 };
 
 const isGenesisBlockIndexed = async () => {
