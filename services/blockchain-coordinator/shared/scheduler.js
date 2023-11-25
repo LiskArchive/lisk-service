@@ -93,7 +93,7 @@ const waitForGenesisBlockIndexing = resolve =>
 				return resolve(true);
 			}
 
-			if (jobCount >= 1) {
+			if (jobCount <= 1) {
 				logger.info(
 					`Genesis block indexing is still in progress. Waiting for ${REFRESH_INTERVAL}ms to re-check the genesis block indexing status.`,
 				);
@@ -263,7 +263,7 @@ const scheduleMissingBlocksIndexing = async () => {
 				missingBlocksByHeight.push(...result);
 
 				if (result.length === 0) {
-					const lastIndexVerifiedHeight = await getIndexVerifiedHeight();
+					const lastIndexVerifiedHeight = (await getIndexVerifiedHeight()) || genesisHeight;
 					if (batchEndHeight <= lastIndexVerifiedHeight + MAX_QUERY_RANGE) {
 						if (NUM_BATCHES > 1 && i < NUM_BATCHES - 1) {
 							logger.info(

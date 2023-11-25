@@ -858,7 +858,7 @@ const getIndexVerifiedHeight = async () => {
 		['height'],
 	);
 
-	return lastIndexedFinalBlock.height || getGenesisHeight();
+	return lastIndexedFinalBlock.height || null;
 };
 
 const isGenesisBlockIndexed = async () => {
