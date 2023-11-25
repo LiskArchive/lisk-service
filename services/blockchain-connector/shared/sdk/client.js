@@ -38,18 +38,49 @@ let clientCache;
 let instantiationBeginTime;
 let isInstantiating = false;
 
-const checkIsClientAlive = () =>
-	clientCache && clientCache._channel && clientCache._channel.isAlive;
+let isAlive = false;
+// const checkIsClientAlive = async () =>
+// 	clientCache && clientCache._channel && clientCache._channel.isAlive;
+
+const pongListener = res => {
+	isAlive = true;
+	return res(true);
+};
+
+const checkIsClientAlive = async () =>
+	// eslint-disable-next-line consistent-return
+	new Promise(resolve => {
+		if (clientCache) {
+			if (config.isUseLiskIPCClient) {
+				return resolve(clientCache && clientCache._channel && clientCache._channel.isAlive);
+			}
+
+			clientCache._channel._ws.on('pong', () => {
+				pongListener.bind(null, resolve)();
+			});
+			clientCache._channel._ws.ping();
+
+			// eslint-disable-next-line consistent-return
+			setTimeout(() => {
+				clientCache._channel._ws.removeEventListener('pong', pongListener.bind(null, resolve));
+				if (!isAlive) {
+					return resolve(false);
+				}
+			}, RETRY_INTERVAL);
+		} else {
+			return resolve(false);
+		}
+	});
 
 // eslint-disable-next-line consistent-return
 const instantiateClient = async (isForceReInstantiate = false) => {
 	try {
 		if (!isInstantiating || isForceReInstantiate) {
-			if (!checkIsClientAlive() || isForceReInstantiate) {
+			if (!(await checkIsClientAlive()) || isForceReInstantiate) {
 				isInstantiating = true;
 				instantiationBeginTime = Date.now();
 
-				if (checkIsClientAlive()) await clientCache.disconnect();
+				if (clientCache) await clientCache.disconnect();
 
 				clientCache = config.isUseLiskIPCClient
 					? await createIPCClient(config.liskAppDataPath)
@@ -84,13 +115,13 @@ const instantiateClient = async (isForceReInstantiate = false) => {
 			throw new Error('ECONNREFUSED: Unable to reach a network node.');
 		}
 
-		return instantiateClient(true);
+		return null;
 	}
 };
 
 const getApiClient = async () => {
 	const apiClient = await waitForIt(instantiateClient, RETRY_INTERVAL);
-	return checkIsClientAlive() ? apiClient : getApiClient();
+	return (await checkIsClientAlive()) ? apiClient : getApiClient(true);
 };
 
 // eslint-disable-next-line consistent-return
@@ -111,7 +142,14 @@ const invokeEndpoint = async (endpoint, params = {}, numRetries = NUM_REQUEST_RE
 	} while (retries--);
 };
 
-const resetApiClientListener = async () => instantiateClient(true);
+const resetApiClientListener = async () => {
+	do {
+		logger.info('Retrying API client re-instantiation.');
+		await instantiateClient(true).catch();
+		await delay(ENDPOINT_INVOKE_RETRY_DELAY);
+	} while (!(await checkIsClientAlive()));
+};
+
 Signals.get('resetApiClient').add(resetApiClientListener);
 
 module.exports = {
