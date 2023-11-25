@@ -153,7 +153,7 @@ const indexBlock = async job => {
 
 		const { height: lastIndexedHeight } = lastIndexedBlock;
 
-		// Index last indexed block height + 1 if there is a gap
+		// Always index the last indexed blockHeight + 1 (sequential indexing)
 		if (lastIndexedHeight && lastIndexedHeight < blockHeightFromJobData - 1) {
 			blockHeightToIndex = lastIndexedHeight + 1;
 		}
