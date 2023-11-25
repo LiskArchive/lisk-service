@@ -38,6 +38,7 @@ const { definition: blocksDefinition } = require('./sources/version3/blocks');
 const { definition: feesDefinition } = require('./sources/version3/fees');
 const { definition: generatorsDefinition } = require('./sources/version3/generators');
 const { definition: transactionsDefinition } = require('./sources/version3/transactions');
+const { definition: indexStatusUpdateDefinition } = require('./sources/version3/indexStatus');
 
 const { host, port } = config;
 
@@ -182,6 +183,8 @@ tempApp.run().then(async () => {
 			'update.fee_estimates': payload =>
 				sendSocketIoEvent('update.fee_estimates', mapper(payload, feesDefinition)),
 			'metadata.change': payload => sendSocketIoEvent('update.metadata', payload),
+			'update.index.status': payload =>
+				sendSocketIoEvent('update.index.status', mapper(payload, indexStatusUpdateDefinition)),
 		},
 		dependencies: config.brokerDependencies,
 	};

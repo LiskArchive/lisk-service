@@ -21,19 +21,6 @@ let indexStatsCache = {};
 let isIndexingInProgress = false;
 let lastUpdate = getCurrentTimestamp();
 
-const indexStatUpdateListener = _indexStats => {
-	indexStatsCache = _indexStats;
-	lastUpdate = getCurrentTimestamp();
-};
-
-const indexingProgressListener = numJobsInProgress => {
-	isIndexingInProgress = numJobsInProgress > 0;
-	lastUpdate = getCurrentTimestamp();
-};
-
-Signals.get('indexStatUpdate').add(indexStatUpdateListener);
-Signals.get('numJobsInProgressUpdate').add(indexingProgressListener);
-
 const getIndexStatus = async () => {
 	const {
 		currentChainHeight,
@@ -60,9 +47,29 @@ const getIndexStatus = async () => {
 	};
 };
 
+const indexStatUpdateListener = async _indexStats => {
+	indexStatsCache = _indexStats;
+	lastUpdate = getCurrentTimestamp();
+
+	const indexStatus = await getIndexStatus();
+	Signals.get('updateIndexStatus').dispatch(indexStatus);
+};
+
+const indexingProgressListener = numJobsInProgress => {
+	isIndexingInProgress = numJobsInProgress > 0;
+	lastUpdate = getCurrentTimestamp();
+};
+
+Signals.get('indexStatUpdate').add(indexStatUpdateListener);
+Signals.get('numJobsInProgressUpdate').add(indexingProgressListener);
+
 const isBlockchainFullyIndexed = () => Number(indexStatsCache.percentage) === 100;
 
 module.exports = {
 	getIndexStatus,
 	isBlockchainFullyIndexed,
+
+	// Testing
+	indexStatUpdateListener,
+	indexingProgressListener,
 };
