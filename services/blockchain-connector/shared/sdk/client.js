@@ -32,15 +32,18 @@ const RETRY_INTERVAL = config.apiClient.instantiation.retryInterval;
 const MAX_INSTANTIATION_WAIT_TIME = config.apiClient.instantiation.maxWaitTime;
 const NUM_REQUEST_RETRIES = config.apiClient.request.maxRetries;
 const ENDPOINT_INVOKE_RETRY_DELAY = config.apiClient.request.retryDelay;
+const CLIENT_ALIVE_ASSUMPTION_TIME = config.apiClient.aliveAssumptionTime;
 
 // Caching and flags
 let clientCache;
 let instantiationBeginTime;
+let lastClientAliveTime;
 let isInstantiating = false;
 let isClientAlive = false;
 
 const pongListener = res => {
 	isClientAlive = true;
+	lastClientAliveTime = Date.now();
 	return res(true);
 };
 
@@ -51,14 +54,17 @@ const checkIsClientAlive = async () =>
 			return resolve(false);
 		}
 
-		if (config.isUseLiskIPCClient) {
+		if (
+			config.isUseLiskIPCClient ||
+			Date.now() - lastClientAliveTime > CLIENT_ALIVE_ASSUMPTION_TIME
+		) {
 			return resolve(clientCache._channel && clientCache._channel.isAlive);
 		}
 
 		const boundPongListener = () => pongListener(resolve);
 
 		clientCache._channel._ws.on('pong', boundPongListener);
-		clientCache._channel._ws.ping();
+		clientCache._channel._ws.ping(() => {});
 
 		// eslint-disable-next-line consistent-return
 		setTimeout(() => {
