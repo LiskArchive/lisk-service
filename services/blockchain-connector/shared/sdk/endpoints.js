@@ -157,7 +157,7 @@ const getBlockByID = async (id, includeGenesisAssets = false) => {
 			return getGenesisBlock(includeGenesisAssets);
 		}
 
-		const blockFromCache = await getBlockByIDFromCache(id);
+		const blockFromCache = await getBlockByIDFromCache(id).catch(() => null);
 		if (blockFromCache) return blockFromCache;
 
 		const block = await invokeEndpoint('chain_getBlockByID', { id });
@@ -215,7 +215,7 @@ const getEventsByHeight = async height => {
 
 const getTransactionByID = async id => {
 	try {
-		const transactionFromCache = await getTransactionByIDFromCache(id);
+		const transactionFromCache = await getTransactionByIDFromCache(id).catch(() => null);
 		if (transactionFromCache) return transactionFromCache;
 
 		const transaction = await invokeEndpoint('chain_getTransactionByID', { id });

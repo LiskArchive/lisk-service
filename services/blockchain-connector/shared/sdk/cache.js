@@ -136,7 +136,6 @@ if (config.cache.isBlockCachingEnabled) cacheBlocksFromWaitlist();
 
 module.exports = {
 	cacheBlocksIfEnabled,
-	cacheBlocksFromWaitlist,
 	getBlockByIDFromCache,
 	getTransactionByIDFromCache,
 	cacheCleanup,

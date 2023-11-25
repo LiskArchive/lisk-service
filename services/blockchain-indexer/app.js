@@ -92,6 +92,7 @@ initDatabase()
 		}
 
 		const app = Microservice(defaultBrokerConfig);
+		setAppContext(app);
 
 		app.addMethods(path.join(__dirname, 'methods'));
 
@@ -129,8 +130,7 @@ initDatabase()
 			app.addJobs(path.join(__dirname, 'jobs', 'indexer'));
 		}
 
-		// Set the app context and start the application
-		setAppContext(app);
+		// Start the application
 		app
 			.run()
 			.then(async () => {
