@@ -17,10 +17,11 @@ const util = require('util');
 
 const { Logger, Signals } = require('lisk-service-framework');
 
+const config = require('../../config');
+
 const { getApiClient } = require('./client');
 const { formatEvent } = require('./formatter');
 const { getRegisteredEvents, getEventsByHeight, getNodeInfo } = require('./endpoints');
-const config = require('../../config');
 const { updateTokenInfo } = require('./token');
 
 const logger = Logger();

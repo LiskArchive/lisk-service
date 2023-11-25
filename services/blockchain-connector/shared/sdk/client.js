@@ -143,8 +143,16 @@ const invokeEndpoint = async (endpoint, params = {}, numRetries = NUM_REQUEST_RE
 	} while (retries--);
 };
 
-const resetApiClientListener = async () => instantiateClient(true);
+// Checks to ensure that the API Client is always alive
+const resetApiClientListener = async () => instantiateClient(true).catch(() => {});
 Signals.get('resetApiClient').add(resetApiClientListener);
+
+if (!config.isUseLiskIPCClient) {
+	setTimeout(async () => {
+		const isAlive = await checkIsClientAlive().catch(() => false);
+		if (!isAlive) instantiateClient(true).catch(() => {});
+	}, CLIENT_ALIVE_ASSUMPTION_TIME);
+}
 
 module.exports = {
 	timeoutMessage,
