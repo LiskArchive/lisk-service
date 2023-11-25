@@ -129,6 +129,7 @@ module.exports = {
 				// GENESIS_BLOCK_URL: 'https://downloads.lisk.com/lisk/mainnet/genesis_block.json.tar.gz',
 				// CLIENT_INSTANTIATION_MAX_WAIT_TIME: 100,
 				// CLIENT_INSTANTIATION_RETRY_INTERVAL: 1,
+				// CLIENT_ALIVE_ASSUMPTION_TIME: 5 * 1000,
 				// ENDPOINT_INVOKE_MAX_RETRIES: 5,
 				// ENDPOINT_INVOKE_RETRY_DELAY: 10,
 				// JOB_INTERVAL_CACHE_CLEANUP: 0,

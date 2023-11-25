@@ -413,6 +413,12 @@ By default, it is set to `100`.
 By default, it is set to `1`.
 | 1
 
+| `CLIENT_ALIVE_ASSUMPTION_TIME`
+| number
+| Interval (in milliseconds) for which the WS API Client is assumed to be alive since the last ping/pong success check. By default, it is set to 5000.
+By default, it is set to `5000`.
+| 5000
+
 | `ENDPOINT_INVOKE_MAX_RETRIES`
 | number
 | Maximum number of endpoint invocation request retries to the node.
