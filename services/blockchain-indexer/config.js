@@ -99,6 +99,7 @@ config.queue = {
 	indexBlocks: {
 		name: 'IndexBlocks',
 		concurrency: 1,
+		scheduledJobsMaxCount: Number(process.env.INDEX_BLOCKS_QUEUE_SCHEDULED_JOB_MAX_COUNT) || 100000,
 	},
 	indexAccountPublicKey: {
 		name: 'PendingAccountPublicKeyUpdates',

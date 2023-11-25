@@ -46,6 +46,7 @@ A list of the most commonly used environment variables is presented below:
 - `LISK_STATIC`: URL of Lisk static assets.
 - `SERVICE_INDEXER_CACHE_REDIS`: URL of the cache storage (Redis).
 - `ACCOUNT_BALANCE_UPDATE_BATCH_SIZE`: Number of accounts for which the balance index is updated at a time. By default, it is set to 1000.
+- `INDEX_BLOCKS_QUEUE_SCHEDULED_JOB_MAX_COUNT`: Maximum number of jobs (in active and waiting state) allowed in the block indexing queue. By default, it is set to 100000.
 - `JOB_INTERVAL_DELETE_SERIALIZED_EVENTS`: Job run interval to delete serialized events. By default, it is set to 0.
 - `JOB_SCHEDULE_DELETE_SERIALIZED_EVENTS`: Job run cron schedule to delete serialized events. By default, it is set to run every 5th minute (`*/5 * * * *`).
 - `JOB_INTERVAL_REFRESH_VALIDATORS`: Job run interval to refresh validators cache. By default, it is set to 0.

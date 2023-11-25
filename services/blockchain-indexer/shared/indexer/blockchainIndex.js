@@ -83,8 +83,6 @@ const getEventTopicsTable = () => getTableInstance(eventTopicsTableSchema, MYSQL
 const getTransactionsTable = () => getTableInstance(transactionsTableSchema, MYSQL_ENDPOINT);
 const getValidatorsTable = () => getTableInstance(validatorsTableSchema, MYSQL_ENDPOINT);
 
-const BLOCK_PROCESS_QUEUES_MAX_JOB_COUNT = 100000;
-
 const validateBlock = block => !!block && block.height >= 0;
 
 const DB_STATUS = Object.freeze({
@@ -835,7 +833,7 @@ const getMissingBlocks = async params => {
 
 const addHeightToIndexBlocksQueue = async (height, priority) => {
 	const liveIndexingJobCount = await getLiveIndexingJobCount();
-	if (liveIndexingJobCount > BLOCK_PROCESS_QUEUES_MAX_JOB_COUNT) {
+	if (liveIndexingJobCount > config.queue.indexBlocks.scheduledJobsMaxCount) {
 		logger.trace(
 			`Skipping adding new job to the queue. Current liveIndexingJobCount: ${liveIndexingJobCount}.`,
 		);

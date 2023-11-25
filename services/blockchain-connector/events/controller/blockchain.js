@@ -79,8 +79,9 @@ const chainNewBlockController = async cb => {
 				assets = block.assets;
 			} catch (err) {
 				logger.warn(
-					`Failed to load block by ID in chainNewBlockListener with error: ${err.message}.`,
+					`Could not fetch block ${blockHeader.id} within chainNewBlockListener due to: ${err.message}.`,
 				);
+				logger.debug(err.stack);
 			}
 		}
 
