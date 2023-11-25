@@ -172,4 +172,15 @@ module.exports = [
 			Signals.get('blockIndexReady').add(indexStatusListener);
 		},
 	},
+	{
+		name: 'update.index.status',
+		description: 'Emit index status updates.',
+		controller: callback => {
+			const indexStatusUpdateListener = async payload => {
+				logger.debug("Dispatching 'update.index.status' event over websocket");
+				callback(payload);
+			};
+			Signals.get('updateIndexStatus').add(indexStatusUpdateListener);
+		},
+	},
 ];
