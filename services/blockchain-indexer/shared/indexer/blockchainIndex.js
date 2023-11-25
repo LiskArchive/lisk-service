@@ -153,7 +153,7 @@ const indexBlock = async job => {
 
 		const { height: lastIndexedHeight } = lastIndexedBlock;
 
-		// Index last indexed block height + 1 and schedule the next block if there is a gap
+		// Index last indexed blockHeight + 1
 		if (lastIndexedHeight && lastIndexedHeight < blockHeightFromJobData - 1) {
 			blockHeightToIndex = lastIndexedHeight + 1;
 		}
