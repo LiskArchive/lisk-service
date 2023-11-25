@@ -56,7 +56,7 @@ const checkIsClientAlive = async () =>
 
 		if (
 			config.isUseLiskIPCClient ||
-			Date.now() - lastClientAliveTime > CLIENT_ALIVE_ASSUMPTION_TIME
+			Date.now() - lastClientAliveTime < CLIENT_ALIVE_ASSUMPTION_TIME
 		) {
 			return resolve(clientCache._channel && clientCache._channel.isAlive);
 		}
