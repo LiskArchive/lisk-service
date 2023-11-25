@@ -118,6 +118,7 @@ config.clientConnVerifyInterval = Number(
 ); // in millisecs
 
 config.apiClient = {
+	aliveAssumptionTime: Number(process.env.CLIENT_ALIVE_ASSUMPTION_TIME || 5 * 1000), // in millisecs
 	instantiation: {
 		maxWaitTime: Number(process.env.CLIENT_INSTANTIATION_MAX_WAIT_TIME || 100), // in millisecs
 		retryInterval: Number(process.env.CLIENT_INSTANTIATION_RETRY_INTERVAL || 1), // in millisecs

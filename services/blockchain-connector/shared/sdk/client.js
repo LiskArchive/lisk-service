@@ -32,24 +32,56 @@ const RETRY_INTERVAL = config.apiClient.instantiation.retryInterval;
 const MAX_INSTANTIATION_WAIT_TIME = config.apiClient.instantiation.maxWaitTime;
 const NUM_REQUEST_RETRIES = config.apiClient.request.maxRetries;
 const ENDPOINT_INVOKE_RETRY_DELAY = config.apiClient.request.retryDelay;
+const CLIENT_ALIVE_ASSUMPTION_TIME = config.apiClient.aliveAssumptionTime;
 
 // Caching and flags
 let clientCache;
 let instantiationBeginTime;
+let lastClientAliveTime;
 let isInstantiating = false;
+let isClientAlive = false;
 
-const checkIsClientAlive = () =>
-	clientCache && clientCache._channel && clientCache._channel.isAlive;
+const pongListener = res => {
+	isClientAlive = true;
+	lastClientAliveTime = Date.now();
+	return res(true);
+};
+
+const checkIsClientAlive = async () =>
+	// eslint-disable-next-line consistent-return
+	new Promise(resolve => {
+		if (!clientCache || (clientCache._channel && !clientCache._channel.isAlive)) {
+			return resolve(false);
+		}
+
+		if (
+			config.isUseLiskIPCClient ||
+			Date.now() - lastClientAliveTime < CLIENT_ALIVE_ASSUMPTION_TIME
+		) {
+			return resolve(clientCache._channel && clientCache._channel.isAlive);
+		}
+
+		const boundPongListener = () => pongListener(resolve);
+
+		clientCache._channel._ws.on('pong', boundPongListener);
+		clientCache._channel._ws.ping(() => {});
+
+		// eslint-disable-next-line consistent-return
+		setTimeout(() => {
+			clientCache._channel._ws.removeEventListener('pong', boundPongListener);
+			if (!isClientAlive) return resolve(false);
+		}, RETRY_INTERVAL);
+	});
 
 // eslint-disable-next-line consistent-return
 const instantiateClient = async (isForceReInstantiate = false) => {
 	try {
 		if (!isInstantiating || isForceReInstantiate) {
-			if (!checkIsClientAlive() || isForceReInstantiate) {
+			if (!(await checkIsClientAlive()) || isForceReInstantiate) {
 				isInstantiating = true;
 				instantiationBeginTime = Date.now();
 
-				if (checkIsClientAlive()) await clientCache.disconnect();
+				if (clientCache) await clientCache.disconnect();
 
 				clientCache = config.isUseLiskIPCClient
 					? await createIPCClient(config.liskAppDataPath)
@@ -90,7 +122,7 @@ const instantiateClient = async (isForceReInstantiate = false) => {
 
 const getApiClient = async () => {
 	const apiClient = await waitForIt(instantiateClient, RETRY_INTERVAL);
-	return checkIsClientAlive() ? apiClient : getApiClient();
+	return (await checkIsClientAlive()) ? apiClient : getApiClient();
 };
 
 // eslint-disable-next-line consistent-return
@@ -111,8 +143,16 @@ const invokeEndpoint = async (endpoint, params = {}, numRetries = NUM_REQUEST_RE
 	} while (retries--);
 };
 
-const resetApiClientListener = async () => instantiateClient(true);
+// Checks to ensure that the API Client is always alive
+const resetApiClientListener = async () => instantiateClient(true).catch(() => {});
 Signals.get('resetApiClient').add(resetApiClientListener);
+
+if (!config.isUseLiskIPCClient) {
+	setTimeout(async () => {
+		const isAlive = await checkIsClientAlive().catch(() => false);
+		if (!isAlive) instantiateClient(true).catch(() => {});
+	}, CLIENT_ALIVE_ASSUMPTION_TIME);
+}
 
 module.exports = {
 	timeoutMessage,
