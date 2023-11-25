@@ -68,7 +68,7 @@ const subscribe = subscribeEvent => {
 };
 
 // subscribe('*'); // Listen to all the events
-subscribe('new.block');
+subscribe('update.index.status');
 subscribe('new.transactions');
 subscribe('delete.block');
 subscribe('delete.transactions');
@@ -76,3 +76,4 @@ subscribe('update.round');
 subscribe('update.generators');
 subscribe('update.fee_estimates');
 subscribe('update.metadata');
+subscribe('update.index.status');

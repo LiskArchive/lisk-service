@@ -444,8 +444,9 @@ function makeHandler(svc, handlerItem) {
 				svc.logger.info(`   <= ${chalk.green.bold('Success')} ${action}`);
 
 				const output = addJsonRpcEnvelope(id, res);
+
 				if (respond !== undefined) respond(output);
-				return output;
+				else return output;
 			} catch (err) {
 				if (
 					svc.settings.log4XXResponses ||

@@ -68,4 +68,8 @@ const isBlockchainFullyIndexed = () => Number(indexStatsCache.percentage) === 10
 module.exports = {
 	getIndexStatus,
 	isBlockchainFullyIndexed,
+
+	// Testing
+	indexStatUpdateListener,
+	indexingProgressListener,
 };
