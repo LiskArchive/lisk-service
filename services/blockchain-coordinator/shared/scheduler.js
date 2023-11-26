@@ -285,7 +285,7 @@ const scheduleMissingBlocksIndexing = async () => {
 			logger.info('Successfully scheduled missing blocks indexing.');
 		}
 	} catch (err) {
-		logger.warn(`Missing blocks indexing scheduling failed due to: ${err.message}.`);
+		logger.warn(`Scheduling to index missing blocks failed due to: ${err.message}.`);
 		logger.trace(err.stack);
 	}
 };
