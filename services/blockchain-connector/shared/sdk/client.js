@@ -68,7 +68,9 @@ const checkIsClientAlive = async () =>
 
 		// eslint-disable-next-line consistent-return
 		setTimeout(() => {
-			clientCache._channel._ws.removeEventListener('pong', boundPongListener);
+			if (clientCache && clientCache._channel && clientCache._channel._ws) {
+				clientCache._channel._ws.removeEventListener('pong', boundPongListener);
+			}
 			if (!isClientAlive) return resolve(false);
 		}, RETRY_INTERVAL);
 	});
