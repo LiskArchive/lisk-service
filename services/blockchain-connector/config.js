@@ -128,4 +128,8 @@ config.apiClient = {
 config.clientConnVerifyInterval =
 	Number(process.env.CLIENT_CONNECTION_VERIFY_INTERVAL) || 30 * 1000; // in millisecs
 
+// TODO: Remove after https://github.com/LiskHQ/lisk-service/issues/1945 is completely resolved
+const exitDelay = Number(process.env.CONNECTOR_EXIT_DELAY_IN_HOURS); // in hours
+config.appExitDelay = (Number.isNaN(exitDelay) ? 3 : exitDelay) * (60 * 60 * 1000);
+
 module.exports = config;
