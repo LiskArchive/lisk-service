@@ -664,8 +664,8 @@ const deleteIndexedBlocks = async job => {
 const deleteIndexedBlocksWrapper = async job => {
 	/* eslint-disable no-use-before-define */
 	try {
-		if (!indexBlocksQueue.queue.isPaused()) {
-			await indexBlocksQueue.pause();
+		if (!(await indexBlocksQueue.queue.isPaused())) {
+			await indexBlocksQueue.queue.pause();
 		}
 		await deleteIndexedBlocks(job);
 	} catch (err) {
@@ -675,7 +675,7 @@ const deleteIndexedBlocksWrapper = async job => {
 	} finally {
 		// Resume indexing once all deletion jobs are processed
 		if ((await getPendingDeleteJobCount()) === 0) {
-			await indexBlocksQueue.resume();
+			await indexBlocksQueue.queue.resume();
 		}
 	}
 	/* eslint-enable no-use-before-define */
