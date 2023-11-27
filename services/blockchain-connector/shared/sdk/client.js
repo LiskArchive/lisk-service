@@ -118,7 +118,7 @@ const instantiateClient = async (isForceReInstantiate = false) => {
 			throw new Error('ECONNREFUSED: Unable to reach a network node.');
 		}
 
-		return instantiateClient(true);
+		return null;
 	}
 };
 
