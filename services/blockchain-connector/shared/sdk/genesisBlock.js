@@ -164,6 +164,7 @@ module.exports = {
 	getGenesisBlockID,
 	getGenesisBlock,
 	getGenesisConfig,
+	getGenesisAssets,
 	getGenesisAssetByModule,
 	getGenesisAssetsLength,
 };

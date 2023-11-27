@@ -41,7 +41,7 @@ config.endpoints.mysqlReplica =
 	process.env.SERVICE_STATISTICS_MYSQL_READ_REPLICA || config.endpoints.mysql;
 
 config.transactionStatistics = {
-	historyLengthDays: Number(process.env.TRANSACTION_STATS_HISTORY_LENGTH_DAYS || 366),
+	historyLengthDays: Number(process.env.TRANSACTION_STATS_HISTORY_LENGTH_DAYS) || 366,
 };
 
 /**
@@ -96,11 +96,11 @@ config.networks = [
 config.job = {
 	// Interval takes priority over schedule and must be greater than 0 to be valid
 	refreshTransactionStats: {
-		interval: process.env.JOB_INTERVAL_REFRESH_TRANSACTION_STATS || 0,
+		interval: Number(process.env.JOB_INTERVAL_REFRESH_TRANSACTION_STATS) || 0,
 		schedule: process.env.JOB_SCHEDULE_REFRESH_TRANSACTION_STATS || '*/30 * * * *',
 	},
 	verifyTransactionStats: {
-		interval: process.env.JOB_INTERVAL_VERIFY_TRANSACTION_STATS || 0,
+		interval: Number(process.env.JOB_INTERVAL_VERIFY_TRANSACTION_STATS) || 0,
 		schedule: process.env.JOB_SCHEDULE_VERIFY_TRANSACTION_STATS || '15 */3 * * *',
 	},
 };

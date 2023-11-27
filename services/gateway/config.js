@@ -42,16 +42,14 @@ config.volatileRedis = process.env.SERVICE_GATEWAY_REDIS_VOLATILE || 'redis://12
 config.jsonRpcStrictMode = process.env.JSON_RPC_STRICT_MODE || 'false';
 
 config.rateLimit = {};
-config.rateLimit.enable = Boolean(
-	String(process.env.HTTP_RATE_LIMIT_ENABLE).toLowerCase() === 'true',
-);
+config.rateLimit.enable = String(process.env.HTTP_RATE_LIMIT_ENABLE).toLowerCase() === 'true';
 config.rateLimit.window = Number(process.env.HTTP_RATE_LIMIT_WINDOW) || 10; // in seconds
 // Max number of requests during window
-config.rateLimit.connectionLimit = Number(process.env.HTTP_RATE_LIMIT_CONNECTIONS || 200);
+config.rateLimit.connectionLimit = Number(process.env.HTTP_RATE_LIMIT_CONNECTIONS) || 200;
 config.rateLimit.enableXForwardedFor = Boolean(
 	String(process.env.HTTP_RATE_LIMIT_ENABLE_X_FORWARDED_FOR).toLowerCase() === 'true',
 );
-config.rateLimit.numKnownProxies = Number(process.env.HTTP_RATE_LIMIT_NUM_KNOWN_PROXIES || 0);
+config.rateLimit.numKnownProxies = Number(process.env.HTTP_RATE_LIMIT_NUM_KNOWN_PROXIES) || 0;
 
 /**
  * LOGGING
@@ -89,8 +87,8 @@ config.api.versions = {
 config.api.isReverseProxyPresent = Boolean(
 	String(process.env.ENABLE_REVERSE_PROXY_TIMEOUT_SETTINGS).toLowerCase() === 'true',
 );
-config.api.httpKeepAliveTimeout = Number(process.env.HTTP_KEEP_ALIVE_TIMEOUT || 65000);
-config.api.httpHeadersTimeout = Number(process.env.HTTP_HEADERS_TIMEOUT || 66000);
+config.api.httpKeepAliveTimeout = Number(process.env.HTTP_KEEP_ALIVE_TIMEOUT) || 65000;
+config.api.httpHeadersTimeout = Number(process.env.HTTP_HEADERS_TIMEOUT) || 66000;
 
 /**
  * HTTP API response caching support
@@ -98,23 +96,22 @@ config.api.httpHeadersTimeout = Number(process.env.HTTP_HEADERS_TIMEOUT || 66000
 config.api.httpCacheControlDirectives = String(
 	process.env.HTTP_CACHE_CONTROL_DIRECTIVES || 'public, max-age=10',
 );
-config.api.enableHttpCacheControl = Boolean(
-	String(process.env.ENABLE_HTTP_CACHE_CONTROL).toLowerCase() === 'true',
-);
+config.api.enableHttpCacheControl =
+	String(process.env.ENABLE_HTTP_CACHE_CONTROL).toLowerCase() === 'true';
 
 // configuration for websocket rate limit
 config.websocket = {
-	enableRateLimit: Boolean(String(process.env.WS_RATE_LIMIT_ENABLE).toLowerCase() === 'true'),
+	enableRateLimit: String(process.env.WS_RATE_LIMIT_ENABLE).toLowerCase() === 'true',
 	rateLimit: {
-		points: Number(process.env.WS_RATE_LIMIT_CONNECTIONS || 5),
-		duration: Number(process.env.WS_RATE_LIMIT_DURATION || 1), // in seconds
+		points: Number(process.env.WS_RATE_LIMIT_CONNECTIONS) || 5,
+		duration: Number(process.env.WS_RATE_LIMIT_DURATION) || 1, // in seconds
 	},
 };
 
 // Gateway RPC cache settings
 config.rpcCache = {
 	ttl: 5, // in seconds
-	enable: Boolean(String(process.env.ENABLE_REQUEST_CACHING).toLowerCase() !== 'false'),
+	enable: String(process.env.ENABLE_REQUEST_CACHING).toLowerCase() !== 'false',
 };
 
 const DEFAULT_DEPENDENCIES = 'indexer,connector';
@@ -125,7 +122,7 @@ config.brokerDependencies = DEFAULT_DEPENDENCIES.concat(',', GATEWAY_DEPENDENCIE
 config.job = {
 	// Interval takes priority over schedule and must be greater than 0 to be valid
 	updateReadinessStatus: {
-		interval: process.env.JOB_INTERVAL_UPDATE_READINESS_STATUS || 0,
+		interval: Number(process.env.JOB_INTERVAL_UPDATE_READINESS_STATUS) || 0,
 		schedule: process.env.JOB_SCHEDULE_UPDATE_READINESS_STATUS || '* * * * *',
 	},
 };
