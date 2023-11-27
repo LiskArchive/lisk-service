@@ -73,7 +73,7 @@ const checkIsClientAlive = async () =>
 			}
 			if (!isClientAlive) return resolve(false);
 		}, RETRY_INTERVAL);
-	});
+	}).catch(() => false);
 
 // eslint-disable-next-line consistent-return
 const instantiateClient = async (isForceReInstantiate = false) => {
@@ -150,8 +150,8 @@ const resetApiClientListener = async () => instantiateClient(true).catch(() => {
 Signals.get('resetApiClient').add(resetApiClientListener);
 
 if (!config.isUseLiskIPCClient) {
-	setTimeout(async () => {
-		const isAlive = await checkIsClientAlive().catch(() => false);
+	setInterval(async () => {
+		const isAlive = await checkIsClientAlive();
 		if (!isAlive) instantiateClient(true).catch(() => {});
 	}, CLIENT_ALIVE_ASSUMPTION_TIME);
 }
