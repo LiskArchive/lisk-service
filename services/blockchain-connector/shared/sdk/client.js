@@ -33,11 +33,13 @@ const MAX_INSTANTIATION_WAIT_TIME = config.apiClient.instantiation.maxWaitTime;
 const NUM_REQUEST_RETRIES = config.apiClient.request.maxRetries;
 const ENDPOINT_INVOKE_RETRY_DELAY = config.apiClient.request.retryDelay;
 const CLIENT_ALIVE_ASSUMPTION_TIME = config.apiClient.aliveAssumptionTime;
+const HEARTBEAT_ACK_MAX_WAIT_TIME = config.apiClient.heartbeatAckMaxWaitTime;
 
 // Caching and flags
 let clientCache;
 let instantiationBeginTime;
 let lastClientAliveTime;
+let heartbeatCheckBeginTime;
 let isInstantiating = false;
 let isClientAlive = false;
 
@@ -56,21 +58,22 @@ const checkIsClientAlive = async () =>
 
 		if (
 			config.isUseLiskIPCClient ||
-			Date.now() - lastClientAliveTime < CLIENT_ALIVE_ASSUMPTION_TIME
+			Date.now() - lastClientAliveTime < CLIENT_ALIVE_ASSUMPTION_TIME ||
+			Date.now() - heartbeatCheckBeginTime < HEARTBEAT_ACK_MAX_WAIT_TIME
 		) {
 			return resolve(clientCache._channel && clientCache._channel.isAlive);
 		}
 
+		heartbeatCheckBeginTime = Date.now();
 		const boundPongListener = () => pongListener(resolve);
 
-		clientCache._channel._ws.on('pong', boundPongListener);
-		clientCache._channel._ws.ping(() => {});
+		const wsInstance = clientCache._channel._ws;
+		wsInstance.on('pong', boundPongListener);
+		wsInstance.ping(() => {});
 
 		// eslint-disable-next-line consistent-return
 		setTimeout(() => {
-			if (clientCache && clientCache._channel && clientCache._channel._ws) {
-				clientCache._channel._ws.removeEventListener('pong', boundPongListener);
-			}
+			wsInstance.removeListener('pong', boundPongListener);
 			if (!isClientAlive) return resolve(false);
 		}, RETRY_INTERVAL);
 	}).catch(() => false);
@@ -88,6 +91,8 @@ const instantiateClient = async (isForceReInstantiate = false) => {
 				clientCache = config.isUseLiskIPCClient
 					? await createIPCClient(config.liskAppDataPath)
 					: await createWSClient(`${liskAddress}/rpc-ws`);
+
+				lastClientAliveTime = Date.now();
 
 				if (isForceReInstantiate) logger.info('Re-instantiated the API client forcefully.');
 

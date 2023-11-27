@@ -113,6 +113,7 @@ config.job = {
 };
 
 config.apiClient = {
+	heartbeatAckMaxWaitTime: 50, // in millisecs
 	aliveAssumptionTime: Number(process.env.CLIENT_ALIVE_ASSUMPTION_TIME) || 5 * 1000, // in millisecs
 	instantiation: {
 		maxWaitTime: Number(process.env.CLIENT_INSTANTIATION_MAX_WAIT_TIME) || 100, // in millisecs

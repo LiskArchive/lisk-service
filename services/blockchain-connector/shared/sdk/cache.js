@@ -21,6 +21,7 @@ const {
 	DB: {
 		sqlite3: { getTableInstance },
 	},
+	Utils: { delay },
 } = require('lisk-service-framework');
 
 const logger = Logger();
@@ -77,6 +78,7 @@ const cacheBlocksFromWaitlist = async () => {
 			);
 			logger.debug(err.stack);
 			blockCacheWaitlist.splice(0, 0, block);
+			await delay();
 		}
 	}
 
