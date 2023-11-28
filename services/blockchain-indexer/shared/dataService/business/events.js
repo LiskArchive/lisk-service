@@ -125,7 +125,10 @@ const getEvents = async params => {
 
 		const allTxIDs = [transactionID];
 		if (transactionID.length === LENGTH_ID) {
-			allTxIDs.push(EVENT_TOPIC_PREFIX.TX_ID.concat(transactionID), EVENT_TOPIC_PREFIX.CCM_ID.concat(transactionID));
+			allTxIDs.push(
+				EVENT_TOPIC_PREFIX.TX_ID.concat(transactionID),
+				EVENT_TOPIC_PREFIX.CCM_ID.concat(transactionID),
+			);
 		} else if (
 			transactionID.startsWith(EVENT_TOPIC_PREFIX.TX_ID) &&
 			transactionID.length === EVENT_TOPIC_PREFIX.TX_ID.length + LENGTH_ID
