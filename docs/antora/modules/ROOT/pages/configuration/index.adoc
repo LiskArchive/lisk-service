@@ -434,10 +434,10 @@ By default, it is set to `10`.
 | `CONNECTOR_EXIT_DELAY_IN_HOURS`
 | number
 | Delay (in hours) after which the blockchain-connector microservice exits. The service should restart automatically if deployed using Docker or PM2.
-To be removed after https://github.com/LiskHQ/lisk-service/issues/1945 is completely resolved.
-By default, it is set to `3`.
-To disable it, set it to `0`.
-| 3
+To be removed eventually.
+To enable it, set it higher than `0`.
+By default, it is set to `0`.
+| 0
 
 | `JOB_INTERVAL_CACHE_CLEANUP`
 | number

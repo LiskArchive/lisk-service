@@ -130,7 +130,6 @@ const init = async () => {
 	// Download the genesis block, if applicable
 	await getGenesisBlock();
 
-	// TODO: Remove after https://github.com/LiskHQ/lisk-service/issues/1945 is completely resolved
 	if (config.appExitDelay) {
 		setTimeout(() => process.exit(0), config.appExitDelay);
 	}
