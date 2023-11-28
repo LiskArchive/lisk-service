@@ -231,6 +231,7 @@ const getEvents = async params => {
 	params = paramsWithoutTopic;
 	const eventsInfo = await eventsTable.find(params, ['eventStr', 'height', 'index']);
 
+	const blocksCache = {};
 	events.data = await BluebirdPromise.map(
 		eventsInfo,
 		async ({ eventStr, height, index }) => {
@@ -243,10 +244,10 @@ const getEvents = async params => {
 				event = eventsFromCache.find(entry => entry.index === index);
 			}
 
-			const [{ id, timestamp } = {}] = await blocksTable.find({ height, limit: 1 }, [
-				'id',
-				'timestamp',
-			]);
+			if (!blocksCache[height]) {
+				blocksCache[height] = await blocksTable.find({ height, limit: 1 }, ['id', 'timestamp']);
+			}
+			const [{ id, timestamp } = {}] = blocksCache[height];
 
 			return parseToJSONCompatObj({
 				...event,
