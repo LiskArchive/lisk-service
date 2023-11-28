@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const config = require('../../config');
 const { requestIndexer } = require('../utils/request');
 
 let isGenesisBlockIndexedFlag = false;
@@ -26,16 +27,18 @@ const isGenesisBlockIndexed = async () => {
 
 const getMissingBlocks = async (from, to) => requestIndexer('getMissingBlocks', { from, to });
 
-const getIndexVerifiedHeight = async () => requestIndexer('getIndexVerifiedHeight');
+const getIndexVerifiedHeight = async () =>
+	requestIndexer('getIndexVerifiedHeight').catch(() => null);
 
-const setIndexVerifiedHeight = async height => requestIndexer('setIndexVerifiedHeight', { height });
-
-const getLiveIndexingJobCount = async () => requestIndexer('getLiveIndexingJobCount');
+const getLiveIndexingJobCount = async () =>
+	requestIndexer('getLiveIndexingJobCount').catch(
+		// So that no new jobs are scheduled when indexer is failing to respond
+		() => config.job.indexMissingBlocks.skipThreshold,
+	);
 
 module.exports = {
 	isGenesisBlockIndexed,
 	getMissingBlocks,
 	getIndexVerifiedHeight,
-	setIndexVerifiedHeight,
 	getLiveIndexingJobCount,
 };

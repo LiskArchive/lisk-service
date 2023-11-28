@@ -31,6 +31,8 @@ Lisk Service leverages the two-way communication approach by utilizing the WebSo
     - [Payload](#payload-6)
   - [`update.metadata`](#updatemetadata)
     - [Payload](#payload-7)
+  - [`update.index.status`](#updateindexstatus)
+    - [Payload](#payload-8)
 
 ## Access paths and compatibility
 
@@ -366,5 +368,28 @@ Updates about recent metadata changes.
   "mainnet": ["Lisk", "Colecti"],
   "testnet": ["Lisk", "Enevti"],
   "betanet": ["Lisk"],
+}
+```
+
+## `update.index.status`
+
+Updates about index status changes.
+
+### Payload
+
+```jsonc
+{
+  "data": {
+    "genesisHeight": 0,
+    "lastBlockHeight": 18779,
+    "lastIndexedBlockHeight": 13955,
+    "chainLength": 18780,
+    "numBlocksIndexed": 13956,
+    "percentageIndexed": 74.31,
+    "isIndexingInProgress": false
+  },
+  "meta": {
+    "lastUpdate": 1700848735
+  }
 }
 ```

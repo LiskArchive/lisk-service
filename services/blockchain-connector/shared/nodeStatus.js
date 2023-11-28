@@ -15,6 +15,7 @@
  */
 const {
 	Logger,
+	Signals,
 	Utils: { waitForIt },
 } = require('lisk-service-framework');
 
@@ -59,6 +60,7 @@ const waitForNodeToFinishSync = resolve =>
 			return isNodeSyncComplete
 				? (() => {
 						logger.info('Node is fully synchronized with the network.');
+						Signals.get('nodeIsSynced').dispatch();
 						return resolve(isNodeSyncComplete);
 				  })()
 				: (() => {

@@ -76,3 +76,4 @@ subscribe('update.round');
 subscribe('update.generators');
 subscribe('update.fee_estimates');
 subscribe('update.metadata');
+subscribe('update.index.status');

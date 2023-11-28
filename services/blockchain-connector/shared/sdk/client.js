@@ -32,28 +32,70 @@ const RETRY_INTERVAL = config.apiClient.instantiation.retryInterval;
 const MAX_INSTANTIATION_WAIT_TIME = config.apiClient.instantiation.maxWaitTime;
 const NUM_REQUEST_RETRIES = config.apiClient.request.maxRetries;
 const ENDPOINT_INVOKE_RETRY_DELAY = config.apiClient.request.retryDelay;
+const CLIENT_ALIVE_ASSUMPTION_TIME = config.apiClient.aliveAssumptionTime;
+const HEARTBEAT_ACK_MAX_WAIT_TIME = config.apiClient.heartbeatAckMaxWaitTime;
 
 // Caching and flags
 let clientCache;
 let instantiationBeginTime;
+let lastClientAliveTime;
+let heartbeatCheckBeginTime;
 let isInstantiating = false;
+let isClientAlive = false;
 
-const checkIsClientAlive = () =>
-	clientCache && clientCache._channel && clientCache._channel.isAlive;
+const pongListener = res => {
+	isClientAlive = true;
+	lastClientAliveTime = Date.now();
+	return res(true);
+};
+
+const checkIsClientAlive = async () =>
+	// eslint-disable-next-line consistent-return
+	new Promise(resolve => {
+		if (!clientCache || (clientCache._channel && !clientCache._channel.isAlive)) {
+			return resolve(false);
+		}
+
+		if (
+			config.isUseLiskIPCClient ||
+			Date.now() - lastClientAliveTime < CLIENT_ALIVE_ASSUMPTION_TIME ||
+			// The below condition ensures that no other pings are sent when there's already a ping sent
+			// after the CLIENT_ALIVE_ASSUMPTION_TIME is exceeded
+			Date.now() - heartbeatCheckBeginTime < HEARTBEAT_ACK_MAX_WAIT_TIME * 2
+		) {
+			return resolve(clientCache._channel && clientCache._channel.isAlive);
+		}
+
+		heartbeatCheckBeginTime = Date.now();
+		const boundPongListener = () => pongListener(resolve);
+
+		const wsInstance = clientCache._channel._ws;
+		wsInstance.on('pong', boundPongListener);
+		isClientAlive = false;
+		wsInstance.ping(() => {});
+
+		// eslint-disable-next-line consistent-return
+		setTimeout(() => {
+			wsInstance.removeListener('pong', boundPongListener);
+			if (!isClientAlive) return resolve(false);
+		}, HEARTBEAT_ACK_MAX_WAIT_TIME);
+	}).catch(() => false);
 
 // eslint-disable-next-line consistent-return
 const instantiateClient = async (isForceReInstantiate = false) => {
 	try {
 		if (!isInstantiating || isForceReInstantiate) {
-			if (!checkIsClientAlive() || isForceReInstantiate) {
+			if (!(await checkIsClientAlive()) || isForceReInstantiate) {
 				isInstantiating = true;
 				instantiationBeginTime = Date.now();
 
-				if (checkIsClientAlive()) await clientCache.disconnect();
+				if (clientCache) await clientCache.disconnect();
 
 				clientCache = config.isUseLiskIPCClient
 					? await createIPCClient(config.liskAppDataPath)
 					: await createWSClient(`${liskAddress}/rpc-ws`);
+
+				lastClientAliveTime = Date.now();
 
 				if (isForceReInstantiate) logger.info('Re-instantiated the API client forcefully.');
 
@@ -84,13 +126,13 @@ const instantiateClient = async (isForceReInstantiate = false) => {
 			throw new Error('ECONNREFUSED: Unable to reach a network node.');
 		}
 
-		return instantiateClient(true);
+		return null;
 	}
 };
 
 const getApiClient = async () => {
 	const apiClient = await waitForIt(instantiateClient, RETRY_INTERVAL);
-	return checkIsClientAlive() ? apiClient : getApiClient();
+	return (await checkIsClientAlive()) ? apiClient : getApiClient();
 };
 
 // eslint-disable-next-line consistent-return
@@ -111,8 +153,16 @@ const invokeEndpoint = async (endpoint, params = {}, numRetries = NUM_REQUEST_RE
 	} while (retries--);
 };
 
-const resetApiClientListener = async () => instantiateClient(true);
+// Checks to ensure that the API Client is always alive
+const resetApiClientListener = async () => instantiateClient(true).catch(() => {});
 Signals.get('resetApiClient').add(resetApiClientListener);
+
+if (!config.isUseLiskIPCClient) {
+	setInterval(async () => {
+		const isAlive = await checkIsClientAlive();
+		if (!isAlive) instantiateClient(true).catch(() => {});
+	}, CLIENT_ALIVE_ASSUMPTION_TIME);
+}
 
 module.exports = {
 	timeoutMessage,

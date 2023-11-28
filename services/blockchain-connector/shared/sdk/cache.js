@@ -21,6 +21,7 @@ const {
 	DB: {
 		sqlite3: { getTableInstance },
 	},
+	Utils: { delay },
 } = require('lisk-service-framework');
 
 const logger = Logger();
@@ -77,6 +78,7 @@ const cacheBlocksFromWaitlist = async () => {
 			);
 			logger.debug(err.stack);
 			blockCacheWaitlist.splice(0, 0, block);
+			await delay(3000); // Delay loop to facilitate reads from cache when writes are failing due to DB locks
 		}
 	}
 
@@ -136,7 +138,6 @@ if (config.cache.isBlockCachingEnabled) cacheBlocksFromWaitlist();
 
 module.exports = {
 	cacheBlocksIfEnabled,
-	cacheBlocksFromWaitlist,
 	getBlockByIDFromCache,
 	getTransactionByIDFromCache,
 	cacheCleanup,

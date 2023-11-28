@@ -31,6 +31,11 @@ const defaultOptions = {
 		attempts: 5,
 		timeout: 5 * 60 * 1000, // ms
 		removeOnComplete: true,
+		removeOnFail: {
+			age: 1 * 60 * 60, // 1 hr in secs
+			count: 100000,
+		},
+		stackTraceLimit: 0,
 	},
 	settings: {},
 };
@@ -62,12 +67,12 @@ const queueInstance = (
 		});
 
 		queue.on('error', err => {
-			logger.error(`${queue.name} job error`, err);
+			logger.error(`${queue.name} job error:\n${JSON.stringify(err, null, '\t')}`);
 		});
 
 		queue.on('failed', (job, err) => {
-			logger.warn(`${job.name} job failed`, err.message);
-			logger.debug(`${job.name} job failed`, err.stack);
+			logger.warn(`${job.name} job failed with error: ${err.message}.`);
+			logger.debug(`${job.name} job failed with error:\n${err.stack}`);
 		});
 
 		setInterval(async () => {
@@ -79,7 +84,7 @@ const queueInstance = (
 				Number(jc.paused) > 0
 			) {
 				logger.info(
-					`Queue counters (${queue.name}): waiting: ${jc.waiting}, active: ${jc.active}, failed: ${jc.failed}, paused: ${jc.paused}`,
+					`Queue counters (${queue.name}): waiting: ${jc.waiting}, active: ${jc.active}, failed: ${jc.failed}, paused: ${jc.paused}.`,
 				);
 			} else {
 				logger.info(`Queue counters (${queue.name}): All scheduled jobs are done.`);

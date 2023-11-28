@@ -44,7 +44,7 @@ A list of the most commonly used environment variables is presented below:
 - `HTTP_CACHE_CONTROL_DIRECTIVES`: HTTP `cache-control` directives.
 - `WS_RATE_LIMIT_ENABLE`: Boolean flag to enable WS rate limiter.
 - `WS_RATE_LIMIT_CONNECTIONS`: Maximum number of new connections allowed within a configured window, specified by `WS_RATE_LIMIT_DURATION`.
-- `WS_RATE_LIMIT_DURATION`: Rate limit window in seconds.
+- `WS_RATE_LIMIT_DURATION`: Rate limit window in seconds. By default, it is set to 1.
 - `ENABLE_REQUEST_CACHING`: Boolean flag to enable RPC response caching.
 - `GATEWAY_DEPENDENCIES`: Services on which the gateway is dependent (can be expressed as a CSV).
 - `JOB_INTERVAL_UPDATE_READINESS_STATUS`: Job run interval to update the readiness status. By default, it is set to 0.

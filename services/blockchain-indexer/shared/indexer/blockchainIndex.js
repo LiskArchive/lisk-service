@@ -26,7 +26,6 @@ const {
 			startDBTransaction,
 			commitDBTransaction,
 			rollbackDBTransaction,
-			KVStore: { getKeyValueTable },
 		},
 	},
 	Utils: { waitForIt },
@@ -75,7 +74,6 @@ const transactionsTableSchema = require('../database/schema/transactions');
 const validatorsTableSchema = require('../database/schema/validators');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
-const keyValueTable = getKeyValueTable();
 
 const logger = Logger();
 
@@ -84,8 +82,6 @@ const getEventsTable = () => getTableInstance(eventsTableSchema, MYSQL_ENDPOINT)
 const getEventTopicsTable = () => getTableInstance(eventTopicsTableSchema, MYSQL_ENDPOINT);
 const getTransactionsTable = () => getTableInstance(transactionsTableSchema, MYSQL_ENDPOINT);
 const getValidatorsTable = () => getTableInstance(validatorsTableSchema, MYSQL_ENDPOINT);
-
-const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
 
 const validateBlock = block => !!block && block.height >= 0;
 
@@ -153,8 +149,8 @@ const indexBlock = async job => {
 
 		const { height: lastIndexedHeight } = lastIndexedBlock;
 
-		// Index last indexed block height + 1 and schedule the next block if there is a gap
-		if (lastIndexedHeight && lastIndexedHeight < blockHeightFromJobData - 1) {
+		// Always index the last indexed blockHeight + 1 (sequential indexing)
+		if (typeof lastIndexedHeight !== 'undefined') {
 			blockHeightToIndex = lastIndexedHeight + 1;
 		}
 
@@ -668,8 +664,8 @@ const deleteIndexedBlocks = async job => {
 const deleteIndexedBlocksWrapper = async job => {
 	/* eslint-disable no-use-before-define */
 	try {
-		if (!indexBlocksQueue.queue.isPaused()) {
-			await indexBlocksQueue.pause();
+		if (!(await indexBlocksQueue.queue.isPaused())) {
+			await indexBlocksQueue.queue.pause();
 		}
 		await deleteIndexedBlocks(job);
 	} catch (err) {
@@ -679,28 +675,35 @@ const deleteIndexedBlocksWrapper = async job => {
 	} finally {
 		// Resume indexing once all deletion jobs are processed
 		if ((await getPendingDeleteJobCount()) === 0) {
-			await indexBlocksQueue.resume();
+			await indexBlocksQueue.queue.resume();
 		}
 	}
 	/* eslint-enable no-use-before-define */
 };
 
 // Initialize queues
-const indexBlocksQueue = Queue(
-	config.endpoints.cache,
-	config.queue.indexBlocks.name,
-	indexBlock,
-	config.queue.indexBlocks.concurrency,
-);
+let indexBlocksQueue;
+let deleteIndexedBlocksQueue;
 
-const deleteIndexedBlocksQueue = Queue(
-	config.endpoints.cache,
-	config.queue.deleteIndexedBlocks.name,
-	deleteIndexedBlocksWrapper,
-	config.queue.deleteIndexedBlocks.concurrency,
-);
+const initBlockProcessingQueues = async () => {
+	indexBlocksQueue = Queue(
+		config.endpoints.cache,
+		config.queue.indexBlocks.name,
+		indexBlock,
+		config.queue.indexBlocks.concurrency,
+	);
+
+	deleteIndexedBlocksQueue = Queue(
+		config.endpoints.cache,
+		config.queue.deleteIndexedBlocks.name,
+		deleteIndexedBlocksWrapper,
+		config.queue.deleteIndexedBlocks.concurrency,
+	);
+};
 
 const getLiveIndexingJobCount = async () => {
+	if (!indexBlocksQueue || !deleteIndexedBlocksQueue) return 0;
+
 	const { queue: indexBlocksBullQueue } = indexBlocksQueue;
 	const { queue: deleteIndexedBlocksBullQueue } = deleteIndexedBlocksQueue;
 
@@ -830,7 +833,7 @@ const getMissingBlocks = async params => {
 
 const addHeightToIndexBlocksQueue = async (height, priority) => {
 	const liveIndexingJobCount = await getLiveIndexingJobCount();
-	if (liveIndexingJobCount > 100000) {
+	if (liveIndexingJobCount > config.queue.indexBlocks.scheduledJobsMaxCount) {
 		logger.trace(
 			`Skipping adding new job to the queue. Current liveIndexingJobCount: ${liveIndexingJobCount}.`,
 		);
@@ -842,9 +845,19 @@ const addHeightToIndexBlocksQueue = async (height, priority) => {
 		: indexBlocksQueue.add({ height });
 };
 
-const setIndexVerifiedHeight = ({ height }) => keyValueTable.set(INDEX_VERIFIED_HEIGHT, height);
+const getIndexVerifiedHeight = async () => {
+	const blocksTable = await getBlocksTable();
+	const [lastIndexedFinalBlock = {}] = await blocksTable.find(
+		{
+			isFinal: true,
+			sort: 'height:desc',
+			limit: 1,
+		},
+		['height'],
+	);
 
-const getIndexVerifiedHeight = () => keyValueTable.get(INDEX_VERIFIED_HEIGHT);
+	return lastIndexedFinalBlock.height || null;
+};
 
 const isGenesisBlockIndexed = async () => {
 	const blocksTable = await getBlocksTable();
@@ -860,8 +873,8 @@ module.exports = {
 	addHeightToIndexBlocksQueue,
 	getMissingBlocks,
 	scheduleBlockDeletion,
-	setIndexVerifiedHeight,
 	getIndexVerifiedHeight,
 	getLiveIndexingJobCount,
 	isGenesisBlockIndexed,
+	initBlockProcessingQueues,
 };

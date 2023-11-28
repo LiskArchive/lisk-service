@@ -10,10 +10,10 @@
     "@jridgewell/gen-mapping" "^0.3.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
-"@artilleryio/int-commons@latest":
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/@artilleryio/int-commons/-/int-commons-2.0.2.tgz#d4742f572507c7f52896f824a692b7dc43609677"
-  integrity sha512-IfdHOtprbuoLY8zlfdmJdEn/bt7NEJPTDc9tGjy2ya76uVdarU495E+nGG4PrDnzhDF8R56uUmEW66aRRzEoTA==
+"@artilleryio/int-commons@2.0.4", "@artilleryio/int-commons@latest":
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/@artilleryio/int-commons/-/int-commons-2.0.4.tgz#a7de48ee3fda1d19a16867df7eac46961346b2e4"
+  integrity sha512-pi4hkKhpT7pyydH7GxZGWnYM+a2fM1WysCDlKsH7UJTy2xqlqmujd5iY+G/74NHsxQUxd8osAHFu+bnkbjMinw==
   dependencies:
     async "^2.6.4"
     cheerio "^1.0.0-rc.10"
@@ -22,13 +22,14 @@
     espree "^9.4.1"
     jsonpath-plus "^7.2.0"
     lodash "^4.17.19"
+    ms "^2.1.3"
 
 "@artilleryio/int-core@latest":
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/@artilleryio/int-core/-/int-core-2.2.0.tgz#f60cc40093d4869042a11f3a5680d1aa2937eb96"
-  integrity sha512-cZSSONpntDDwgRQUMe/6BryPiZRNoejT9nRSWsn2EDVqOaOkb4rNcEKuA0PqwGQM8ompBZsLBorf9UmYQ2b3Ow==
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/@artilleryio/int-core/-/int-core-2.2.2.tgz#59f72cae160638142bf39288237a9e165785d0b6"
+  integrity sha512-BYbheLZb7m+DrQt2OTM4uaX6IWbjYf/D9ZVi49WW5QdDOTsnWCjOES46iR0lM2hWKf0qF2ESajkDVm1ithvXOw==
   dependencies:
-    "@artilleryio/int-commons" latest
+    "@artilleryio/int-commons" "2.0.4"
     "@artilleryio/sketches-js" "^2.1.1"
     agentkeepalive "^4.1.0"
     arrivals "^2.1.2"
@@ -1946,10 +1947,10 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@liskhq/lisk-api-client@^6.0.0":
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/@liskhq/lisk-api-client/-/lisk-api-client-6.0.0.tgz#2d0fbf128f4341b394154bd1987a688008c38578"
-  integrity sha512-IdApCNokD8TBbxf3ovuQ9Htd1VkhUkifWVt3bM000VAI7Qg7JxZismLvH3P/fhEIEh4xzdyj1bMP7TdZWF0v7Q==
+"@liskhq/lisk-api-client@^6.0.1":
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/@liskhq/lisk-api-client/-/lisk-api-client-6.0.1.tgz#5b78a48c3c98b047391e07114eb05887709a6f85"
+  integrity sha512-eyyZz0ZAUiGKCX9armNkEpYVmb/yz2JhKL6OygDUtbPO7X7V6Ofu7XH+mBoPdtPEyNhi59idSnJuOclpZ5kWtw==
   dependencies:
     "@liskhq/lisk-codec" "^0.4.0"
     "@liskhq/lisk-cryptography" "^4.0.0"
@@ -1960,11 +1961,11 @@
     zeromq "6.0.0-beta.6"
 
 "@liskhq/lisk-client@^6.0.0":
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/@liskhq/lisk-client/-/lisk-client-6.0.0.tgz#ad107bad739a90d38b91243fc453f0050079eb75"
-  integrity sha512-+z9WozvWRj9l0rKIPYeVyBv9jvaiWhrJPLwgx+paAbypD50PUzFsEXMSOfsHR6hjwfnvfTBbhCD5eGvWRdBA9Q==
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/@liskhq/lisk-client/-/lisk-client-6.0.1.tgz#17e1727ae829b98b1ddca4393785987c015bf7e8"
+  integrity sha512-RdaFHNuCmjVLZbzAqF/BboszZJCpgqOUpb5SKsQOyHBLZA2/x76sZURb0DA0XBRbb1vxDh3GC2F9a3OrWf7sKQ==
   dependencies:
-    "@liskhq/lisk-api-client" "^6.0.0"
+    "@liskhq/lisk-api-client" "^6.0.1"
     "@liskhq/lisk-codec" "^0.4.0"
     "@liskhq/lisk-cryptography" "^4.0.0"
     "@liskhq/lisk-passphrase" "^4.0.0"
@@ -3041,9 +3042,9 @@
     "@types/node" "*"
 
 "@types/node@*", "@types/node@>=10.0.0", "@types/node@>=12.12.47", "@types/node@>=13.7.0":
-  version "20.9.4"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.9.4.tgz#cc8f970e869c26834bdb7ed480b30ede622d74c7"
-  integrity sha512-wmyg8HUhcn6ACjsn8oKYjkN/zUzQeNtMy44weTJSM6p4MMzEOuKbA3OjJ267uPCOW7Xex9dyrNTful8XTQYoDA==
+  version "20.10.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.10.0.tgz#16ddf9c0a72b832ec4fcce35b8249cf149214617"
+  integrity sha512-D0WfRmU9TQ8I9PFx9Yc+EBHw+vSpIub4IDvQivcp26PtPrdMGAq5SDcpXEo/epqa/DXotVpekHiLNTg3iaKXBQ==
   dependencies:
     undici-types "~5.26.4"
 
@@ -3390,9 +3391,9 @@ arrivals@^2.1.2:
     nanotimer "0.3.14"
 
 artillery-engine-playwright@latest:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/artillery-engine-playwright/-/artillery-engine-playwright-1.0.0.tgz#49343f57b9f7e00a12b63ed1d92a0169ecc1244d"
-  integrity sha512-TQo+IgdBSo8NBNuBDU4VLuOIu578o6NrI4I4QMCehVt0j/zS1gDwl6MOrJh9qsS1kwRSELk1W+KbOPPqZpPZ1Q==
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/artillery-engine-playwright/-/artillery-engine-playwright-1.1.0.tgz#d1a7ff1e7b3b6965e8e67e8a615c3723eaa15106"
+  integrity sha512-AZrM5FbETHcBBOgBDCCTOkpSBwT6r0LqqSwoZQx/X/fHvBcxintf/OrIK/VFarUH3cCEu3ZiCqoT6j/Ydy5dnA==
   dependencies:
     "@playwright/browser-chromium" "1.39.0"
     debug "^4.3.2"
@@ -3417,18 +3418,18 @@ artillery-plugin-apdex@latest:
   integrity sha512-hXYHzkTv3RvapSBuO6YBjIvpsKhngrhBDLfiLuR9NoQhPpOO87K0TAKc9Tt73P36eOH1MOA/D5RCg5Bh1sbH8g==
 
 artillery-plugin-ensure@^1.1.5, artillery-plugin-ensure@latest:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/artillery-plugin-ensure/-/artillery-plugin-ensure-1.2.0.tgz#cba8519df97bef8a975d60a7b2a9c0aa8f291da7"
-  integrity sha512-o8P8amtnJDO/H7ZQJ/CIhLqsvw3UJaI4nTV7WSNpamQwb2Y8E4dt9r01dhKddzaBX7lwQvbhX5il9buw2NAwrg==
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/artillery-plugin-ensure/-/artillery-plugin-ensure-1.3.0.tgz#a0fa149f1af81ff5b36d04f753ae1d95fc6e11a3"
+  integrity sha512-+y5Ha5pSsxSwYaeKnn33F8Za7Ol2WcLowzDn8pHiCLwPRPNWmiewDKRffRekqRDpAYHhwgOF0/kWoCwEYjbPAA==
   dependencies:
     chalk "^2.4.2"
     debug "^4.3.3"
     filtrex "^2.2.3"
 
 artillery-plugin-expect@latest:
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/artillery-plugin-expect/-/artillery-plugin-expect-2.3.2.tgz#3492978953fc709b10781af2d220ce12ad796e9a"
-  integrity sha512-LesFFTAZr1ncU0f16h4CCDVXBN9QSrilw8U1uITDV9GXQv2oPPtskFjcLRQTqErTmY+ZqdfQjY55kGcJAD3GbQ==
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/artillery-plugin-expect/-/artillery-plugin-expect-2.3.3.tgz#739b4913b6b8789652d381e5c9732afaaff69435"
+  integrity sha512-vKA3WMjEwEGae29EWoZZjGPWX/hcLc1lRqEl/2xAcQXwDnF7nj2aiqMgeEBlpqr8XqAhbr9teQxblFxlf37yzQ==
   dependencies:
     chalk "^4.1.2"
     debug "^4.3.2"
@@ -3443,9 +3444,9 @@ artillery-plugin-metrics-by-endpoint@latest:
     debug "^4.3.2"
 
 artillery-plugin-publish-metrics@latest:
-  version "2.8.0"
-  resolved "https://registry.yarnpkg.com/artillery-plugin-publish-metrics/-/artillery-plugin-publish-metrics-2.8.0.tgz#093e32dbe8501cd150f90225fbe7213048ea7d63"
-  integrity sha512-EqC3S2fNNJeHmxGMblWSP3Cwc/R7EDTo96o2qO0TPWxztasDEJbQgxUgKXSgAY1dadZAZ5TJDrwPPBlQz3xMEQ==
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/artillery-plugin-publish-metrics/-/artillery-plugin-publish-metrics-2.9.0.tgz#fbb1cbc745066376d94501b4afd203add54e4b27"
+  integrity sha512-IKWoGrBdR5+XQ82W9HYUNuO89f8y4aCDiqFHLVqMYCq4avqS9WsBKr49mCmLV0lhbUWA3qMcVfNZnuTdZLnHew==
   dependencies:
     "@aws-sdk/client-cloudwatch" "^3.370.0"
     "@opentelemetry/api" "^1.4.1"
@@ -4278,9 +4279,9 @@ cli-spinners@^1.0.1:
   integrity sha512-1QL4544moEsDVH9T/l6Cemov/37iv1RtoKf7NJ04A60+4MREXNfx/QvavbH6QoGdsD4N4Mwy49cmaINR/o2mdg==
 
 cli-spinners@^2.2.0:
-  version "2.9.1"
-  resolved "https://registry.yarnpkg.com/cli-spinners/-/cli-spinners-2.9.1.tgz#9c0b9dad69a6d47cbb4333c14319b060ed395a35"
-  integrity sha512-jHgecW0pxkonBJdrKsqxgRX9AcG+u/5k0Q7WPDfi8AogLAdwxEkyYYNWwZ5GvVFoFx2uiY1eNcSK00fh+1+FyQ==
+  version "2.9.2"
+  resolved "https://registry.yarnpkg.com/cli-spinners/-/cli-spinners-2.9.2.tgz#1773a8f4b9c4d6ac31563df53b3fc1d79462fe41"
+  integrity sha512-ywqV+5MmyL4E7ybXgKys4DugZbX0FC6LnwrhjuykIjnK9k8OQacQ7axGKnjDXWNhns0xot3bZI5h55H8yo9cJg==
 
 cli-table3@^0.6.0, cli-table3@^0.6.2:
   version "0.6.3"
@@ -5053,9 +5054,9 @@ ejs@^3.1.8:
     jake "^10.8.5"
 
 electron-to-chromium@^1.4.535:
-  version "1.4.592"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.592.tgz#1ffd49ba3da3da3077ea20014b066c910d50c913"
-  integrity sha512-D3NOkROIlF+d5ixnz7pAf3Lu/AuWpd6AYgI9O67GQXMXTcCP1gJQRotOq35eQy5Sb4hez33XH1YdTtILA7Udww==
+  version "1.4.594"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.594.tgz#f69f207fba80735a44a988df42f3f439115d0515"
+  integrity sha512-xT1HVAu5xFn7bDfkjGQi9dNpMqGchUkebwf1GL7cZN32NSwwlHRPMSDJ1KN6HkS0bWUtndbSQZqvpQftKG2uFQ==
 
 emittery@^0.13.1:
   version "0.13.1"
@@ -7828,9 +7829,9 @@ nice-try@^1.0.4:
   integrity sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==
 
 node-gyp-build@^4.1.0:
-  version "4.7.0"
-  resolved "https://registry.yarnpkg.com/node-gyp-build/-/node-gyp-build-4.7.0.tgz#749f0033590b2a89ac8edb5e0775f95f5ae86d15"
-  integrity sha512-PbZERfeFdrHQOOXiAKOY0VPbykZy90ndPKk0d+CFDegTKmWp1VgOTz2xACVbr1BjCWxrQp68CXtvNsveFhqDJg==
+  version "4.7.1"
+  resolved "https://registry.yarnpkg.com/node-gyp-build/-/node-gyp-build-4.7.1.tgz#cd7d2eb48e594874053150a9418ac85af83ca8f7"
+  integrity sha512-wTSrZ+8lsRRa3I3H8Xr65dLWSgCvY2l4AOnaeKdPA9TB/WYMPaTcrzf3rXvFoVvjKNVnu0CcWSx54qq9GKRUYg==
 
 node-int64@^0.4.0:
   version "0.4.0"
