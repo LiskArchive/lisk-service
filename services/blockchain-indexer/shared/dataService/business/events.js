@@ -125,22 +125,13 @@ const getEvents = async params => {
 
 		const allTxIDs = [transactionID];
 		if (transactionID.length === LENGTH_ID) {
-			allTxIDs.push(
-				EVENT_TOPIC_PREFIX.TX_ID.concat(transactionID),
-				EVENT_TOPIC_PREFIX.CCM_ID.concat(transactionID),
-			);
+			allTxIDs.push(EVENT_TOPIC_PREFIX.TX_ID.concat(transactionID));
 		} else if (
 			transactionID.startsWith(EVENT_TOPIC_PREFIX.TX_ID) &&
 			transactionID.length === EVENT_TOPIC_PREFIX.TX_ID.length + LENGTH_ID
 		) {
 			// Check for the transaction ID both with and without the topic prefix
 			allTxIDs.push(transactionID.slice(EVENT_TOPIC_PREFIX.TX_ID.length));
-		} else if (
-			transactionID.startsWith(EVENT_TOPIC_PREFIX.CCM_ID) &&
-			transactionID.length === EVENT_TOPIC_PREFIX.CCM_ID.length + LENGTH_ID
-		) {
-			// Check for CCM ID both with and without the topic prefix
-			allTxIDs.push(transactionID.slice(EVENT_TOPIC_PREFIX.CCM_ID.length));
 		}
 
 		params.leftOuterJoin.push({
@@ -204,6 +195,26 @@ const getEvents = async params => {
 		const { topic, ...remParams } = params;
 		params = remParams;
 
+		const allTopics = topic.split(',');
+		if (topic.length === LENGTH_ID) {
+			allTopics.push(
+				EVENT_TOPIC_PREFIX.TX_ID.concat(topic),
+				EVENT_TOPIC_PREFIX.CCM_ID.concat(topic),
+			);
+		} else if (
+			topic.startsWith(EVENT_TOPIC_PREFIX.TX_ID) &&
+			topic.length === EVENT_TOPIC_PREFIX.TX_ID.length + LENGTH_ID
+		) {
+			// Check for the transaction ID both with and without the topic prefix
+			allTopics.push(topic.slice(EVENT_TOPIC_PREFIX.TX_ID.length));
+		} else if (
+			topic.startsWith(EVENT_TOPIC_PREFIX.CCM_ID) &&
+			topic.length === EVENT_TOPIC_PREFIX.CCM_ID.length + LENGTH_ID
+		) {
+			// Check for CCM ID both with and without the topic prefix
+			allTopics.push(topic.slice(EVENT_TOPIC_PREFIX.CCM_ID.length));
+		}
+
 		params.leftOuterJoin.push({
 			targetTable: `event_topics as eventTopicsForTopic`,
 			leftColumn: `events.id`,
@@ -212,7 +223,7 @@ const getEvents = async params => {
 
 		params.whereIn.push({
 			property: 'eventTopicsForTopic.topic',
-			values: [topic],
+			values: allTopics,
 		});
 	}
 
