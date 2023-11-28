@@ -320,8 +320,14 @@ const getTableInstance = (tableConfig, knex) => {
 		}
 
 		if (params.leftOuterJoin) {
-			const { targetTable, leftColumn, rightColumn } = params.leftOuterJoin;
-			query.leftOuterJoin(targetTable, leftColumn, rightColumn);
+			params.leftOuterJoin = Array.isArray(params.leftOuterJoin)
+				? params.leftOuterJoin
+				: [params.leftOuterJoin];
+
+			params.leftOuterJoin.forEach(join => {
+				const { targetTable, leftColumn, rightColumn } = join;
+				query.leftOuterJoin(targetTable, leftColumn, rightColumn);
+			});
 		}
 
 		if (params.rightOuterJoin) {

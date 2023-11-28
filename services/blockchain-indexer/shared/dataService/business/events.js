@@ -27,19 +27,16 @@ const config = require('../../../config');
 
 const blocksTableSchema = require('../../database/schema/blocks');
 const eventsTableSchema = require('../../database/schema/events');
-const eventTopicsTableSchema = require('../../database/schema/eventTopics');
 
 const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/param');
 const { parseToJSONCompatObj } = require('../../utils/parser');
 const { LENGTH_ID, EVENT_TOPIC_PREFIX } = require('../../constants');
-const { dropDuplicates } = require('../../utils/array');
 
 const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 
 const getBlocksTable = () => getTableInstance(blocksTableSchema, MYSQL_ENDPOINT);
 const getEventsTable = () => getTableInstance(eventsTableSchema, MYSQL_ENDPOINT);
-const getEventTopicsTable = () => getTableInstance(eventTopicsTableSchema, MYSQL_ENDPOINT);
 
 const eventCache = CacheLRU('events');
 const eventCacheByBlockID = CacheLRU('eventsByBlockID');
@@ -105,7 +102,6 @@ const deleteEventsFromCacheByBlockID = async blockID => eventCacheByBlockID.dele
 const getEvents = async params => {
 	const blocksTable = await getBlocksTable();
 	const eventsTable = await getEventsTable();
-	const eventTopicsTable = await getEventTopicsTable();
 
 	const events = {
 		data: [],
@@ -120,27 +116,56 @@ const getEvents = async params => {
 		params = normalizeRangeParam(params, 'timestamp');
 	}
 
+	params.leftOuterJoin = [];
+	params.whereIn = [];
+
 	if (params.transactionID) {
 		const { transactionID, ...remParams } = params;
 		params = remParams;
 
-		// Special handling of transaction topic prefix is unnecessary here because of the handling for topic param below
-		if (!params.topic) {
-			params.topic = transactionID;
-		} else {
-			params.topic = `${params.topic},${transactionID}`;
+		const allTxIDs = [transactionID];
+		if (transactionID.length === LENGTH_ID) {
+			allTxIDs.push(EVENT_TOPIC_PREFIX.TX_ID.concat(transactionID), EVENT_TOPIC_PREFIX.CCM_ID.concat(transactionID));
+		} else if (
+			transactionID.startsWith(EVENT_TOPIC_PREFIX.TX_ID) &&
+			transactionID.length === EVENT_TOPIC_PREFIX.TX_ID.length + LENGTH_ID
+		) {
+			// Check for the transaction ID both with and without the topic prefix
+			allTxIDs.push(transactionID.slice(EVENT_TOPIC_PREFIX.TX_ID.length));
+		} else if (
+			transactionID.startsWith(EVENT_TOPIC_PREFIX.CCM_ID) &&
+			transactionID.length === EVENT_TOPIC_PREFIX.CCM_ID.length + LENGTH_ID
+		) {
+			// Check for CCM ID both with and without the topic prefix
+			allTxIDs.push(transactionID.slice(EVENT_TOPIC_PREFIX.CCM_ID.length));
 		}
+
+		params.leftOuterJoin.push({
+			targetTable: `event_topics as eventTopicsForTxID`,
+			leftColumn: `events.id`,
+			rightColumn: `eventTopicsForTxID.eventID`,
+		});
+
+		params.whereIn.push({
+			property: 'eventTopicsForTxID.topic',
+			values: allTxIDs,
+		});
 	}
 
 	if (params.senderAddress) {
 		const { senderAddress, ...remParams } = params;
 		params = remParams;
 
-		if (!params.topic) {
-			params.topic = senderAddress;
-		} else {
-			params.topic = `${params.topic},${senderAddress}`;
-		}
+		params.leftOuterJoin.push({
+			targetTable: `event_topics as eventTopicsForSenderAddress`,
+			leftColumn: `events.id`,
+			rightColumn: `eventTopicsForSenderAddress.eventID`,
+		});
+
+		params.whereIn.push({
+			property: 'eventTopicsForSenderAddress.topic',
+			values: [senderAddress],
+		});
 	}
 
 	if ('blockID' in params) {
@@ -176,40 +201,20 @@ const getEvents = async params => {
 		const { topic, ...remParams } = params;
 		params = remParams;
 
-		const topics = topic.split(',');
-		const numUniqueTopics = dropDuplicates(topics).length;
-		topics.forEach(t => {
-			if (t.length === LENGTH_ID) {
-				topics.push(EVENT_TOPIC_PREFIX.TX_ID.concat(t), EVENT_TOPIC_PREFIX.CCM_ID.concat(t));
-			} else if (
-				t.startsWith(EVENT_TOPIC_PREFIX.TX_ID) &&
-				t.length === EVENT_TOPIC_PREFIX.TX_ID.length + LENGTH_ID
-			) {
-				// Check for the transaction ID both with and without the topic prefix
-				topics.push(t.slice(EVENT_TOPIC_PREFIX.TX_ID.length));
-			} else if (
-				t.startsWith(EVENT_TOPIC_PREFIX.CCM_ID) &&
-				t.length === EVENT_TOPIC_PREFIX.CCM_ID.length + LENGTH_ID
-			) {
-				// Check for CCM ID both with and without the topic prefix
-				topics.push(t.slice(EVENT_TOPIC_PREFIX.CCM_ID.length));
-			}
+		params.leftOuterJoin.push({
+			targetTable: `event_topics as eventTopicsForTopic`,
+			leftColumn: `events.id`,
+			rightColumn: `eventTopicsForTopic.eventID`,
 		});
 
-		const response = await eventTopicsTable.find(
-			{
-				whereIn: { property: 'topic', values: topics },
-				groupBy: 'eventID',
-				// Must be the numUniqueTopics from params.topic instead of the length from the updated topics list
-				// This is to ensure that the DB response returns correct number of eventIDs
-				havingRaw: `COUNT(DISTINCT topic) = ${numUniqueTopics}`,
-			},
-			['eventID'],
-		);
-		const eventIDs = response.map(entry => entry.eventID);
-		params.whereIn = { property: 'id', values: eventIDs };
+		params.whereIn.push({
+			property: 'eventTopicsForTopic.topic',
+			values: [topic],
+		});
 	}
 
+	const { topic, ...paramsWithoutTopic } = params;
+	params = paramsWithoutTopic;
 	const eventsInfo = await eventsTable.find(params, ['eventStr', 'height', 'index']);
 
 	events.data = await BluebirdPromise.map(
