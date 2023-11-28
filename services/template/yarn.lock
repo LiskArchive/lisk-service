@@ -1053,9 +1053,9 @@ leven@2.1.0:
   resolved "https://registry.yarnpkg.com/leven/-/leven-2.1.0.tgz#c2e7a9f772094dee9d34202ae8acce4687875580"
   integrity sha512-nvVPLpIHUxCUoRLrFqTgSxXJ614d8AgQoWl7zPe/2VadE8+1dpU3LBhowRuBAcuwruWtOdD8oYC9jDNJjXDPyA==
 
-"lisk-service-framework@https://github.com/LiskHQ/lisk-service/raw/68b71e08b61b49a40434a1cf1f1d5a9cdc9053a3/framework/dist/lisk-service-framework-1.6.9.tgz":
-  version "1.6.9"
-  resolved "https://github.com/LiskHQ/lisk-service/raw/68b71e08b61b49a40434a1cf1f1d5a9cdc9053a3/framework/dist/lisk-service-framework-1.6.9.tgz#47db5a32c2747052b4f697e8f2f2ec005842b6cb"
+"lisk-service-framework@https://github.com/LiskHQ/lisk-service/raw/21c265fab4cfde3c21b703453a55159b5d0e960a/framework/dist/lisk-service-framework-1.6.10.tgz":
+  version "1.6.10"
+  resolved "https://github.com/LiskHQ/lisk-service/raw/21c265fab4cfde3c21b703453a55159b5d0e960a/framework/dist/lisk-service-framework-1.6.10.tgz#7e1516ecc6c5c185a742396231cbac5a83482919"
   dependencies:
     "@keyv/redis" "^2.1.2"
     "@log4js-node/gelf" "github:MichalTuleja/log4js-node-gelf#89d9933"
