@@ -59,7 +59,9 @@ const checkIsClientAlive = async () =>
 		if (
 			config.isUseLiskIPCClient ||
 			Date.now() - lastClientAliveTime < CLIENT_ALIVE_ASSUMPTION_TIME ||
-			Date.now() - heartbeatCheckBeginTime < HEARTBEAT_ACK_MAX_WAIT_TIME
+			// The below condition ensures that no other pings are sent when there's already a ping sent
+			// after the CLIENT_ALIVE_ASSUMPTION_TIME is exceeded
+			Date.now() - heartbeatCheckBeginTime < HEARTBEAT_ACK_MAX_WAIT_TIME * 2
 		) {
 			return resolve(clientCache._channel && clientCache._channel.isAlive);
 		}
@@ -69,13 +71,14 @@ const checkIsClientAlive = async () =>
 
 		const wsInstance = clientCache._channel._ws;
 		wsInstance.on('pong', boundPongListener);
+		isClientAlive = false;
 		wsInstance.ping(() => {});
 
 		// eslint-disable-next-line consistent-return
 		setTimeout(() => {
 			wsInstance.removeListener('pong', boundPongListener);
 			if (!isClientAlive) return resolve(false);
-		}, RETRY_INTERVAL);
+		}, HEARTBEAT_ACK_MAX_WAIT_TIME);
 	}).catch(() => false);
 
 // eslint-disable-next-line consistent-return
