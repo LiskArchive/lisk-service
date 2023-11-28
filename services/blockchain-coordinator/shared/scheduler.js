@@ -77,31 +77,35 @@ const waitForJobCountToFallBelowThreshold = async () => {
 	/* eslint-enable no-constant-condition */
 };
 
-const waitForGenesisBlockIndexing = resolve =>
-	new Promise(res => {
+const waitForGenesisBlockIndexing = (resolve, reject) =>
+	new Promise((res, rej) => {
 		if (!resolve) resolve = res;
+		if (!reject) reject = rej;
+
 		if (intervalID) {
 			clearInterval(intervalID);
 			intervalID = null;
 		}
 
 		return isGenesisBlockIndexed().then(async isIndexed => {
-			const jobCount = await getLiveIndexingJobCount();
-
 			if (isIndexed) {
 				logger.info('Genesis block is indexed.');
 				return resolve(true);
 			}
 
-			if (jobCount <= 1) {
+			const jobCount = await getLiveIndexingJobCount();
+			if (jobCount >= 1) {
 				logger.info(
 					`Genesis block indexing is still in progress. Waiting for ${REFRESH_INTERVAL}ms to re-check the genesis block indexing status.`,
 				);
-				intervalID = setInterval(waitForGenesisBlockIndexing.bind(null, resolve), REFRESH_INTERVAL);
+				intervalID = setInterval(
+					waitForGenesisBlockIndexing.bind(null, resolve, reject),
+					REFRESH_INTERVAL,
+				);
 				return false;
 			}
 
-			throw new Error('Genesis block indexing failed.');
+			return reject(new Error('Genesis block indexing failed.'));
 		});
 	});
 
