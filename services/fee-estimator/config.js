@@ -35,21 +35,17 @@ config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 10; // in s
 config.endpoints.cache = process.env.SERVICE_FEE_ESTIMATOR_CACHE || 'redis://127.0.0.1:6379/1';
 
 config.feeEstimates = {
-	quickAlgorithmEnabled: Boolean(
-		String(process.env.ENABLE_FEE_ESTIMATOR_QUICK).toLowerCase() !== 'false',
-	),
-	fullAlgorithmEnabled: Boolean(
-		String(process.env.ENABLE_FEE_ESTIMATOR_FULL).toLowerCase() === 'true',
-	),
-	coldStartBatchSize: Number(process.env.FEE_EST_COLD_START_BATCH_SIZE || 1),
-	defaultStartBlockHeight: Number(process.env.FEE_EST_DEFAULT_START_BLOCK_HEIGHT || 1),
+	quickAlgorithmEnabled: String(process.env.ENABLE_FEE_ESTIMATOR_QUICK).toLowerCase() !== 'false',
+	fullAlgorithmEnabled: String(process.env.ENABLE_FEE_ESTIMATOR_FULL).toLowerCase() === 'true',
+	coldStartBatchSize: Number(process.env.FEE_EST_COLD_START_BATCH_SIZE) || 1,
+	defaultStartBlockHeight: Number(process.env.FEE_EST_DEFAULT_START_BLOCK_HEIGHT) || 1,
 	medEstLowerPercentile: 25,
 	medEstUpperPercentile: 75,
 	highEstLowerPercentile: 80,
 	highEstUpperPercentile: 100,
-	emaBatchSize: Number(process.env.FEE_EST_EMA_BATCH_SIZE || 20),
-	emaDecayRate: Number(process.env.FEE_EST_EMA_DECAY_RATE || 0.5),
-	wavgDecayPercentage: Number(process.env.FEE_EST_WAVG_DECAY_PERCENTAGE || 10),
+	emaBatchSize: Number(process.env.FEE_EST_EMA_BATCH_SIZE) || 20,
+	emaDecayRate: Number(process.env.FEE_EST_EMA_DECAY_RATE) || 0.5,
+	wavgDecayPercentage: Number(process.env.FEE_EST_WAVG_DECAY_PERCENTAGE) || 10,
 };
 
 config.cacheKeys = Object.freeze({

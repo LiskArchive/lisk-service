@@ -96,37 +96,41 @@ config.cache = {
 	isBlockCachingEnabled: Boolean(
 		String(process.env.ENABLE_BLOCK_CACHING).toLowerCase() !== 'false',
 	), // Enabled by default
-	expiryInHours: process.env.EXPIRY_IN_HOURS || 12,
+	expiryInHours: Number(process.env.EXPIRY_IN_HOURS) || 12,
 	dbDataDir: 'data/db_cache',
 };
 
 config.job = {
 	// Interval takes priority over schedule and must be greater than 0 to be valid
 	cacheCleanup: {
-		interval: process.env.JOB_INTERVAL_CACHE_CLEANUP || 0,
+		interval: Number(process.env.JOB_INTERVAL_CACHE_CLEANUP) || 0,
 		schedule: process.env.JOB_SCHEDULE_CACHE_CLEANUP || '0 */12 * * *',
 	},
 	refreshPeers: {
-		interval: process.env.JOB_INTERVAL_REFRESH_PEERS || 60,
+		interval: Number(process.env.JOB_INTERVAL_REFRESH_PEERS) || 60,
 		schedule: process.env.JOB_SCHEDULE_REFRESH_PEERS || '',
 	},
 };
 
-// Every n milliseconds, verify if client connection is alive
-config.clientConnVerifyInterval = Number(
-	process.env.CLIENT_CONNECTION_VERIFY_INTERVAL || 30 * 1000,
-); // in millisecs
-
 config.apiClient = {
-	aliveAssumptionTime: Number(process.env.CLIENT_ALIVE_ASSUMPTION_TIME || 5 * 1000), // in millisecs
+	heartbeatAckMaxWaitTime: 50, // in millisecs
+	aliveAssumptionTime: Number(process.env.CLIENT_ALIVE_ASSUMPTION_TIME) || 5 * 1000, // in millisecs
 	instantiation: {
-		maxWaitTime: Number(process.env.CLIENT_INSTANTIATION_MAX_WAIT_TIME || 100), // in millisecs
-		retryInterval: Number(process.env.CLIENT_INSTANTIATION_RETRY_INTERVAL || 1), // in millisecs
+		maxWaitTime: Number(process.env.CLIENT_INSTANTIATION_MAX_WAIT_TIME) || 100, // in millisecs
+		retryInterval: Number(process.env.CLIENT_INSTANTIATION_RETRY_INTERVAL) || 1, // in millisecs
 	},
 	request: {
-		maxRetries: Number(process.env.ENDPOINT_INVOKE_MAX_RETRIES || 5),
-		retryDelay: Number(process.env.ENDPOINT_INVOKE_RETRY_DELAY || 10), // in millisecs
+		maxRetries: Number(process.env.ENDPOINT_INVOKE_MAX_RETRIES) || 5,
+		retryDelay: Number(process.env.ENDPOINT_INVOKE_RETRY_DELAY) || 10, // in millisecs
 	},
 };
+
+// Every n milliseconds, verify if client connection is alive
+config.clientConnVerifyInterval =
+	Number(process.env.CLIENT_CONNECTION_VERIFY_INTERVAL) || 30 * 1000; // in millisecs
+
+// Backdoor config to restart the connector if the stall issue pops up - disabled by default
+const exitDelay = Number(process.env.CONNECTOR_EXIT_DELAY_IN_HOURS); // in hours
+config.appExitDelay = (Number.isNaN(exitDelay) ? 0 : exitDelay) * (60 * 60 * 1000);
 
 module.exports = config;

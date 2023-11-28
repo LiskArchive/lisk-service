@@ -431,6 +431,14 @@ By default, it is set to `5`.
 By default, it is set to `10`.
 | 10
 
+| `CONNECTOR_EXIT_DELAY_IN_HOURS`
+| number
+| Delay (in hours) after which the blockchain-connector microservice exits. The service should restart automatically if deployed using Docker or PM2.
+To be removed eventually.
+To enable it, set it higher than `0`.
+By default, it is set to `0`.
+| 0
+
 | `JOB_INTERVAL_CACHE_CLEANUP`
 | number
 | Job run interval to clean up block cache.
