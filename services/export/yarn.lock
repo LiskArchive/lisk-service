@@ -3024,9 +3024,9 @@ lines-and-columns@^1.1.6:
     socket.io-client "^4.0.1"
     stack-trace "0.0.10"
 
-"lisk-service-framework@https://github.com/LiskHQ/lisk-service/raw/3c76f62b7cad9b83ee07611e604da9d7ca01606d/framework/dist/lisk-service-framework-1.6.10.tgz":
+"lisk-service-framework@https://github.com/LiskHQ/lisk-service/raw/bea05ce084df5446738846964b4d6c30b5088b69/framework/dist/lisk-service-framework-1.6.10.tgz":
   version "1.6.10"
-  resolved "https://github.com/LiskHQ/lisk-service/raw/3c76f62b7cad9b83ee07611e604da9d7ca01606d/framework/dist/lisk-service-framework-1.6.10.tgz#cbb2ecb6b0359b33e57975f2464ba49051a359a3"
+  resolved "https://github.com/LiskHQ/lisk-service/raw/bea05ce084df5446738846964b4d6c30b5088b69/framework/dist/lisk-service-framework-1.6.10.tgz#97bf69581c35c6c3e9318ebb54853b890543f7a1"
   dependencies:
     "@keyv/redis" "^2.1.2"
     "@log4js-node/gelf" "github:MichalTuleja/log4js-node-gelf#89d9933"
