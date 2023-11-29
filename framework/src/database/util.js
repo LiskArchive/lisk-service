@@ -331,13 +331,23 @@ const getTableInstance = (tableConfig, knex) => {
 		}
 
 		if (params.rightOuterJoin) {
-			const { targetTable, leftColumn, rightColumn } = params.rightOuterJoin;
-			query.rightOuterJoin(targetTable, leftColumn, rightColumn);
+			params.rightOuterJoin = Array.isArray(params.rightOuterJoin)
+				? params.rightOuterJoin
+				: [params.rightOuterJoin];
+
+			params.rightOuterJoin.forEach(join => {
+				const { targetTable, leftColumn, rightColumn } = join;
+				query.rightOuterJoin(targetTable, leftColumn, rightColumn);
+			});
 		}
 
 		if (params.innerJoin) {
-			const { targetTable, leftColumn, rightColumn } = params.innerJoin;
-			query.innerJoin(targetTable, leftColumn, rightColumn);
+			params.innerJoin = Array.isArray(params.innerJoin) ? params.innerJoin : [params.innerJoin];
+
+			params.innerJoin.forEach(join => {
+				const { targetTable, leftColumn, rightColumn } = join;
+				query.innerJoin(targetTable, leftColumn, rightColumn);
+			});
 		}
 
 		if (params.search) {
