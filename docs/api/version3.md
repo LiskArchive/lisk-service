@@ -758,7 +758,7 @@ _Supports pagination._
 | --------- | ---- | ---------- | ------- | ------- |
 | transactionID | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  |
 | senderAddress | String | `/^lsk[a-hjkm-z2-9]{38}$/` | *(empty)* |  |
-| topic | String | `/^\b(?:(?:04\|05)?[0-9a-fA-F]{2,64}\|lsk[a-hjkm-z2-9]{38})(?:,(?:(?:04\|05)?[0-9a-fA-F]{2,64}\|lsk[a-hjkm-z2-9]{38}))*\b$/` | *(empty)* | Can be expressed as a CSV. |
+| topic | String | `/^\b(?:(?:04\|05)?[0-9a-fA-F]{64}\|lsk[a-hjkm-z2-9]{38})(?:,(?:(?:04\|05)?[0-9a-fA-F]{64}\|lsk[a-hjkm-z2-9]{38}))*\b$/` | *(empty)* | Can be expressed as a CSV. For performance reasons, we do not allow users to query default topics such as `03`. |
 | blockID | String | `/^\b(?:[A-Fa-f0-9]){64}\b$/` | *(empty)* |  |
 | height | String | `/^(?:(?:\d+)\|(?::(?:\d+))\|(?:(?:\d+):(?:\d+)?))$/` | *(empty)* | Query by height or a height range. Can be expressed as an interval i.e. `1:20` or `1:` or `:20`. Specified values are inclusive. |
 | timestamp | String | `/^(?:(?:\d+)\|(?::(?:\d+))\|(?:(?:\d+):(?:\d+)?))$/` | *(empty)* | Query by timestamp or a timestamp range. Can be expressed as an interval i.e. `1000000:2000000` or `1000000:` or `:2000000`. Specified values are inclusive. |

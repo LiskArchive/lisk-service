@@ -2,7 +2,7 @@
 	"topic": {
 		"name": "topic",
 		"in": "query",
-		"description": "Event topic to query (can be expressed as CSV).",
+		"description": "Event topic to query (can be expressed as CSV). For performance reasons, we do not allow users to query default topics such as `03`.",
 		"type": "string",
 		"minLength": 1
 	},

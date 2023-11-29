@@ -236,7 +236,7 @@ const scheduleMissingBlocksIndexing = async () => {
 	const jobCount = await getLiveIndexingJobCount();
 	if (jobCount > config.job.indexMissingBlocks.skipThreshold) {
 		logger.info(
-			`Skipping missing blocks job run. ${jobCount} indexing jobs (current threshold: ${config.job.indexMissingBlocks.skipThreshold}) already in the queue.`,
+			`Skipping missing blocks job run. ${jobCount} indexing jobs already in the queue. Current threshold set at: ${config.job.indexMissingBlocks.skipThreshold}.`,
 		);
 		return;
 	}
