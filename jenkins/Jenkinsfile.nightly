@@ -80,8 +80,8 @@ pipeline {
 					nvm(readFile('.nvmrc').trim()) {
 						sh '''
 							make build
-							make down
-							make up
+							docker-compose -f jenkins/docker-compose.nightly.yml down --volumes --remove-orphans
+							docker-compose -f jenkins/docker-compose.nightly.yml --env-file .env up -d
 						'''
 					}
 				}
@@ -244,7 +244,7 @@ pipeline {
 				dir('lisk-service') {
 					nvm(readFile('.nvmrc').trim()) {
 						sh '''
-							make down
+							docker-compose -f jenkins/docker-compose.nightly.yml down --volumes --remove-orphans
 							pm2 stop jenkins/lisk-core/pm2.config.json
 							pm2 delete jenkins/lisk-core/pm2.config.json
 							pm2 flush

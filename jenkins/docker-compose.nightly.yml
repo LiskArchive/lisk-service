@@ -2,8 +2,10 @@ version: '3.3'
 services:
   nats:
     image: nats:2.6-alpine
+    ports:
+      - '4222:4222'
     volumes:
-      - ./docker/nats-server.conf:/etc/nats/nats-server.conf:ro
+      - ../docker/nats-server.conf:/etc/nats/nats-server.conf:ro
     command: nats-server --config /etc/nats/nats-server.conf
     networks:
       - services_network
@@ -14,7 +16,7 @@ services:
   redis_persistent:
     image: redis:5-alpine
     volumes:
-      - ./docker/redis.persistent.conf:/etc/redis/redis.conf:ro
+      - ../docker/redis.persistent.conf:/etc/redis/redis.conf:ro
       - redis-data:/data
     networks:
       - services_network
@@ -26,7 +28,7 @@ services:
   redis_volatile:
     image: redis:5-alpine
     volumes:
-      - ./docker/redis.volatile.conf:/etc/redis/redis.conf:ro
+      - ../docker/redis.volatile.conf:/etc/redis/redis.conf:ro
     networks:
       - services_network
     restart: always
@@ -39,10 +41,10 @@ services:
     platform: linux/amd64
     command: mysqld --max_connections=500
     volumes:
-      - ./docker/mysql/primary/conf/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
+      - ../docker/mysql/primary/conf/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
       - mysql-primary-data:/var/lib/mysql
-      - ./docker/mysql/primary/init:/docker-entrypoint-initdb.d
-      - ./docker/mysql/mysql-healthcheck.sh:/healthcheck.sh
+      - ../docker/mysql/primary/init:/docker-entrypoint-initdb.d
+      - ../docker/mysql/mysql-healthcheck.sh:/healthcheck.sh
     restart: always
     networks:
       - services_network
@@ -62,8 +64,8 @@ services:
     platform: linux/amd64
     command: mysqld --max_connections=500
     volumes:
-      - ./docker/mysql/read/conf/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
-      - ./docker/mysql/read/init:/docker-entrypoint-initdb.d
+      - ../docker/mysql/read/conf/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
+      - ../docker/mysql/read/init:/docker-entrypoint-initdb.d
     restart: always
     expose:
       - '3306'
@@ -87,7 +89,7 @@ services:
       mysql-read-replica:
         condition: service_healthy
     volumes:
-      - ./docker/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ../docker/nginx.conf:/etc/nginx/nginx.conf:ro
     networks:
       - services_network
     healthcheck:
