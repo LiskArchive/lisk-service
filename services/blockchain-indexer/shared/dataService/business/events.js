@@ -27,6 +27,7 @@ const config = require('../../../config');
 
 const blocksTableSchema = require('../../database/schema/blocks');
 const eventsTableSchema = require('../../database/schema/events');
+const eventTopicsTableSchema = require('../../database/schema/eventTopics');
 
 const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/param');
@@ -135,8 +136,8 @@ const getEvents = async params => {
 		}
 
 		params.leftOuterJoin.push({
-			targetTable: `event_topics as eventTopicsForTxID`,
-			leftColumn: `events.id`,
+			targetTable: `${eventTopicsTableSchema.tableName} as eventTopicsForTxID`,
+			leftColumn: `${eventsTableSchema.tableName}.id`,
 			rightColumn: `eventTopicsForTxID.eventID`,
 		});
 
@@ -151,8 +152,8 @@ const getEvents = async params => {
 		params = remParams;
 
 		params.leftOuterJoin.push({
-			targetTable: `event_topics as eventTopicsForSenderAddress`,
-			leftColumn: `events.id`,
+			targetTable: `${eventTopicsTableSchema.tableName} as eventTopicsForSenderAddress`,
+			leftColumn: `${eventsTableSchema.tableName}.id`,
 			rightColumn: `eventTopicsForSenderAddress.eventID`,
 		});
 
@@ -216,8 +217,8 @@ const getEvents = async params => {
 		}
 
 		params.leftOuterJoin.push({
-			targetTable: `event_topics as eventTopicsForTopic`,
-			leftColumn: `events.id`,
+			targetTable: `${eventTopicsTableSchema.tableName} as eventTopicsForTopic`,
+			leftColumn: `${eventsTableSchema.tableName}.id`,
 			rightColumn: `eventTopicsForTopic.eventID`,
 		});
 
