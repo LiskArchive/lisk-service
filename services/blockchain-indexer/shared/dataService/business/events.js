@@ -196,25 +196,24 @@ const getEvents = async params => {
 		const { topic, ...remParams } = params;
 		params = remParams;
 
-		const allTopics = topic.split(',');
-		if (topic.length === LENGTH_ID) {
-			allTopics.push(
-				EVENT_TOPIC_PREFIX.TX_ID.concat(topic),
-				EVENT_TOPIC_PREFIX.CCM_ID.concat(topic),
-			);
-		} else if (
-			topic.startsWith(EVENT_TOPIC_PREFIX.TX_ID) &&
-			topic.length === EVENT_TOPIC_PREFIX.TX_ID.length + LENGTH_ID
-		) {
-			// Check for the transaction ID both with and without the topic prefix
-			allTopics.push(topic.slice(EVENT_TOPIC_PREFIX.TX_ID.length));
-		} else if (
-			topic.startsWith(EVENT_TOPIC_PREFIX.CCM_ID) &&
-			topic.length === EVENT_TOPIC_PREFIX.CCM_ID.length + LENGTH_ID
-		) {
-			// Check for CCM ID both with and without the topic prefix
-			allTopics.push(topic.slice(EVENT_TOPIC_PREFIX.CCM_ID.length));
-		}
+		const topics = topic.split(',');
+		topics.forEach(t => {
+			if (t.length === LENGTH_ID) {
+				topics.push(EVENT_TOPIC_PREFIX.TX_ID.concat(t), EVENT_TOPIC_PREFIX.CCM_ID.concat(t));
+			} else if (
+				t.startsWith(EVENT_TOPIC_PREFIX.TX_ID) &&
+				t.length === EVENT_TOPIC_PREFIX.TX_ID.length + LENGTH_ID
+			) {
+				// Check for the transaction ID both with and without the topic prefix
+				topics.push(t.slice(EVENT_TOPIC_PREFIX.TX_ID.length));
+			} else if (
+				t.startsWith(EVENT_TOPIC_PREFIX.CCM_ID) &&
+				t.length === EVENT_TOPIC_PREFIX.CCM_ID.length + LENGTH_ID
+			) {
+				// Check for CCM ID both with and without the topic prefix
+				topics.push(t.slice(EVENT_TOPIC_PREFIX.CCM_ID.length));
+			}
+		});
 
 		params.leftOuterJoin.push({
 			targetTable: `${eventTopicsTableSchema.tableName} as eventTopicsForTopic`,
@@ -224,7 +223,7 @@ const getEvents = async params => {
 
 		params.whereIn.push({
 			property: 'eventTopicsForTopic.topic',
-			values: allTopics,
+			values: topics,
 		});
 	}
 
@@ -232,7 +231,6 @@ const getEvents = async params => {
 	params = paramsWithoutTopic;
 	const eventsInfo = await eventsTable.find(params, ['eventStr', 'height', 'index']);
 
-	const blocksCache = {};
 	events.data = await BluebirdPromise.map(
 		eventsInfo,
 		async ({ eventStr, height, index }) => {
@@ -245,10 +243,10 @@ const getEvents = async params => {
 				event = eventsFromCache.find(entry => entry.index === index);
 			}
 
-			if (!blocksCache[height]) {
-				blocksCache[height] = await blocksTable.find({ height, limit: 1 }, ['id', 'timestamp']);
-			}
-			const [{ id, timestamp } = {}] = blocksCache[height];
+			const [{ id, timestamp } = {}] = await blocksTable.find({ height, limit: 1 }, [
+				'id',
+				'timestamp',
+			]);
 
 			return parseToJSONCompatObj({
 				...event,
