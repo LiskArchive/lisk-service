@@ -320,18 +320,34 @@ const getTableInstance = (tableConfig, knex) => {
 		}
 
 		if (params.leftOuterJoin) {
-			const { targetTable, leftColumn, rightColumn } = params.leftOuterJoin;
-			query.leftOuterJoin(targetTable, leftColumn, rightColumn);
+			params.leftOuterJoin = Array.isArray(params.leftOuterJoin)
+				? params.leftOuterJoin
+				: [params.leftOuterJoin];
+
+			params.leftOuterJoin.forEach(join => {
+				const { targetTable, leftColumn, rightColumn } = join;
+				query.leftOuterJoin(targetTable, leftColumn, rightColumn);
+			});
 		}
 
 		if (params.rightOuterJoin) {
-			const { targetTable, leftColumn, rightColumn } = params.rightOuterJoin;
-			query.rightOuterJoin(targetTable, leftColumn, rightColumn);
+			params.rightOuterJoin = Array.isArray(params.rightOuterJoin)
+				? params.rightOuterJoin
+				: [params.rightOuterJoin];
+
+			params.rightOuterJoin.forEach(join => {
+				const { targetTable, leftColumn, rightColumn } = join;
+				query.rightOuterJoin(targetTable, leftColumn, rightColumn);
+			});
 		}
 
 		if (params.innerJoin) {
-			const { targetTable, leftColumn, rightColumn } = params.innerJoin;
-			query.innerJoin(targetTable, leftColumn, rightColumn);
+			params.innerJoin = Array.isArray(params.innerJoin) ? params.innerJoin : [params.innerJoin];
+
+			params.innerJoin.forEach(join => {
+				const { targetTable, leftColumn, rightColumn } = join;
+				query.innerJoin(targetTable, leftColumn, rightColumn);
+			});
 		}
 
 		if (params.search) {

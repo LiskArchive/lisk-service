@@ -265,10 +265,108 @@ describe('getEvents', () => {
 			offset: 0,
 		};
 
+		const paramsWithTopicTxIDPadded = {
+			...params,
+			transactionID: '04c8ee3933cc841287d834f74f278ac12f145f320d0593a612e11b67b4a58cd17b',
+		};
+
 		const { getEvents } = require(mockEventsFilePath);
 		const result = await getEvents(params);
+		const resultWithTxIDPadded = await getEvents(paramsWithTopicTxIDPadded);
 
 		expect(result).toEqual(getEventsResult);
+		expect(resultWithTxIDPadded).toEqual(getEventsResult);
+	});
+
+	it('should retrieve events successfully with transactions ID passed as topic', async () => {
+		const blockID = '793acee22acea7f4f474e2f8e9e24cb9220da2fc2405026214b5d72a152cb55d';
+
+		jest.mock('../../../../../config', () => {
+			const actual = jest.requireActual('../../../../../config');
+			return {
+				...actual,
+				db: {
+					...actual.db,
+					isPersistEvents: true,
+				},
+			};
+		});
+
+		jest.mock('lisk-service-framework', () => {
+			const actual = jest.requireActual('lisk-service-framework');
+			return {
+				...actual,
+				DB: {
+					MySQL: {
+						getTableInstance: jest.fn(schema => {
+							if (schema.tableName === mockBlocksTableSchema.tableName) {
+								return {
+									find: jest.fn(queryParams => {
+										if (queryParams.id) {
+											expect(queryParams.id).toBe(blockID);
+										}
+
+										return [
+											{
+												blockID,
+												height: 123,
+											},
+										];
+									}),
+								};
+							}
+							if (schema.tableName === mockEventsTableSchema.tableName) {
+								return {
+									find: jest.fn(() => mockEventsForEventTopics),
+									count: jest.fn(() => 10),
+								};
+							}
+							if (schema.tableName === mockEventTopicsTableSchema.tableName) {
+								return {
+									find: jest.fn(queryParams => {
+										expect(queryParams).toEqual(mockEventTopicsQueryParams);
+										return mockEventsForEventTopics;
+									}),
+									count: jest.fn(() => 10),
+								};
+							}
+							throw new Error();
+						}),
+					},
+				},
+			};
+		});
+
+		const params = {
+			blockID,
+			senderAddress: 'lskw68y3kyus7ota9mykr726aby44mw574m8dkngu',
+			topic: 'c8ee3933cc841287d834f74f278ac12f145f320d0593a612e11b67b4a58cd17b',
+			timestamp: '1:1000000000',
+			height: '1:1000',
+			sort: 'timestamp:desc',
+			order: 'index:asc',
+			limit: 10,
+			offset: 0,
+		};
+
+		const paramsWithTopicTxIDPadded = {
+			...params,
+			topic: '04c8ee3933cc841287d834f74f278ac12f145f320d0593a612e11b67b4a58cd17b',
+		};
+
+		const paramsWithTopicTxIDPaddedWithCCMID = {
+			...params,
+			topic: '05c8ee3933cc841287d834f74f278ac12f145f320d0593a612e11b67b4a58cd17b',
+		};
+
+		const { getEvents } = require(mockEventsFilePath);
+		const result = await getEvents(params);
+		const resultWithTxIDPadded = await getEvents(paramsWithTopicTxIDPadded);
+		const resultWithTxIDPaddedWithCCMID = await getEvents(paramsWithTopicTxIDPaddedWithCCMID);
+
+		expect(result).toEqual(getEventsResult);
+		expect(resultWithTxIDPadded).toEqual(getEventsResult);
+		expect(resultWithTxIDPaddedWithCCMID).toEqual(getEventsResult);
 	});
 
 	it('should throw a NotFoundException when an invalid blockID is provided', async () => {

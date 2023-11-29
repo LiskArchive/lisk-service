@@ -61,6 +61,11 @@ config.queue = {
 		attempts: 5,
 		timeout: 5 * 60 * 1000, // millisecs
 		removeOnComplete: true,
+		removeOnFail: {
+			age: 1 * 60 * 60, // 1 hr in secs
+			count: 100000,
+		},
+		stackTraceLimit: 0,
 	},
 
 	// Inter-microservice message queues
@@ -73,7 +78,7 @@ config.job = {
 	// Interval takes priority over schedule and must be greater than 0 to be valid
 	indexMissingBlocks: {
 		interval: Number(process.env.JOB_INTERVAL_INDEX_MISSING_BLOCKS) || 0,
-		schedule: process.env.JOB_SCHEDULE_INDEX_MISSING_BLOCKS || '*/5 * * * *',
+		schedule: process.env.JOB_SCHEDULE_INDEX_MISSING_BLOCKS || '* * * * *',
 		skipThreshold: Number(process.env.INDEX_MISSING_BLOCKS_SKIP_THRESHOLD) || 1000,
 		maxBlocksToSchedule: Number(process.env.INDEX_MISSING_BLOCKS_MAX_SCHEDULE) || 25000,
 	},

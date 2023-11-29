@@ -106,8 +106,8 @@ The following system requirements are recommended to start Lisk Service:
 
 #### Memory
 
-- Machines with a minimum of 8 GB RAM for the Mainnet.
-- Machines with a minimum of 8 GB RAM for the Testnet.
+- Machines with a minimum of 16 GB RAM for the Mainnet.
+- Machines with a minimum of 16 GB RAM for the Testnet.
 
 #### Storage
 

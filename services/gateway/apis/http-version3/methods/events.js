@@ -32,7 +32,7 @@ module.exports = {
 			max: 41,
 			pattern: regex.ADDRESS_LISK32,
 		},
-		topic: { optional: true, type: 'string', min: 2, pattern: regex.TOPIC_CSV },
+		topic: { optional: true, type: 'string', pattern: regex.TOPIC_CSV },
 		module: { optional: true, type: 'string', min: 1, pattern: regex.MODULE },
 		name: {
 			optional: true,
