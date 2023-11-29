@@ -25,6 +25,8 @@ const isGenesisBlockIndexed = async () => {
 	return isGenesisBlockIndexedFlag;
 };
 
+const getIndexStatus = async () => requestIndexer('index.status').catch(() => null);
+
 const getMissingBlocks = async (from, to) => requestIndexer('getMissingBlocks', { from, to });
 
 const getIndexVerifiedHeight = async () =>
@@ -38,6 +40,7 @@ const getLiveIndexingJobCount = async () =>
 
 module.exports = {
 	isGenesisBlockIndexed,
+	getIndexStatus,
 	getMissingBlocks,
 	getIndexVerifiedHeight,
 	getLiveIndexingJobCount,

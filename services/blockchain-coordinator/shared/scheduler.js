@@ -22,6 +22,7 @@ const logger = Logger();
 
 const { initEventsScheduler } = require('./eventsScheduler');
 const {
+	getIndexStatus,
 	getMissingBlocks,
 	getIndexVerifiedHeight,
 	isGenesisBlockIndexed,
@@ -32,6 +33,7 @@ const { getAllPosValidators } = require('./sources/connector');
 
 const { getCurrentHeight, getGenesisHeight, initNodeConstants } = require('./constants');
 
+const { range } = require('./utils/array');
 const delay = require('./utils/delay');
 const config = require('../config');
 
@@ -276,6 +278,18 @@ const scheduleMissingBlocksIndexing = async () => {
 						}
 					}
 				}
+			}
+		}
+
+		// Re-check for tiny gaps and schedule jobs accordingly
+		const indexStatus = await getIndexStatus();
+		if (indexStatus) {
+			const { chainLength, numBlocksIndexed, lastBlockHeight } = indexStatus.data;
+			const numStillMissingJobs = chainLength - numBlocksIndexed - missingBlocksByHeight.length;
+			if (numStillMissingJobs > 0 && numStillMissingJobs <= 10) {
+				missingBlocksByHeight.push(
+					...range(lastBlockHeight - numStillMissingJobs + 1, lastBlockHeight + 1),
+				);
 			}
 		}
 
