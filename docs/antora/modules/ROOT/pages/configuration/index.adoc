@@ -421,7 +421,7 @@ By default, it is set to `5000`.
 
 | `HEARTBEAT_ACK_MAX_WAIT_TIME`
 | number
-| Maximum wait time (in milliseconds) for checking client hearbeat acknowledgement.
+| Maximum time (in milliseconds) within which the checkIsClientAlive's algorithm expects a corresponding `pong` for the `ping` sent to the WS server.
 By default, it is set to `1000`.
 | 1000
 
