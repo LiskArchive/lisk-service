@@ -37,6 +37,7 @@ A list of the most commonly used environment variables is presented below:
 - `CLIENT_INSTANTIATION_MAX_WAIT_TIME`: Maximum wait time (in milliseconds) for the API client instantiation before forcefully instantiating a new client when getApiClient is invoked. By default, it is set to 100.
 - `CLIENT_INSTANTIATION_RETRY_INTERVAL`: Retry interval (in milliseconds) to invoke instantiate API client when getApiClient is invoked. By default, it is set to 5.
 - `CLIENT_ALIVE_ASSUMPTION_TIME`: Interval (in milliseconds) for which the WS API Client is assumed to be alive since the last ping/pong success check. By default, it is set to 5000.
+- `HEARTBEAT_ACK_MAX_WAIT_TIME`: Maximum wait time (in milliseconds) for checking client hearbeat acknowledgement. By default, it is set to 1000.
 - `ENDPOINT_INVOKE_MAX_RETRIES`: Maximum number of endpoint invocation request retries to the node. By default, it is set to 1.
 - `ENDPOINT_INVOKE_RETRY_DELAY`: Delay (in milliseconds) between each endpoint invocation request retry. By default, it is set to 10.
 - `CONNECTOR_EXIT_DELAY_IN_HOURS`: Delay (in hours) after which the blockchain-connector microservice exits. The service should restart automatically if deployed using Docker or PM2. To be removed eventually. To enable it, set it higher than `0`. By default, it is set to `0`.

@@ -207,8 +207,7 @@ const getTransactions = async params => {
 	return transactions;
 };
 
-const getTransactionsByBlockID = async blockID => {
-	const block = await getBlockByID(blockID);
+const formatTransactionsInBlock = async block => {
 	const transactions = await BluebirdPromise.map(
 		block.transactions,
 		async transaction => {
@@ -272,12 +271,18 @@ const getTransactionsByBlockID = async blockID => {
 	};
 };
 
+const getTransactionsByBlockID = async blockID => {
+	const block = await getBlockByID(blockID);
+	return formatTransactionsInBlock(block);
+};
+
 module.exports = {
 	getTransactions,
 	getTransactionIDsByBlockID,
 	getTransactionsByBlockID,
 	getTransactionsByIDs,
 	normalizeTransaction,
+	formatTransactionsInBlock,
 
 	// For unit test
 	validateParams,
