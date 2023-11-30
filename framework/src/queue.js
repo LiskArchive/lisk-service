@@ -31,10 +31,7 @@ const defaultOptions = {
 		attempts: 5,
 		timeout: 5 * 60 * 1000, // ms
 		removeOnComplete: true,
-		removeOnFail: {
-			age: 1 * 60 * 60, // 1 hr in secs
-			count: 100000,
-		},
+		removeOnFail: true,
 		stackTraceLimit: 0,
 	},
 	settings: {},
