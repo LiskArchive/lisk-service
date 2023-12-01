@@ -281,4 +281,5 @@ module.exports = {
 
 	// For unit test
 	validateParams,
+	normalizeTransactions,
 };
