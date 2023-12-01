@@ -113,8 +113,7 @@ const newRoundProcessor = async () => {
 	await reloadGeneratorsCache();
 	const limit = await getNumberOfGenerators();
 	const generators = await getGenerators({ limit, offset: 0 });
-	const response = { generators: generators.data.map(generator => generator.address) };
-	Signals.get('newRound').dispatch(response);
+	Signals.get('newRound').dispatch(generators);
 	logger.info(`Finished performing all updates on new round.`);
 };
 

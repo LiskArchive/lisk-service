@@ -78,7 +78,7 @@ const cacheBlocksFromWaitlist = async () => {
 			);
 			logger.debug(err.stack);
 			blockCacheWaitlist.splice(0, 0, block);
-			await delay(3000); // Delay loop to facilitate reads from cache when writes are failing due to DB locks
+			await delay(10000); // Delay loop to facilitate reads from cache when writes are failing due to DB locks
 		}
 	}
 

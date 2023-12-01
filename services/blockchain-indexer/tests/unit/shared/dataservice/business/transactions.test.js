@@ -13,7 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { validateParams } = require('../../../../../shared/dataService/business/transactions');
+const {
+	mockTxRequest,
+	mockTransferCrossChainTxRequest,
+} = require('../../constants/transactionEstimateFees');
+
+const {
+	validateParams,
+	normalizeTransactions,
+} = require('../../../../../shared/dataService/business/transactions');
 
 jest.mock('lisk-service-framework', () => {
 	const actual = jest.requireActual('lisk-service-framework');
@@ -62,5 +70,34 @@ describe('Test validateParams method', () => {
 
 	it('should throw error when called with null', async () => {
 		expect(() => validateParams(null)).rejects.toThrow();
+	});
+});
+
+describe('Test normalizeTransactions method', () => {
+	it('should return normalized transactions when called with valid transactions', async () => {
+		const transactions = [mockTxRequest.transaction, mockTransferCrossChainTxRequest.transaction];
+		const normalizedTransactions = await normalizeTransactions(transactions);
+
+		const expectedResult = [
+			{
+				...mockTxRequest.transaction,
+				moduleCommand: `${mockTxRequest.transaction.module}:${mockTxRequest.transaction.command}`,
+			},
+			{
+				...mockTransferCrossChainTxRequest.transaction,
+				moduleCommand: `${mockTransferCrossChainTxRequest.transaction.module}:${mockTransferCrossChainTxRequest.transaction.command}`,
+			},
+		];
+
+		expect(normalizedTransactions.length).toEqual(transactions.length);
+		expect(normalizedTransactions).toEqual(expectedResult);
+	});
+
+	it('should throw error when called with null', async () => {
+		expect(() => normalizeTransactions(null)).rejects.toThrow();
+	});
+
+	it('should throw error when called with undefined', async () => {
+		expect(() => normalizeTransactions(null)).rejects.toThrow();
 	});
 });
