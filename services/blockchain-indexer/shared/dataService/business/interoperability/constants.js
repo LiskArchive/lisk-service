@@ -23,7 +23,6 @@ const APP_STATUS = {
 	TERMINATED: 'terminated',
 };
 
-// TODO: Update values from SDK once the discussion is concluded: https://github.com/LiskHQ/discussions/discussions/101
 const CHAIN_STATUS = Object.freeze({
 	0: 'registered',
 	1: 'activated',
