@@ -508,11 +508,13 @@ const deleteIndexedBlocks = async job => {
 					);
 					forkedTransactions = transactionsToDelete.filter(t => ![null, undefined].includes(t));
 				}
-				await transactionsTable.deleteByPrimaryKey(forkedTransactionIDs, dbTrx);
-				Signals.get('deleteTransactions').dispatch({
-					data: forkedTransactions,
-					meta: { offset: 0, count: forkedTransactions.length, total: forkedTransactions.length },
-				});
+				if (forkedTransactionIDs.length) {
+					await transactionsTable.deleteByPrimaryKey(forkedTransactionIDs, dbTrx);
+					Signals.get('deleteTransactions').dispatch({
+						data: forkedTransactions,
+						meta: { offset: 0, count: forkedTransactions.length, total: forkedTransactions.length },
+					});
+				}
 
 				// Update generatedBlocks count for the block generator
 				const validatorsTable = await getValidatorsTable();
