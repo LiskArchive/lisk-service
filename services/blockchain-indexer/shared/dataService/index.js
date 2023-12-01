@@ -25,6 +25,7 @@ const {
 	getTransactionIDsByBlockID,
 	getTransactionsByIDs,
 	normalizeTransaction,
+	formatTransactionsInBlock,
 	getEventsByHeight,
 	cacheEventsByBlockID,
 	deleteEventsFromCacheByBlockID,
@@ -144,6 +145,7 @@ module.exports = {
 	getTransactionsByBlockID,
 	dryRunTransactions,
 	estimateTransactionFees,
+	formatTransactionsInBlock,
 
 	// Interoperability
 	getBlockchainApps,

@@ -415,9 +415,15 @@ By default, it is set to `1`.
 
 | `CLIENT_ALIVE_ASSUMPTION_TIME`
 | number
-| Interval (in milliseconds) for which the WS API Client is assumed to be alive since the last ping/pong success check. By default, it is set to 5000.
+| Interval (in milliseconds) for which the WS API Client is assumed to be alive since the last ping/pong success check.
 By default, it is set to `5000`.
 | 5000
+
+| `HEARTBEAT_ACK_MAX_WAIT_TIME`
+| number
+| Maximum time (in milliseconds) within which the checkIsClientAlive's algorithm expects a corresponding `pong` for the `ping` sent to the WS server.
+By default, it is set to `1000`.
+| 1000
 
 | `ENDPOINT_INVOKE_MAX_RETRIES`
 | number

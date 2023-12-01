@@ -32,6 +32,7 @@ const {
 	getTransactionsByBlockID,
 	getTransactionsByIDs,
 	normalizeTransaction,
+	formatTransactionsInBlock,
 } = require('./transactions');
 
 const { getPendingTransactions, loadAllPendingTransactions } = require('./pendingTransactions');
@@ -129,6 +130,7 @@ module.exports = {
 	postTransactions,
 	dryRunTransactions,
 	estimateTransactionFees,
+	formatTransactionsInBlock,
 
 	// Events
 	getEvents,

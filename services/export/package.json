@@ -36,7 +36,7 @@
 		"bull": "^3.29.2",
 		"exceljs": "^4.3.0",
 		"json2csv": "^5.0.6",
-		"lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/bea05ce084df5446738846964b4d6c30b5088b69/framework/dist/lisk-service-framework-1.6.10.tgz",
+		"lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/5cb6fc8e9b9798595d1a4652b9148afcbfaaed1f/framework/dist/lisk-service-framework-1.6.11.tgz",
 		"minio": "^7.0.21",
 		"moment": "^2.29.4",
 		"moment-range": "^4.0.2",

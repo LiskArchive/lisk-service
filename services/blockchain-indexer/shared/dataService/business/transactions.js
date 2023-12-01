@@ -207,11 +207,10 @@ const getTransactions = async params => {
 	return transactions;
 };
 
-const getTransactionsByBlockID = async blockID => {
-	const block = await getBlockByID(blockID);
+const formatTransactionsInBlock = async block => {
 	const transactions = await BluebirdPromise.map(
 		block.transactions,
-		async transaction => {
+		async (transaction, index) => {
 			const senderAddress = getLisk32AddressFromPublicKey(transaction.senderPublicKey);
 
 			const senderAccount = await getIndexedAccountInfo({ address: senderAddress, limit: 1 }, [
@@ -243,6 +242,7 @@ const getTransactionsByBlockID = async blockID => {
 				id: block.id,
 				height: block.height,
 				timestamp: block.timestamp,
+				isFinal: block.isFinal,
 			};
 
 			const transactionsTable = await getTransactionsTable();
@@ -257,6 +257,7 @@ const getTransactionsByBlockID = async blockID => {
 				transaction.executionStatus = await getTransactionExecutionStatus(transaction, events);
 			}
 
+			transaction.index = index;
 			return transaction;
 		},
 		{ concurrency: block.transactions.length },
@@ -272,12 +273,18 @@ const getTransactionsByBlockID = async blockID => {
 	};
 };
 
+const getTransactionsByBlockID = async blockID => {
+	const block = await getBlockByID(blockID);
+	return formatTransactionsInBlock(block);
+};
+
 module.exports = {
 	getTransactions,
 	getTransactionIDsByBlockID,
 	getTransactionsByBlockID,
 	getTransactionsByIDs,
 	normalizeTransaction,
+	formatTransactionsInBlock,
 
 	// For unit test
 	validateParams,

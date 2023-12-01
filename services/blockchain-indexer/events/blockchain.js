@@ -19,6 +19,7 @@ const {
 	reloadAllPendingTransactions,
 	reloadGeneratorsCache,
 	getGenerators,
+	formatTransactionsInBlock,
 } = require('../shared/dataService');
 
 const logger = Logger();
@@ -69,15 +70,9 @@ module.exports = [
 							logger.debug(
 								`Block (${block.id}) arrived containing ${block.numberOfTransactions} new transactions`,
 							);
-							const transactionsPayload = {
-								data: block.transactions,
-								meta: {
-									count: numberOfTransactions,
-									offset: 0,
-									total: numberOfTransactions,
-								},
-							};
-							callback(transactionsPayload);
+
+							const formattedTransactions = await formatTransactionsInBlock(block);
+							callback(formattedTransactions);
 						}
 					} else {
 						const payloadStr = JSON.stringify(payload);
