@@ -135,13 +135,6 @@ const requireAllJsonExpectedResponse = {
 					example: '2020-10-01:2020-10-31',
 					description: 'The date interval for which the transactions need to be exported.\n',
 				},
-				fileName: {
-					type: 'string',
-					format: 'fileName',
-					example: 'transactions_<currentChainID>_<address>_<from>_<to>.csv',
-					description:
-						'The name of the file containing the exported account transaction history.\n',
-				},
 				fileUrl: {
 					type: 'string',
 					format: 'fileUrl',
@@ -169,9 +162,6 @@ const requireAllJsonExpectedResponse = {
 								'True when already exported and available for download. False when scheduled to export',
 						},
 					},
-				},
-				links: {
-					type: 'object',
 				},
 			},
 		},

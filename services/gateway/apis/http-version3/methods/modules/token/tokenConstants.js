@@ -16,7 +16,7 @@
 
 const tokenConstantsSource = require('../../../../../sources/version3/tokenConstants');
 const envelope = require('../../../../../sources/version3/mappings/stdEnvelope');
-const { response, getSwaggerDescription } = require('../../../../../shared/utils');
+const { getSwaggerDescription } = require('../../../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -40,7 +40,6 @@ module.exports = {
 				},
 			},
 		};
-		Object.assign(constantsSchema[this.swaggerApiPath].get.responses, response);
 		return constantsSchema;
 	},
 	source: tokenConstantsSource,

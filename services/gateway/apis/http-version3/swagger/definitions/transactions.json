@@ -38,18 +38,18 @@
 				"properties": {
 					"format": {
 						"type": "string",
-						"example": "YYYY-MM",
-						"description": "Date/month format for the stated aggregation interval ('from' & 'to')."
+						"example": "YYYY-MM-DD",
+						"description": "Date/month/Day format for the stated aggregation interval ('from' & 'to')."
 					},
 					"from": {
 						"type": "string",
-						"example": "2021-12",
-						"description": "Date/month representing the beginning of the aggregation interval."
+						"example": "2021-12-01",
+						"description": "Date/month/Day representing the beginning of the aggregation interval."
 					},
 					"to": {
 						"type": "string",
-						"example": "2022-09",
-						"description": "Date/month representing the ending of the aggregation interval."
+						"example": "2022-09-01",
+						"description": "Date/month/Day representing the ending of the aggregation interval."
 					}
 				}
 			}

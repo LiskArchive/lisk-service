@@ -15,7 +15,7 @@
  */
 const tokenSummarySource = require('../../../../../sources/version3/tokenSummary');
 const envelope = require('../../../../../sources/version3/mappings/stdEnvelope');
-const { transformParams, response, getSwaggerDescription } = require('../../../../../shared/utils');
+const { transformParams, getSwaggerDescription } = require('../../../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -44,7 +44,6 @@ module.exports = {
 				},
 			},
 		};
-		Object.assign(tokenSummarySchema[this.swaggerApiPath].get.responses, response);
 		return tokenSummarySchema;
 	},
 	source: tokenSummarySource,

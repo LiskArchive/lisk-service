@@ -598,7 +598,7 @@ const createApiDocsExpectedResponse = {
 					$ref: '#/parameters/state',
 				},
 				{
-					$ref: '#/parameters/height',
+					$ref: '#/parameters/heightWithoutRange',
 				},
 				{
 					$ref: '#/parameters/limit',
@@ -1069,7 +1069,7 @@ const createApiDocsExpectedResponse = {
 			description: 'Returns tokens information\n RPC => get.token.balances',
 			parameters: [
 				{
-					$ref: '#/parameters/address',
+					$ref: '#/parameters/addressRequired',
 				},
 				{
 					$ref: '#/parameters/tokenID',
@@ -1110,12 +1110,6 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/tokenConstantsWithEnvelope',
 					},
 				},
-				400: {
-					description: 'Bad request',
-					schema: {
-						$ref: '#/definitions/badRequest',
-					},
-				},
 			},
 		},
 	},
@@ -1132,12 +1126,6 @@ const createApiDocsExpectedResponse = {
 						"Returns the token summary. The 'supportedTokens' is an empty list when all the tokens are supported on the blockchain application.",
 					schema: {
 						$ref: '#/definitions/tokenSummaryWithEnvelope',
-					},
-				},
-				400: {
-					description: 'Bad request',
-					schema: {
-						$ref: '#/definitions/badRequest',
 					},
 				},
 			},

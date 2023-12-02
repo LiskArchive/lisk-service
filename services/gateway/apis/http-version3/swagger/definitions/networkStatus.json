@@ -79,6 +79,10 @@
 								"type": "integer",
 								"example": 15360
 							},
+							"minimumCertifyHeight": {
+								"type": "integer",
+								"example": 20520176
+							},
 							"bftBatchSize": {
 								"type": "integer",
 								"example": 10
