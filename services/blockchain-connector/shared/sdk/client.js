@@ -153,19 +153,14 @@ const invokeEndpoint = async (endpoint, params = {}, numRetries = NUM_REQUEST_RE
 	} while (retries--);
 };
 
-// Checks to ensure that the API Client is always alive
-const resetApiClientListener = async () => instantiateClient(true).catch(() => {});
-Signals.get('resetApiClient').add(resetApiClientListener);
+// Check to ensure that the API Client is always alive
+const triggerRegularClientLivelinessChecks = () =>
+	setInterval(async () => {
+		const isAlive = await checkIsClientAlive();
+		if (!isAlive) instantiateClient(true).catch(() => {});
+	}, CLIENT_ALIVE_ASSUMPTION_TIME);
 
-if (!config.isUseLiskIPCClient) {
-	const triggerRegularClientLivelinessChecks = () =>
-		setInterval(async () => {
-			const isAlive = await checkIsClientAlive();
-			if (!isAlive) instantiateClient(true).catch(() => {});
-		}, CLIENT_ALIVE_ASSUMPTION_TIME);
-
-	Signals.get('genesisBlockDownloaded').add(triggerRegularClientLivelinessChecks);
-}
+Signals.get('genesisBlockDownloaded').add(triggerRegularClientLivelinessChecks);
 
 module.exports = {
 	timeoutMessage,
