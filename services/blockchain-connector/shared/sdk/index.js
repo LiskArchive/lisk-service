@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { Signals } = require('lisk-service-framework');
+
 const config = require('../../config');
 
 const {
@@ -112,7 +114,6 @@ const {
 const { cacheCleanup } = require('./cache');
 const { formatTransaction } = require('./formatter');
 const { encodeCCM } = require('./encoder');
-const { Signals } = require('lisk-service-framework');
 
 const init = async () => {
 	// Cache all the schemas
