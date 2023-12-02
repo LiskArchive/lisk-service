@@ -17,6 +17,8 @@ const util = require('util');
 
 const { Logger, Signals } = require('lisk-service-framework');
 
+const config = require('../../config');
+
 const { getApiClient } = require('./client');
 const { formatEvent } = require('./formatter');
 const { getRegisteredEvents, getEventsByHeight, getNodeInfo } = require('./endpoints');
@@ -38,12 +40,17 @@ const events = [
 	EVENT_TX_POOL_TRANSACTION_NEW,
 ];
 
+let eventsCounter;
+
 const logError = (method, err) => {
 	logger.warn(`Invocation for ${method} failed with error: ${err.message}.`);
 	logger.debug(err.stack);
 };
 
 const subscribeToAllRegisteredEvents = async () => {
+	// Reset eventsCounter first
+	eventsCounter = 0;
+
 	const apiClient = await getApiClient();
 	const registeredEvents = await getRegisteredEvents();
 	const allEvents = registeredEvents.concat(events);
@@ -51,6 +58,8 @@ const subscribeToAllRegisteredEvents = async () => {
 		apiClient.subscribe(event, async payload => {
 			// Force update necessary caches on new chain events
 			if (event.startsWith('chain_')) {
+				eventsCounter++; // Increase counter with every newBlock/deleteBlock
+
 				await getNodeInfo(true).catch(err => logError('getNodeInfo', err));
 				await updateTokenInfo().catch(err => logError('updateTokenInfo', err));
 			}
@@ -67,6 +76,51 @@ const getEventsByHeightFormatted = async height => {
 	const formattedEvents = chainEvents.map(event => formatEvent(event));
 	return formattedEvents;
 };
+
+// To ensure API Client is alive and receiving chain events
+let isNodeSynced = false;
+let isGenesisBlockDownloaded = false;
+
+const ensureAPIClientLiveness = () => {
+	if (isNodeSynced && isGenesisBlockDownloaded) {
+		setInterval(() => {
+			if (typeof eventsCounter === 'number' && eventsCounter > 0) {
+				eventsCounter = 0;
+			} else {
+				if (typeof eventsCounter !== 'number') {
+					logger.warn(
+						`eventsCounter ended up with non-numeric value: ${JSON.stringify(
+							eventsCounter,
+							null,
+							'\t',
+						)}.`,
+					);
+					eventsCounter = 0;
+				}
+
+				Signals.get('resetApiClient').dispatch();
+				logger.info("Dispatched 'resetApiClient' signal to re-instantiate the API client.");
+			}
+		}, config.clientConnVerifyInterval);
+	} else {
+		logger.info(
+			`Cannot start the events-based client liveness check yet. Either the node is not yet synced or the genesis block hasn't been downloaded yet.\nisNodeSynced: ${isNodeSynced}, isGenesisBlockDownloaded: ${isGenesisBlockDownloaded}`,
+		);
+	}
+};
+
+const nodeIsSyncedListener = () => {
+	isNodeSynced = true;
+	ensureAPIClientLiveness();
+};
+
+const genesisBlockDownloadedListener = () => {
+	isGenesisBlockDownloaded = true;
+	ensureAPIClientLiveness();
+};
+
+Signals.get('nodeIsSynced').add(nodeIsSyncedListener);
+Signals.get('genesisBlockDownloaded').add(genesisBlockDownloadedListener);
 
 module.exports = {
 	events,
