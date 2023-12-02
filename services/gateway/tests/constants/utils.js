@@ -170,9 +170,6 @@ const requireAllJsonExpectedResponse = {
 						},
 					},
 				},
-				links: {
-					type: 'object',
-				},
 			},
 		},
 	},
