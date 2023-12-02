@@ -154,10 +154,10 @@ const invokeEndpoint = async (endpoint, params = {}, numRetries = NUM_REQUEST_RE
 };
 
 // Checks to ensure that the API Client is always alive
-const resetApiClientListener = async () => instantiateClient(true).catch(() => {});
-Signals.get('resetApiClient').add(resetApiClientListener);
-
-if (!config.isUseLiskIPCClient) {
+if (config.isUseLiskIPCClient) {
+	const resetApiClientListener = async () => instantiateClient(true).catch(() => {});
+	Signals.get('resetApiClient').add(resetApiClientListener);
+} else {
 	const triggerRegularClientLivelinessChecks = () =>
 		setInterval(async () => {
 			const isAlive = await checkIsClientAlive();
