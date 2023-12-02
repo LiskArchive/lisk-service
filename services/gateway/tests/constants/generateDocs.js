@@ -1110,6 +1110,12 @@ const createApiDocsExpectedResponse = {
 						$ref: '#/definitions/tokenConstantsWithEnvelope',
 					},
 				},
+				400: {
+					description: 'Bad request',
+					schema: {
+						$ref: '#/definitions/badRequest',
+					},
+				},
 			},
 		},
 	},
@@ -1126,6 +1132,12 @@ const createApiDocsExpectedResponse = {
 						"Returns the token summary. The 'supportedTokens' is an empty list when all the tokens are supported on the blockchain application.",
 					schema: {
 						$ref: '#/definitions/tokenSummaryWithEnvelope',
+					},
+				},
+				400: {
+					description: 'Bad request',
+					schema: {
+						$ref: '#/definitions/badRequest',
 					},
 				},
 			},

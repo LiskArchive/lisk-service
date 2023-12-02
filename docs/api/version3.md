@@ -2108,8 +2108,7 @@ _Supports pagination._
       "count": 100,
       "offset": 25,
       "total": 43749
-    },
-    "links": {}
+    }
 }
 ```
 
@@ -2269,8 +2268,7 @@ No parameters are required.
         "2.1": 41
       }
     },
-    "meta": {},
-    "links": {}
+    "meta": {}
   }
 ```
 

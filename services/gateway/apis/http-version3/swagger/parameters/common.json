@@ -45,7 +45,7 @@
 	"heightWithoutRange": {
 		"name": "height",
 		"in": "query",
-		"description": "Query by height..",
+		"description": "Query by height.",
 		"type": "string",
 		"minimum": 0
 	},
