@@ -158,10 +158,13 @@ const resetApiClientListener = async () => instantiateClient(true).catch(() => {
 Signals.get('resetApiClient').add(resetApiClientListener);
 
 if (!config.isUseLiskIPCClient) {
-	setInterval(async () => {
-		const isAlive = await checkIsClientAlive();
-		if (!isAlive) instantiateClient(true).catch(() => {});
-	}, CLIENT_ALIVE_ASSUMPTION_TIME);
+	const triggerRegularClientLivelinessChecks = () =>
+		setInterval(async () => {
+			const isAlive = await checkIsClientAlive();
+			if (!isAlive) instantiateClient(true).catch(() => {});
+		}, CLIENT_ALIVE_ASSUMPTION_TIME);
+
+	Signals.get('genesisBlockDownloaded').add(triggerRegularClientLivelinessChecks);
 }
 
 module.exports = {

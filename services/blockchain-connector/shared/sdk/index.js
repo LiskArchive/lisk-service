@@ -112,6 +112,7 @@ const {
 const { cacheCleanup } = require('./cache');
 const { formatTransaction } = require('./formatter');
 const { encodeCCM } = require('./encoder');
+const { Signals } = require('lisk-service-framework');
 
 const init = async () => {
 	// Cache all the schemas
@@ -128,7 +129,9 @@ const init = async () => {
 	await getPosConstants();
 
 	// Download the genesis block, if applicable
-	await getGenesisBlock();
+	await getGenesisBlock().then(() => {
+		Signals.get('genesisBlockDownloaded').dispatch();
+	});
 
 	if (config.appExitDelay) {
 		setTimeout(() => process.exit(0), config.appExitDelay);
