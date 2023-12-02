@@ -5637,7 +5637,7 @@ _Supports pagination._
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
 | chainID | String | `/^\b(?:[a-fA-F0-9]{8}\|,)+\b$/` | *(empty)* | Can be expressed as a CSV. |
-| chainName | String | `/^[a-z0-9!@$&_.]{1,32}$/` | *(empty)* | Supports case-insensitive chain name. |
+| chainName | String | `/^[A-Za-z0-9!@$&_.]{1,32}$/` | *(empty)* | Supports case-insensitive chain name. |
 | status | String | `/^\b(?:registered\|activated\|terminated\|unregistered\|,){1,7}\b$/` | *(empty)* | Can be expressed as a CSV. |
 | search | String | `/^[\w!@$&.]{1,20}$/` | *(empty)* | Case-insensitive search by chain name. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
@@ -5908,7 +5908,7 @@ _Supports pagination._
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| chainName | String | `/^[a-z0-9!@$&_.]{1,32}$/` | *(empty)* | Supports case-insensitive chain name. |
+| chainName | String | `/^[A-Za-z0-9!@$&_.]{1,32}$/` | *(empty)* | Supports case-insensitive chain name. |
 | network | String | `/^\b(?:mainnet\|testnet\|betanet\|devnet\|,){0,7}\b$/` | *(empty)* | Can be expressed as a CSV. |
 | search | String | `/^[\w!@$&.]{1,20}$/` | *(empty)* | Case-insensitive search by chain name. Supports both partial and full text search. |
 | limit | Number | `[1,100]` | 10 |  |
@@ -5965,7 +5965,7 @@ _Supports pagination._
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| chainName | String | `/^[a-z0-9!@$&_.]{1,32}$/` | *(empty)* | Supports case-insensitive chain name. |
+| chainName | String | `/^[A-Za-z0-9!@$&_.]{1,32}$/` | *(empty)* | Supports case-insensitive chain name. |
 | displayName | String | `/^[a-z0-9!@$&_.]{1,20}$/` | *(empty)* | Supports case-insensitive display name. |
 | chainID | String | `/^\b(?:[a-fA-F0-9]{8}\|,)+\b$/` | *(empty)* | Can be expressed as a CSV. |
 | isDefault | Boolean | `[true, false]` | *(empty)* |  |
@@ -6058,7 +6058,7 @@ _Supports pagination._
 
 | Parameter | Type | Validation | Default | Comment |
 | --------- | ---- | ---------- | ------- | ------- |
-| chainName | String | `/^[a-z0-9!@$&_.]{1,32}$/` | *(empty)* | Supports case-insensitive chain name. |
+| chainName | String | `/^[A-Za-z0-9!@$&_.]{1,32}$/` | *(empty)* | Supports case-insensitive chain name. |
 | chainID | String | `/^\b[a-fA-F0-9]{8}\b$/` | *(empty)* | |
 | tokenName | String | `/^[\w!@$&.,]{3,}$/` | *(empty)* | Supports case-insensitive token name. |
 | tokenID | String | `/^\b([a-fA-F0-9]{16})(,[a-fA-F0-9]{16})*\b$/` | *(empty)* | Can be expressed as a CSV. |
