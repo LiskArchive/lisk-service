@@ -50,7 +50,7 @@ const { getTransactionExecutionStatus } = require('../utils/transactions');
 const { getEventsInfoToIndex } = require('./utils/events');
 const { calcCommissionAmount, calcSelfStakeReward } = require('./utils/validator');
 const { indexAccountPublicKey } = require('./accountIndex');
-const { indexGenesisBlockAssets } = require('./genesisBlock');
+const { getGenesisAssetIntervalTimeout, indexGenesisBlockAssets } = require('./genesisBlock');
 const { updateTotalLockedAmounts } = require('./utils/blockchainIndex');
 const {
 	getAddressesFromTokenEvents,
@@ -135,8 +135,8 @@ const indexBlock = async job => {
 	let dbTrx;
 	let blockToIndexFromNode;
 
+	const genesisHeight = await getGenesisHeight();
 	try {
-		const genesisHeight = await getGenesisHeight();
 		const blocksTable = await getBlocksTable();
 
 		const [lastIndexedBlock = {}] = await blocksTable.find(
@@ -379,6 +379,11 @@ const indexBlock = async job => {
 			`Successfully indexed block ${blockToIndexFromNode.id} at height ${blockToIndexFromNode.height}.`,
 		);
 	} catch (error) {
+		// Stop genesisAsset index progress logging on errors
+		if (blockToIndexFromNode.height === genesisHeight) {
+			clearInterval(getGenesisAssetIntervalTimeout());
+		}
+
 		// Block may not have been initialized when error occurred
 		const failedBlockInfo = {
 			id: typeof blockToIndexFromNode === 'undefined' ? undefined : blockToIndexFromNode.id,

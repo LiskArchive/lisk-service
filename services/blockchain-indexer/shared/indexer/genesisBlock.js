@@ -41,7 +41,10 @@ const getStakesTable = () => getTableInstance(stakesTableSchema, MYSQL_ENDPOINT)
 const getCommissionsTable = () => getTableInstance(commissionsTableSchema, MYSQL_ENDPOINT);
 
 const allAccountsAddresses = [];
+let intervalTimeout;
 let isTokensBalanceIndexed = false;
+
+const getGenesisAssetIntervalTimeout = () => intervalTimeout;
 
 const indexTokenModuleAssets = async dbTrx => {
 	logger.info('Starting to index the genesis assets from the Token module.');
@@ -171,7 +174,7 @@ const indexPosModuleAssets = async dbTrx => {
 
 const indexGenesisBlockAssets = async dbTrx => {
 	logger.info('Starting to index the genesis assets.');
-	const intervalTimeout = setInterval(
+	intervalTimeout = setInterval(
 		() => logger.info('Genesis assets indexing still in progress...'),
 		5000,
 	);
@@ -204,6 +207,7 @@ const indexTokenBalancesListener = async () => {
 Signals.get('chainNewBlock').add(indexTokenBalancesListener);
 
 module.exports = {
+	getGenesisAssetIntervalTimeout,
 	indexGenesisBlockAssets,
 
 	// For testing

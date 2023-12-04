@@ -197,8 +197,8 @@
 						"example": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b"
 					},
 					"height": {
-						"type": "string",
-						"example": "166"
+						"type": "number",
+						"example": 166
 					},
 					"timestamp": {
 						"type": "integer",
