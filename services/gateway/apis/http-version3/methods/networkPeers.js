@@ -33,7 +33,13 @@ module.exports = {
 			default: 'any',
 			lowercase: true,
 		},
-		height: { optional: true, min: 0, type: 'number', integer: true },
+		height: {
+			optional: true,
+			min: 0,
+			type: 'number',
+			integer: true,
+			altSwaggerKey: 'heightWithoutRange',
+		},
 		limit: { optional: true, min: 1, max: 100, type: 'number', integer: true, default: 10 },
 		offset: { optional: true, min: 0, type: 'number', integer: true, default: 0 },
 		sort: {

@@ -32,7 +32,8 @@ module.exports = [
 					await reloadValidatorCache();
 					logger.info('Successfully initialized validators cache.');
 				} catch (err) {
-					logger.warn(`Initializing validators cache failed due to: ${err.stack}`);
+					logger.warn(`Initializing validators cache failed due to: ${err.message}`);
+					logger.debug(err.stack);
 				}
 			}
 		},
@@ -43,6 +44,7 @@ module.exports = [
 					await reloadValidatorCache();
 				} catch (err) {
 					logger.warn(`Reloading validators cache failed due to: ${err.message}`);
+					logger.debug(err.stack);
 				}
 			}
 		},

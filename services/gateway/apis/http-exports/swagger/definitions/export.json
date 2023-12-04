@@ -101,9 +101,6 @@
 						"description": "True when already exported and available for download. False when scheduled to export"
 					}
 				}
-			},
-			"links": {
-				"type": "object"
 			}
 		}
 	}

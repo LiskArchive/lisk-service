@@ -26,7 +26,7 @@ module.exports = {
 			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
 			watch: false,
 			kill_timeout: 10000,
-			max_memory_restart: '300M',
+			max_memory_restart: '500M',
 			autorestart: true,
 			env: {
 				// --- Remember to set the properties below
@@ -75,7 +75,7 @@ module.exports = {
 			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
 			watch: false,
 			kill_timeout: 10000,
-			max_memory_restart: '150M',
+			max_memory_restart: '500M',
 			autorestart: true,
 			env: {
 				// --- Remember to set the properties below
@@ -107,17 +107,17 @@ module.exports = {
 			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
 			watch: false,
 			kill_timeout: 10000,
-			max_memory_restart: '150M',
+			max_memory_restart: '500M',
 			autorestart: true,
 			env: {
 				// --- Remember to set the properties below
 				SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
-				LISK_APP_WS: 'ws://127.0.0.1:7887',
-				GEOIP_JSON: 'https://geoip.lisk.com/json',
-				// ENABLE_BLOCK_CACHING: true,
-				// EXPIRY_IN_HOURS: 12,
 				// USE_LISK_IPC_CLIENT: true,
 				// LISK_APP_DATA_PATH: '~/.lisk/lisk-core',
+				// LISK_APP_WS: 'ws://127.0.0.1:7887',
+				// GEOIP_JSON: 'https://geoip.lisk.com/json',
+				// ENABLE_BLOCK_CACHING: true,
+				// EXPIRY_IN_HOURS: 12,
 				// ENABLE_TESTING_MODE: false,
 				// SERVICE_BROKER_TIMEOUT: 10,
 				// SERVICE_LOG_LEVEL: 'info',
@@ -150,7 +150,7 @@ module.exports = {
 			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
 			watch: false,
 			kill_timeout: 10000,
-			max_memory_restart: '500M',
+			max_memory_restart: '1000M',
 			autorestart: true,
 			env: {
 				// --- Remember to set the properties below
@@ -159,9 +159,9 @@ module.exports = {
 				SERVICE_INDEXER_REDIS_VOLATILE: 'redis://127.0.0.1:6379/2',
 				SERVICE_MESSAGE_QUEUE_REDIS: 'redis://127.0.0.1:6379/3',
 				SERVICE_INDEXER_MYSQL: 'mysql://lisk:password@127.0.0.1:3306/lisk',
-				ENABLE_DATA_RETRIEVAL_MODE: true,
-				ENABLE_INDEXING_MODE: true,
-				ENABLE_PERSIST_EVENTS: false,
+				// ENABLE_DATA_RETRIEVAL_MODE: true,
+				// ENABLE_INDEXING_MODE: true,
+				// ENABLE_PERSIST_EVENTS: false,
 				// ENABLE_APPLY_SNAPSHOT: false,
 				// DURABILITY_VERIFY_FREQUENCY: 1,
 				// INDEX_SNAPSHOT_URL: '',
@@ -208,7 +208,7 @@ module.exports = {
 			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
 			watch: false,
 			kill_timeout: 10000,
-			max_memory_restart: '300M',
+			max_memory_restart: '500M',
 			autorestart: true,
 			env: {
 				// --- Remember to set the properties below
@@ -237,14 +237,14 @@ module.exports = {
 			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
 			watch: false,
 			kill_timeout: 10000,
-			max_memory_restart: '300M',
+			max_memory_restart: '500M',
 			autorestart: true,
 			env: {
 				// --- Remember to set the properties below
 				SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
 				SERVICE_FEE_ESTIMATOR_CACHE: 'redis://127.0.0.1:6379/1',
-				ENABLE_FEE_ESTIMATOR_QUICK: true,
-				ENABLE_FEE_ESTIMATOR_FULL: false,
+				// ENABLE_FEE_ESTIMATOR_QUICK: true,
+				// ENABLE_FEE_ESTIMATOR_FULL: false,
 				// FEE_EST_COLD_START_BATCH_SIZE: 1,
 				// FEE_EST_DEFAULT_START_BLOCK_HEIGHT: 1,
 				// FEE_EST_EMA_BATCH_SIZE: 20,
@@ -269,14 +269,14 @@ module.exports = {
 			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
 			watch: false,
 			kill_timeout: 10000,
-			max_memory_restart: '300M',
+			max_memory_restart: '500M',
 			autorestart: true,
 			env: {
 				// --- Remember to set the properties below
 				SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
 				SERVICE_STATISTICS_REDIS: 'redis://127.0.0.1:6379/1',
 				SERVICE_STATISTICS_MYSQL: 'mysql://lisk:password@127.0.0.1:3306/lisk',
-				TRANSACTION_STATS_HISTORY_LENGTH_DAYS: 366,
+				// TRANSACTION_STATS_HISTORY_LENGTH_DAYS: 366,
 				// SERVICE_STATISTICS_MYSQL_READ_REPLICA: 'mysql://reader:password@127.0.0.1:3307/lisk',
 				// SERVICE_BROKER_TIMEOUT: 10,
 				// SERVICE_LOG_LEVEL: 'info',
@@ -301,15 +301,14 @@ module.exports = {
 			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
 			watch: false,
 			kill_timeout: 10000,
-			max_memory_restart: '300M',
+			max_memory_restart: '500M',
 			autorestart: true,
 			env: {
 				// --- Remember to set the properties below
 				SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
 				SERVICE_MARKET_REDIS: 'redis://127.0.0.1:6379/2',
-				SERVICE_MARKET_FIAT_CURRENCIES: 'EUR,USD,CHF,GBP,RUB,PLN,JPY,AUD,GBP,INR',
-				SERVICE_MARKET_TARGET_PAIRS:
-					'LSK_BTC,LSK_EUR,LSK_USD,LSK_CHF,LSK_PLN,LSK_JPY,LSK_AUD,LSK_GBP,LSK_INR,BTC_EUR,BTC_USD,BTC_CHF',
+				// SERVICE_MARKET_FIAT_CURRENCIES: 'EUR,USD,CHF,GBP,RUB,PLN,JPY,AUD,GBP,INR',
+				// SERVICE_MARKET_TARGET_PAIRS: 'LSK_BTC,LSK_EUR,LSK_USD,LSK_CHF,LSK_PLN,LSK_JPY,LSK_AUD,LSK_GBP,LSK_INR,BTC_EUR,BTC_USD,BTC_CHF',
 				// EXCHANGERATESAPI_IO_API_KEY: ''
 				// SERVICE_BROKER_TIMEOUT: 10,
 				// SERVICE_LOG_LEVEL: 'info',
@@ -340,7 +339,7 @@ module.exports = {
 			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
 			watch: false,
 			kill_timeout: 10000,
-			max_memory_restart: '300M',
+			max_memory_restart: '500M',
 			autorestart: true,
 			env: {
 				SERVICE_BROKER: 'redis://127.0.0.1:6379/0',

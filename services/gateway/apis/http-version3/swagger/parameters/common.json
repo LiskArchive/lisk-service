@@ -42,6 +42,23 @@
 		"type": "string",
 		"minimum": 0
 	},
+	"heightWithoutRange": {
+		"name": "height",
+		"in": "query",
+		"description": "Query by height.",
+		"type": "string",
+		"minimum": 0
+	},
+	"addressRequired": {
+		"name": "address",
+		"required": true,
+		"in": "query",
+		"description": "Lisk account address.",
+		"type": "string",
+		"format": "address",
+		"minLength": 41,
+		"maxLength": 41
+	},
 	"blockHeight": {
 		"name": "height",
 		"in": "query",

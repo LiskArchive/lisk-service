@@ -598,7 +598,7 @@ const createApiDocsExpectedResponse = {
 					$ref: '#/parameters/state',
 				},
 				{
-					$ref: '#/parameters/height',
+					$ref: '#/parameters/heightWithoutRange',
 				},
 				{
 					$ref: '#/parameters/limit',
@@ -1069,7 +1069,7 @@ const createApiDocsExpectedResponse = {
 			description: 'Returns tokens information\n RPC => get.token.balances',
 			parameters: [
 				{
-					$ref: '#/parameters/address',
+					$ref: '#/parameters/addressRequired',
 				},
 				{
 					$ref: '#/parameters/tokenID',
