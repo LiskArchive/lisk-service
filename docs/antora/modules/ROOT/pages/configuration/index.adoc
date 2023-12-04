@@ -404,8 +404,8 @@ By default, it is set to `12` hours.
 | `CLIENT_INSTANTIATION_MAX_WAIT_TIME`
 | number
 | Maximum wait time (in milliseconds) for the API client instantiation before forcefully instantiating a new client when getApiClient is invoked.
-By default, it is set to `100`.
-| 100
+By default, it is set to `5000`.
+| 5000
 
 | `CLIENT_INSTANTIATION_RETRY_INTERVAL`
 | number
