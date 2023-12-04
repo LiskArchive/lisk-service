@@ -31,7 +31,7 @@ const mockEventTopicsTableSchema = require('../../../../../shared/database/schem
 const {
 	mockEventTopics,
 	mockEventsForEventTopics,
-	getEventsResult,
+	mockGetEventsResult,
 	mockEventTopicsQueryParams,
 } = require('../../constants/events');
 
@@ -232,8 +232,19 @@ describe('getEvents', () => {
 								};
 							}
 							if (schema.tableName === mockTransactionsTableSchema.tableName) {
+								const txIDs = mockGetEventsResult.data.reduce((acc, event) => {
+									const eventTopics = event.topics || [];
+									eventTopics
+										.filter(topic => topic.length === 64)
+										.forEach(topic => {
+											const topicObject = { id: topic };
+											acc.push(topicObject);
+										});
+									return acc;
+								}, []);
+
 								return {
-									find: jest.fn(() => []),
+									find: jest.fn(() => txIDs),
 									count: jest.fn(() => 10),
 								};
 							}
@@ -281,8 +292,8 @@ describe('getEvents', () => {
 		const result = await getEvents(params);
 		const resultWithTxIDPadded = await getEvents(paramsWithTopicTxIDPadded);
 
-		expect(result).toEqual(getEventsResult);
-		expect(resultWithTxIDPadded).toEqual(getEventsResult);
+		expect(result).toEqual(mockGetEventsResult);
+		expect(resultWithTxIDPadded).toEqual(mockGetEventsResult);
 	});
 
 	it('should retrieve events successfully with transactions ID passed as topic', async () => {
@@ -322,6 +333,23 @@ describe('getEvents', () => {
 									}),
 								};
 							}
+							if (schema.tableName === mockTransactionsTableSchema.tableName) {
+								const txIDs = mockGetEventsResult.data.reduce((acc, event) => {
+									const eventTopics = event.topics || [];
+									eventTopics
+										.filter(topic => topic.length === 64)
+										.forEach(topic => {
+											const topicObject = { id: topic };
+											acc.push(topicObject);
+										});
+									return acc;
+								}, []);
+
+								return {
+									find: jest.fn(() => txIDs),
+									count: jest.fn(() => 10),
+								};
+							}
 							if (schema.tableName === mockEventsTableSchema.tableName) {
 								return {
 									find: jest.fn(() => mockEventsForEventTopics),
@@ -337,10 +365,7 @@ describe('getEvents', () => {
 									count: jest.fn(() => 10),
 								};
 							}
-							return {
-								find: jest.fn(() => []),
-								count: jest.fn(() => 10),
-							};
+							throw new Error();
 						}),
 					},
 				},
@@ -374,9 +399,9 @@ describe('getEvents', () => {
 		const resultWithTxIDPadded = await getEvents(paramsWithTopicTxIDPadded);
 		const resultWithTxIDPaddedWithCCMID = await getEvents(paramsWithTopicTxIDPaddedWithCCMID);
 
-		expect(result).toEqual(getEventsResult);
-		expect(resultWithTxIDPadded).toEqual(getEventsResult);
-		expect(resultWithTxIDPaddedWithCCMID).toEqual(getEventsResult);
+		expect(result).toEqual(mockGetEventsResult);
+		expect(resultWithTxIDPadded).toEqual(mockGetEventsResult);
+		expect(resultWithTxIDPaddedWithCCMID).toEqual(mockGetEventsResult);
 	});
 
 	it('should throw a NotFoundException when an invalid blockID is provided', async () => {

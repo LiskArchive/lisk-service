@@ -130,7 +130,7 @@ const mockEventsForEventTopics = [
 	},
 ];
 
-const getEventsResult = {
+const mockGetEventsResult = {
 	data: [
 		{
 			data: {
@@ -358,6 +358,6 @@ const mockEventTopicsQueryParams = {
 module.exports = {
 	mockEventTopics,
 	mockEventsForEventTopics,
-	getEventsResult,
+	mockGetEventsResult,
 	mockEventTopicsQueryParams,
 };
