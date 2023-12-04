@@ -26,6 +26,7 @@ const mockEventsFilePath = path.resolve(
 
 const mockBlocksTableSchema = require('../../../../../shared/database/schema/blocks');
 const mockEventsTableSchema = require('../../../../../shared/database/schema/events');
+const mockTransactionsTableSchema = require('../../../../../shared/database/schema/transactions');
 const mockEventTopicsTableSchema = require('../../../../../shared/database/schema/eventTopics');
 const {
 	mockEventTopics,
@@ -230,6 +231,12 @@ describe('getEvents', () => {
 									}),
 								};
 							}
+							if (schema.tableName === mockTransactionsTableSchema.tableName) {
+								return {
+									find: jest.fn(() => []),
+									count: jest.fn(() => 10),
+								};
+							}
 							if (schema.tableName === mockEventsTableSchema.tableName) {
 								return {
 									find: jest.fn(() => mockEventsForEventTopics),
@@ -330,7 +337,10 @@ describe('getEvents', () => {
 									count: jest.fn(() => 10),
 								};
 							}
-							throw new Error();
+							return {
+								find: jest.fn(() => []),
+								count: jest.fn(() => 10),
+							};
 						}),
 					},
 				},
