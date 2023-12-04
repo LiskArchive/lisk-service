@@ -28,6 +28,7 @@ const config = require('../../../config');
 const blocksTableSchema = require('../../database/schema/blocks');
 const eventsTableSchema = require('../../database/schema/events');
 const eventTopicsTableSchema = require('../../database/schema/eventTopics');
+const transactionsTableSchema = require('../../database/schema/transactions');
 
 const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/param');
@@ -38,6 +39,7 @@ const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 
 const getBlocksTable = () => getTableInstance(blocksTableSchema, MYSQL_ENDPOINT);
 const getEventsTable = () => getTableInstance(eventsTableSchema, MYSQL_ENDPOINT);
+const getTransactionsTable = () => getTableInstance(transactionsTableSchema, MYSQL_ENDPOINT);
 
 const eventCache = CacheLRU('events');
 const eventCacheByBlockID = CacheLRU('eventsByBlockID');
@@ -151,6 +153,28 @@ const getEvents = async params => {
 		const { senderAddress, ...remParams } = params;
 		params = remParams;
 
+		// Get all transactions IDs for sender Address
+		const transactionsTable = await getTransactionsTable();
+		const resultSet = await transactionsTable.find({ senderAddress }, ['id']);
+		const txIDs = resultSet.map(row => row.id);
+
+		const txIDsToQuery = [];
+
+		// eslint-disable-next-line no-restricted-syntax
+		for (const txID of txIDs) {
+			if (txID.length === LENGTH_ID) {
+				txIDsToQuery.push(EVENT_TOPIC_PREFIX.TX_ID.concat(txID));
+			} else if (
+				txID.startsWith(EVENT_TOPIC_PREFIX.TX_ID) &&
+				txID.length === EVENT_TOPIC_PREFIX.TX_ID.length + LENGTH_ID
+			) {
+				// Check for the transaction ID both with and without the topic prefix
+				txIDsToQuery.push(txID.slice(EVENT_TOPIC_PREFIX.TX_ID.length));
+			}
+
+			txIDsToQuery.push(txID);
+		}
+
 		params.leftOuterJoin.push({
 			targetTable: `${eventTopicsTableSchema.tableName} as eventTopicsForSenderAddress`,
 			leftColumn: `${eventsTableSchema.tableName}.id`,
@@ -159,7 +183,7 @@ const getEvents = async params => {
 
 		params.whereIn.push({
 			property: 'eventTopicsForSenderAddress.topic',
-			values: [senderAddress],
+			values: txIDsToQuery,
 		});
 	}
 
