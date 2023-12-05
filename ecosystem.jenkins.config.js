@@ -110,6 +110,7 @@ module.exports = {
 				ENABLE_DATA_RETRIEVAL_MODE: true,
 				ENABLE_INDEXING_MODE: true,
 				ENABLE_PERSIST_EVENTS: false,
+				// INVOKE_ALLOWED_METHODS: '',
 			},
 		},
 		{
