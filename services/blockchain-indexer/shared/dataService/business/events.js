@@ -28,6 +28,7 @@ const config = require('../../../config');
 const blocksTableSchema = require('../../database/schema/blocks');
 const eventsTableSchema = require('../../database/schema/events');
 const eventTopicsTableSchema = require('../../database/schema/eventTopics');
+const transactionsTableSchema = require('../../database/schema/transactions');
 
 const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/param');
@@ -38,6 +39,7 @@ const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 
 const getBlocksTable = () => getTableInstance(blocksTableSchema, MYSQL_ENDPOINT);
 const getEventsTable = () => getTableInstance(eventsTableSchema, MYSQL_ENDPOINT);
+const getTransactionsTable = () => getTableInstance(transactionsTableSchema, MYSQL_ENDPOINT);
 
 const eventCache = CacheLRU('events');
 const eventCacheByBlockID = CacheLRU('eventsByBlockID');
@@ -124,15 +126,11 @@ const getEvents = async params => {
 		const { transactionID, ...remParams } = params;
 		params = remParams;
 
-		const allTxIDs = [transactionID];
+		const allTxIDs = [];
 		if (transactionID.length === LENGTH_ID) {
 			allTxIDs.push(EVENT_TOPIC_PREFIX.TX_ID.concat(transactionID));
-		} else if (
-			transactionID.startsWith(EVENT_TOPIC_PREFIX.TX_ID) &&
-			transactionID.length === EVENT_TOPIC_PREFIX.TX_ID.length + LENGTH_ID
-		) {
-			// Check for the transaction ID both with and without the topic prefix
-			allTxIDs.push(transactionID.slice(EVENT_TOPIC_PREFIX.TX_ID.length));
+		} else {
+			allTxIDs.push(transactionID);
 		}
 
 		params.leftOuterJoin.push({
@@ -151,6 +149,22 @@ const getEvents = async params => {
 		const { senderAddress, ...remParams } = params;
 		params = remParams;
 
+		// Get all transactions IDs for sender Address
+		const transactionsTable = await getTransactionsTable();
+		const resultSet = await transactionsTable.find({ senderAddress }, ['id']);
+		const txIDs = resultSet.map(row => row.id);
+
+		const txIDsToQuery = [];
+
+		// eslint-disable-next-line no-restricted-syntax
+		for (const txID of txIDs) {
+			if (txID.length === LENGTH_ID) {
+				txIDsToQuery.push(EVENT_TOPIC_PREFIX.TX_ID.concat(txID));
+			} else {
+				txIDsToQuery.push(txID);
+			}
+		}
+
 		params.leftOuterJoin.push({
 			targetTable: `${eventTopicsTableSchema.tableName} as eventTopicsForSenderAddress`,
 			leftColumn: `${eventsTableSchema.tableName}.id`,
@@ -159,7 +173,7 @@ const getEvents = async params => {
 
 		params.whereIn.push({
 			property: 'eventTopicsForSenderAddress.topic',
-			values: [senderAddress],
+			values: txIDsToQuery,
 		});
 	}
 
@@ -197,21 +211,12 @@ const getEvents = async params => {
 		params = remParams;
 
 		const topics = topic.split(',');
+		const topicsToQuery = [];
 		topics.forEach(t => {
 			if (t.length === LENGTH_ID) {
-				topics.push(EVENT_TOPIC_PREFIX.TX_ID.concat(t), EVENT_TOPIC_PREFIX.CCM_ID.concat(t));
-			} else if (
-				t.startsWith(EVENT_TOPIC_PREFIX.TX_ID) &&
-				t.length === EVENT_TOPIC_PREFIX.TX_ID.length + LENGTH_ID
-			) {
-				// Check for the transaction ID both with and without the topic prefix
-				topics.push(t.slice(EVENT_TOPIC_PREFIX.TX_ID.length));
-			} else if (
-				t.startsWith(EVENT_TOPIC_PREFIX.CCM_ID) &&
-				t.length === EVENT_TOPIC_PREFIX.CCM_ID.length + LENGTH_ID
-			) {
-				// Check for CCM ID both with and without the topic prefix
-				topics.push(t.slice(EVENT_TOPIC_PREFIX.CCM_ID.length));
+				topicsToQuery.push(EVENT_TOPIC_PREFIX.TX_ID.concat(t), EVENT_TOPIC_PREFIX.CCM_ID.concat(t));
+			} else {
+				topicsToQuery.push(t);
 			}
 		});
 
@@ -223,7 +228,7 @@ const getEvents = async params => {
 
 		params.whereIn.push({
 			property: 'eventTopicsForTopic.topic',
-			values: topics,
+			values: topicsToQuery,
 		});
 	}
 

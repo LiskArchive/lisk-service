@@ -127,7 +127,7 @@ module.exports = {
 				// SERVICE_LOG_FILE: false,
 				// DOCKER_HOST: 'local',
 				// GENESIS_BLOCK_URL: 'https://downloads.lisk.com/lisk/mainnet/genesis_block.json.tar.gz',
-				// CLIENT_INSTANTIATION_MAX_WAIT_TIME: 100,
+				// CLIENT_INSTANTIATION_MAX_WAIT_TIME: 5000,
 				// CLIENT_INSTANTIATION_RETRY_INTERVAL: 1,
 				// CLIENT_ALIVE_ASSUMPTION_TIME: 5 * 1000,
 				// HEARTBEAT_ACK_MAX_WAIT_TIME: 1000,
