@@ -159,6 +159,14 @@ describe('invokeEndpoint', () => {
 			requestConnector: jest.fn(() => mockBlockByHeightRes),
 		}));
 
+		jest.mock('../../../../../config', () => {
+			const actual = jest.requireActual(mockedFilePath);
+			return {
+				...actual,
+				invokeAllowedMethods: ['*'],
+			};
+		});
+
 		const params = {
 			endpoint: 'chain_getBlockByHeight',
 			params: {
@@ -172,6 +180,30 @@ describe('invokeEndpoint', () => {
 			data: mockBlockByHeightRes,
 			meta: params,
 		});
+	});
+
+	it('should throw error if module or endpoint is not allowed', async () => {
+		jest.mock('../../../../../shared/utils/request', () => ({
+			requestConnector: jest.fn(() => mockBlockByHeightRes),
+		}));
+
+		jest.mock('../../../../../config', () => {
+			const actual = jest.requireActual(mockedFilePath);
+			return {
+				...actual,
+				invokeAllowedMethods: ['legacy'],
+			};
+		});
+
+		const params = {
+			endpoint: 'chain_getBlockByHeight',
+			params: {
+				height: 10,
+			},
+		};
+
+		const { invokeEndpoint } = require('../../../../../shared/dataService/business/invoke');
+		expect(() => invokeEndpoint(params)).rejects.toThrow();
 	});
 
 	it('should throw error when node is not reachable', async () => {
