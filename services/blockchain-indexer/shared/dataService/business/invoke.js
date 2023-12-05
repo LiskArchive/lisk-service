@@ -29,7 +29,7 @@ const {
 } = require('../../constants');
 const config = require('../../../config');
 
-const DISABLE_CHAIN_ENDPOINTS_INVOCATION = config.disableChainEndpointsInvocation;
+const INVOKE_ALLOWED_METHODS = config.invokeAllowedMethods;
 
 const checkIfEndpointRegistered = async endpoint => {
 	const allRegisteredEndpoints = await getAllRegisteredEndpoints();
@@ -70,17 +70,31 @@ const validateEndpointParams = async invokeEndpointParams => {
 	}
 };
 
-const checkIfEndpointDisabled = (endpoint) => DISABLE_CHAIN_ENDPOINTS_INVOCATION && endpoint.includes('chain');
+const checkIfEndpointAllowed = endpoint => {
+	if (INVOKE_ALLOWED_METHODS.includes('*')) {
+		return true;
+	}
 
+	// eslint-disable-next-line no-restricted-syntax
+	for (const allowedMethod of INVOKE_ALLOWED_METHODS) {
+		if (endpoint.includes(allowedMethod)) {
+			return true;
+		}
+	}
+
+	return false;
+};
 const invokeEndpoint = async params => {
 	const invokeEndpointRes = {
 		data: {},
 		meta: {},
 	};
 
-	const isEndpointDisabled = checkIfEndpointDisabled(params.endpoint);
-	if (isEndpointDisabled) {
-		throw new ValidationException(`Endpoint '${params.endpoint}' is disabled with DISABLE_CHAIN_ENDPOINTS_INVOCATION config.`);
+	const isEndpointAllowed = checkIfEndpointAllowed(params.endpoint);
+	if (!isEndpointAllowed) {
+		throw new ValidationException(
+			`Endpoint '${params.endpoint}' is disabled with INVOKE_ALLOWED_METHODS config.`,
+		);
 	}
 
 	const isRegisteredEndpoint = await checkIfEndpointRegistered(params.endpoint);
