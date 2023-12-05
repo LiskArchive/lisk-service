@@ -65,6 +65,7 @@ A list of the most commonly used environment variables is presented below:
 - `JOB_SCHEDULE_TRIGGER_ACCOUNT_UPDATES`: Job run cron schedule to trigger account updates. By default, it is set to run every 15th minute (`*/15 * * * *`).
 - `ESTIMATES_BUFFER_BYTES_LENGTH`: Transaction buffer bytes to consider when estimating the transaction fees. By default, it is set to 0.
 - `MAINCHAIN_SERVICE_URL`: Mainchain service URL for custom deployments.
+- `INVOKE_ALLOWED_METHODS`: List of allowed methods that can be invoked via `invoke` api endpoint. The list can be expressed as a CSV. `*` indicates all endpoints can be invoked. Example: `*`, `legacy,chain`, `chain_getBlocksByIDs`
 
 > **Note**: `interval` takes priority over `schedule` and must be greater than 0 to be valid for all the moleculer job configurations.
 
