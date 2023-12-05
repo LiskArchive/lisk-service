@@ -64,11 +64,6 @@ const normalizeTransactions = async txs => {
 	return normalizedTransactions;
 };
 
-const getTransactionByID = async id => {
-	const response = await requestConnector('getTransactionByID', { id });
-	return normalizeTransaction(response);
-};
-
 const getTransactionsByIDs = async ids => {
 	const response = await requestConnector('getTransactionsByIDs', { ids });
 	return normalizeTransactions(response);
@@ -146,11 +141,6 @@ const getTransactions = async params => {
 			transactions.data = transactions.data.concat(
 				await getTransactionsByIDs(params.ids.slice(i * BATCH_SIZE, (i + 1) * BATCH_SIZE)),
 			);
-		}
-	} else if (params.id) {
-		transactions.data.push(await getTransactionByID(params.id));
-		if ('offset' in params && params.limit) {
-			transactions.data = transactions.data.slice(params.offset, params.offset + params.limit);
 		}
 	}
 
