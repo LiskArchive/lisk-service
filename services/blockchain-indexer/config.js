@@ -213,6 +213,6 @@ config.estimateFees = {
 	bufferBytesLength: Number(process.env.ESTIMATES_BUFFER_BYTES_LENGTH) || 0,
 };
 
-config.invokeAllowedMethods = String(process.env.INVOKE_ALLOWED_METHODS).split(',');
+config.invokeAllowedMethods = String(process.env.INVOKE_ALLOWED_METHODS || '').split(',');
 
 module.exports = config;

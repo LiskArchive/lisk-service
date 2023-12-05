@@ -70,7 +70,7 @@ const validateEndpointParams = async invokeEndpointParams => {
 	}
 };
 
-const checkIfEndpointAllowed = endpoint => {
+const checkIfEndpointInvocationAllowed = endpoint => {
 	if (INVOKE_ALLOWED_METHODS.includes('*')) {
 		return true;
 	}
@@ -90,7 +90,7 @@ const invokeEndpoint = async params => {
 		meta: {},
 	};
 
-	const isEndpointAllowed = checkIfEndpointAllowed(params.endpoint);
+	const isEndpointAllowed = checkIfEndpointInvocationAllowed(params.endpoint);
 	if (!isEndpointAllowed) {
 		throw new ValidationException(
 			`Proxy invocation of endpoint '${params.endpoint}' is not allowed.`,
@@ -114,7 +114,9 @@ const invokeEndpoint = async params => {
 		invokeEndpointRes.data = await requestConnector('invokeEndpoint', params);
 		invokeEndpointRes.meta = params;
 	} catch (err) {
-		throw new ServiceUnavailableException(`Node is not reachable at the moment.\nError: ${err.message}`);
+		throw new ServiceUnavailableException(
+			`Node is not reachable at the moment.\nError: ${err.message}`,
+		);
 	}
 
 	return invokeEndpointRes;
