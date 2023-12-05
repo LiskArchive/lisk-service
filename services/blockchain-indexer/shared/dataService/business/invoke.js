@@ -75,14 +75,7 @@ const checkIfEndpointInvocationAllowed = endpoint => {
 		return true;
 	}
 
-	// eslint-disable-next-line no-restricted-syntax
-	for (const allowedMethod of INVOKE_ALLOWED_METHODS) {
-		if (endpoint.startsWith(allowedMethod)) {
-			return true;
-		}
-	}
-
-	return false;
+	return INVOKE_ALLOWED_METHODS.some(allowedMethod => endpoint.startsWith(allowedMethod));
 };
 const invokeEndpoint = async params => {
 	const invokeEndpointRes = {
