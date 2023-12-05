@@ -77,7 +77,7 @@ const checkIfEndpointAllowed = endpoint => {
 
 	// eslint-disable-next-line no-restricted-syntax
 	for (const allowedMethod of INVOKE_ALLOWED_METHODS) {
-		if (endpoint.includes(allowedMethod)) {
+		if (endpoint.startsWith(allowedMethod)) {
 			return true;
 		}
 	}
@@ -93,7 +93,7 @@ const invokeEndpoint = async params => {
 	const isEndpointAllowed = checkIfEndpointAllowed(params.endpoint);
 	if (!isEndpointAllowed) {
 		throw new ValidationException(
-			`Endpoint '${params.endpoint}' is disabled with INVOKE_ALLOWED_METHODS config.`,
+			`Proxy invocation of endpoint '${params.endpoint}' is not allowed.`,
 		);
 	}
 
@@ -114,7 +114,7 @@ const invokeEndpoint = async params => {
 		invokeEndpointRes.data = await requestConnector('invokeEndpoint', params);
 		invokeEndpointRes.meta = params;
 	} catch (err) {
-		throw new ServiceUnavailableException(`Node is not reachable at the moment.\nError:${err}`);
+		throw new ServiceUnavailableException(`Node is not reachable at the moment.\nError: ${err.message}`);
 	}
 
 	return invokeEndpointRes;
