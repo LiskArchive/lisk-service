@@ -126,15 +126,11 @@ const getEvents = async params => {
 		const { transactionID, ...remParams } = params;
 		params = remParams;
 
-		const allTxIDs = [transactionID];
+		const allTxIDs = [];
 		if (transactionID.length === LENGTH_ID) {
 			allTxIDs.push(EVENT_TOPIC_PREFIX.TX_ID.concat(transactionID));
-		} else if (
-			transactionID.startsWith(EVENT_TOPIC_PREFIX.TX_ID) &&
-			transactionID.length === EVENT_TOPIC_PREFIX.TX_ID.length + LENGTH_ID
-		) {
-			// Check for the transaction ID both with and without the topic prefix
-			allTxIDs.push(transactionID.slice(EVENT_TOPIC_PREFIX.TX_ID.length));
+		} else {
+			allTxIDs.push(transactionID);
 		}
 
 		params.leftOuterJoin.push({
@@ -164,15 +160,9 @@ const getEvents = async params => {
 		for (const txID of txIDs) {
 			if (txID.length === LENGTH_ID) {
 				txIDsToQuery.push(EVENT_TOPIC_PREFIX.TX_ID.concat(txID));
-			} else if (
-				txID.startsWith(EVENT_TOPIC_PREFIX.TX_ID) &&
-				txID.length === EVENT_TOPIC_PREFIX.TX_ID.length + LENGTH_ID
-			) {
-				// Check for the transaction ID both with and without the topic prefix
-				txIDsToQuery.push(txID.slice(EVENT_TOPIC_PREFIX.TX_ID.length));
+			} else {
+				txIDsToQuery.push(txID);
 			}
-
-			txIDsToQuery.push(txID);
 		}
 
 		params.leftOuterJoin.push({
@@ -221,21 +211,12 @@ const getEvents = async params => {
 		params = remParams;
 
 		const topics = topic.split(',');
+		const topicsToQuery = [];
 		topics.forEach(t => {
 			if (t.length === LENGTH_ID) {
-				topics.push(EVENT_TOPIC_PREFIX.TX_ID.concat(t), EVENT_TOPIC_PREFIX.CCM_ID.concat(t));
-			} else if (
-				t.startsWith(EVENT_TOPIC_PREFIX.TX_ID) &&
-				t.length === EVENT_TOPIC_PREFIX.TX_ID.length + LENGTH_ID
-			) {
-				// Check for the transaction ID both with and without the topic prefix
-				topics.push(t.slice(EVENT_TOPIC_PREFIX.TX_ID.length));
-			} else if (
-				t.startsWith(EVENT_TOPIC_PREFIX.CCM_ID) &&
-				t.length === EVENT_TOPIC_PREFIX.CCM_ID.length + LENGTH_ID
-			) {
-				// Check for CCM ID both with and without the topic prefix
-				topics.push(t.slice(EVENT_TOPIC_PREFIX.CCM_ID.length));
+				topicsToQuery.push(EVENT_TOPIC_PREFIX.TX_ID.concat(t), EVENT_TOPIC_PREFIX.CCM_ID.concat(t));
+			} else {
+				topicsToQuery.push(t);
 			}
 		});
 
@@ -247,7 +228,7 @@ const getEvents = async params => {
 
 		params.whereIn.push({
 			property: 'eventTopicsForTopic.topic',
-			values: topics,
+			values: topicsToQuery,
 		});
 	}
 
