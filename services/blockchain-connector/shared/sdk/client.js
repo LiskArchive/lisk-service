@@ -75,7 +75,8 @@ const checkIsClientAlive = async () =>
 		wsInstance.ping(() => {});
 
 		// eslint-disable-next-line consistent-return
-		setTimeout(() => {
+		const timeout = setTimeout(() => {
+			clearTimeout(timeout);
 			wsInstance.removeListener('pong', boundPongListener);
 			if (!isClientAlive) return resolve(false);
 		}, HEARTBEAT_ACK_MAX_WAIT_TIME);
@@ -109,6 +110,9 @@ const instantiateClient = async (isForceReInstantiate = false) => {
 
 		if (Date.now() - instantiationBeginTime > MAX_INSTANTIATION_WAIT_TIME) {
 			// Waited too long, reset the flag to re-attempt client instantiation
+			logger.warn(
+				`MAX_INSTANTIATION_WAIT_TIME of ${MAX_INSTANTIATION_WAIT_TIME}ms has expired. Resetting isInstantiating to false.`,
+			);
 			isInstantiating = false;
 		}
 	} catch (err) {
