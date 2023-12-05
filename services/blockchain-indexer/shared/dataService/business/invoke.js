@@ -27,6 +27,9 @@ const {
 	getEngineEndpoints,
 	getAllRegisteredEndpoints,
 } = require('../../constants');
+const config = require('../../../config');
+
+const DISABLE_CHAIN_ENDPOINTS_INVOCATION = config.disableChainEndpointsInvocation;
 
 const checkIfEndpointRegistered = async endpoint => {
 	const allRegisteredEndpoints = await getAllRegisteredEndpoints();
@@ -67,11 +70,18 @@ const validateEndpointParams = async invokeEndpointParams => {
 	}
 };
 
+const checkIfEndpointDisabled = (endpoint) => DISABLE_CHAIN_ENDPOINTS_INVOCATION && endpoint.includes('chain');
+
 const invokeEndpoint = async params => {
 	const invokeEndpointRes = {
 		data: {},
 		meta: {},
 	};
+
+	const isEndpointDisabled = checkIfEndpointDisabled(params.endpoint);
+	if (isEndpointDisabled) {
+		throw new ValidationException(`Endpoint '${params.endpoint}' is disabled with DISABLE_CHAIN_ENDPOINTS_INVOCATION config.`);
+	}
 
 	const isRegisteredEndpoint = await checkIfEndpointRegistered(params.endpoint);
 	if (!isRegisteredEndpoint) {
@@ -90,7 +100,7 @@ const invokeEndpoint = async params => {
 		invokeEndpointRes.data = await requestConnector('invokeEndpoint', params);
 		invokeEndpointRes.meta = params;
 	} catch (err) {
-		throw new ServiceUnavailableException('Node is not reachable at the moment.');
+		throw new ServiceUnavailableException(`Node is not reachable at the moment.\nError:${err}`);
 	}
 
 	return invokeEndpointRes;

@@ -138,8 +138,8 @@ const engineEndpoints = [
 				id: {
 					type: 'string',
 					format: 'hex',
-					minLength: 32,
-					maxLength: 32,
+					minLength: 64,
+					maxLength: 64,
 				},
 			},
 		},
@@ -156,8 +156,8 @@ const engineEndpoints = [
 					items: {
 						type: 'string',
 						format: 'hex',
-						minLength: 32,
-						maxLength: 32,
+						minLength: 64,
+						maxLength: 64,
 					},
 				},
 			},
@@ -205,8 +205,8 @@ const engineEndpoints = [
 				id: {
 					type: 'string',
 					format: 'hex',
-					minLength: 32,
-					maxLength: 32,
+					minLength: 64,
+					maxLength: 64,
 				},
 			},
 		},
@@ -223,8 +223,8 @@ const engineEndpoints = [
 					items: {
 						type: 'string',
 						format: 'hex',
-						minLength: 32,
-						maxLength: 32,
+						minLength: 64,
+						maxLength: 64,
 					},
 				},
 			},
@@ -379,7 +379,16 @@ const engineEndpoints = [
 	},
 	{
 		name: 'txpool_getTransactionsFromPool',
-		request: null,
+		request: {
+			$id: '/generator/getTransactionsFromPool',
+			type: 'object',
+			properties: {
+				address: {
+					type: 'string',
+					format: 'lisk32',
+				},
+			},
+		},
 	},
 	{
 		name: 'txpool_dryRunTransaction',

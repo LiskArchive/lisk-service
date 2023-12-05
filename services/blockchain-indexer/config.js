@@ -213,4 +213,6 @@ config.estimateFees = {
 	bufferBytesLength: Number(process.env.ESTIMATES_BUFFER_BYTES_LENGTH) || 0,
 };
 
+config.disableChainEndpointsInvocation = String(process.env.DISABLE_CHAIN_ENDPOINTS_INVOCATION).toLowerCase() !== 'false';
+
 module.exports = config;
