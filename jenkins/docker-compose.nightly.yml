@@ -14,7 +14,7 @@ services:
       test: echo $$(wget --server-response http://nats:8222/varz 2>&1 | grep  '200 OK') | grep '200'  || exit 1
 
   redis_persistent:
-    image: redis:5-alpine
+    image: redis:7-alpine
     volumes:
       - ../docker/redis.persistent.conf:/etc/redis/redis.conf:ro
       - redis-data:/data
@@ -26,7 +26,7 @@ services:
       test: redis-cli ping
 
   redis_volatile:
-    image: redis:5-alpine
+    image: redis:7-alpine
     volumes:
       - ../docker/redis.volatile.conf:/etc/redis/redis.conf:ro
     networks:
