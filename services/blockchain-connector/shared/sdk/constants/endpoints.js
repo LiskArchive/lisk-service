@@ -99,6 +99,38 @@ const plainKeysObjectSchema = {
 
 const engineEndpoints = [
 	{
+		name: 'legacy_getTransactionByID',
+		request: {
+			$id: '/lisk/legacy/getTransactionByIDRequest',
+			type: 'object',
+			required: ['id'],
+			properties: {
+				id: {
+					type: 'string',
+					format: 'hex',
+					minLength: 64,
+					maxLength: 64,
+				},
+			},
+		},
+	},
+	{
+		name: 'legacy_getTransactionsByBlockID',
+		request: {
+			$id: '/lisk/legacy/getTransactionsByBlockIDRequest',
+			type: 'object',
+			required: ['id'],
+			properties: {
+				id: {
+					type: 'string',
+					format: 'hex',
+					minLength: 64,
+					maxLength: 64,
+				},
+			},
+		},
+	},
+	{
 		name: 'legacy_getBlockByID',
 		request: {
 			$id: '/lisk/legacy/getBlockByIDRequest',
@@ -108,8 +140,8 @@ const engineEndpoints = [
 				id: {
 					type: 'string',
 					format: 'hex',
-					minLength: 32,
-					maxLength: 32,
+					minLength: 64,
+					maxLength: 64,
 				},
 			},
 		},
@@ -127,6 +159,10 @@ const engineEndpoints = [
 				},
 			},
 		},
+	},
+	{
+		name: 'legacy_getLegacyBrackets',
+		request: null,
 	},
 	{
 		name: 'chain_getBlockByID',
@@ -328,6 +364,20 @@ const engineEndpoints = [
 		},
 	},
 	{
+		name: 'consensus_getBFTParametersActiveValidators',
+		request: {
+			$id: '/lisk/chain/getBFTParametersActiveValidatorsRequest',
+			type: 'object',
+			required: ['height'],
+			properties: {
+				height: {
+					type: 'integer',
+					minimum: 0,
+				},
+			},
+		},
+	},
+	{
 		name: 'consensus_getBFTHeights',
 		request: null,
 	},
@@ -356,17 +406,27 @@ const engineEndpoints = [
 		request: null,
 	},
 	{
-		name: 'system_getrequest',
-		request: {},
+		name: 'system_getSchema',
+		request: null,
 	},
 	{
 		name: 'system_getMetricsReport',
-		request: null,
+		request: {
+			$id: '/lisk/system/getMetricsReportRequest',
+			type: 'object',
+			required: [],
+			properties: {
+				inString: {
+					type: 'boolean',
+				},
+			},
+		},
 	},
 	{
 		name: 'txpool_postTransaction',
 		request: {
 			$id: '/lisk/postTransaction',
+			title: 'Transactions',
 			type: 'object',
 			required: ['transaction'],
 			properties: {
@@ -394,6 +454,7 @@ const engineEndpoints = [
 		name: 'txpool_dryRunTransaction',
 		request: {
 			$id: '/lisk/dryRunTransaction',
+			title: 'Transactions',
 			type: 'object',
 			required: ['transaction'],
 			properties: {
@@ -402,6 +463,10 @@ const engineEndpoints = [
 					format: 'hex',
 				},
 				skipVerify: {
+					type: 'boolean',
+					default: false,
+				},
+				strict: {
 					type: 'boolean',
 					default: false,
 				},
@@ -416,6 +481,7 @@ const engineEndpoints = [
 		name: 'generator_setStatus',
 		request: {
 			$id: '/lisk/setStatusRequest',
+			title: 'Set block generation status',
 			type: 'object',
 			required: ['address', 'height', 'maxHeightGenerated', 'maxHeightPrevoted'],
 			properties: {
@@ -442,6 +508,7 @@ const engineEndpoints = [
 		name: 'generator_updateStatus',
 		request: {
 			$id: '/lisk/updateStatusRequest',
+			title: 'Update block generation status',
 			type: 'object',
 			required: [
 				'address',
