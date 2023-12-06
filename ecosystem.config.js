@@ -26,7 +26,7 @@ module.exports = {
 			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
 			watch: false,
 			kill_timeout: 10000,
-			max_memory_restart: '500M',
+			max_memory_restart: '250M',
 			autorestart: true,
 			env: {
 				// --- Remember to set the properties below
@@ -75,7 +75,7 @@ module.exports = {
 			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
 			watch: false,
 			kill_timeout: 10000,
-			max_memory_restart: '500M',
+			max_memory_restart: '250M',
 			autorestart: true,
 			env: {
 				// --- Remember to set the properties below
@@ -107,7 +107,7 @@ module.exports = {
 			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
 			watch: false,
 			kill_timeout: 10000,
-			max_memory_restart: '500M',
+			max_memory_restart: '1000M',
 			autorestart: true,
 			env: {
 				// --- Remember to set the properties below
@@ -150,7 +150,7 @@ module.exports = {
 			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
 			watch: false,
 			kill_timeout: 10000,
-			max_memory_restart: '1000M',
+			max_memory_restart: '500M',
 			autorestart: true,
 			env: {
 				// --- Remember to set the properties below
@@ -208,7 +208,7 @@ module.exports = {
 			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
 			watch: false,
 			kill_timeout: 10000,
-			max_memory_restart: '500M',
+			max_memory_restart: '250M',
 			autorestart: true,
 			env: {
 				// --- Remember to set the properties below
@@ -237,7 +237,7 @@ module.exports = {
 			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
 			watch: false,
 			kill_timeout: 10000,
-			max_memory_restart: '500M',
+			max_memory_restart: '250M',
 			autorestart: true,
 			env: {
 				// --- Remember to set the properties below
@@ -269,7 +269,7 @@ module.exports = {
 			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
 			watch: false,
 			kill_timeout: 10000,
-			max_memory_restart: '500M',
+			max_memory_restart: '250M',
 			autorestart: true,
 			env: {
 				// --- Remember to set the properties below
@@ -301,7 +301,7 @@ module.exports = {
 			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
 			watch: false,
 			kill_timeout: 10000,
-			max_memory_restart: '500M',
+			max_memory_restart: '250M',
 			autorestart: true,
 			env: {
 				// --- Remember to set the properties below
@@ -339,7 +339,7 @@ module.exports = {
 			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
 			watch: false,
 			kill_timeout: 10000,
-			max_memory_restart: '500M',
+			max_memory_restart: '250M',
 			autorestart: true,
 			env: {
 				SERVICE_BROKER: 'redis://127.0.0.1:6379/0',

@@ -26,7 +26,7 @@ module.exports = {
 			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
 			watch: false,
 			kill_timeout: 10000,
-			max_memory_restart: '500M',
+			max_memory_restart: '250M',
 			autorestart: true,
 			env: {
 				PORT: 9901,
@@ -57,7 +57,7 @@ module.exports = {
 			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
 			watch: false,
 			kill_timeout: 10000,
-			max_memory_restart: '500M',
+			max_memory_restart: '250',
 			autorestart: true,
 			env: {
 				// --- Remember to set the properties below
@@ -76,7 +76,7 @@ module.exports = {
 			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
 			watch: false,
 			kill_timeout: 10000,
-			max_memory_restart: '500M',
+			max_memory_restart: '1000M',
 			autorestart: true,
 			env: {
 				// --- Remember to set the properties below
@@ -98,7 +98,7 @@ module.exports = {
 			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
 			watch: false,
 			kill_timeout: 10000,
-			max_memory_restart: '1000M',
+			max_memory_restart: '500M',
 			autorestart: true,
 			env: {
 				// --- Remember to set the properties below
@@ -122,7 +122,7 @@ module.exports = {
 			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
 			watch: false,
 			kill_timeout: 10000,
-			max_memory_restart: '500M',
+			max_memory_restart: '250M',
 			autorestart: true,
 			env: {
 				// --- Remember to set the properties below
@@ -140,7 +140,7 @@ module.exports = {
 			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
 			watch: false,
 			kill_timeout: 10000,
-			max_memory_restart: '500M',
+			max_memory_restart: '250M',
 			autorestart: true,
 			env: {
 				// --- Remember to set the properties below
@@ -160,14 +160,14 @@ module.exports = {
 			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
 			watch: false,
 			kill_timeout: 10000,
-			max_memory_restart: '500M',
+			max_memory_restart: '250M',
 			autorestart: true,
 			env: {
 				// --- Remember to set the properties below
 				SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
 				SERVICE_STATISTICS_REDIS: 'redis://127.0.0.1:6379/1',
 				SERVICE_STATISTICS_MYSQL: 'mysql://lisk:password@127.0.0.1:3306/lisk',
-				TRANSACTION_STATS_HISTORY_LENGTH_DAYS: 366,
+				// TRANSACTION_STATS_HISTORY_LENGTH_DAYS: 366,
 			},
 		},
 		{
@@ -180,14 +180,51 @@ module.exports = {
 			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
 			watch: false,
 			kill_timeout: 10000,
-			max_memory_restart: '500M',
+			max_memory_restart: '250M',
 			autorestart: true,
 			env: {
 				SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
 				SERVICE_MARKET_REDIS: 'redis://127.0.0.1:6379/2',
-				SERVICE_MARKET_FIAT_CURRENCIES: 'EUR,USD,CHF,GBP,RUB',
-				SERVICE_MARKET_TARGET_PAIRS: 'LSK_BTC,LSK_EUR,LSK_USD,LSK_CHF,BTC_EUR,BTC_USD,BTC_CHF',
+				// SERVICE_MARKET_FIAT_CURRENCIES: 'EUR,USD,CHF,GBP,RUB',
+				// SERVICE_MARKET_TARGET_PAIRS: 'LSK_BTC,LSK_EUR,LSK_USD,LSK_CHF,BTC_EUR,BTC_USD,BTC_CHF',
 				// EXCHANGERATESAPI_IO_API_KEY: ''
+			},
+		},
+		{
+			name: 'lisk-service-export',
+			script: 'app.js',
+			cwd: './services/export',
+			pid_file: './pids/service_export.pid',
+			out_file: './logs/service_export.log',
+			error_file: './logs/service_export.err',
+			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
+			watch: false,
+			kill_timeout: 10000,
+			max_memory_restart: '250M',
+			autorestart: true,
+			env: {
+				SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
+				SERVICE_EXPORT_REDIS: 'redis://127.0.0.1:6379/3',
+				SERVICE_EXPORT_REDIS_VOLATILE: 'redis://127.0.0.1:6379/4',
+				// SERVICE_EXPORT_PARTIALS: './data/partials',
+				// EXPORT_S3_BUCKET_NAME_PARTIALS: 'partials',
+				// SERVICE_EXPORT_STATIC: './data/static',
+				// EXPORT_S3_BUCKET_NAME_EXPORTS: 'exports',
+				// SERVICE_BROKER_TIMEOUT: 10,
+				// SERVICE_LOG_LEVEL: 'info',
+				// SERVICE_LOG_CONSOLE: false,
+				// SERVICE_LOG_STDOUT: true,
+				// SERVICE_LOG_GELF: false,
+				// SERVICE_LOG_FILE: false,
+				// DOCKER_HOST: 'local',
+				// EXPORT_S3_ENDPOINT: 's3.amazonaws.com',
+				// EXPORT_S3_ACCESS_KEY: '',
+				// EXPORT_S3_SECRET_KEY: '',
+				// EXPORT_S3_SESSION_TOKEN: '',
+				// EXPORT_S3_REGION: 'eu-central-1',
+				// EXPORT_S3_BUCKET_NAME: 'export',
+				// JOB_INTERVAL_CACHE_PURGE: 0,
+				// JOB_SCHEDULE_CACHE_PURGE: '45 4 * * *',
 			},
 		},
 	],
