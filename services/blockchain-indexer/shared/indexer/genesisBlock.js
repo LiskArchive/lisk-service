@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const BluebirdPromise = require('bluebird');
+
 const {
 	DB: {
 		MySQL: { getTableInstance },
@@ -23,21 +25,27 @@ const {
 
 const { MODULE, MODULE_SUB_STORE, getGenesisHeight } = require('../constants');
 const { updateTotalStake, updateTotalSelfStake } = require('./transactionProcessor/pos/stake');
-const { requestConnector } = require('../utils/request');
 const { updateAccountBalances } = require('./accountBalanceIndex');
+const { indexAccountPublicKey, triggerAccountUpdates } = require('./accountIndex');
 const { updateTotalLockedAmounts } = require('./utils/blockchainIndex');
+const { getIndexStats } = require('./indexStatus');
 
 const requestAll = require('../utils/requestAll');
 const config = require('../../config');
+const accountsTableSchema = require('../database/schema/accounts');
 const stakesTableSchema = require('../database/schema/stakes');
 const commissionsTableSchema = require('../database/schema/commissions');
-const { getIndexStats } = require('./indexStatus');
+
+const { getLisk32AddressFromPublicKey } = require('../utils/account');
+const { requestConnector } = require('../utils/request');
+const { INVALID_ED25519_KEY } = require('../constants');
 
 const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getStakesTable = () => getTableInstance(stakesTableSchema, MYSQL_ENDPOINT);
+const getAccountsTable = () => getTableInstance(accountsTableSchema, MYSQL_ENDPOINT);
 const getCommissionsTable = () => getTableInstance(commissionsTableSchema, MYSQL_ENDPOINT);
 
 const allAccountsAddresses = [];
@@ -82,6 +90,8 @@ const indexTokenModuleAssets = async dbTrx => {
 	logger.info('Finished indexing all the genesis assets from the Token module.');
 };
 
+const isGeneratorKeyValid = generatorKey => generatorKey !== INVALID_ED25519_KEY;
+
 const indexPosValidatorsInfo = async (numValidators, dbTrx) => {
 	logger.debug(
 		'Starting to index the PoS Validators information from the genesis PoS module assets.',
@@ -99,11 +109,30 @@ const indexPosValidatorsInfo = async (numValidators, dbTrx) => {
 		const validators = posModuleData[MODULE_SUB_STORE.POS.VALIDATORS];
 		const genesisHeight = await getGenesisHeight();
 
-		const commissionEntries = validators.map(validator => ({
-			address: validator.address,
-			commission: validator.commission,
-			height: genesisHeight,
-		}));
+		const commissionEntries = await BluebirdPromise.map(
+			validators,
+			async validator => {
+				// Index all valid public keys
+				if (isGeneratorKeyValid(validator.generatorKey)) {
+					const account = {
+						address: getLisk32AddressFromPublicKey(validator.generatorKey),
+						publicKey: validator.generatorKey,
+					};
+
+					const accountsTable = await getAccountsTable();
+					await accountsTable
+						.upsert(account)
+						.catch(() => indexAccountPublicKey(validator.generatorKey));
+				}
+
+				return {
+					address: validator.address,
+					commission: validator.commission,
+					height: genesisHeight,
+				};
+			},
+			{ concurrency: validators.length },
+		);
 
 		await commissionsTable.upsert(commissionEntries, dbTrx);
 	}
@@ -180,6 +209,8 @@ const indexGenesisBlockAssets = async dbTrx => {
 	);
 	await indexTokenModuleAssets(dbTrx);
 	await indexPosModuleAssets(dbTrx);
+
+	await triggerAccountUpdates();
 	clearInterval(intervalTimeout);
 	logger.info('Finished indexing all the genesis assets.');
 };

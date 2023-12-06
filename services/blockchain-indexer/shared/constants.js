@@ -146,6 +146,7 @@ const COMMAND = Object.freeze({
 	REGISTER_MAINCHAIN: 'registerMainchain',
 });
 
+const INVALID_ED25519_KEY = 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'; // LIP-0063
 const LENGTH_CHAIN_ID = 4 * 2; // Each byte is represented with 2 nibbles
 const LENGTH_TOKEN_LOCAL_ID = 4 * 2; // Each byte is represented with 2 nibbles
 const PATTERN_ANY_TOKEN_ID = '*';
@@ -230,6 +231,7 @@ module.exports = {
 	getAllRegisteredEndpoints,
 	initNodeConstants,
 
+	INVALID_ED25519_KEY,
 	LENGTH_CHAIN_ID,
 	PATTERN_ANY_TOKEN_ID,
 	PATTERN_ANY_CHAIN_TOKEN_ID,
