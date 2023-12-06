@@ -215,6 +215,12 @@ config.estimateFees = {
 
 config.invokeAllowedMethods = process.env.INVOKE_ALLOWED_METHODS
 	? String(process.env.INVOKE_ALLOWED_METHODS).split(',')
-	: [];
+	: [
+			'dynamicReward_getExpectedValidatorRewards',
+			'token_hasUserAccount',
+			'token_getInitializationFees',
+			'interoperability_getMinimumMessageFee',
+			'txpool_getTransactionsFromPool',
+	  ];
 
 module.exports = config;
