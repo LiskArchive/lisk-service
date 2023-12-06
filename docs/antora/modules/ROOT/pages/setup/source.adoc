@@ -27,7 +27,7 @@ Mona Bärenfänger <mona@lightcurve.io>
 :url_config: configuration/source.adoc
 :url_management_pm2: management/source.adoc
 :url_references_config: configuration/index.adoc
-:url_core_setup_npm: v4@lisk-core::setup/npm.adoc
+:url_core_setup_npm: lisk-core::setup/npm.adoc
 
 As an alternative to the Docker image setup, it is also possible to install Lisk Service from source code.
 
