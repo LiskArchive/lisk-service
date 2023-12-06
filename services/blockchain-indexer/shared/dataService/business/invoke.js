@@ -27,6 +27,9 @@ const {
 	getEngineEndpoints,
 	getAllRegisteredEndpoints,
 } = require('../../constants');
+const config = require('../../../config');
+
+const INVOKE_ALLOWED_METHODS = config.invokeAllowedMethods;
 
 const checkIfEndpointRegistered = async endpoint => {
 	const allRegisteredEndpoints = await getAllRegisteredEndpoints();
@@ -67,11 +70,25 @@ const validateEndpointParams = async invokeEndpointParams => {
 	}
 };
 
+const checkIfEndpointInvocationAllowed = endpoint => {
+	if (INVOKE_ALLOWED_METHODS.includes('*')) {
+		return true;
+	}
+
+	return INVOKE_ALLOWED_METHODS.some(allowedMethod => endpoint.startsWith(allowedMethod));
+};
 const invokeEndpoint = async params => {
 	const invokeEndpointRes = {
 		data: {},
 		meta: {},
 	};
+
+	const isEndpointAllowed = checkIfEndpointInvocationAllowed(params.endpoint);
+	if (!isEndpointAllowed) {
+		throw new ValidationException(
+			`Proxy invocation of endpoint '${params.endpoint}' is not allowed.`,
+		);
+	}
 
 	const isRegisteredEndpoint = await checkIfEndpointRegistered(params.endpoint);
 	if (!isRegisteredEndpoint) {
@@ -90,7 +107,9 @@ const invokeEndpoint = async params => {
 		invokeEndpointRes.data = await requestConnector('invokeEndpoint', params);
 		invokeEndpointRes.meta = params;
 	} catch (err) {
-		throw new ServiceUnavailableException('Node is not reachable at the moment.');
+		throw new ServiceUnavailableException(
+			`Node is not reachable at the moment.\nError: ${err.message}`,
+		);
 	}
 
 	return invokeEndpointRes;

@@ -759,6 +759,15 @@ By default, it is set to `100000`.
 | Mainchain service URL for custom deployments.
 | https://service.lisk.com
 
+| `INVOKE_ALLOWED_METHODS`
+| string
+| List of allowed methods that can be invoked via the `/invoke` API endpoint.
+The list can be expressed as a CSV.
+To allow invocation of all endpoints, set it to `*`.
+To allow invocation of all the registered methods under the specified namespaces, set it similar to `legacy,chain`.
+To allow invocation of specific methods, set it similar to `chain_getBlocksByIDs,chain_getBlocksByHeight`.
+| `*`, `legacy,chain`, `chain_getBlocksByIDs`
+
 |===
 
 ==== Database snapshot configuration
