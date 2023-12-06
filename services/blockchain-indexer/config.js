@@ -104,12 +104,12 @@ config.queue = {
 		scheduledJobsMaxCount: Number(process.env.INDEX_BLOCKS_QUEUE_SCHEDULED_JOB_MAX_COUNT) || 100000,
 	},
 	indexAccountPublicKey: {
-		name: 'PendingAccountPublicKeyUpdates',
-		concurrency: 64,
+		name: 'PendingPublickeyUpdates',
+		concurrency: 512,
 	},
 	indexAccountAddress: {
-		name: 'PendingAccountAddressUpdates',
-		concurrency: 64,
+		name: 'PendingAddressUpdates',
+		concurrency: 512,
 	},
 };
 
