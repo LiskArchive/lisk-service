@@ -267,17 +267,14 @@ const scheduleMissingBlocksIndexing = async () => {
 
 			if (Array.isArray(result)) {
 				missingBlocksByHeight.push(...result);
-
-				if (result.length === 0) {
-					const lastIndexVerifiedHeight = (await getIndexVerifiedHeight()) || genesisHeight;
-					if (batchEndHeight <= lastIndexVerifiedHeight + MAX_QUERY_RANGE) {
-						if (NUM_BATCHES > 1 && i < NUM_BATCHES - 1) {
-							logger.info(
-								`No missing blocks found in range ${batchStartHeight} - ${batchEndHeight}. Setting index verified height to ${batchEndHeight}.`,
-							);
-						}
-					}
-				}
+			} else {
+				logger.warn(
+					`getMissingBlocks returned '${typeof result}' type instead of an Array.\nresult: ${JSON.stringify(
+						result,
+						null,
+						'\t',
+					)}`,
+				);
 			}
 		}
 
@@ -286,21 +283,22 @@ const scheduleMissingBlocksIndexing = async () => {
 		if (indexStatus) {
 			const { chainLength, numBlocksIndexed, lastBlockHeight } = indexStatus.data;
 			const numStillMissingJobs = chainLength - numBlocksIndexed - missingBlocksByHeight.length;
-			if (numStillMissingJobs > 0 && numStillMissingJobs <= 10) {
+
+			if (numStillMissingJobs > 0 && numStillMissingJobs <= 100) {
 				missingBlocksByHeight.push(
 					...range(lastBlockHeight - numStillMissingJobs + 1, lastBlockHeight + 1),
 				);
 			}
 		}
 
-		if (missingBlocksByHeight.length === 0) {
-			logger.info(
-				`No missing blocks found in range ${blockIndexLowerRange} - ${blockIndexHigherRange}. Setting index verified height to ${blockIndexHigherRange}.`,
-			);
-		} else {
+		if (missingBlocksByHeight.length) {
 			// Schedule indexing for the missing blocks
 			await scheduleBlocksIndexing(missingBlocksByHeight);
 			logger.info('Successfully scheduled missing blocks indexing.');
+		} else {
+			logger.info(
+				`No missing blocks found in range ${blockIndexLowerRange} - ${blockIndexHigherRange}.`,
+			);
 		}
 	} catch (err) {
 		logger.warn(`Scheduling to index missing blocks failed due to: ${err.message}.`);
