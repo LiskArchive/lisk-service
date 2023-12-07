@@ -57,7 +57,7 @@ module.exports = {
 			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
 			watch: false,
 			kill_timeout: 10000,
-			max_memory_restart: '250',
+			max_memory_restart: '250M',
 			autorestart: true,
 			env: {
 				// --- Remember to set the properties below
