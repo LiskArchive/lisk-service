@@ -80,7 +80,7 @@ const cacheBlocksFromWaitlist = async () => {
 			logger.debug(err.stack);
 			blockCacheWaitlist.splice(0, 0, block);
 
-			// Skip caching if it causes errors 5 times in a row
+			// Skip caching if it causes errors 3 times in a row
 			if (numErrors++ > 3) break;
 
 			await delay(5 * 1000); // Delay loop to facilitate reads from cache when writes are failing due to DB locks
