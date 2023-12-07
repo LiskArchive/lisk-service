@@ -386,7 +386,7 @@ Updates about index status changes.
     "chainLength": 18780,
     "numBlocksIndexed": 13956,
     "percentageIndexed": 74.31,
-    "isIndexingInProgress": false
+    "isIndexingInProgress": true
   },
   "meta": {
     "lastUpdate": 1700848735

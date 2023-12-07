@@ -59,6 +59,7 @@ const cacheBlocksFromWaitlist = async () => {
 	const blocksCache = await getBlocksCache();
 	const trxIDToBlockIDCache = await getTrxIDtoBlockIDCache();
 
+	let numErrors = 0;
 	while (blockCacheWaitlist.length) {
 		const block = blockCacheWaitlist.shift();
 		try {
@@ -78,7 +79,11 @@ const cacheBlocksFromWaitlist = async () => {
 			);
 			logger.debug(err.stack);
 			blockCacheWaitlist.splice(0, 0, block);
-			await delay(10000); // Delay loop to facilitate reads from cache when writes are failing due to DB locks
+
+			// Skip caching if it causes errors 3 times in a row
+			if (numErrors++ > 3) break;
+
+			await delay(5 * 1000); // Delay loop to facilitate reads from cache when writes are failing due to DB locks
 		}
 	}
 
