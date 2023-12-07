@@ -428,7 +428,7 @@ By default, it is set to `1000`.
 | `ENDPOINT_INVOKE_MAX_RETRIES`
 | number
 | Maximum number of endpoint invocation request retries to the node.
-By default, it is set to `5`.
+By default, it is set to `3`.
 | 5
 
 | `ENDPOINT_INVOKE_RETRY_DELAY`
