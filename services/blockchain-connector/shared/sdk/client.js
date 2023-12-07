@@ -86,11 +86,17 @@ const checkIsClientAlive = async () =>
 const instantiateClient = async (isForceReInstantiate = false) => {
 	try {
 		if (!isInstantiating || isForceReInstantiate) {
+			isInstantiating = true;
+
 			if (!(await checkIsClientAlive()) || isForceReInstantiate) {
-				isInstantiating = true;
 				instantiationBeginTime = Date.now();
 
-				if (clientCache) await clientCache.disconnect();
+				if (clientCache) {
+					clientCache.disconnect().catch(err => {
+						// Ensure failed disconnection doesn't impact the re-instantiation
+						logger.warn(`Client disconnection failed due to: ${err.message}.`);
+					});
+				}
 
 				clientCache = config.isUseLiskIPCClient
 					? await createIPCClient(config.liskAppDataPath)
@@ -102,9 +108,9 @@ const instantiateClient = async (isForceReInstantiate = false) => {
 
 				// Inform listeners about the newly instantiated ApiClient
 				Signals.get('newApiClient').dispatch();
-
-				isInstantiating = false;
 			}
+
+			isInstantiating = false;
 			return clientCache;
 		}
 
