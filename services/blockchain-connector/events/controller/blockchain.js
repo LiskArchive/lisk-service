@@ -92,12 +92,20 @@ const chainNewBlockController = async cb => {
 				transactions,
 			}),
 		);
+
+		// Reload validators cache on pos module transactions
+		if (transactions.some(t => t.module === 'pos')) {
+			Signals.get('reloadAllPosValidators').dispatch();
+		}
 	};
 	Signals.get('chainNewBlock').add(chainNewBlockListener);
 };
 
 const chainDeleteBlockController = async cb => {
-	const chainDeleteBlockListener = async payload => cb(formatBlock(payload));
+	const chainDeleteBlockListener = async payload => {
+		cb(formatBlock(payload));
+		Signals.get('reloadAllPosValidators').dispatch();
+	};
 	Signals.get('chainDeleteBlock').add(chainDeleteBlockListener);
 };
 
