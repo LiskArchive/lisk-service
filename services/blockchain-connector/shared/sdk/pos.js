@@ -48,7 +48,11 @@ const getPosValidator = async address => {
 const getAllPosValidators = async isForceReload => {
 	try {
 		if (!allPosValidators || isForceReload) {
-			allPosValidators = await invokeEndpoint('pos_getAllValidators');
+			const response = await invokeEndpoint('pos_getAllValidators');
+			if (Array.isArray(response)) {
+				allPosValidators = response;
+				logger.info(`Reloaded pos validators list. Validators count: ${allPosValidators.length}.`);
+			}
 		}
 		return allPosValidators;
 	} catch (err) {
