@@ -14,6 +14,7 @@
  *
  */
 const { Logger, Signals } = require('lisk-service-framework');
+const { MODULE_NAME_POS } = require('../../shared/sdk/constants/names');
 
 const { getBlockByID } = require('../../shared/sdk/endpoints');
 const { formatBlock: formatBlockFromFormatter } = require('../../shared/sdk/formatter');
@@ -92,12 +93,20 @@ const chainNewBlockController = async cb => {
 				transactions,
 			}),
 		);
+
+		// Reload validators cache on pos module transactions
+		if (transactions.some(t => t.module === MODULE_NAME_POS)) {
+			Signals.get('reloadAllPosValidators').dispatch();
+		}
 	};
 	Signals.get('chainNewBlock').add(chainNewBlockListener);
 };
 
 const chainDeleteBlockController = async cb => {
-	const chainDeleteBlockListener = async payload => cb(formatBlock(payload));
+	const chainDeleteBlockListener = async payload => {
+		cb(formatBlock(payload));
+		Signals.get('reloadAllPosValidators').dispatch();
+	};
 	Signals.get('chainDeleteBlock').add(chainDeleteBlockListener);
 };
 

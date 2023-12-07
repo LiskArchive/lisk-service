@@ -15,6 +15,7 @@
  */
 const {
 	Logger,
+	Signals,
 	Exceptions: { TimeoutException },
 } = require('lisk-service-framework');
 
@@ -27,6 +28,7 @@ const { getGenesisHeight } = require('./genesisBlock');
 const logger = Logger();
 
 let posModuleConstants;
+let allPosValidators;
 
 const getPosValidator = async address => {
 	try {
@@ -43,10 +45,16 @@ const getPosValidator = async address => {
 	}
 };
 
-const getAllPosValidators = async () => {
+const getAllPosValidators = async isForceReload => {
 	try {
-		const validators = await invokeEndpoint('pos_getAllValidators');
-		return validators;
+		if (!allPosValidators || isForceReload) {
+			const response = await invokeEndpoint('pos_getAllValidators');
+			if (Array.isArray(response)) {
+				allPosValidators = response;
+				logger.info(`Reloaded pos validators list. Validators count: ${allPosValidators.length}.`);
+			}
+		}
+		return allPosValidators;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException("Request timed out when calling 'getAllPosValidators'.");
@@ -55,6 +63,8 @@ const getAllPosValidators = async () => {
 		throw err;
 	}
 };
+
+Signals.get('reloadAllPosValidators').add(() => getAllPosValidators(true));
 
 const getPosValidatorsByStake = async limit => {
 	try {
