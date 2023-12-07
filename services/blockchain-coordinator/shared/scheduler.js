@@ -48,7 +48,7 @@ const accountMessageQueue = new MessageQueue(
 );
 
 let intervalID;
-const REFRESH_INTERVAL = 30000;
+const REFRESH_INTERVAL = config.job.progressRefreshInterval;
 
 const getInProgressJobCount = async queue => {
 	const jobCount = await queue.getJobCounts();
@@ -231,17 +231,17 @@ const scheduleMissingBlocksIndexing = async () => {
 		return;
 	}
 
-	const genesisHeight = await getGenesisHeight();
-	const currentHeight = await getCurrentHeight();
-
 	// Skip job scheduling when the jobCount is greater than the threshold
 	const jobCount = await getLiveIndexingJobCount();
 	if (jobCount > config.job.indexMissingBlocks.skipThreshold) {
 		logger.info(
-			`Skipping missing blocks job run. ${jobCount} indexing jobs already in the queue. Current threshold set at: ${config.job.indexMissingBlocks.skipThreshold}.`,
+			`Skipping missing blocks job run. ${jobCount} indexing jobs already in the queue. Current threshold: ${config.job.indexMissingBlocks.skipThreshold}.`,
 		);
 		return;
 	}
+
+	const genesisHeight = await getGenesisHeight();
+	const currentHeight = await getCurrentHeight();
 
 	// Missing blocks are being checked during regular interval
 	// By default they are checked from the blockchain's beginning

@@ -152,6 +152,9 @@ const indexBlock = async job => {
 		// Always index the last indexed blockHeight + 1 (sequential indexing)
 		if (typeof lastIndexedHeight !== 'undefined') {
 			blockHeightToIndex = lastIndexedHeight + 1;
+
+			// Skip job run if the height to be indexed does not exist
+			if ((await getCurrentHeight()) < blockHeightToIndex) return;
 		}
 
 		const [currentBlockInDB = {}] = await blocksTable.find(
