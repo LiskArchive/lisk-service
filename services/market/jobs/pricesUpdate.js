@@ -29,7 +29,7 @@ module.exports = [
 			await updatePrices();
 		},
 		controller: async () => {
-			logger.debug('Job scheduled to maintain updated market prices.');
+			logger.debug('Job scheduled to update market prices.');
 			await updatePrices();
 		},
 	},

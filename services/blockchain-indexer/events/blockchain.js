@@ -35,7 +35,7 @@ module.exports = [
 				try {
 					if (payload && Array.isArray(payload.data)) {
 						const [block] = payload.data;
-						logger.debug(`New block arrived (${block.id})...`);
+						logger.debug(`Received new block (${block.id})...`);
 						// Fork detection
 						if (localPreviousBlockId) {
 							if (localPreviousBlockId !== block.previousBlockId) {
@@ -68,7 +68,7 @@ module.exports = [
 
 						if (numberOfTransactions > 0) {
 							logger.debug(
-								`Block (${block.id}) arrived containing ${block.numberOfTransactions} new transactions.`,
+								`Received block (${block.id}) containing ${block.numberOfTransactions} new transactions.`,
 							);
 
 							const formattedTransactions = await formatTransactionsInBlock(block);
@@ -161,7 +161,7 @@ module.exports = [
 		description: 'Returns true when the index is ready',
 		controller: callback => {
 			const indexStatusListener = async payload => {
-				logger.debug("Dispatching 'index.ready' event over message broker.");
+				logger.debug("Dispatching 'index.ready' event to message broker.");
 				callback(payload);
 			};
 			Signals.get('blockIndexReady').add(indexStatusListener);
@@ -172,21 +172,10 @@ module.exports = [
 		description: 'Emit index status updates.',
 		controller: callback => {
 			const indexStatusUpdateListener = async payload => {
-				logger.debug("Dispatching 'update.index.status' event over message broker.");
+				logger.debug("Dispatching 'update.index.status' event to message broker.");
 				callback(payload);
 			};
 			Signals.get('updateIndexStatus').add(indexStatusUpdateListener);
-		},
-	},
-	{
-		name: 'genesisBlockIndexed',
-		description: 'Emit event after genesis block is indexed.',
-		controller: callback => {
-			const genesisBlockIndexedListener = async () => {
-				logger.debug("Dispatching 'genesisBlockIndexed' event over message broker.");
-				callback();
-			};
-			Signals.get('genesisBlockIndexed').add(genesisBlockIndexedListener);
 		},
 	},
 ];

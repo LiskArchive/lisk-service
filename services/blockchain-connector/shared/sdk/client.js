@@ -33,6 +33,8 @@ const MAX_INSTANTIATION_WAIT_TIME = config.apiClient.instantiation.maxWaitTime;
 const NUM_REQUEST_RETRIES = config.apiClient.request.maxRetries;
 const ENDPOINT_INVOKE_RETRY_DELAY = config.apiClient.request.retryDelay;
 const CLIENT_ALIVE_ASSUMPTION_TIME = config.apiClient.aliveAssumptionTime;
+const CLIENT_ALIVE_ASSUMPTION_TIME_BEFORE_GENESIS =
+	config.apiClient.aliveAssumptionTimeBeforeGenesis;
 const HEARTBEAT_ACK_MAX_WAIT_TIME = config.apiClient.heartbeatAckMaxWaitTime;
 
 // Caching and flags
@@ -42,6 +44,7 @@ let lastClientAliveTime;
 let heartbeatCheckBeginTime;
 let isInstantiating = false;
 let isClientAlive = false;
+let isGenesisBlockIndexed = false;
 
 const pongListener = res => {
 	isClientAlive = true;
@@ -171,19 +174,29 @@ if (config.isUseLiskIPCClient) {
 	};
 
 	const genesisBlockDownloadedListener = () => {
-		triggerRegularClientLivelinessChecks(30 * 1000);
-
-		// Incase genesisBlockIndexed event is not triggered by indexer wait for max 15 mins for genesis block to get indexed
-		setTimeout(() => Signals.get('genesisBlockIndexed').dispatch(), 15 * 60 * 1000);
+		triggerRegularClientLivelinessChecks(CLIENT_ALIVE_ASSUMPTION_TIME_BEFORE_GENESIS);
+		logger.info(
+			`Updated node liveliness check to occur to every ${CLIENT_ALIVE_ASSUMPTION_TIME_BEFORE_GENESIS} seconds. Will update again after checking of genesis block is indexed.`,
+		);
 	};
 
-	const genesisBlockIndexedListener = () => {
-		clearInterval(intervalTimeout);
-		triggerRegularClientLivelinessChecks(CLIENT_ALIVE_ASSUMPTION_TIME);
+	const genesisBlockIndexedListener = indexStatus => {
+		if (
+			!isGenesisBlockIndexed &&
+			indexStatus.data &&
+			indexStatus.data.genesisHeight < indexStatus.data.lastIndexedBlockHeight
+		) {
+			clearInterval(intervalTimeout);
+			triggerRegularClientLivelinessChecks(CLIENT_ALIVE_ASSUMPTION_TIME);
+			isGenesisBlockIndexed = true;
+			logger.info(
+				`Updated node liveliness check to occur to every ${CLIENT_ALIVE_ASSUMPTION_TIME} seconds since genesis block is indexed.`,
+			);
+		}
 	};
 
 	Signals.get('genesisBlockDownloaded').add(genesisBlockDownloadedListener);
-	Signals.get('genesisBlockIndexed').add(genesisBlockIndexedListener);
+	Signals.get('updateIndexStatus').add(genesisBlockIndexedListener);
 }
 
 module.exports = {

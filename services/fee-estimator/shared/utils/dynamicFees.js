@@ -93,7 +93,7 @@ const getEstimateFeePerByteForBatch = async (fromHeight, toHeight, cacheKey) => 
 	await cacheRedisFees.set(cacheKey, feeEstPerByte);
 
 	logger.info(
-		`Recalulated dynamic fees: L: ${feeEstPerByte.low} M: ${feeEstPerByte.med} H: ${feeEstPerByte.high}.`,
+		`Re-calulated dynamic fees: L: ${feeEstPerByte.low} M: ${feeEstPerByte.med} H: ${feeEstPerByte.high}.`,
 	);
 
 	return feeEstPerByte;

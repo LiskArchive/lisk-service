@@ -104,7 +104,7 @@ const ensureAPIClientLiveness = () => {
 		}, config.clientConnVerifyInterval);
 	} else {
 		logger.info(
-			`Cannot start the events-based client liveness check yet. Either the node is not yet synced or the genesis block hasn't been downloaded yet.\nisNodeSynced: ${isNodeSynced}, isGenesisBlockDownloaded: ${isGenesisBlockDownloaded}.`,
+			`Cannot start the events-based client liveness check yet. Either the node is not yet synced or the genesis block hasn't been downloaded yet.\nisNodeSynced: ${isNodeSynced}, isGenesisBlockDownloaded: ${isGenesisBlockDownloaded}`,
 		);
 	}
 };

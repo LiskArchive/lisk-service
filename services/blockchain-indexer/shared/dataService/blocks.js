@@ -44,10 +44,10 @@ const getBlocksFromServer = async params => {
 		meta: {},
 	};
 
-	if (params.blockID) logger.debug(`Retrieved block with ID ${params.blockID} from Lisk Core.`);
+	if (params.blockID) logger.debug(`Retrieved block with ID ${params.blockID} from the node.`);
 	else if (params.height)
-		logger.debug(`Retrieved block with height: ${params.height} from Lisk Core.`);
-	else logger.debug(`Retrieved block with custom search: ${util.inspect(params)} from Lisk Core.`);
+		logger.debug(`Retrieved block with height: ${params.height} from the node.`);
+	else logger.debug(`Retrieved block with custom search: ${util.inspect(params)} from the node.`);
 
 	const response = await business.getBlocks(params);
 	if (response.data) blocks.data = response.data;

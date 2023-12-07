@@ -32,9 +32,9 @@ const app = Microservice({
 	brokerTimeout: config.brokerTimeout, // in seconds
 	logger: config.log,
 	events: {
-		genesisBlockIndexed: async () => {
-			logger.debug("Received a 'genesisBlockIndexed' moleculer event from indexer.");
-			Signals.get('genesisBlockIndexed').dispatch();
+		'update.index.status': async payload => {
+			logger.debug("Received a 'update.index.status' moleculer event from indexer.");
+			Signals.get('updateIndexStatus').dispatch(payload);
 		},
 	},
 });
