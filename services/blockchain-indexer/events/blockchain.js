@@ -39,7 +39,7 @@ module.exports = [
 						// Fork detection
 						if (localPreviousBlockId) {
 							if (localPreviousBlockId !== block.previousBlockId) {
-								logger.debug(`Fork detected at block height ${localPreviousBlockId}`);
+								logger.debug(`Fork detected at block height ${localPreviousBlockId}.`);
 							}
 						}
 						localPreviousBlockId = block.id;
@@ -68,7 +68,7 @@ module.exports = [
 
 						if (numberOfTransactions > 0) {
 							logger.debug(
-								`Block (${block.id}) arrived containing ${block.numberOfTransactions} new transactions`,
+								`Block (${block.id}) arrived containing ${block.numberOfTransactions} new transactions.`,
 							);
 
 							const formattedTransactions = await formatTransactionsInBlock(block);
@@ -161,7 +161,7 @@ module.exports = [
 		description: 'Returns true when the index is ready',
 		controller: callback => {
 			const indexStatusListener = async payload => {
-				logger.debug("Dispatching 'index.ready' event over message broker");
+				logger.debug("Dispatching 'index.ready' event over message broker.");
 				callback(payload);
 			};
 			Signals.get('blockIndexReady').add(indexStatusListener);
@@ -172,7 +172,7 @@ module.exports = [
 		description: 'Emit index status updates.',
 		controller: callback => {
 			const indexStatusUpdateListener = async payload => {
-				logger.debug("Dispatching 'update.index.status' event over message broker");
+				logger.debug("Dispatching 'update.index.status' event over message broker.");
 				callback(payload);
 			};
 			Signals.get('updateIndexStatus').add(indexStatusUpdateListener);
@@ -183,7 +183,7 @@ module.exports = [
 		description: 'Emit event after genesis block is indexed.',
 		controller: callback => {
 			const genesisBlockIndexedListener = async () => {
-				logger.debug("Dispatching 'genesisBlockIndexed' event over message broker");
+				logger.debug("Dispatching 'genesisBlockIndexed' event over message broker.");
 				callback();
 			};
 			Signals.get('genesisBlockIndexed').add(genesisBlockIndexedListener);

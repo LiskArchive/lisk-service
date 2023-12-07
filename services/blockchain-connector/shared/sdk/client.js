@@ -172,6 +172,9 @@ if (config.isUseLiskIPCClient) {
 
 	const genesisBlockDownloadedListener = () => {
 		triggerRegularClientLivelinessChecks(30 * 1000);
+
+		// Incase genesisBlockIndexed event is not triggered by indexer wait for max 15 mins for genesis block to get indexed
+		setTimeout(() => Signals.get('genesisBlockIndexed').dispatch(), 15 * 60 * 1000);
 	};
 
 	const genesisBlockIndexedListener = () => {

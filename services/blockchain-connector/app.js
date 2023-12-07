@@ -33,7 +33,7 @@ const app = Microservice({
 	logger: config.log,
 	events: {
 		genesisBlockIndexed: async () => {
-			logger.debug("Received a 'genesisBlockIndexed' event from indexer.");
+			logger.debug("Received a 'genesisBlockIndexed' moleculer event from indexer.");
 			Signals.get('genesisBlockIndexed').dispatch();
 		},
 	},
