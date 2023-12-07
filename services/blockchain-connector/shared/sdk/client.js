@@ -176,7 +176,7 @@ if (config.isUseLiskIPCClient) {
 	const genesisBlockDownloadedListener = () => {
 		triggerRegularClientLivelinessChecks(CLIENT_ALIVE_ASSUMPTION_TIME_BEFORE_GENESIS);
 		logger.info(
-			`Updated node liveliness check to occur to every ${CLIENT_ALIVE_ASSUMPTION_TIME_BEFORE_GENESIS} seconds. Will update again after checking of genesis block is indexed.`,
+			`API client heartbeat checks scheduled every ${CLIENT_ALIVE_ASSUMPTION_TIME_BEFORE_GENESIS}ms. The frequency will be set to ${CLIENT_ALIVE_ASSUMPTION_TIME}ms after successful indexing of the genesis block.`,
 		);
 	};
 
@@ -184,13 +184,13 @@ if (config.isUseLiskIPCClient) {
 		if (
 			!isGenesisBlockIndexed &&
 			indexStatus.data &&
-			indexStatus.data.genesisHeight < indexStatus.data.lastIndexedBlockHeight
+			indexStatus.data.genesisHeight <= indexStatus.data.lastIndexedBlockHeight
 		) {
 			clearInterval(intervalTimeout);
 			triggerRegularClientLivelinessChecks(CLIENT_ALIVE_ASSUMPTION_TIME);
 			isGenesisBlockIndexed = true;
 			logger.info(
-				`Updated node liveliness check to occur to every ${CLIENT_ALIVE_ASSUMPTION_TIME} seconds since genesis block is indexed.`,
+				`API client heartbeat checks re-scheduled to run every ${CLIENT_ALIVE_ASSUMPTION_TIME_BEFORE_GENESIS}ms.`,
 			);
 		}
 	};

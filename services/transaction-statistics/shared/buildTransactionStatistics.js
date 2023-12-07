@@ -130,7 +130,7 @@ const insertToDB = async (statsList, date) => {
 			await transactionStatisticsTable.deleteByPrimaryKey([id]);
 			logger.debug(`Removed the following date from the database: ${date}.`);
 		} catch (err) {
-			logger.debug(`The database does not contain an entry with the following date: ${date}.`);
+			logger.debug(`The database does not contain an entry for the following date: ${date}.`);
 		}
 
 		statsList.map(statistic => {
