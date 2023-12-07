@@ -190,7 +190,7 @@ if (config.isUseLiskIPCClient) {
 			triggerRegularClientLivelinessChecks(CLIENT_ALIVE_ASSUMPTION_TIME);
 			isGenesisBlockIndexed = true;
 			logger.info(
-				`API client heartbeat checks re-scheduled to run every ${CLIENT_ALIVE_ASSUMPTION_TIME_BEFORE_GENESIS}ms.`,
+				`API client heartbeat checks re-scheduled to run every ${CLIENT_ALIVE_ASSUMPTION_TIME}ms.`,
 			);
 		}
 	};
