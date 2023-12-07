@@ -161,7 +161,7 @@ module.exports = [
 		description: 'Returns true when the index is ready',
 		controller: callback => {
 			const indexStatusListener = async payload => {
-				logger.debug("Dispatching 'index.ready' event over websocket");
+				logger.debug("Dispatching 'index.ready' event over message broker");
 				callback(payload);
 			};
 			Signals.get('blockIndexReady').add(indexStatusListener);
@@ -172,10 +172,21 @@ module.exports = [
 		description: 'Emit index status updates.',
 		controller: callback => {
 			const indexStatusUpdateListener = async payload => {
-				logger.debug("Dispatching 'update.index.status' event over websocket");
+				logger.debug("Dispatching 'update.index.status' event over message broker");
 				callback(payload);
 			};
 			Signals.get('updateIndexStatus').add(indexStatusUpdateListener);
+		},
+	},
+	{
+		name: 'genesisBlockIndexed',
+		description: 'Emit event after genesis block is indexed.',
+		controller: callback => {
+			const genesisBlockIndexedListener = async () => {
+				logger.debug("Dispatching 'genesisBlockIndexed' event over message broker");
+				callback();
+			};
+			Signals.get('genesisBlockIndexed').add(genesisBlockIndexedListener);
 		},
 	},
 ];

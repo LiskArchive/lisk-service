@@ -162,13 +162,25 @@ if (config.isUseLiskIPCClient) {
 	const resetApiClientListener = async () => instantiateClient(true).catch(() => {});
 	Signals.get('resetApiClient').add(resetApiClientListener);
 } else {
-	const triggerRegularClientLivelinessChecks = () =>
-		setInterval(async () => {
+	let intervalTimeout;
+	const triggerRegularClientLivelinessChecks = intervalMs => {
+		intervalTimeout = setInterval(async () => {
 			const isAlive = await checkIsClientAlive();
 			if (!isAlive) instantiateClient(true).catch(() => {});
-		}, CLIENT_ALIVE_ASSUMPTION_TIME);
+		}, intervalMs);
+	};
 
-	Signals.get('genesisBlockDownloaded').add(triggerRegularClientLivelinessChecks);
+	const genesisBlockDownloadedListener = () => {
+		triggerRegularClientLivelinessChecks(30 * 1000);
+	};
+
+	const genesisBlockIndexedListener = () => {
+		clearInterval(intervalTimeout);
+		triggerRegularClientLivelinessChecks(CLIENT_ALIVE_ASSUMPTION_TIME);
+	};
+
+	Signals.get('genesisBlockDownloaded').add(genesisBlockDownloadedListener);
+	Signals.get('genesisBlockIndexed').add(genesisBlockIndexedListener);
 }
 
 module.exports = {

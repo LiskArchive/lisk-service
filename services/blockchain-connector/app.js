@@ -14,7 +14,7 @@
  *
  */
 const path = require('path');
-const { Microservice, Logger, LoggerConfig } = require('lisk-service-framework');
+const { Signals, Microservice, Logger, LoggerConfig } = require('lisk-service-framework');
 
 const config = require('./config');
 
@@ -31,6 +31,12 @@ const app = Microservice({
 	transporter: config.transporter,
 	brokerTimeout: config.brokerTimeout, // in seconds
 	logger: config.log,
+	events: {
+		genesisBlockIndexed: async () => {
+			logger.debug("Received a 'genesisBlockIndexed' event from indexer.");
+			Signals.get('genesisBlockIndexed').dispatch();
+		},
+	},
 });
 
 nodeStatus.waitForNode().then(async () => {

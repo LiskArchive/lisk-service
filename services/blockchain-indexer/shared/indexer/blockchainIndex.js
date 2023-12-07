@@ -378,6 +378,10 @@ const indexBlock = async job => {
 		logger.info(
 			`Successfully indexed block ${blockToIndexFromNode.id} at height ${blockToIndexFromNode.height}.`,
 		);
+
+		if (blockToIndexFromNode.height === genesisHeight) {
+			Signals.get('genesisBlockIndexed').dispatch();
+		}
 	} catch (error) {
 		// Stop genesisAsset index progress logging on errors
 		if (blockToIndexFromNode.height === genesisHeight) {
