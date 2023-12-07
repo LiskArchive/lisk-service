@@ -44,10 +44,10 @@ const getBlocksFromServer = async params => {
 		meta: {},
 	};
 
-	if (params.blockID) logger.debug(`Retrieved block with ID ${params.blockID} from Lisk Core`);
+	if (params.blockID) logger.debug(`Retrieved block with ID ${params.blockID} from Lisk Core.`);
 	else if (params.height)
-		logger.debug(`Retrieved block with height: ${params.height} from Lisk Core`);
-	else logger.debug(`Retrieved block with custom search: ${util.inspect(params)} from Lisk Core`);
+		logger.debug(`Retrieved block with height: ${params.height} from Lisk Core.`);
+	else logger.debug(`Retrieved block with custom search: ${util.inspect(params)} from Lisk Core.`);
 
 	const response = await business.getBlocks(params);
 	if (response.data) blocks.data = response.data;
@@ -140,7 +140,7 @@ const getBlocksAssets = async params => {
 
 const performLastBlockUpdate = async newBlock => {
 	try {
-		logger.debug(`Setting last block to height: ${newBlock.height} (id: ${newBlock.id})`);
+		logger.debug(`Setting last block to height: ${newBlock.height} (id: ${newBlock.id}).`);
 		await setLastBlock(newBlock);
 	} catch (err) {
 		logger.error(`Error occurred when performing last block update:\n${err.stack}`);

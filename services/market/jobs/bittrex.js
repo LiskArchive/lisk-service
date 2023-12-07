@@ -39,11 +39,11 @@ module.exports = [
 		interval: config.job.refreshPricesBittrex.interval,
 		schedule: config.job.refreshPricesBittrex.schedule,
 		init: async () => {
-			logger.debug('Initializing market prices from Bittrex');
+			logger.debug('Initializing market prices from Bittrex.');
 			await reloadMarketPrices();
 		},
 		controller: async () => {
-			logger.debug('Job scheduled to update prices from Bittrex');
+			logger.debug('Job scheduled to update prices from Bittrex.');
 			await reloadMarketPrices();
 		},
 	},

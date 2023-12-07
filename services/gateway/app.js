@@ -191,7 +191,7 @@ tempApp.run().then(async () => {
 
 	if (config.rateLimit.enable) {
 		logger.info(
-			`Enabling rate limiter, connLimit: ${config.rateLimit.connectionLimit}, window: ${config.rateLimit.window}`,
+			`Enabling rate limiter, connLimit: ${config.rateLimit.connectionLimit}, window: ${config.rateLimit.window}.`,
 		);
 
 		gatewayConfig.settings.rateLimit = {

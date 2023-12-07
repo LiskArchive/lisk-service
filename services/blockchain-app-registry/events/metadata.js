@@ -23,7 +23,7 @@ module.exports = [
 		description: 'Emit event when the database is successfully synchronized',
 		controller: async callback => {
 			const updateMetadataListener = async data => {
-				logger.debug('Database has been successfully synchronized');
+				logger.debug('Database has been successfully synchronized.');
 				callback(data);
 			};
 			Signals.get('metadataUpdated').add(updateMetadataListener);

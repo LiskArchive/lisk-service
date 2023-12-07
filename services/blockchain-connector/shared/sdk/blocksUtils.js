@@ -52,24 +52,24 @@ const loadConfig = async () => {
 
 	if (config.genesisBlockUrl !== config.constants.GENESIS_BLOCK_URL_DEFAULT) {
 		genesisBlockUrl = config.genesisBlockUrl;
-		logger.info(`genesisBlockUrl set to ${genesisBlockUrl}`);
+		logger.info(`genesisBlockUrl set to ${genesisBlockUrl}.`);
 
 		genesisBlockFilePath = `./data/${chainID}/genesis_block.json`;
-		logger.info(`genesisBlockFilePath set to ${genesisBlockFilePath}`);
+		logger.info(`genesisBlockFilePath set to ${genesisBlockFilePath}.`);
 	} else {
 		// Check if current node is running Lisk Core
 		const [networkConfig] = config.networks.LISK.filter(c => chainID === c.chainID);
 		if (networkConfig) {
-			logger.info(`Found config for ${networkConfig.name} (${chainID})`);
+			logger.info(`Found config for ${networkConfig.name} (${chainID}).`);
 
 			genesisBlockUrl = networkConfig.genesisBlockUrl;
-			logger.info(`genesisBlockUrl set to ${genesisBlockUrl}`);
+			logger.info(`genesisBlockUrl set to ${genesisBlockUrl}.`);
 
 			genesisBlockFilePath = `./data/${chainID}/genesis_block.json`;
-			logger.info(`genesisBlockFilePath set to ${genesisBlockFilePath}`);
+			logger.info(`genesisBlockFilePath set to ${genesisBlockFilePath}.`);
 		} else {
 			logger.info(
-				`Network is neither defined in the config, nor in the environment variable (${chainID})`,
+				`Network is neither defined in the config, nor in the environment variable (${chainID}).`,
 			);
 			return;
 		}
