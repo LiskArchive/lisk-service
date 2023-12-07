@@ -128,7 +128,7 @@ const init = async () => {
 	await getTokenInitializationFees();
 	await getRewardTokenID();
 	await getPosConstants();
-	await getAllPosValidators(true);
+	await getAllPosValidators();
 
 	// Download the genesis block, if applicable
 	await getGenesisBlock().then(() => {
