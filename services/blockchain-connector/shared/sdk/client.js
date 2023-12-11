@@ -93,21 +93,17 @@ const instantiateClient = async (isForceReInstantiate = false) => {
 		if (!isInstantiating || isForceReInstantiate) {
 			const isNodeClientAlive = await checkIsClientAlive();
 
-			if (!config.isUseLiskIPCClient && isNodeClientAlive) {
-				wsConnectionsEstablished = 0;
-			}
-
-			if (!config.isUseLiskIPCClient && !isNodeClientAlive) {
-				let NUM_RETRIES = 10;
-				while (
-					!config.isUseLiskIPCClient &&
-					wsConnectionsEstablished >= WS_CONNECTION_LIMIT &&
-					NUM_RETRIES-- > 0
-				) {
-					await delay(1000);
-					if (await checkIsClientAlive()) {
-						wsConnectionsEstablished = 0;
-						return clientCache;
+			if (!config.isUseLiskIPCClient) {
+				if (isNodeClientAlive) {
+					wsConnectionsEstablished = 0;
+				} else {
+					let numRetries = NUM_REQUEST_RETRIES;
+					while (wsConnectionsEstablished >= WS_CONNECTION_LIMIT && numRetries--) {
+						await delay(MAX_INSTANTIATION_WAIT_TIME);
+						if (await checkIsClientAlive()) {
+							wsConnectionsEstablished = 0;
+							return clientCache;
+						}
 					}
 				}
 			}
@@ -116,7 +112,6 @@ const instantiateClient = async (isForceReInstantiate = false) => {
 			if (!isNodeClientAlive || isForceReInstantiate) {
 				if (!config.isUseLiskIPCClient) wsConnectionsEstablished++;
 
-				isInstantiating = true;
 				instantiationBeginTime = Date.now();
 
 				if (clientCache) {
