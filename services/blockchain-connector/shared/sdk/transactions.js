@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { Logger } = require('lisk-service-framework');
 const { encodeTransaction } = require('./encoder');
 const { formatTransaction, formatEvent } = require('./formatter');
 const {
@@ -22,6 +23,8 @@ const {
 	postTransaction,
 	dryRunTransaction,
 } = require('./endpoints');
+
+const logger = Logger();
 
 const getTransactionByIDFormatted = async id => {
 	const transaction = await getTransactionByID(id);
@@ -37,8 +40,22 @@ const getTransactionsByIDsFormatted = async ids => {
 
 const getTransactionsFromPoolFormatted = async () => {
 	const transactions = await getTransactionsFromPool();
-	const formattedTransactions = transactions.map(t => formatTransaction(t));
-	return formattedTransactions;
+	const formattedTransactions = transactions.map(t => {
+		try {
+			return formatTransaction(t);
+		} catch (error) {
+			logger.warn(
+				`Formatting transaction failed due to: ${error.message}\nTransaction: ${JSON.stringify(
+					t,
+					null,
+					'\t',
+				)}`,
+			);
+			return null;
+		}
+	});
+
+	return formattedTransactions.filter(t => t);
 };
 
 const dryRunTransactionWrapper = async params => {

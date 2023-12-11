@@ -52,11 +52,12 @@ const formatTransaction = (transaction, additionalFee = 0) => {
 	const txParamsSchema = getTransactionParamsSchema(transaction);
 
 	// Encode transaction params to calculate transaction size
-	if (typeof transaction.params === 'object' && !Buffer.isBuffer(transaction.params)) {
-		transaction.params = codec.encode(
-			txParamsSchema,
-			parseInputBySchema(transaction.params, txParamsSchema),
-		);
+	if (typeof transaction.params === 'object') {
+		transaction.params = Buffer.isBuffer(transaction.params)
+			? transaction.params.toString('hex')
+			: codec
+					.encode(txParamsSchema, parseInputBySchema(transaction.params, txParamsSchema))
+					.toString('hex');
 	}
 	const schemaCompliantTransaction = parseInputBySchema(transaction, txSchema);
 
