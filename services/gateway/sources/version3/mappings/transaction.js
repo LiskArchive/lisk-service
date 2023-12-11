@@ -20,18 +20,21 @@ module.exports = {
 	fee: '=,string',
 	minFee: '=,string',
 	size: '=,number',
-	sender: {
-		address: 'sender.address,string',
-		publicKey: 'sender.publicKey,string',
-		name: 'sender.name,string',
-	},
-	params: '=',
 	block: {
 		id: 'block.id,string',
 		height: 'block.height,number',
 		timestamp: 'block.timestamp,number',
 		isFinal: 'block.isFinal,boolean',
 	},
+	sender: {
+		address: 'sender.address,string',
+		publicKey: 'sender.publicKey,string',
+		name: 'sender.name,string',
+	},
+	params: '=',
+	signatures: '=',
+	executionStatus: '=,string',
+	index: '=,number',
 	meta: {
 		recipient: {
 			address: 'meta.recipient.address,string',
@@ -39,6 +42,4 @@ module.exports = {
 			name: 'meta.recipient.name,string',
 		},
 	},
-	executionStatus: '=,string',
-	index: '=,number',
 };

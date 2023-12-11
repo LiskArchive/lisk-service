@@ -84,20 +84,20 @@ const newBlockProcessor = async block => {
 	await performLastBlockUpdate(newBlock);
 	Signals.get('newBlock').dispatch(response);
 	logger.info(
-		`Finished scheduling new block (${block.header.id}) event for the block at height ${block.header.height}.`,
+		`Finished scheduling new block (${block.header.id}) event for block height ${block.header.height}.`,
 	);
 };
 
 const deleteBlockProcessor = async header => {
 	try {
 		logger.debug(
-			`Scheduling the delete block (${header.id}) event for the block at height ${header.height}.`,
+			`Scheduling the delete block (${header.id}) event for block height ${header.height}.`,
 		);
 		const response = await formatBlock({ header }, true);
 		await scheduleBlockDeletion(header);
 		Signals.get('deleteBlock').dispatch(response);
 		logger.info(
-			`Finished scheduling the delete block (${header.id}) event for the block at height ${header.height}.`,
+			`Finished scheduling the delete block (${header.id}) event for block height ${header.height}.`,
 		);
 	} catch (err) {
 		logger.warn(

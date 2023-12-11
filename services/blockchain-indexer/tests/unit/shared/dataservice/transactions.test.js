@@ -84,7 +84,7 @@ describe('dryRunTransactions', () => {
 	it('should return bad request error response on other error', async () => {
 		const mockError = new Error('Some other error');
 		const expectedErrorResponse = {
-			data: { error: `Failed to dry run transaction: Error: ${mockError.message}.` },
+			data: { error: `Failed to dry run transaction: Error: ${mockError.message}` },
 			status: 'BAD_REQUEST',
 		};
 

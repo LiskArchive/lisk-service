@@ -68,7 +68,7 @@ const reloadAccountKnowledge = async () => {
 			logger.warn(`Static information unavailable for the current chainID: ${chainID}.`);
 		}
 	} catch (err) {
-		logger.error(`Could not reload known accounts: ${err.message}.`);
+		logger.error(`Could not reload known accounts: ${err.message}`);
 		logger.debug(err.stack);
 	}
 };

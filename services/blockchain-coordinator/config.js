@@ -72,6 +72,8 @@ config.queue = {
 };
 
 config.job = {
+	progressRefreshInterval: 30 * 1000, // millisecs
+
 	// Interval takes priority over schedule and must be greater than 0 to be valid
 	indexMissingBlocks: {
 		interval: Number(process.env.JOB_INTERVAL_INDEX_MISSING_BLOCKS) || 0,

@@ -80,7 +80,7 @@ const chainNewBlockController = async cb => {
 				assets = block.assets;
 			} catch (err) {
 				logger.warn(
-					`Could not fetch block ${blockHeader.id} within chainNewBlockListener due to: ${err.message}.`,
+					`Could not fetch block ${blockHeader.id} within chainNewBlockListener due to: ${err.message}`,
 				);
 				logger.debug(err.stack);
 			}

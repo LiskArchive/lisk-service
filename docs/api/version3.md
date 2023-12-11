@@ -337,6 +337,12 @@ _Supports pagination._
       "fee": "5166000",
       "minFee": "165000",
       "size": 166,
+      "block": {
+        "id": "ebb1ba587a1e8385a2aac1317edcb872c05b2b07df6560fabd0f0d23d7d6a0df",
+        "height": 122721,
+        "timestamp": 1678989430,
+        "isFinal": true
+      },
       "sender": {
         "address": "lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo",
         "publicKey": "475697e34ae02b394721020d38677a072dbd5c03d61c1c8fdd6563eb66160fa3",
@@ -348,21 +354,18 @@ _Supports pagination._
         "recipientAddress": "lskezo8pcrbsoceuuu64rpc8w2qkont2ec3n772yu",
         "data": ""
       },
-      "block": {
-        "id": "ebb1ba587a1e8385a2aac1317edcb872c05b2b07df6560fabd0f0d23d7d6a0df",
-        "height": 122721,
-        "timestamp": 1678989430,
-        "isFinal": true
-      },
+      "signatures": [
+        "48425002226745847e155cf5480478c2336a43bb178439e9058cc2b50e26335cf7c8360b6c6a49793d7ae8d087bc746cab9618655e6a0adba4694cce2015b50f"
+      ],
+      "executionStatus": "successful",
+      "index": 0,
       "meta": {
         "recipient": {
           "address": "lskezo8pcrbsoceuuu64rpc8w2qkont2ec3n772yu",
           "publicKey": null,
           "name": null
         }
-      },
-      "executionStatus": "successful",
-      "index": 0
+      }
     },
   ],
   "meta": {

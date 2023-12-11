@@ -93,9 +93,7 @@ const indexTokenModuleAssets = async dbTrx => {
 const isGeneratorKeyValid = generatorKey => generatorKey !== INVALID_ED25519_KEY;
 
 const indexPosValidatorsInfo = async (numValidators, dbTrx) => {
-	logger.debug(
-		'Starting to index the PoS Validators information from the genesis PoS module assets.',
-	);
+	logger.debug('Starting to index the validators information from the genesis PoS module assets.');
 	if (numValidators > 0) {
 		const commissionsTable = await getCommissionsTable();
 
@@ -136,13 +134,11 @@ const indexPosValidatorsInfo = async (numValidators, dbTrx) => {
 
 		await commissionsTable.upsert(commissionEntries, dbTrx);
 	}
-	logger.debug(
-		'Finished indexing the PoS Validators information from the genesis PoS module assets.',
-	);
+	logger.debug('Finished indexing the validators information from the genesis PoS module assets.');
 };
 
 const indexPosStakesInfo = async (numStakers, dbTrx) => {
-	logger.debug('Starting to index the PoS stakes information from the genesis PoS module assets.');
+	logger.debug('Starting to index the stakes information from the genesis PoS module assets.');
 	let totalStake = BigInt(0);
 	let totalSelfStake = BigInt(0);
 
@@ -185,7 +181,7 @@ const indexPosStakesInfo = async (numStakers, dbTrx) => {
 
 	await updateTotalSelfStake(totalSelfStake, dbTrx);
 	logger.info(`Updated total self-stakes information at genesis: ${totalSelfStake.toString()}.`);
-	logger.debug('Finished indexing the PoS stakes information from the genesis PoS module assets.');
+	logger.debug('Finished indexing the stakes information from the genesis PoS module assets.');
 };
 
 const indexPosModuleAssets = async dbTrx => {
@@ -219,7 +215,7 @@ const indexTokenBalances = async () => {
 	// eslint-disable-next-line no-restricted-syntax
 	for (const address of allAccountsAddresses) {
 		await updateAccountBalances(address).catch(err => {
-			const errorMessage = `Updating account balance for ${address} failed. Retrying.\nError: ${err.message}.`;
+			const errorMessage = `Updating account balance for ${address} failed. Retrying.\nError: ${err.message}`;
 			logger.warn(errorMessage);
 			logger.debug(err.stack);
 

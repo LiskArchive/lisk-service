@@ -120,7 +120,7 @@ describe('reloadAccountKnowledge', () => {
 					info: jest.fn(),
 					warn: jest.fn(),
 					error: async data =>
-						expect(data).toEqual('Could not reload known accounts: Test error message.'),
+						expect(data).toEqual('Could not reload known accounts: Test error message'),
 				}),
 			};
 		});

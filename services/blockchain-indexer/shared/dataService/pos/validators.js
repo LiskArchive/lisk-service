@@ -149,7 +149,7 @@ const loadAllPosValidators = async () => {
 			logger.info(`Updated validator list with ${validatorList.length} validators.`);
 		}
 	} catch (err) {
-		logger.warn(`Failed to load all validators due to: ${err.message}.`);
+		logger.warn(`Failed to load all validators due to: ${err.message}`);
 	}
 };
 

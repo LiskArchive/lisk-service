@@ -27,7 +27,8 @@ const isGenesisBlockIndexed = async () => {
 
 const getIndexStatus = async () => requestIndexer('index.status').catch(() => null);
 
-const getMissingBlocks = async (from, to) => requestIndexer('getMissingBlocks', { from, to });
+const getMissingBlocks = async (from, to) =>
+	requestIndexer('getMissingBlocks', { from, to }).catch(err => err);
 
 const getIndexVerifiedHeight = async () =>
 	requestIndexer('getIndexVerifiedHeight').catch(() => null);
