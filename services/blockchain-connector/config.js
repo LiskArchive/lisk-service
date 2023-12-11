@@ -122,7 +122,7 @@ config.apiClient = {
 		retryInterval: Number(process.env.CLIENT_INSTANTIATION_RETRY_INTERVAL) || 1, // in millisecs
 	},
 	request: {
-		maxRetries: Number(process.env.ENDPOINT_INVOKE_MAX_RETRIES) || 5,
+		maxRetries: Number(process.env.ENDPOINT_INVOKE_MAX_RETRIES) || 3,
 		retryDelay: Number(process.env.ENDPOINT_INVOKE_RETRY_DELAY) || 10, // in millisecs
 	},
 };

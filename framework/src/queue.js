@@ -68,7 +68,7 @@ const queueInstance = (
 		});
 
 		queue.on('failed', (job, err) => {
-			logger.warn(`${job.name} job failed with error: ${err.message}.`);
+			logger.warn(`${job.name} job failed with error: ${err.message}`);
 			logger.debug(`${job.name} job failed with error:\n${err.stack}`);
 		});
 

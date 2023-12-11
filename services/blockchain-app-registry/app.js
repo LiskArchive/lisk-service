@@ -47,7 +47,7 @@ app.addEvents(path.join(__dirname, 'events'));
 
 // Run the application
 const reportErrorAndExitProcess = err => {
-	logger.fatal(`Failed to start service ${packageJson.name} due to: ${err.message}.`);
+	logger.fatal(`Failed to start service ${packageJson.name} due to: ${err.message}`);
 	logger.fatal(err.stack);
 	process.exit(1);
 };

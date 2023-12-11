@@ -80,18 +80,23 @@ const triggerAccountsBalanceUpdate = async () => {
 		config.set.accountBalanceUpdate.batchSize,
 	);
 
+	const numAddressesScheduled = addresses.length;
 	try {
 		// eslint-disable-next-line no-restricted-syntax
-		for (const address of addresses) {
+		while (addresses.length) {
+			const address = addresses.shift();
 			await updateAccountBalances(address);
 		}
+		logger.info(`Successfully updated account balances for ${numAddressesScheduled} account(s).`);
 	} catch (err) {
-		// Reschedule accounts balance update on error
+		// Reschedule accounts balance update on error for remaining addresses
 		await scheduleAddressesBalanceUpdate(addresses);
-	}
 
-	if (addresses.length) {
-		logger.info(`Updated account balance for ${addresses.length} account(s).`);
+		const numPending = addresses.length;
+		const numSuccess = numAddressesScheduled - numPending;
+		logger.info(
+			`Successfully updated account balances for ${numSuccess} account(s). Rescheduling updates for ${numPending} account(s).`,
+		);
 	}
 };
 

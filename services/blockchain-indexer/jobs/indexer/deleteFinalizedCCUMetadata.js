@@ -32,7 +32,7 @@ module.exports = [
 				await deleteFinalizedCCUMetadata(finalizedHeight);
 				logger.info('Successfully deleted CCUs metadata until the finalized block height.');
 			} catch (err) {
-				logger.warn(`'Deleting CCUs metadata failed due to: ${err.message}.`);
+				logger.warn(`'Deleting CCUs metadata failed due to: ${err.message}`);
 			}
 		},
 	},

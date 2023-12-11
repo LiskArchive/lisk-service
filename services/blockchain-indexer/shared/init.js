@@ -47,7 +47,7 @@ const init = async () => {
 				await snapshotUtils.initSnapshot();
 				logger.info('Successfully downloaded and applied the snapshot.');
 			} catch (err) {
-				logger.warn(`Unable to apply snapshot:\n${err.message}.`);
+				logger.warn(`Unable to apply snapshot:\n${err.message}`);
 			}
 		}
 

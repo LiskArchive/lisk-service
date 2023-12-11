@@ -31,7 +31,7 @@ module.exports = [
 				await triggerAccountUpdates();
 				logger.info('Triggered account updates successfully.');
 			} catch (err) {
-				logger.warn(`Triggering account updates failed due to: ${err.message}.`);
+				logger.warn(`Triggering account updates failed due to: ${err.message}`);
 				logger.trace(err.stack);
 			}
 		},
@@ -47,7 +47,7 @@ module.exports = [
 				await triggerAccountsBalanceUpdate();
 				logger.info('Triggered account balance updates successfully.');
 			} catch (err) {
-				logger.warn(`Triggering account balance updates failed due to: ${err.message}.`);
+				logger.warn(`Triggering account balance updates failed due to: ${err.message}`);
 				logger.trace(err.stack);
 			}
 		},
