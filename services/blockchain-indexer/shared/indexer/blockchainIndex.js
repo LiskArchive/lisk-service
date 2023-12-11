@@ -383,9 +383,7 @@ const indexBlock = async job => {
 		);
 	} catch (error) {
 		// Stop genesisAsset index progress logging on errors
-		if (blockToIndexFromNode.height === genesisHeight) {
-			clearInterval(getGenesisAssetIntervalTimeout());
-		}
+		clearInterval(getGenesisAssetIntervalTimeout());
 
 		// Block may not have been initialized when error occurred
 		const failedBlockInfo = {
