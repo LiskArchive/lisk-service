@@ -54,12 +54,12 @@ const downloadAndExtractTarball = (url, directoryPath) =>
 
 const downloadJSONFile = (fileUrl, filePath) =>
 	new Promise((resolve, reject) => {
-		logger.info(`Downloading JSON file from ${fileUrl} as ${filePath}`);
+		logger.info(`Downloading JSON file from ${fileUrl} as ${filePath}.`);
 		request(fileUrl)
 			.then(async response => {
 				const block = typeof response === 'string' ? JSON.parse(response).data : response.data;
 				fs.writeFile(filePath, JSON.stringify(block), () => {
-					logger.info('File downloaded successfully');
+					logger.info('File downloaded successfully.');
 					resolve();
 				});
 			})
@@ -68,7 +68,7 @@ const downloadJSONFile = (fileUrl, filePath) =>
 
 const downloadAndUnzipFile = (fileUrl, filePath) =>
 	new Promise((resolve, reject) => {
-		logger.info(`Downloading and extracting file from ${fileUrl} as ${filePath}`);
+		logger.info(`Downloading and extracting file from ${fileUrl} as ${filePath}.`);
 		getHTTPProtocolByURL(fileUrl).get(fileUrl, response => {
 			if (response.statusCode === 200) {
 				const unzip = zlib.createUnzip();
@@ -76,7 +76,7 @@ const downloadAndUnzipFile = (fileUrl, filePath) =>
 				response.pipe(unzip).pipe(writeFile);
 				response.on('error', async err => reject(new Error(err)));
 				response.on('end', async () => {
-					logger.info('File downloaded successfully');
+					logger.info('File downloaded successfully.');
 					resolve();
 				});
 			} else {
@@ -90,7 +90,7 @@ const downloadAndUnzipFile = (fileUrl, filePath) =>
 
 const downloadFile = (url, dirPath) =>
 	new Promise((resolve, reject) => {
-		logger.info(`Downloading file from ${url} to ${dirPath}`);
+		logger.info(`Downloading file from ${url} to ${dirPath}.`);
 
 		getHTTPProtocolByURL(url).get(url, response => {
 			if (response.statusCode === 200) {
@@ -100,7 +100,7 @@ const downloadFile = (url, dirPath) =>
 				response.pipe(writeStream);
 				response.on('error', async err => reject(new Error(err)));
 				response.on('end', async () => {
-					logger.info('File downloaded successfully');
+					logger.info('File downloaded successfully.');
 					resolve();
 				});
 			} else {

@@ -60,7 +60,7 @@ const getReady = () => {
 		});
 		return { services: includeSvcForReadiness };
 	} catch (_) {
-		logger.error(`Current service status: ${currentSvcStatus}`);
+		logger.error(`Current service status:\n${JSON.stringify(currentSvcStatus, null, '\t')}`);
 		throw new MoleculerError('Service Unavailable', 503, 'SERVICES_NOT_READY');
 	}
 };

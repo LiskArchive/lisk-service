@@ -33,6 +33,8 @@ const MAX_INSTANTIATION_WAIT_TIME = config.apiClient.instantiation.maxWaitTime;
 const NUM_REQUEST_RETRIES = config.apiClient.request.maxRetries;
 const ENDPOINT_INVOKE_RETRY_DELAY = config.apiClient.request.retryDelay;
 const CLIENT_ALIVE_ASSUMPTION_TIME = config.apiClient.aliveAssumptionTime;
+const CLIENT_ALIVE_ASSUMPTION_TIME_BEFORE_GENESIS =
+	config.apiClient.aliveAssumptionTimeBeforeGenesis;
 const HEARTBEAT_ACK_MAX_WAIT_TIME = config.apiClient.heartbeatAckMaxWaitTime;
 
 // Caching and flags
@@ -42,6 +44,7 @@ let lastClientAliveTime;
 let heartbeatCheckBeginTime;
 let isInstantiating = false;
 let isClientAlive = false;
+let isGenesisBlockIndexed = false;
 
 const pongListener = res => {
 	isClientAlive = true;
@@ -168,13 +171,38 @@ if (config.isUseLiskIPCClient) {
 	const resetApiClientListener = async () => instantiateClient(true).catch(() => {});
 	Signals.get('resetApiClient').add(resetApiClientListener);
 } else {
-	const triggerRegularClientLivelinessChecks = () =>
-		setInterval(async () => {
+	let intervalTimeout;
+	const triggerRegularClientLivelinessChecks = intervalMs => {
+		intervalTimeout = setInterval(async () => {
 			const isAlive = await checkIsClientAlive();
 			if (!isAlive) instantiateClient(true).catch(() => {});
-		}, CLIENT_ALIVE_ASSUMPTION_TIME);
+		}, intervalMs);
+	};
 
-	Signals.get('genesisBlockDownloaded').add(triggerRegularClientLivelinessChecks);
+	const genesisBlockDownloadedListener = () => {
+		triggerRegularClientLivelinessChecks(CLIENT_ALIVE_ASSUMPTION_TIME_BEFORE_GENESIS);
+		logger.info(
+			`API client heartbeat checks scheduled every ${CLIENT_ALIVE_ASSUMPTION_TIME_BEFORE_GENESIS}ms. The frequency will be set to ${CLIENT_ALIVE_ASSUMPTION_TIME}ms after successful indexing of the genesis block.`,
+		);
+	};
+
+	const genesisBlockIndexedListener = indexStatus => {
+		if (
+			!isGenesisBlockIndexed &&
+			indexStatus.data &&
+			indexStatus.data.genesisHeight <= indexStatus.data.lastIndexedBlockHeight
+		) {
+			clearInterval(intervalTimeout);
+			triggerRegularClientLivelinessChecks(CLIENT_ALIVE_ASSUMPTION_TIME);
+			isGenesisBlockIndexed = true;
+			logger.info(
+				`API client heartbeat checks re-scheduled to run every ${CLIENT_ALIVE_ASSUMPTION_TIME}ms.`,
+			);
+		}
+	};
+
+	Signals.get('genesisBlockDownloaded').add(genesisBlockDownloadedListener);
+	Signals.get('updateIndexStatus').add(genesisBlockIndexedListener);
 }
 
 module.exports = {

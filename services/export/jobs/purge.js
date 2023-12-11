@@ -28,7 +28,7 @@ module.exports = [
 		interval: config.job.purgeCache.interval,
 		schedule: config.job.purgeCache.schedule,
 		controller: () => {
-			logger.info('Performing cache maintenance');
+			logger.info('Running cache maintenance.');
 			partials.purge();
 			staticFiles.purge();
 		},
