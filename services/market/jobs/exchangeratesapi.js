@@ -25,11 +25,11 @@ module.exports = [
 		interval: config.job.refreshPricesExchangeratesapi.interval,
 		schedule: config.job.refreshPricesExchangeratesapi.schedule,
 		init: async () => {
-			logger.debug('Initializing market prices from exchangeratesapi');
+			logger.debug('Initializing market prices from exchangeratesapi.');
 			await reload();
 		},
 		controller: async () => {
-			logger.debug('Job scheduled to update prices from exchangeratesapi');
+			logger.debug('Job scheduled to update prices from exchangeratesapi.');
 			await reload();
 		},
 	},

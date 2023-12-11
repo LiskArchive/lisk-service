@@ -32,19 +32,19 @@ const app = Microservice({
 	logger: config.log,
 	events: {
 		chainNewBlock: async payload => {
-			logger.debug("Received a 'chainNewBlock' event from connecter.");
+			logger.debug("Received a 'chainNewBlock' moleculer event from connecter.");
 			Signals.get('newBlock').dispatch(payload);
 		},
 		chainDeleteBlock: async payload => {
-			logger.debug("Received a 'chainDeleteBlock' event from connecter.");
+			logger.debug("Received a 'chainDeleteBlock' moleculer event from connecter.");
 			Signals.get('deleteBlock').dispatch(payload);
 		},
 		chainValidatorsChange: async payload => {
-			logger.debug("Received a 'chainValidatorsChange' event from connecter.");
+			logger.debug("Received a 'chainValidatorsChange' moleculer event from connecter.");
 			Signals.get('newRound').dispatch(payload);
 		},
 		systemNodeInfo: async payload => {
-			logger.debug("Received a 'systemNodeInfo' event from connecter.");
+			logger.debug("Received a 'systemNodeInfo' moleculer event from connecter.");
 			Signals.get('nodeInfo').dispatch(payload);
 		},
 	},

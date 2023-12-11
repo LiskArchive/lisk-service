@@ -39,11 +39,11 @@ module.exports = [
 		interval: config.job.refreshPricesKraken.interval,
 		schedule: config.job.refreshPricesKraken.schedule,
 		init: async () => {
-			logger.debug('Initializing market prices from Kraken');
+			logger.debug('Initializing market prices from Kraken.');
 			await reloadMarketPrices();
 		},
 		controller: async () => {
-			logger.debug('Job scheduled to update prices from Kraken');
+			logger.debug('Job scheduled to update prices from Kraken.');
 			await reloadMarketPrices();
 		},
 	},

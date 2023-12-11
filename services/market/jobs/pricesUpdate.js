@@ -25,11 +25,11 @@ module.exports = [
 		interval: config.job.updatePrices.interval,
 		schedule: config.job.updatePrices.schedule,
 		init: async () => {
-			logger.debug('Initializing market prices');
+			logger.debug('Initializing market prices.');
 			await updatePrices();
 		},
 		controller: async () => {
-			logger.debug('Job scheduled to maintain updated market prices');
+			logger.debug('Job scheduled to update market prices.');
 			await updatePrices();
 		},
 	},

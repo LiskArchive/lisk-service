@@ -58,7 +58,7 @@ const calculateEstimateFeePerByteQuick = async () => {
 	const fromHeight = toHeight - batchSize;
 
 	logger.debug(
-		`Computing quick fee estimate for block ${latestBlock.id} at height ${latestBlock.height}`,
+		`Computing quick fee estimate for block ${latestBlock.id} at height ${latestBlock.height}.`,
 	);
 	const cachedFeeEstPerByteQuick = await checkAndProcessExecution(
 		fromHeight,

@@ -50,7 +50,7 @@ export const applyTransaction = async (blockHeader, tx, events, dbTrx) => {
 	// Process the transaction to create the entityTableEntry
 	// And, finally, perform DB operations to update the index
 	await entityTable.upsert(entityTableEntry, dbTrx); // it is important to pass dbTrx
-	logger.debug('Add custom logs');
+	logger.debug('Add custom logs.');
 
 	Promise.resolve({ blockHeader, tx });
 };
@@ -66,7 +66,7 @@ export const revertTransaction = async (blockHeader, tx, events, dbTrx) => {
 	// Process the transaction to create the entityTableEntry
 	// And, finally, perform DB operations to update the index and revert the induced changes
 	await entityTable.delete(entityTableEntry, dbTrx); // it is important to pass dbTrx
-	logger.debug('Add custom logs');
+	logger.debug('Add custom logs.');
 
 	Promise.resolve({ blockHeader, tx });
 };

@@ -50,15 +50,15 @@ const defaultBrokerConfig = {
 	logger: config.log,
 	events: {
 		chainNewBlock: async () => {
-			logger.debug("Received a 'chainNewBlock' event from connecter.");
+			logger.debug("Received a 'chainNewBlock' moleculer event from connecter.");
 			Signals.get('chainNewBlock').dispatch();
 		},
 		systemNodeInfo: async payload => {
-			logger.debug("Received a 'systemNodeInfo' event from connecter.");
+			logger.debug("Received a 'systemNodeInfo' moleculer event from connecter.");
 			Signals.get('nodeInfo').dispatch(payload);
 		},
 		'update.fee_estimates': async payload => {
-			logger.debug("Received a 'update.fee_estimates' event from fee-estimator.");
+			logger.debug("Received a 'update.fee_estimates' moleculer event from fee-estimator.");
 			await setFeeEstimates(payload);
 		},
 	},

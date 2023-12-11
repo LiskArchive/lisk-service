@@ -35,15 +35,15 @@ const reloadMarketPrices = async () =>
 module.exports = [
 	{
 		name: 'prices.retrieve.binance',
-		description: 'Fetches up-to-date market prices from Binance',
+		description: 'Fetches up-to-date market prices from Binance.',
 		interval: config.job.refreshPricesBinance.interval,
 		schedule: config.job.refreshPricesBinance.schedule,
 		init: async () => {
-			logger.debug('Initializing market prices from Binance');
+			logger.debug('Initializing market prices from Binance.');
 			await reloadMarketPrices();
 		},
 		controller: async () => {
-			logger.debug('Job scheduled to update prices from Binance');
+			logger.debug('Job scheduled to update prices from Binance.');
 			await reloadMarketPrices();
 		},
 	},
