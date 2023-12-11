@@ -29,13 +29,15 @@ const logger = Logger();
 const timeoutMessage = 'Response not received in';
 const liskAddress = config.endpoints.liskWs;
 const RETRY_INTERVAL = config.apiClient.instantiation.retryInterval;
-const MAX_INSTANTIATION_WAIT_TIME = config.apiClient.instantiation.maxWaitTime;
+// const MAX_INSTANTIATION_WAIT_TIME = config.apiClient.instantiation.maxWaitTime;
+const MAX_INSTANTIATION_WAIT_TIME = 100;
 const NUM_REQUEST_RETRIES = config.apiClient.request.maxRetries;
 const ENDPOINT_INVOKE_RETRY_DELAY = config.apiClient.request.retryDelay;
 const CLIENT_ALIVE_ASSUMPTION_TIME = config.apiClient.aliveAssumptionTime;
 const CLIENT_ALIVE_ASSUMPTION_TIME_BEFORE_GENESIS =
 	config.apiClient.aliveAssumptionTimeBeforeGenesis;
 const HEARTBEAT_ACK_MAX_WAIT_TIME = config.apiClient.heartbeatAckMaxWaitTime;
+const WS_CONNECTION_LIMIT = config.apiClient.wsConnectionLimit;
 
 // Caching and flags
 let clientCache;
@@ -45,6 +47,7 @@ let heartbeatCheckBeginTime;
 let isInstantiating = false;
 let isClientAlive = false;
 let isGenesisBlockIndexed = false;
+let wsConnectionsEstablished = 0;
 
 const pongListener = res => {
 	isClientAlive = true;
@@ -89,7 +92,30 @@ const checkIsClientAlive = async () =>
 const instantiateClient = async (isForceReInstantiate = false) => {
 	try {
 		if (!isInstantiating || isForceReInstantiate) {
-			if (!(await checkIsClientAlive()) || isForceReInstantiate) {
+			const isNodeClientAlive = await checkIsClientAlive();
+
+			if (!config.isUseLiskIPCClient && isNodeClientAlive) {
+				wsConnectionsEstablished = 0;
+			}
+
+			if (!config.isUseLiskIPCClient && !isNodeClientAlive) {
+				let NUM_RETRIES = 10;
+				while (
+					!config.isUseLiskIPCClient &&
+					wsConnectionsEstablished >= WS_CONNECTION_LIMIT &&
+					NUM_RETRIES-- > 0
+				) {
+					await delay(1000);
+					if (await checkIsClientAlive()) {
+						wsConnectionsEstablished = 0;
+						return clientCache;
+					}
+				}
+			}
+
+			if (!isNodeClientAlive || isForceReInstantiate) {
+				if (!config.isUseLiskIPCClient) wsConnectionsEstablished++;
+
 				isInstantiating = true;
 				instantiationBeginTime = Date.now();
 
