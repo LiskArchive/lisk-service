@@ -116,7 +116,7 @@ const instantiateClient = async (isForceReInstantiate = false) => {
 
 		if (Date.now() - instantiationBeginTime > MAX_INSTANTIATION_WAIT_TIME) {
 			// Waited too long, reset the flag to re-attempt client instantiation
-			logger.warn(
+			logger.debug(
 				`MAX_INSTANTIATION_WAIT_TIME of ${MAX_INSTANTIATION_WAIT_TIME}ms has expired. Resetting isInstantiating to false.`,
 			);
 			isInstantiating = false;
