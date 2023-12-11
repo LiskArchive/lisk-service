@@ -97,7 +97,7 @@ const instantiateClient = async (isForceReInstantiate = false) => {
 				if (clientCache) {
 					clientCache.disconnect().catch(err => {
 						// Ensure failed disconnection doesn't impact the re-instantiation
-						logger.warn(`Client disconnection failed due to: ${err.message}.`);
+						logger.warn(`Client disconnection failed due to: ${err.message}`);
 					});
 				}
 

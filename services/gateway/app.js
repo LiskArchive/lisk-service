@@ -231,7 +231,7 @@ tempApp.run().then(async () => {
 			logger.info(`Started Gateway API on ${host}:${port}.`);
 		})
 		.catch(err => {
-			logger.fatal(`Failed to start service ${packageJson.name} due to: ${err.message}.`);
+			logger.fatal(`Failed to start service ${packageJson.name} due to: ${err.message}`);
 			logger.fatal(err.stack);
 			process.exit(1);
 		});

@@ -31,7 +31,7 @@ module.exports = [
 				await syncWithRemoteRepo();
 				logger.info('Database has been successfully synchronized.');
 			} catch (err) {
-				logger.warn(`Refreshing blockchain application metadata failed due to: ${err.message}.`);
+				logger.warn(`Refreshing blockchain application metadata failed due to: ${err.message}`);
 			}
 		},
 	},

@@ -43,7 +43,7 @@ const events = [
 let eventsCounter;
 
 const logError = (method, err) => {
-	logger.warn(`Invocation for ${method} failed with error: ${err.message}.`);
+	logger.warn(`Invocation for ${method} failed with error: ${err.message}`);
 	logger.debug(err.stack);
 };
 

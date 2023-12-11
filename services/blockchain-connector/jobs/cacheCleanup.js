@@ -33,7 +33,7 @@ module.exports = [
 					logger.info('Cache has been successfully cleaned.');
 				}
 			} catch (err) {
-				logger.warn(`Cleaning cache failed due to: ${err.message}.`);
+				logger.warn(`Cleaning cache failed due to: ${err.message}`);
 			}
 		},
 	},

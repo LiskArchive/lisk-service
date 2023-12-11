@@ -117,7 +117,7 @@ const postTransactions = async params => {
 			};
 
 		return {
-			data: { error: `Transaction payload was rejected by the network node: ${err.message}.` },
+			data: { error: `Transaction payload was rejected by the network node: ${err.message}` },
 			status: 'BAD_REQUEST',
 		};
 	}
@@ -139,7 +139,7 @@ const dryRunTransactions = async params => {
 			};
 
 		return {
-			data: { error: `Failed to dry run transaction: ${err.message}.` },
+			data: { error: `Failed to dry run transaction: ${err.message}` },
 			status: 'BAD_REQUEST',
 		};
 	}

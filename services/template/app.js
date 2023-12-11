@@ -45,7 +45,7 @@ app
 		logger.info(`Service started ${packageJson.name}.`);
 	})
 	.catch(err => {
-		logger.fatal(`Failed to start service ${packageJson.name} due to: ${err.message}.`);
+		logger.fatal(`Failed to start service ${packageJson.name} due to: ${err.message}`);
 		logger.fatal(err.stack);
 		process.exit(1);
 	});

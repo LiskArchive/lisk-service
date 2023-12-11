@@ -66,7 +66,7 @@ module.exports = [
 				await removeEmptyDirectoriesAndNonMetaFiles(config.dataDir);
 				logger.info('Data directory has been successfully cleaned.');
 			} catch (err) {
-				logger.warn(`Cleaning data directory failed due to: ${err.message}.`);
+				logger.warn(`Cleaning data directory failed due to: ${err.message}`);
 			}
 		},
 	},

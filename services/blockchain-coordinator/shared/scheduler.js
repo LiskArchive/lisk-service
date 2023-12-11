@@ -301,7 +301,7 @@ const scheduleMissingBlocksIndexing = async () => {
 			);
 		}
 	} catch (err) {
-		logger.warn(`Scheduling to index missing blocks failed due to: ${err.message}.`);
+		logger.warn(`Scheduling to index missing blocks failed due to: ${err.message}`);
 		logger.trace(err.stack);
 	}
 };
@@ -313,7 +313,7 @@ const init = async () => {
 		await initIndexingScheduler();
 		await initEventsScheduler();
 	} catch (err) {
-		logger.error(`Unable to initialize coordinator due to: ${err.message}.`);
+		logger.error(`Unable to initialize coordinator due to: ${err.message}`);
 		logger.trace(err.stack);
 		throw err;
 	}

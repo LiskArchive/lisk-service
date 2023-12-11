@@ -215,7 +215,7 @@ const indexTokenBalances = async () => {
 	// eslint-disable-next-line no-restricted-syntax
 	for (const address of allAccountsAddresses) {
 		await updateAccountBalances(address).catch(err => {
-			const errorMessage = `Updating account balance for ${address} failed. Retrying.\nError: ${err.message}.`;
+			const errorMessage = `Updating account balance for ${address} failed. Retrying.\nError: ${err.message}`;
 			logger.warn(errorMessage);
 			logger.debug(err.stack);
 
