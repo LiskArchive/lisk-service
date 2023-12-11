@@ -242,6 +242,16 @@
 					}
 				}
 			},
+			"signatures": {
+				"type": "array",
+				"description": "An array representing signature(s) of the transaction sender.",
+				"items": {
+					"type": "string"
+				},
+				"example": [
+					"48425002226745847e155cf5480478c2336a43bb178439e9058cc2b50e26335cf7c8360b6c6a49793d7ae8d087bc746cab9618655e6a0adba4694cce2015b50f"
+				]
+			},
 			"executionStatus": {
 				"type": "string",
 				"example": "successful",
