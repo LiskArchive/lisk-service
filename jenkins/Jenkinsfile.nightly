@@ -187,14 +187,14 @@ pipeline {
 							nvm(readFile('.nvmrc').trim()) {
 								dir('./services/blockchain-app-registry') { sh "npm run test:functional" }
 								dir('./services/blockchain-indexer') { 
-									sh "SERVICE_BROKER='nats://127.0.0.1:${SERVICE_BROKER_PORT}' SERVICE_INDEXER_CACHE_REDIS='redis://127.0.0.1:${REDIS_PORT}/2' SERVICE_INDEXER_REDIS_VOLATILE='redis://127.0.0.1:${REDIS_PORT}/3' SERVICE_MESSAGE_QUEUE_REDIS='redis://127.0.0.1:${REDIS_PORT}/4' npm run test:functional"
+									sh "SERVICE_BROKER='nats://127.0.0.1:${SERVICE_BROKER_PORT}' SERVICE_INDEXER_CACHE_REDIS='redis://lisk:password@127.0.0.1:${REDIS_PORT}/2' SERVICE_INDEXER_REDIS_VOLATILE='redis://lisk:password@127.0.0.1:${REDIS_PORT}/3' SERVICE_MESSAGE_QUEUE_REDIS='redis://lisk:password@127.0.0.1:${REDIS_PORT}/4' npm run test:functional"
 								}
 								dir('./services/fee-estimator') { sh "npm run test:functional" }
 								dir('./services/market') { 
-									sh "SERVICE_BROKER='nats://127.0.0.1:${SERVICE_BROKER_PORT}' SERVICE_MARKET_REDIS='redis://127.0.0.1:${REDIS_PORT}/10' npm run test:functional"
+									sh "SERVICE_BROKER='nats://127.0.0.1:${SERVICE_BROKER_PORT}' SERVICE_MARKET_REDIS='redis://lisk:password@127.0.0.1:${REDIS_PORT}/10' npm run test:functional"
 								}
 								dir('./services/transaction-statistics') { sh "SERVICE_BROKER='nats://127.0.0.1:${SERVICE_BROKER_PORT}' npm run test:functional" }
-								dir('./framework') { sh "REDIS_URL='redis://127.0.0.1:${REDIS_PORT}/0' npm run test:functional" }
+								dir('./framework') { sh "REDIS_URL='redis://lisk:password@127.0.0.1:${REDIS_PORT}/0' npm run test:functional" }
 								dir('./services/blockchain-connector') { sh "SERVICE_BROKER='nats://127.0.0.1:${SERVICE_BROKER_PORT}' npm run test:functional" }
 							}
 						}

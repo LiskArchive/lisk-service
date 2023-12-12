@@ -26,13 +26,14 @@ const config = {
 /**
  * Inter-service message broker
  */
-config.transporter = process.env.SERVICE_BROKER || 'redis://127.0.0.1:6379/0';
+config.transporter = process.env.SERVICE_BROKER || 'redis://lisk:password@127.0.0.1:6379/0';
 config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 10; // in seconds
 
 /**
  * External endpoints
  */
-config.endpoints.cache = process.env.SERVICE_FEE_ESTIMATOR_CACHE || 'redis://127.0.0.1:6379/1';
+config.endpoints.cache =
+	process.env.SERVICE_FEE_ESTIMATOR_CACHE || 'redis://lisk:password@127.0.0.1:6379/1';
 
 config.feeEstimates = {
 	quickAlgorithmEnabled: String(process.env.ENABLE_FEE_ESTIMATOR_QUICK).toLowerCase() !== 'false',

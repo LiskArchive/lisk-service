@@ -17,7 +17,7 @@ const Queue = require('../../src/queue');
 
 describe('Test queue', () => {
 	let queue;
-	const redisEndpoint = process.env.REDIS_URL || 'redis://127.0.0.1:6379/0';
+	const redisEndpoint = process.env.REDIS_URL || 'redis://lisk:password@127.0.0.1:6379/0';
 
 	it('should create a queue with a given redis instance', async () => {
 		const testFunc = async (a, b) => a + b;

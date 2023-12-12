@@ -32,9 +32,10 @@ config.host = process.env.HOST || '0.0.0.0';
 /**
  * Inter-service message broker
  */
-config.transporter = process.env.SERVICE_BROKER || 'redis://127.0.0.1:6379/0';
+config.transporter = process.env.SERVICE_BROKER || 'redis://lisk:password@127.0.0.1:6379/0';
 config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 10; // in seconds
-config.volatileRedis = process.env.SERVICE_GATEWAY_REDIS_VOLATILE || 'redis://127.0.0.1:6379/5';
+config.volatileRedis =
+	process.env.SERVICE_GATEWAY_REDIS_VOLATILE || 'redis://lisk:password@127.0.0.1:6379/5';
 
 /**
  * Compatibility

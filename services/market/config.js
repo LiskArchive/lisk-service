@@ -21,7 +21,7 @@ const config = {
 };
 
 // Moleculer broker config
-config.transporter = process.env.SERVICE_BROKER || 'redis://127.0.0.1:6379/0';
+config.transporter = process.env.SERVICE_BROKER || 'redis://lisk:password@127.0.0.1:6379/0';
 config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 10; // in seconds
 
 // Logging
@@ -70,7 +70,8 @@ config.ttl = {
 /**
  * External endpoints
  */
-config.endpoints.redis = process.env.SERVICE_MARKET_REDIS || 'redis://127.0.0.1:6379/6';
+config.endpoints.redis =
+	process.env.SERVICE_MARKET_REDIS || 'redis://lisk:password@127.0.0.1:6379/6';
 
 /**
  * Market prices config
