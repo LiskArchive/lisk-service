@@ -36,6 +36,7 @@ const CLIENT_ALIVE_ASSUMPTION_TIME = config.apiClient.aliveAssumptionTime;
 const CLIENT_ALIVE_ASSUMPTION_TIME_BEFORE_GENESIS =
 	config.apiClient.aliveAssumptionTimeBeforeGenesis;
 const HEARTBEAT_ACK_MAX_WAIT_TIME = config.apiClient.heartbeatAckMaxWaitTime;
+const WS_CONNECTION_LIMIT = config.apiClient.wsConnectionLimit;
 
 // Caching and flags
 let clientCache;
@@ -45,6 +46,7 @@ let heartbeatCheckBeginTime;
 let isInstantiating = false;
 let isClientAlive = false;
 let isGenesisBlockIndexed = false;
+let wsConnectionsEstablished = 0;
 
 const pongListener = res => {
 	isClientAlive = true;
@@ -89,9 +91,27 @@ const checkIsClientAlive = async () =>
 const instantiateClient = async (isForceReInstantiate = false) => {
 	try {
 		if (!isInstantiating || isForceReInstantiate) {
-			isInstantiating = true;
+			const isNodeClientAlive = await checkIsClientAlive();
 
-			if (!(await checkIsClientAlive()) || isForceReInstantiate) {
+			if (!config.isUseLiskIPCClient) {
+				if (isNodeClientAlive) {
+					wsConnectionsEstablished = 0;
+				} else {
+					let numRetries = NUM_REQUEST_RETRIES;
+					while (wsConnectionsEstablished >= WS_CONNECTION_LIMIT && numRetries--) {
+						await delay(MAX_INSTANTIATION_WAIT_TIME);
+						if (await checkIsClientAlive()) {
+							wsConnectionsEstablished = 0;
+							return clientCache;
+						}
+					}
+				}
+			}
+
+			isInstantiating = true;
+			if (!isNodeClientAlive || isForceReInstantiate) {
+				if (!config.isUseLiskIPCClient) wsConnectionsEstablished++;
+
 				instantiationBeginTime = Date.now();
 
 				if (clientCache) {
