@@ -39,6 +39,7 @@
 		"debug": "^4.3.1",
 		"fastest-validator": "^1.10.1",
 		"http-status-codes": "^1.4.0",
+		"ioredis": "^5.3.2",
 		"json-colorizer": "^2.2.2",
 		"keyv": "^4.0.3",
 		"keyv-lru": "^3.0.4",
