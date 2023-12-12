@@ -50,7 +50,9 @@ const pendingTransactionSchema = {
 	size: Joi.number().integer().positive().required(),
 	sender: Joi.object(sender).required(),
 	params: Joi.object().required(),
-	signatures: Joi.array().items(Joi.string().required()).required(),
+	signatures: Joi.array()
+		.items(Joi.string().pattern(regex.HASH_SHA512).allow('').required())
+		.required(),
 	executionStatus: Joi.string().valid('pending').required(),
 	meta: Joi.object(transactionMetaSchema).optional(),
 };
