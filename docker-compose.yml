@@ -186,9 +186,9 @@ services:
       replicas: 1
     environment:
       - SERVICE_BROKER=nats://nats:4222
-      - SERVICE_INDEXER_CACHE_REDIS=redis://redis_persistent:6379/0
-      - SERVICE_INDEXER_REDIS_VOLATILE=redis://redis_volatile:6379/0
-      - SERVICE_MESSAGE_QUEUE_REDIS=redis://redis_persistent:6379/8
+      - SERVICE_INDEXER_CACHE_REDIS=redis://lisk:password@redis_persistent:6379/0
+      - SERVICE_INDEXER_REDIS_VOLATILE=redis://lisk:password@redis_volatile:6379/0
+      - SERVICE_MESSAGE_QUEUE_REDIS=redis://lisk:password@redis_persistent:6379/8
       - SERVICE_INDEXER_MYSQL=mysql://lisk:password@mysql-primary:3306/lisk
       - SERVICE_INDEXER_MYSQL_READ_REPLICA=mysql://reader:password@mysql-read-replica-haproxy:3307/lisk
       - ENABLE_DATA_RETRIEVAL_MODE=${ENABLE_DATA_RETRIEVAL_MODE}
@@ -245,7 +245,7 @@ services:
       replicas: 1
     environment:
       - SERVICE_BROKER=nats://nats:4222
-      - SERVICE_MESSAGE_QUEUE_REDIS=redis://redis_persistent:6379/8
+      - SERVICE_MESSAGE_QUEUE_REDIS=redis://lisk:password@redis_persistent:6379/8
       - SERVICE_BROKER_TIMEOUT=${SERVICE_BROKER_TIMEOUT}
       - SERVICE_LOG_LEVEL=${SERVICE_LOG_LEVEL}
       - SERVICE_LOG_CONSOLE=${SERVICE_LOG_CONSOLE}
@@ -277,7 +277,7 @@ services:
       replicas: 1
     environment:
       - SERVICE_BROKER=nats://nats:4222
-      - SERVICE_STATISTICS_REDIS=redis://redis_persistent:6379/5
+      - SERVICE_STATISTICS_REDIS=redis://lisk:password@redis_persistent:6379/5
       - SERVICE_STATISTICS_MYSQL=mysql://lisk:password@mysql-primary:3306/lisk
       - SERVICE_STATISTICS_MYSQL_READ_REPLICA=mysql://reader:password@mysql-read-replica-haproxy:3307/lisk
       - TRANSACTION_STATS_HISTORY_LENGTH_DAYS=${TRANSACTION_STATS_HISTORY_LENGTH_DAYS}
@@ -308,7 +308,7 @@ services:
       replicas: 1
     environment:
       - SERVICE_BROKER=nats://nats:4222
-      - SERVICE_FEE_ESTIMATOR_CACHE=redis://redis_persistent:6379/6
+      - SERVICE_FEE_ESTIMATOR_CACHE=redis://lisk:password@redis_persistent:6379/6
       - ENABLE_FEE_ESTIMATOR_QUICK=${ENABLE_FEE_ESTIMATOR_QUICK}
       - ENABLE_FEE_ESTIMATOR_FULL=${ENABLE_FEE_ESTIMATOR_FULL}
       - FEE_EST_COLD_START_BATCH_SIZE=${FEE_EST_COLD_START_BATCH_SIZE}
@@ -346,7 +346,7 @@ services:
       - SERVICE_BROKER=nats://nats:4222
       - PORT=${PORT}
       - HOST=${HOST}
-      - SERVICE_GATEWAY_REDIS_VOLATILE=redis://redis_volatile:6379/1
+      - SERVICE_GATEWAY_REDIS_VOLATILE=redis://lisk:password@redis_volatile:6379/1
       - ENABLE_HTTP_API=${ENABLE_HTTP_API}
       - ENABLE_WS_API=${ENABLE_WS_API}
       - HTTP_CACHE_CONTROL_DIRECTIVES=${HTTP_CACHE_CONTROL_DIRECTIVES}
@@ -395,7 +395,7 @@ services:
       replicas: 1
     environment:
       - SERVICE_BROKER=nats://nats:4222
-      - SERVICE_MARKET_REDIS=redis://redis_persistent:6379/2
+      - SERVICE_MARKET_REDIS=redis://lisk:password@redis_persistent:6379/2
       - EXCHANGERATESAPI_IO_API_KEY=${EXCHANGERATESAPI_IO_API_KEY}
       - SERVICE_MARKET_FIAT_CURRENCIES=${SERVICE_MARKET_FIAT_CURRENCIES}
       - SERVICE_MARKET_TARGET_PAIRS=${SERVICE_MARKET_TARGET_PAIRS}
@@ -434,8 +434,8 @@ services:
       replicas: 1
     environment:
       - SERVICE_BROKER=nats://nats:4222
-      - SERVICE_EXPORT_REDIS=redis://redis_persistent:6379/3
-      - SERVICE_EXPORT_REDIS_VOLATILE=redis://redis_volatile:6379/3
+      - SERVICE_EXPORT_REDIS=redis://lisk:password@redis_persistent:6379/3
+      - SERVICE_EXPORT_REDIS_VOLATILE=redis://lisk:password@redis_volatile:6379/3
       - SERVICE_EXPORT_PARTIALS=/home/lisk/lisk-service/export/data/partials
       - EXPORT_S3_BUCKET_NAME_PARTIALS=${EXPORT_S3_BUCKET_NAME_PARTIALS}
       - SERVICE_EXPORT_STATIC=/home/lisk/lisk-service/export/data/static

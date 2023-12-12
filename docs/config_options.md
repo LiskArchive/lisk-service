@@ -12,7 +12,7 @@ When using the Docker setup, the default values specified in the [`docker/exampl
 ```bash
 # Must be identical for all microservices
 # Make sure that all microservices are able to connect with the common Redis
-SERVICE_BROKER=redis://127.0.0.1:6379/0
+SERVICE_BROKER=redis://lisk:password@127.0.0.1:6379/0
 
 # Number of seconds to wait before returning a RequestTimeout error when it takes too long to return a value. To disable use 0.
 SERVICE_BROKER_TIMEOUT=10

@@ -27,17 +27,18 @@ const config = {
 /**
  * Inter-service message broker
  */
-config.transporter = process.env.SERVICE_BROKER || 'redis://127.0.0.1:6379/0';
+config.transporter = process.env.SERVICE_BROKER || 'redis://lisk:password@127.0.0.1:6379/0';
 config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 10; // in seconds
 
 /**
  * External endpoints
  */
-config.endpoints.cache = process.env.SERVICE_INDEXER_CACHE_REDIS || 'redis://127.0.0.1:6379/2';
+config.endpoints.cache =
+	process.env.SERVICE_INDEXER_CACHE_REDIS || 'redis://lisk:password@127.0.0.1:6379/2';
 config.endpoints.volatileRedis =
-	process.env.SERVICE_INDEXER_REDIS_VOLATILE || 'redis://127.0.0.1:6379/3';
+	process.env.SERVICE_INDEXER_REDIS_VOLATILE || 'redis://lisk:password@127.0.0.1:6379/3';
 config.endpoints.messageQueue =
-	process.env.SERVICE_MESSAGE_QUEUE_REDIS || 'redis://127.0.0.1:6379/4';
+	process.env.SERVICE_MESSAGE_QUEUE_REDIS || 'redis://lisk:password@127.0.0.1:6379/4';
 // Primary database. Used for both read-write operations.
 config.endpoints.mysql =
 	process.env.SERVICE_INDEXER_MYSQL || 'mysql://lisk:password@127.0.0.1:3306/lisk';

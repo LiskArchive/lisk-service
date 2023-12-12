@@ -26,7 +26,7 @@ LoggerConfig(loggerConf);
 
 const app = Microservice({
 	name: 'test-service',
-	transporter: process.env.REDIS_URL || 'redis://127.0.0.1:6379/0',
+	transporter: process.env.REDIS_URL || 'redis://lisk:password@127.0.0.1:6379/0',
 	logger: loggerConf,
 });
 

@@ -28,7 +28,7 @@ if (process.argv.length < 0) {
 // const TIMEOUT = 15 * 1000;
 
 const broker = new ServiceBroker({
-	transporter: 'redis://127.0.0.1:6379',
+	transporter: 'redis://lisk:password@127.0.0.1:6379',
 	logLevel: 'info',
 	requestTimeout: 15 * 1000,
 	logger: console,

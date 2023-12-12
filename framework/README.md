@@ -41,7 +41,7 @@ const logger = Logger('test-microservice');
 // Initialize Microservice framework
 const app = Microservice({
 	name: 'test',
-	transporter: 'redis://127.0.0.1:6379',
+	transporter: 'redis://lisk:password@127.0.0.1:6379',
 	logger: Logger('test-moleculer'),
 });
 

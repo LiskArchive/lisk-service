@@ -49,7 +49,7 @@ The common configurations described in this section apply to all the microservic
 *Must be identical for all the microservices.*
 Make sure that all microservices can connect with the message broker.
 This could be a NATS or a Redis instance.
-|redis://127.0.0.1:6379/0
+|redis://lisk:password@127.0.0.1:6379/0
 
 | `SERVICE_BROKER_TIMEOUT`
 | number
@@ -103,7 +103,7 @@ module.exports = {
       // [...]
       env: {
         // --- Remember to set the properties below
-        SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
+        SERVICE_BROKER: 'redis://lisk:password@127.0.0.1:6379/0',
         SERVICE_LOG_LEVEL: 'info',
         // SERVICE_BROKER_TIMEOUT: 10,
         // SERVICE_LOG_CONSOLE: 'false',
@@ -118,7 +118,7 @@ module.exports = {
       // [...]
       env: {
         // --- Remember to set the properties below
-        SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
+        SERVICE_BROKER: 'redis://lisk:password@127.0.0.1:6379/0',
         SERVICE_LOG_LEVEL: 'info',
         // SERVICE_BROKER_TIMEOUT: 10,
         // SERVICE_LOG_CONSOLE: 'false',
@@ -156,7 +156,7 @@ module.exports = {
 | `SERVICE_BROKER`
 | string
 | URL of the microservice message broker (NATS or Redis).
-| redis://127.0.0.1:6379/0
+| redis://lisk:password@127.0.0.1:6379/0
 
 | `JSON_RPC_STRICT_MODE`
 | boolean
@@ -181,7 +181,7 @@ Must be listed as comma-separated values.
 | URL of the volatile cache storage (Redis).
 Used to cache RPC requests.
 Required when `ENABLE_REQUEST_CACHING` is enabled.
-| redis://127.0.0.1:6379/5
+| redis://lisk:password@127.0.0.1:6379/5
 
 | `GATEWAY_DEPENDENCIES`
 | string
@@ -307,8 +307,8 @@ module.exports = {
       env: {
         PORT: 9901,
         // --- Remember to set the properties below
-        SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
-        SERVICE_GATEWAY_REDIS_VOLATILE: 'redis://127.0.0.1:6379/5',
+        SERVICE_BROKER: 'redis://lisk:password@127.0.0.1:6379/0',
+        SERVICE_GATEWAY_REDIS_VOLATILE: 'redis://lisk:password@127.0.0.1:6379/5',
         ENABLE_HTTP_API: 'http-status,http-version3,http-exports',
         ENABLE_WS_API: 'blockchain,rpc-v3',
         GATEWAY_DEPENDENCIES: 'indexer,connector',
@@ -359,7 +359,7 @@ module.exports = {
 | `SERVICE_BROKER`
 | string
 | URL of the microservice message broker (NATS or Redis).
-| redis://127.0.0.1:6379/0
+| redis://lisk:password@127.0.0.1:6379/0
 
 | `LISK_APP_WS`
 | string
@@ -484,7 +484,7 @@ module.exports = {
       // [...]
       env: {
         // --- Remember to set the properties below
-        SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
+        SERVICE_BROKER: 'redis://lisk:password@127.0.0.1:6379/0',
         LISK_APP_WS: 'ws://127.0.0.1:7887',
         GEOIP_JSON: 'https://geoip.lisk.com/json',
         // ENABLE_BLOCK_CACHING: true,
@@ -526,13 +526,13 @@ module.exports = {
 | `SERVICE_BROKER`
 | string
 | URL of the microservice message broker (NATS or Redis).
-| redis://127.0.0.1:6379/0
+| redis://lisk:password@127.0.0.1:6379/0
 
 | `SERVICE_MESSAGE_QUEUE_REDIS`
 | string
 | URL of the Redis instance hosting the job queue to schedule the block indexing jobs.
 Must match the value supplied for the `indexer` microservice.
-| redis://127.0.0.1:6379/3
+| redis://lisk:password@127.0.0.1:6379/3
 
 | `JOB_INTERVAL_INDEX_MISSING_BLOCKS`
 | number
@@ -560,8 +560,8 @@ module.exports = {
       // [...]
       env: {
         // --- Remember to set the properties below
-        SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
-        SERVICE_MESSAGE_QUEUE_REDIS: 'redis://127.0.0.1:6379/3',
+        SERVICE_BROKER: 'redis://lisk:password@127.0.0.1:6379/0',
+        SERVICE_MESSAGE_QUEUE_REDIS: 'redis://lisk:password@127.0.0.1:6379/3',
         // SERVICE_BROKER_TIMEOUT: 10,
         // SERVICE_LOG_LEVEL: 'info',
         // SERVICE_LOG_CONSOLE: false,
@@ -592,7 +592,7 @@ module.exports = {
 | `SERVICE_BROKER`
 | string
 | URL of the microservice message broker (NATS or Redis).
-| redis://127.0.0.1:6379/0
+| redis://lisk:password@127.0.0.1:6379/0
 
 | `SERVICE_INDEXER_MYSQL`
 | string
@@ -603,12 +603,12 @@ module.exports = {
 | string
 | URL of the job queue to process the scheduled indexing jobs by the Blockchain Coordinator (Redis).
 Must match the value supplied for the `coordinator` microservice.
-| redis://127.0.0.1:6379/3
+| redis://lisk:password@127.0.0.1:6379/3
 
 | `SERVICE_INDEXER_REDIS_VOLATILE`
 | string
 | URL of the volatile cache storage (Redis).
-| redis://127.0.0.1:6379/2
+| redis://lisk:password@127.0.0.1:6379/2
 
 | `ENABLE_DATA_RETRIEVAL_MODE`
 | string
@@ -628,7 +628,7 @@ Must match the value supplied for the `coordinator` microservice.
 | `SERVICE_INDEXER_CACHE_REDIS`
 | string
 | URL of the cache storage (Redis).
-| redis://127.0.0.1:6379/1
+| redis://lisk:password@127.0.0.1:6379/1
 
 | `SERVICE_INDEXER_MYSQL_READ_REPLICA`
 | string
@@ -817,10 +817,10 @@ module.exports = {
       // [...]
       env: {
         // --- Remember to set the properties below
-        SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
-        SERVICE_INDEXER_CACHE_REDIS: 'redis://127.0.0.1:6379/1',
-        SERVICE_INDEXER_REDIS_VOLATILE: 'redis://127.0.0.1:6379/2',
-        SERVICE_MESSAGE_QUEUE_REDIS: 'redis://127.0.0.1:6379/3',
+        SERVICE_BROKER: 'redis://lisk:password@127.0.0.1:6379/0',
+        SERVICE_INDEXER_CACHE_REDIS: 'redis://lisk:password@127.0.0.1:6379/1',
+        SERVICE_INDEXER_REDIS_VOLATILE: 'redis://lisk:password@127.0.0.1:6379/2',
+        SERVICE_MESSAGE_QUEUE_REDIS: 'redis://lisk:password@127.0.0.1:6379/3',
         SERVICE_INDEXER_MYSQL: 'mysql://lisk:password@127.0.0.1:3306/lisk',
         ENABLE_DATA_RETRIEVAL_MODE: 'true',
         ENABLE_INDEXING_MODE: 'true',
@@ -881,7 +881,7 @@ module.exports = {
 | `SERVICE_BROKER`
 | string
 | URL of the microservice message broker (NATS or Redis).
-| redis://127.0.0.1:6379/0
+| redis://lisk:password@127.0.0.1:6379/0
 
 | `SERVICE_APP_REGISTRY_MYSQL`
 | string
@@ -947,7 +947,7 @@ module.exports = {
       // [...]
       env: {
         // --- Remember to set the properties below
-        SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
+        SERVICE_BROKER: 'redis://lisk:password@127.0.0.1:6379/0',
         SERVICE_APP_REGISTRY_MYSQL: 'mysql://lisk:password@127.0.0.1:3306/lisk',
         ENABLE_REBUILD_INDEX_AT_INIT: false,
         // SERVICE_BROKER_TIMEOUT: 10,
@@ -984,12 +984,12 @@ module.exports = {
 | `SERVICE_BROKER`
 | string
 | URL of the microservice message broker (NATS or Redis).
-| redis://127.0.0.1:6379/0
+| redis://lisk:password@127.0.0.1:6379/0
 
 | `SERVICE_FEE_ESTIMATOR_CACHE`
 | string
 | URL of the cache storage (Redis).
-| redis://127.0.0.1:6379/1
+| redis://lisk:password@127.0.0.1:6379/1
 
 | `ENABLE_FEE_ESTIMATOR_QUICK`
 | boolean
@@ -1042,8 +1042,8 @@ module.exports = {
       // [...]
       env: {
         // --- Remember to set the properties below
-        SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
-        SERVICE_FEE_ESTIMATOR_CACHE: 'redis://127.0.0.1:6379/1',
+        SERVICE_BROKER: 'redis://lisk:password@127.0.0.1:6379/0',
+        SERVICE_FEE_ESTIMATOR_CACHE: 'redis://lisk:password@127.0.0.1:6379/1',
         ENABLE_FEE_ESTIMATOR_QUICK: true,
         ENABLE_FEE_ESTIMATOR_FULL: false,
         // FEE_EST_COLD_START_BATCH_SIZE: 1,
@@ -1080,7 +1080,7 @@ module.exports = {
 | `SERVICE_BROKER`
 | string
 | URL of the microservice message broker (NATS or Redis).
-| redis://127.0.0.1:6379/0
+| redis://lisk:password@127.0.0.1:6379/0
 
 | `SERVICE_STATISTICS_MYSQL`
 | string
@@ -1090,7 +1090,7 @@ module.exports = {
 | `SERVICE_STATISTICS_REDIS`
 | string
 | URL of the cache storage (Redis).
-| redis://127.0.0.1:6379/1
+| redis://lisk:password@127.0.0.1:6379/1
 
 | `TRANSACTION_STATS_HISTORY_LENGTH_DAYS`
 | number
@@ -1141,8 +1141,8 @@ module.exports = {
       // [...]
       env: {
         // --- Remember to set the properties below
-        SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
-        SERVICE_STATISTICS_REDIS: 'redis://127.0.0.1:6379/1',
+        SERVICE_BROKER: 'redis://lisk:password@127.0.0.1:6379/0',
+        SERVICE_STATISTICS_REDIS: 'redis://lisk:password@127.0.0.1:6379/1',
         SERVICE_STATISTICS_MYSQL: 'mysql://lisk:password@127.0.0.1:3306/lisk',
         TRANSACTION_STATS_HISTORY_LENGTH_DAYS: 366,
         // SERVICE_STATISTICS_MYSQL_READ_REPLICA: 'mysql://reader:password@127.0.0.1:3307/lisk',
@@ -1177,12 +1177,12 @@ module.exports = {
 | `SERVICE_BROKER`
 | string
 | URL of the microservice message broker (NATS or Redis).
-| redis://127.0.0.1:6379/0
+| redis://lisk:password@127.0.0.1:6379/0
 
 | `SERVICE_MARKET_REDIS`
 | string
 | URL of the cache storage (Redis).
-| redis://127.0.0.1:6379/2
+| redis://lisk:password@127.0.0.1:6379/2
 
 | `SERVICE_MARKET_FIAT_CURRENCIES`
 | string
@@ -1278,8 +1278,8 @@ module.exports = {
       // [...]
       env: {
         // --- Remember to set the properties below
-        SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
-        SERVICE_MARKET_REDIS: 'redis://127.0.0.1:6379/2',
+        SERVICE_BROKER: 'redis://lisk:password@127.0.0.1:6379/0',
+        SERVICE_MARKET_REDIS: 'redis://lisk:password@127.0.0.1:6379/2',
         SERVICE_MARKET_FIAT_CURRENCIES: 'EUR,USD,CHF,GBP,RUB,PLN,JPY,AUD,GBP,INR',
         SERVICE_MARKET_TARGET_PAIRS: 'LSK_BTC,LSK_EUR,LSK_USD,LSK_CHF,LSK_PLN,LSK_JPY,LSK_AUD,LSK_GBP,LSK_INR,BTC_EUR,BTC_USD,BTC_CHF',
         // EXCHANGERATESAPI_IO_API_KEY: ''
@@ -1323,17 +1323,17 @@ For the local file system, use `*SERVICE_EXPORT_PARTIALS*` and `*SERVICE_EXPORT_
 | `SERVICE_BROKER`
 | string
 | URL of the microservice message broker (NATS or Redis).
-| redis://127.0.0.1:6379/0
+| redis://lisk:password@127.0.0.1:6379/0
 
 | `SERVICE_EXPORT_REDIS`
 | string
 | URL of the permanent cache storage (Redis).
-| redis://127.0.0.1:6379/3
+| redis://lisk:password@127.0.0.1:6379/3
 
 | `SERVICE_EXPORT_REDIS_VOLATILE`
 | string
 | URL of the volatile cache storage (Redis).
-| redis://127.0.0.1:6379/4
+| redis://lisk:password@127.0.0.1:6379/4
 
 | `SERVICE_EXPORT_PARTIALS`
 | string
@@ -1416,9 +1416,9 @@ module.exports = {
       name: 'lisk-service-export',
       // [...]
       env: {
-        SERVICE_BROKER: 'redis://127.0.0.1:6379/0',
-        SERVICE_EXPORT_REDIS: 'redis://127.0.0.1:6379/3',
-        SERVICE_EXPORT_REDIS_VOLATILE: 'redis://127.0.0.1:6379/4',
+        SERVICE_BROKER: 'redis://lisk:password@127.0.0.1:6379/0',
+        SERVICE_EXPORT_REDIS: 'redis://lisk:password@127.0.0.1:6379/3',
+        SERVICE_EXPORT_REDIS_VOLATILE: 'redis://lisk:password@127.0.0.1:6379/4',
         // SERVICE_EXPORT_PARTIALS: './data/partials',
         // EXPORT_S3_BUCKET_NAME_PARTIALS: 'partials',
         // SERVICE_EXPORT_STATIC: './data/static',
