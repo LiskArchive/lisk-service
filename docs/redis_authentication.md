@@ -1,6 +1,6 @@
 # Redis Authentication
 
-To avoid any unauthorized access to the Redis database resulting in an unintended behavior, arising from the usage of Redis' passwordless `default` user.
+To prevent unauthorized access to the Redis database and mitigate unintended behavior associated with the use of Redis' passwordless `default` user.
 
 With Lisk Service [v0.7.2](https://github.com/LiskHQ/lisk-service/tree/v0.7.2), similar to our MySQL setup, we now enforce our custom authentication on Redis, by default, with the following credentials:
 
@@ -69,6 +69,6 @@ used_cpu_user_main_thread:1.334302
 
 In case, you have an existing passwordless running instance of Redis and want to continue using it, please override all the Redis connection strings via the necessary environment variables either in the `.env` (Docker setup) or the `ecosystem.config.json` (PM2 setup) config files.
 
-To easily find the necessary environment variables, open the relevant config file, and replace all the instances of `redis://lisk:password@` with `redis://`. Please ensure that the update environment variables are enabled.
+To easily find the necessary environment variables, open the relevant config file, and replace all the instances of `redis://lisk:password@` with `redis://`. Please ensure that the updated environment variables are enabled.
 
 > **NOTE**: We _**highly recommend**_ using authentication on Redis.
