@@ -34,7 +34,7 @@ user default off
 
 ## Setting up auth on existing passwordless Redis instances
 
-To set up authentication on your current running Redis instance, execute the following commands after you login to the Redis CLI:
+To set up authentication on your current running Redis instance, execute the following commands after you log in to the Redis CLI:
 
 ```
 CONFIG SET requirepass password
