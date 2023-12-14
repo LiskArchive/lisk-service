@@ -4,7 +4,8 @@ Mona Bärenfänger <mona@lightcurve.io>
 :toc:
 :source-language: bash
 // URLs
-:url_redis: https://redis.io/docs/install/install-redis/install-redis-on-linux/
+:url_redis_install_ubuntu: https://redis.io/docs/install/install-redis/install-redis-on-linux/
+:url_redis_install_mac: https://redis.io/docs/install/install-redis/install-redis-on-mac-os/
 :url_docker_install_linux: https://docs.docker.com/engine/install
 :url_docker_install_linux_compose: https://docs.docker.com/compose/install/
 :url_docker_install_mac: https://docs.docker.com/docker-for-mac/install/
@@ -299,14 +300,12 @@ Redis system-wide::
 +
 --
 *Ubuntu*
-----
-sudo apt-get install redis-server
-----
+
+To install Redis on Ubuntu, please follow the {url_redis_install_ubuntu}[official Redis installation guide].
 
 *macOS*
-----
-brew install redis
-----
+
+To install Redis on MacOS, please follow the {url_redis_install_mac}[official Redis installation guide].
 --
 ====
 
