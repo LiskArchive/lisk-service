@@ -287,7 +287,7 @@ docker run --name redis_service --port 6379:6379 -d redis:7-alpine
 ----
 docker run --name redis_service -v /path/to/custom_redis.conf:/usr/local/etc/redis/redis.conf --port 6379:6379 -d redis:7-alpine
 ----
-NOTE: Starting with Lisk Service version 0.7.2 we strongly recommend using custom authentication in Redis. To learn more about it please check this {url_lisk_service_redis_auth}[guide] in the Lisk Service repository.
+NOTE: Starting with Lisk Service version 0.7.2 we strongly recommend using custom authentication in Redis. To learn more about it please check this {url_lisk_service_redis_auth}[guide^] in the Lisk Service repository.
 
 The above commands should be enough to start Redis which is ready to use with Lisk Service.
 
@@ -303,11 +303,11 @@ Redis system-wide::
 --
 *Ubuntu*
 
-To install Redis on Ubuntu, please follow the {url_redis_install_ubuntu}[official Redis installation guide].
+To install Redis on Ubuntu, please follow the {url_redis_install_ubuntu}[official Redis installation guide^].
 
 *macOS*
 
-To install Redis on MacOS, please follow the {url_redis_install_mac}[official Redis installation guide].
+To install Redis on MacOS, please follow the {url_redis_install_mac}[official Redis installation guide^].
 --
 ====
 
