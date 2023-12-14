@@ -4,6 +4,7 @@ Mona Bärenfänger <mona@lightcurve.io>
 :toc:
 :source-language: bash
 // URLs
+:url_lisk_service_redis_auth: https://github.com/LiskHQ/lisk-service/blob/development/docs/redis_authentication.md
 :url_redis_install_ubuntu: https://redis.io/docs/install/install-redis/install-redis-on-linux/
 :url_redis_install_mac: https://redis.io/docs/install/install-redis/install-redis-on-mac-os/
 :url_docker_install_linux: https://docs.docker.com/engine/install
@@ -286,6 +287,7 @@ docker run --name redis_service --port 6379:6379 -d redis:7-alpine
 ----
 docker run --name redis_service -v /path/to/custom_redis.conf:/usr/local/etc/redis/redis.conf --port 6379:6379 -d redis:7-alpine
 ----
+NOTE: Starting with Lisk Service version 0.7.2 we strongly recommend using custom authentication in Redis. To learn more about it please check this {url_lisk_service_redis_auth}[guide] in the Lisk Service repository.
 
 The above commands should be enough to start Redis which is ready to use with Lisk Service.
 
