@@ -29,6 +29,7 @@ Mona Bärenfänger <mona@lightcurve.io>
 :url_references_config: configuration/index.adoc
 :url_core_setup_npm: lisk-core::setup/npm.adoc
 
+
 As an alternative to the Docker image setup, it is also possible to install Lisk Service from source code.
 
 TIP: Install from source code if you want to customize the codebase of Lisk Service, e.g. if you want to adjust the API to be fully compatible with your blockchain application.
