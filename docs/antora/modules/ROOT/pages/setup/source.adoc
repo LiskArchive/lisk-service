@@ -4,6 +4,7 @@ Mona Bärenfänger <mona@lightcurve.io>
 :toc:
 :source-language: bash
 // URLs
+:url_redis: https://redis.io/docs/install/install-redis/install-redis-on-linux/
 :url_docker_install_linux: https://docs.docker.com/engine/install
 :url_docker_install_linux_compose: https://docs.docker.com/compose/install/
 :url_docker_install_mac: https://docs.docker.com/docker-for-mac/install/
