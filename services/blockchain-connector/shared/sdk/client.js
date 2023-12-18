@@ -73,6 +73,12 @@ const checkIsClientAlive = async clientCache =>
 	}).catch(() => false);
 
 const instantiateAndCacheClient = async () => {
+	if (cachedApiClients.length > CACHED_CLIENT_COUNT) {
+		// TODO: Down level log to debug
+		logger.info(`Skipping API client instantiation as cached API client count(${cachedApiClients.length}) is greater than CACHED_CLIENT_COUNT(${CACHED_CLIENT_COUNT}).`);
+		return;
+	}
+
 	try {
 		const instantiationBeginTime = Date.now();
 		const clientCache = config.isUseLiskIPCClient
@@ -185,8 +191,6 @@ if (config.isUseLiskIPCClient) {
 		await delay(CLIENT_ALIVE_ASSUMPTION_TIME);
 	}
 })();
-// Initiate client cache for first time
-refreshClientsCache();
 
 module.exports = {
 	timeoutMessage,
