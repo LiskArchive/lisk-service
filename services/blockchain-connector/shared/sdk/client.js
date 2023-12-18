@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger, Signals } = require('lisk-service-framework');
+const { Logger, Signals, CacheRedis } = require('lisk-service-framework');
 const { createWSClient, createIPCClient } = require('@liskhq/lisk-api-client');
 
 const config = require('../../config');
@@ -32,6 +32,13 @@ const CACHED_CLIENT_COUNT = 5;
 
 // Pool of cached api clients
 const cachedApiClients = [];
+
+// TODO: Remove this variable and cache usage and docker compose variable. Used to get an idea about the total number of time api client connection is created
+const redisCache = CacheRedis(
+	'temp',
+	process.env.SERVICE_CONNECTOR_CACHE_REDIS || 'redis://lisk:password@127.0.0.1:6381/2',
+);
+const TOTAL_CLIENT_INITIALIZATION_COUNT = 'totalClientInitializationCount';
 
 const checkIsClientAlive = async clientCache =>
 	// eslint-disable-next-line consistent-return
@@ -88,6 +95,12 @@ const instantiateAndCacheClient = async () => {
 			: await createWSClient(`${liskAddress}/rpc-ws`);
 
 		cachedApiClients.push(clientCache);
+
+		await redisCache.set(
+			TOTAL_CLIENT_INITIALIZATION_COUNT,
+			((await redisCache.get(TOTAL_CLIENT_INITIALIZATION_COUNT)) || 0) + 1,
+		);
+
 		logger.info(
 			`Instantiated another API client. Time taken: ${
 				Date.now() - instantiationBeginTime
@@ -185,11 +198,16 @@ if (config.isUseLiskIPCClient) {
 (async () => {
 	// eslint-disable-next-line no-constant-condition
 	while (true) {
-		// eslint-disable-next-line no-console
-		console.time('refreshClientsCache');
+		const cacheRefreshStartTime = Date.now();
 		await refreshClientsCache();
-		// eslint-disable-next-line no-console
-		console.timeEnd('refreshClientsCache');
+		// TODO: Down level the log to debug
+		logger.info(
+			`Refreshed api client cached in ${
+				Date.now() - cacheRefreshStartTime
+			}ms. API client instantiated ${await redisCache.get(
+				TOTAL_CLIENT_INITIALIZATION_COUNT,
+			)} time(s) so far.`,
+		);
 		await delay(CLIENT_ALIVE_ASSUMPTION_TIME);
 	}
 })();

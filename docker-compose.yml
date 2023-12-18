@@ -162,6 +162,7 @@ services:
       - JOB_SCHEDULE_CACHE_CLEANUP=${JOB_SCHEDULE_CACHE_CLEANUP}
       - JOB_INTERVAL_REFRESH_PEERS=${JOB_INTERVAL_REFRESH_PEERS}
       - JOB_SCHEDULE_REFRESH_PEERS=${JOB_SCHEDULE_REFRESH_PEERS}
+      - SERVICE_CONNECTOR_CACHE_REDIS=redis://lisk:password@redis_persistent:6379/0
     restart: always
     extra_hosts:
       - 'host.docker.internal:host-gateway'
