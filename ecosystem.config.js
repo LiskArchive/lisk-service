@@ -196,7 +196,7 @@ module.exports = {
 				// JOB_SCHEDULE_DELETE_FINALIZED_CCU_METADATA: '0 2 * * *',
 				// JOB_INTERVAL_TRIGGER_ACCOUNT_UPDATES: 0,
 				// JOB_SCHEDULE_TRIGGER_ACCOUNT_UPDATES: '*/15 * * * *',
-				// INVOKE_ALLOWED_METHODS: 'dynamicReward_getExpectedValidatorRewards,token_hasUserAccount,token_getInitializationFees,interoperability_getMinimumMessageFee,txpool_getTransactionsFromPool',
+				// INVOKE_ALLOWED_METHODS: 'dynamicReward_getExpectedValidatorRewards,token_hasUserAccount,token_getInitializationFees,interoperability_getMinimumMessageFee,txpool_getTransactionsFromPool,pos_getExpectedSharedRewards',
 			},
 		},
 		{
