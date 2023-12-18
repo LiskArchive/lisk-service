@@ -40,8 +40,9 @@ const checkIsClientAlive = async clientCache =>
 			return resolve(false);
 		}
 
+		// Skip heartbeat check for IPC client
 		if (config.isUseLiskIPCClient) {
-			return resolve(clientCache && clientCache._channel && clientCache._channel.isAlive);
+			return resolve(true);
 		}
 
 		const heartbeatCheckBeginTime = Date.now();
@@ -173,13 +174,17 @@ if (config.isUseLiskIPCClient) {
 
 // Check periodically for client aliveness and refill cached clients pool
 // TODO: Remove all console.time
-setInterval(async () => {
-	// eslint-disable-next-line no-console
-	console.time('refreshClientsCache');
-	await refreshClientsCache();
-	// eslint-disable-next-line no-console
-	console.timeEnd('refreshClientsCache');
-}, CLIENT_ALIVE_ASSUMPTION_TIME);
+(async () => {
+	// eslint-disable-next-line no-constant-condition
+	while (true) {
+		// eslint-disable-next-line no-console
+		console.time('refreshClientsCache');
+		await refreshClientsCache();
+		// eslint-disable-next-line no-console
+		console.timeEnd('refreshClientsCache');
+		await delay(CLIENT_ALIVE_ASSUMPTION_TIME);
+	}
+})();
 // Initiate client cache for first time
 refreshClientsCache();
 
