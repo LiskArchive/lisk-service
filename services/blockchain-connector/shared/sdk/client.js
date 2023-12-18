@@ -75,7 +75,9 @@ const checkIsClientAlive = async clientCache =>
 const instantiateAndCacheClient = async () => {
 	if (cachedApiClients.length > CACHED_CLIENT_COUNT) {
 		// TODO: Down level log to debug
-		logger.info(`Skipping API client instantiation as cached API client count(${cachedApiClients.length}) is greater than CACHED_CLIENT_COUNT(${CACHED_CLIENT_COUNT}).`);
+		logger.info(
+			`Skipping API client instantiation as cached API client count(${cachedApiClients.length}) is greater than CACHED_CLIENT_COUNT(${CACHED_CLIENT_COUNT}).`,
+		);
 		return;
 	}
 
