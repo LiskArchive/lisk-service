@@ -13,10 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	Logger,
-	Signals,
-} = require('lisk-service-framework');
+const { Logger, Signals } = require('lisk-service-framework');
 const { createWSClient, createIPCClient } = require('@liskhq/lisk-api-client');
 
 const config = require('../../config');
@@ -36,7 +33,7 @@ const CACHED_CLIENT_COUNT = 5;
 // Pool of cached api clients
 const cachedApiClients = [];
 
-const checkIsClientAlive = async (clientCache) =>
+const checkIsClientAlive = async clientCache =>
 	// eslint-disable-next-line consistent-return
 	new Promise(resolve => {
 		if (!clientCache || !clientCache._channel || !clientCache._channel.isAlive) {
@@ -59,7 +56,9 @@ const checkIsClientAlive = async (clientCache) =>
 		const timeout = setTimeout(() => {
 			wsInstance.removeListener('pong', boundPongListener);
 			// TODO: Downlevel log to debug
-			logger.info(`Did not receive API client pong after ${Date.now() - heartbeatCheckBeginTime}ms.`);
+			logger.info(
+				`Did not receive API client pong after ${Date.now() - heartbeatCheckBeginTime}ms.`,
+			);
 			return resolve(false);
 		}, HEARTBEAT_ACK_MAX_WAIT_TIME);
 
@@ -80,7 +79,11 @@ const instantiateAndCacheClient = async () => {
 			: await createWSClient(`${liskAddress}/rpc-ws`);
 
 		cachedApiClients.push(clientCache);
-		logger.info(`Instantiated another API client. Time taken: ${Date.now() - instantiationBeginTime}ms. Cached API client count:${cachedApiClients.length}`);
+		logger.info(
+			`Instantiated another API client. Time taken: ${
+				Date.now() - instantiationBeginTime
+			}ms. Cached API client count:${cachedApiClients.length}`,
+		);
 	} catch (err) {
 		// Nullify the apiClient cache and unset isInstantiating, so that it can be re-instantiated properly
 		const errMessage = config.isUseLiskIPCClient
@@ -129,7 +132,7 @@ const refreshClientsCache = async () => {
 	while (index < cachedApiClients.length) {
 		const cachedClient = cachedApiClients[index];
 		try {
-			if (!await checkIsClientAlive(cachedClient)) {
+			if (!(await checkIsClientAlive(cachedClient))) {
 				cachedApiClients.splice(index, 1);
 				if (index === 0) {
 					activeClientNotAvailable = true;
@@ -171,8 +174,10 @@ if (config.isUseLiskIPCClient) {
 // Check periodically for client aliveness and refill cached clients pool
 // TODO: Remove all console.time
 setInterval(async () => {
+	// eslint-disable-next-line no-console
 	console.time('refreshClientsCache');
 	await refreshClientsCache();
+	// eslint-disable-next-line no-console
 	console.timeEnd('refreshClientsCache');
 }, CLIENT_ALIVE_ASSUMPTION_TIME);
 // Initiate client cache for first time
