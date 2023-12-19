@@ -81,6 +81,10 @@ const calcSelfStakeReward = async (generatorAddress, blockReward, commissionAmou
 		const commissionAmountQ = q96(commissionAmount);
 		const remBlockRewardQ = blockRewardQ.sub(commissionAmountQ);
 
+		if (totalStakes === BigInt(0)) {
+			return totalStakes;
+		}
+
 		const selfStakeRewardQ = remBlockRewardQ.muldiv(selfStakesQ, totalStakesQ);
 		return selfStakeRewardQ.floor();
 	}
