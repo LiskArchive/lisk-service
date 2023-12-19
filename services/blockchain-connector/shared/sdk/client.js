@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger, Signals, CacheRedis } = require('lisk-service-framework');
+const { Logger, Signals } = require('lisk-service-framework');
 const { createWSClient, createIPCClient } = require('@liskhq/lisk-api-client');
 
 const config = require('../../config');
@@ -32,13 +32,6 @@ const CONNECTION_LIMIT = config.apiClient.connectionLimit;
 
 // Pool of cached api clients
 const cachedApiClients = [];
-
-// TODO: Remove this variable and cache usage and docker compose variable. Used to get an idea about the total number of time api client connection is created
-const redisCache = CacheRedis(
-	'temp',
-	process.env.SERVICE_CONNECTOR_CACHE_REDIS || 'redis://lisk:password@127.0.0.1:6381/2',
-);
-const TOTAL_CLIENT_INITIALIZATION_COUNT = 'totalClientInitializationCount';
 
 const checkIsClientAlive = async clientCache =>
 	// eslint-disable-next-line consistent-return
@@ -63,8 +56,7 @@ const checkIsClientAlive = async clientCache =>
 		// eslint-disable-next-line consistent-return
 		const timeout = setTimeout(() => {
 			wsInstance.removeListener('pong', boundPongListener);
-			// TODO: Downlevel log to debug
-			logger.info(
+			logger.debug(
 				`Did not receive API client pong after ${Date.now() - heartbeatCheckBeginTime}ms.`,
 			);
 			return resolve(false);
@@ -73,16 +65,14 @@ const checkIsClientAlive = async clientCache =>
 		const pongListener = res => {
 			clearTimeout(timeout);
 			wsInstance.removeListener('pong', boundPongListener);
-			// TODO: Downlevel log to debug
-			logger.info(`Received API client pong in ${Date.now() - heartbeatCheckBeginTime}ms.`);
+			logger.debug(`Received API client pong in ${Date.now() - heartbeatCheckBeginTime}ms.`);
 			return res(true);
 		};
 	}).catch(() => false);
 
 const instantiateAndCacheClient = async () => {
 	if (cachedApiClients.length > CONNECTION_LIMIT) {
-		// TODO: Down level log to debug
-		logger.info(
+		logger.debug(
 			`Skipping API client instantiation as cached API client count(${cachedApiClients.length}) is greater than CONNECTION_LIMIT(${CONNECTION_LIMIT}).`,
 		);
 		return;
@@ -95,11 +85,6 @@ const instantiateAndCacheClient = async () => {
 			: await createWSClient(`${liskAddress}/rpc-ws`);
 
 		cachedApiClients.push(clientCache);
-
-		await redisCache.set(
-			TOTAL_CLIENT_INITIALIZATION_COUNT,
-			((await redisCache.get(TOTAL_CLIENT_INITIALIZATION_COUNT)) || 0) + 1,
-		);
 
 		logger.info(
 			`Instantiated another API client. Time taken: ${
@@ -145,6 +130,14 @@ const invokeEndpoint = async (endpoint, params = {}, numRetries = NUM_REQUEST_RE
 	} while (retries--);
 };
 
+const disconnectClient = async cachedClient => {
+	try {
+		await cachedClient.disconnect();
+	} catch (err) {
+		logger.warn(`Client disconnection failed due to: ${err.message}`);
+	}
+};
+
 const refreshClientsCache = async () => {
 	// Indicates if an active client was destroyed or no active clients available
 	let activeClientNotAvailable = cachedApiClients.length === 0;
@@ -159,9 +152,7 @@ const refreshClientsCache = async () => {
 				if (index === 0) {
 					activeClientNotAvailable = true;
 				}
-				cachedClient.disconnect().catch(err => {
-					logger.warn(`Client disconnection failed due to: ${err.message}`);
-				});
+				await disconnectClient(cachedClient);
 			} else {
 				index++;
 			}
@@ -185,28 +176,33 @@ const refreshClientsCache = async () => {
 	if (activeClientNotAvailable && cachedApiClients.length > 0) {
 		Signals.get('newApiClient').dispatch();
 	}
+
+	return cachedApiClients.length;
 };
 
-// Checks to ensure that the API Client is always alive
-if (config.isUseLiskIPCClient) {
-	const resetApiClientListener = async () => instantiateAndCacheClient().catch(() => {});
-	Signals.get('resetApiClient').add(resetApiClientListener);
-}
+// Listen to client unresponsive events and try to reinitialize client
+const resetApiClientListener = async () => {
+	logger.info(
+		`Received API client reset signal. Will drop ${cachedApiClients.length} cached API client(s).`,
+	);
+	// Drop pool of cached clients. Will be instantiated by refresh clients job
+	while (cachedApiClients.length > 0) {
+		const cachedClient = cachedApiClients.pop();
+		await disconnectClient(cachedClient);
+	}
+};
+Signals.get('resetApiClient').add(resetApiClientListener);
 
 // Check periodically for client aliveness and refill cached clients pool
-// TODO: Remove all console.time
 (async () => {
 	// eslint-disable-next-line no-constant-condition
 	while (true) {
 		const cacheRefreshStartTime = Date.now();
 		await refreshClientsCache();
-		// TODO: Down level the log to debug
-		logger.info(
-			`Refreshed api client cached in ${
-				Date.now() - cacheRefreshStartTime
-			}ms. API client instantiated ${await redisCache.get(
-				TOTAL_CLIENT_INITIALIZATION_COUNT,
-			)} time(s) so far.`,
+		logger.debug(
+			`Refreshed api client cached in ${Date.now() - cacheRefreshStartTime}ms. There are ${
+				cachedApiClients.length
+			} API client(s) in the pool.`,
 		);
 		await delay(CLIENT_ALIVE_ASSUMPTION_TIME);
 	}
