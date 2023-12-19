@@ -28,7 +28,7 @@ const NUM_REQUEST_RETRIES = config.apiClient.request.maxRetries;
 const ENDPOINT_INVOKE_RETRY_DELAY = config.apiClient.request.retryDelay;
 const CLIENT_ALIVE_ASSUMPTION_TIME = config.apiClient.aliveAssumptionTime;
 const HEARTBEAT_ACK_MAX_WAIT_TIME = config.apiClient.heartbeatAckMaxWaitTime;
-const CACHED_CLIENT_COUNT = 5;
+const CONNECTION_LIMIT = config.apiClient.connectionLimit;
 
 // Pool of cached api clients
 const cachedApiClients = [];
@@ -80,10 +80,10 @@ const checkIsClientAlive = async clientCache =>
 	}).catch(() => false);
 
 const instantiateAndCacheClient = async () => {
-	if (cachedApiClients.length > CACHED_CLIENT_COUNT) {
+	if (cachedApiClients.length > CONNECTION_LIMIT) {
 		// TODO: Down level log to debug
 		logger.info(
-			`Skipping API client instantiation as cached API client count(${cachedApiClients.length}) is greater than CACHED_CLIENT_COUNT(${CACHED_CLIENT_COUNT}).`,
+			`Skipping API client instantiation as cached API client count(${cachedApiClients.length}) is greater than CONNECTION_LIMIT(${CONNECTION_LIMIT}).`,
 		);
 		return;
 	}
@@ -171,7 +171,7 @@ const refreshClientsCache = async () => {
 	}
 
 	// Initiate new clients if necessary
-	let missingClientCount = CACHED_CLIENT_COUNT - cachedApiClients.length;
+	let missingClientCount = CONNECTION_LIMIT - cachedApiClients.length;
 
 	while (missingClientCount-- > 0) {
 		try {
