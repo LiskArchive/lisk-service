@@ -127,8 +127,6 @@ module.exports = {
 				// SERVICE_LOG_FILE: false,
 				// DOCKER_HOST: 'local',
 				// GENESIS_BLOCK_URL: 'https://downloads.lisk.com/lisk/mainnet/genesis_block.json.tar.gz',
-				// CLIENT_INSTANTIATION_MAX_WAIT_TIME: 5000,
-				// CLIENT_INSTANTIATION_RETRY_INTERVAL: 1,
 				// CLIENT_ALIVE_ASSUMPTION_TIME: 5 * 1000,
 				// HEARTBEAT_ACK_MAX_WAIT_TIME: 1000,
 				// ENDPOINT_INVOKE_MAX_RETRIES: 3,
@@ -196,7 +194,7 @@ module.exports = {
 				// JOB_SCHEDULE_DELETE_FINALIZED_CCU_METADATA: '0 2 * * *',
 				// JOB_INTERVAL_TRIGGER_ACCOUNT_UPDATES: 0,
 				// JOB_SCHEDULE_TRIGGER_ACCOUNT_UPDATES: '*/15 * * * *',
-				// INVOKE_ALLOWED_METHODS: 'dynamicReward_getExpectedValidatorRewards,token_hasUserAccount,token_getInitializationFees,interoperability_getMinimumMessageFee,txpool_getTransactionsFromPool',
+				// INVOKE_ALLOWED_METHODS: 'dynamicReward_getExpectedValidatorRewards,token_hasUserAccount,token_getInitializationFees,interoperability_getMinimumMessageFee,txpool_getTransactionsFromPool,pos_getExpectedSharedRewards',
 			},
 		},
 		{

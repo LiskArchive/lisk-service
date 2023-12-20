@@ -13,11 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	Logger,
-	Signals,
-	Utils: { waitForIt },
-} = require('lisk-service-framework');
+const { Logger, Signals } = require('lisk-service-framework');
 const { createWSClient, createIPCClient } = require('@liskhq/lisk-api-client');
 
 const config = require('../../config');
@@ -28,127 +24,75 @@ const logger = Logger();
 // Constants
 const timeoutMessage = 'Response not received in';
 const liskAddress = config.endpoints.liskWs;
-const RETRY_INTERVAL = config.apiClient.instantiation.retryInterval;
-const MAX_INSTANTIATION_WAIT_TIME = config.apiClient.instantiation.maxWaitTime;
 const NUM_REQUEST_RETRIES = config.apiClient.request.maxRetries;
 const ENDPOINT_INVOKE_RETRY_DELAY = config.apiClient.request.retryDelay;
 const CLIENT_ALIVE_ASSUMPTION_TIME = config.apiClient.aliveAssumptionTime;
-const CLIENT_ALIVE_ASSUMPTION_TIME_BEFORE_GENESIS =
-	config.apiClient.aliveAssumptionTimeBeforeGenesis;
 const HEARTBEAT_ACK_MAX_WAIT_TIME = config.apiClient.heartbeatAckMaxWaitTime;
-const WS_CONNECTION_LIMIT = config.apiClient.wsConnectionLimit;
+const CONNECTION_LIMIT = config.apiClient.connectionLimit;
 
-// Caching and flags
-let clientCache;
-let instantiationBeginTime;
-let lastClientAliveTime;
-let heartbeatCheckBeginTime;
-let isInstantiating = false;
-let isClientAlive = false;
-let isGenesisBlockIndexed = false;
-let wsConnectionsEstablished = 0;
+// Pool of cached api clients
+const cachedApiClients = [];
 
-const pongListener = res => {
-	isClientAlive = true;
-	lastClientAliveTime = Date.now();
-	return res(true);
-};
-
-const checkIsClientAlive = async () =>
+const checkIsClientAlive = async clientCache =>
 	// eslint-disable-next-line consistent-return
 	new Promise(resolve => {
-		if (!clientCache || (clientCache._channel && !clientCache._channel.isAlive)) {
+		if (!clientCache || !clientCache._channel || !clientCache._channel.isAlive) {
 			return resolve(false);
 		}
 
-		if (
-			config.isUseLiskIPCClient ||
-			Date.now() - lastClientAliveTime < CLIENT_ALIVE_ASSUMPTION_TIME ||
-			// The below condition ensures that no other pings are sent when there's already a ping sent
-			// after the CLIENT_ALIVE_ASSUMPTION_TIME is exceeded
-			Date.now() - heartbeatCheckBeginTime < HEARTBEAT_ACK_MAX_WAIT_TIME * 2
-		) {
-			return resolve(clientCache._channel && clientCache._channel.isAlive);
+		// Skip heartbeat check for IPC client
+		if (config.isUseLiskIPCClient) {
+			return resolve(true);
 		}
 
-		heartbeatCheckBeginTime = Date.now();
-		const boundPongListener = () => pongListener(resolve);
-
+		const heartbeatCheckBeginTime = Date.now();
 		const wsInstance = clientCache._channel._ws;
+
+		// eslint-disable-next-line no-use-before-define
+		const boundPongListener = () => pongListener(resolve);
 		wsInstance.on('pong', boundPongListener);
-		isClientAlive = false;
 		wsInstance.ping(() => {});
 
 		// eslint-disable-next-line consistent-return
 		const timeout = setTimeout(() => {
+			wsInstance.removeListener('pong', boundPongListener);
+			logger.debug(
+				`Did not receive API client pong after ${Date.now() - heartbeatCheckBeginTime}ms.`,
+			);
+			return resolve(false);
+		}, HEARTBEAT_ACK_MAX_WAIT_TIME);
+
+		const pongListener = res => {
 			clearTimeout(timeout);
 			wsInstance.removeListener('pong', boundPongListener);
-			if (!isClientAlive) return resolve(false);
-		}, HEARTBEAT_ACK_MAX_WAIT_TIME);
+			logger.debug(`Received API client pong in ${Date.now() - heartbeatCheckBeginTime}ms.`);
+			return res(true);
+		};
 	}).catch(() => false);
 
-// eslint-disable-next-line consistent-return
-const instantiateClient = async (isForceReInstantiate = false) => {
+const instantiateAndCacheClient = async () => {
+	if (cachedApiClients.length > CONNECTION_LIMIT) {
+		logger.debug(
+			`Skipping API client instantiation as cached API client count(${cachedApiClients.length}) is greater than CONNECTION_LIMIT(${CONNECTION_LIMIT}).`,
+		);
+		return;
+	}
+
 	try {
-		if (!isInstantiating || isForceReInstantiate) {
-			const isNodeClientAlive = await checkIsClientAlive();
+		const instantiationBeginTime = Date.now();
+		const clientCache = config.isUseLiskIPCClient
+			? await createIPCClient(config.liskAppDataPath)
+			: await createWSClient(`${liskAddress}/rpc-ws`);
 
-			if (!config.isUseLiskIPCClient) {
-				if (isNodeClientAlive) {
-					wsConnectionsEstablished = 0;
-				} else {
-					let numRetries = NUM_REQUEST_RETRIES;
-					while (wsConnectionsEstablished >= WS_CONNECTION_LIMIT && numRetries--) {
-						await delay(MAX_INSTANTIATION_WAIT_TIME);
-						if (await checkIsClientAlive()) {
-							wsConnectionsEstablished = 0;
-							return clientCache;
-						}
-					}
-				}
-			}
+		cachedApiClients.push(clientCache);
 
-			isInstantiating = true;
-			if (!isNodeClientAlive || isForceReInstantiate) {
-				if (!config.isUseLiskIPCClient) wsConnectionsEstablished++;
-
-				instantiationBeginTime = Date.now();
-
-				if (clientCache) {
-					clientCache.disconnect().catch(err => {
-						// Ensure failed disconnection doesn't impact the re-instantiation
-						logger.warn(`Client disconnection failed due to: ${err.message}`);
-					});
-				}
-
-				clientCache = config.isUseLiskIPCClient
-					? await createIPCClient(config.liskAppDataPath)
-					: await createWSClient(`${liskAddress}/rpc-ws`);
-
-				lastClientAliveTime = Date.now();
-
-				if (isForceReInstantiate) logger.info('Re-instantiated the API client forcefully.');
-
-				// Inform listeners about the newly instantiated ApiClient
-				Signals.get('newApiClient').dispatch();
-			}
-
-			isInstantiating = false;
-			return clientCache;
-		}
-
-		if (Date.now() - instantiationBeginTime > MAX_INSTANTIATION_WAIT_TIME) {
-			// Waited too long, reset the flag to re-attempt client instantiation
-			logger.debug(
-				`MAX_INSTANTIATION_WAIT_TIME of ${MAX_INSTANTIATION_WAIT_TIME}ms has expired. Resetting isInstantiating to false.`,
-			);
-			isInstantiating = false;
-		}
+		logger.info(
+			`Instantiated another API client. Time taken: ${
+				Date.now() - instantiationBeginTime
+			}ms. Cached API client count:${cachedApiClients.length}`,
+		);
 	} catch (err) {
 		// Nullify the apiClient cache and unset isInstantiating, so that it can be re-instantiated properly
-		clientCache = null;
-		isInstantiating = false;
-
 		const errMessage = config.isUseLiskIPCClient
 			? `Error instantiating IPC client at ${config.liskAppDataPath}.`
 			: `Error instantiating WS client to ${liskAddress}.`;
@@ -158,14 +102,14 @@ const instantiateClient = async (isForceReInstantiate = false) => {
 		if (err.message.includes('ECONNREFUSED')) {
 			throw new Error('ECONNREFUSED: Unable to reach a network node.');
 		}
-
-		return null;
 	}
 };
 
 const getApiClient = async () => {
-	const apiClient = await waitForIt(instantiateClient, RETRY_INTERVAL);
-	return (await checkIsClientAlive()) ? apiClient : getApiClient();
+	if (cachedApiClients.length === 0) {
+		throw new Error(`No api client is alive!`);
+	}
+	return cachedApiClients[0];
 };
 
 // eslint-disable-next-line consistent-return
@@ -186,44 +130,83 @@ const invokeEndpoint = async (endpoint, params = {}, numRetries = NUM_REQUEST_RE
 	} while (retries--);
 };
 
-// Checks to ensure that the API Client is always alive
-if (config.isUseLiskIPCClient) {
-	const resetApiClientListener = async () => instantiateClient(true).catch(() => {});
-	Signals.get('resetApiClient').add(resetApiClientListener);
-} else {
-	let intervalTimeout;
-	const triggerRegularClientLivelinessChecks = intervalMs => {
-		intervalTimeout = setInterval(async () => {
-			const isAlive = await checkIsClientAlive();
-			if (!isAlive) instantiateClient(true).catch(() => {});
-		}, intervalMs);
-	};
+const disconnectClient = async cachedClient => {
+	try {
+		await cachedClient.disconnect();
+	} catch (err) {
+		logger.warn(`Client disconnection failed due to: ${err.message}`);
+	}
+};
 
-	const genesisBlockDownloadedListener = () => {
-		triggerRegularClientLivelinessChecks(CLIENT_ALIVE_ASSUMPTION_TIME_BEFORE_GENESIS);
-		logger.info(
-			`API client heartbeat checks scheduled every ${CLIENT_ALIVE_ASSUMPTION_TIME_BEFORE_GENESIS}ms. The frequency will be set to ${CLIENT_ALIVE_ASSUMPTION_TIME}ms after successful indexing of the genesis block.`,
-		);
-	};
+const refreshClientsCache = async () => {
+	// Indicates if an active client was destroyed or no active clients available
+	let activeClientNotAvailable = cachedApiClients.length === 0;
 
-	const genesisBlockIndexedListener = indexStatus => {
-		if (
-			!isGenesisBlockIndexed &&
-			indexStatus.data &&
-			indexStatus.data.genesisHeight <= indexStatus.data.lastIndexedBlockHeight
-		) {
-			clearInterval(intervalTimeout);
-			triggerRegularClientLivelinessChecks(CLIENT_ALIVE_ASSUMPTION_TIME);
-			isGenesisBlockIndexed = true;
-			logger.info(
-				`API client heartbeat checks re-scheduled to run every ${CLIENT_ALIVE_ASSUMPTION_TIME}ms.`,
-			);
+	// Check liveliness and remove non-responsive clients
+	let index = 0;
+	while (index < cachedApiClients.length) {
+		const cachedClient = cachedApiClients[index];
+		try {
+			if (!(await checkIsClientAlive(cachedClient))) {
+				cachedApiClients.splice(index, 1);
+				if (index === 0) {
+					activeClientNotAvailable = true;
+				}
+				await disconnectClient(cachedClient);
+			} else {
+				index++;
+			}
+		} catch (err) {
+			logger.info(`Failed to refresh an active API client from cache.\nError:${err.message}`);
 		}
-	};
+	}
 
-	Signals.get('genesisBlockDownloaded').add(genesisBlockDownloadedListener);
-	Signals.get('updateIndexStatus').add(genesisBlockIndexedListener);
-}
+	// Initiate new clients if necessary
+	let missingClientCount = CONNECTION_LIMIT - cachedApiClients.length;
+
+	while (missingClientCount-- > 0) {
+		try {
+			await instantiateAndCacheClient();
+		} catch (err) {
+			logger.info(`Failed to instantiate new api client.\nError:${err.message}`);
+		}
+	}
+
+	// Reset event listeners if active api client was destroyed
+	if (activeClientNotAvailable && cachedApiClients.length > 0) {
+		Signals.get('newApiClient').dispatch();
+	}
+
+	return cachedApiClients.length;
+};
+
+// Listen to client unresponsive events and try to reinitialize client
+const resetApiClientListener = async () => {
+	logger.info(
+		`Received API client reset signal. Will drop ${cachedApiClients.length} cached API client(s).`,
+	);
+	// Drop pool of cached clients. Will be instantiated by refresh clients job
+	while (cachedApiClients.length > 0) {
+		const cachedClient = cachedApiClients.pop();
+		await disconnectClient(cachedClient);
+	}
+};
+Signals.get('resetApiClient').add(resetApiClientListener);
+
+// Check periodically for client aliveness and refill cached clients pool
+(async () => {
+	// eslint-disable-next-line no-constant-condition
+	while (true) {
+		const cacheRefreshStartTime = Date.now();
+		await refreshClientsCache();
+		logger.debug(
+			`Refreshed api client cached in ${Date.now() - cacheRefreshStartTime}ms. There are ${
+				cachedApiClients.length
+			} API client(s) in the pool.`,
+		);
+		await delay(CLIENT_ALIVE_ASSUMPTION_TIME);
+	}
+})();
 
 module.exports = {
 	timeoutMessage,
