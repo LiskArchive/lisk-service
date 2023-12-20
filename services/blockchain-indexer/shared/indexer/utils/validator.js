@@ -75,7 +75,7 @@ const calcSelfStakeReward = async (generatorAddress, blockReward, commissionAmou
 			{ amount: BigInt('0') },
 		);
 
-		// Return commission as 0 if self stake is 0
+		// Return commission as 0 if total stake is 0. Skip further calculations to avoid division by zero
 		if (totalStakes <= BigInt('0')) {
 			return BigInt('0');
 		}
