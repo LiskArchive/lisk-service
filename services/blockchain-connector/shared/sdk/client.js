@@ -157,7 +157,7 @@ const refreshClientsCache = async () => {
 				index++;
 			}
 		} catch (err) {
-			logger.info(`Failed to check client aliveness.\nError:${err.message}`);
+			logger.info(`Failed to refresh an active API client from cache.\nError:${err.message}`);
 		}
 	}
 
