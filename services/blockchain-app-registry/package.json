@@ -34,7 +34,7 @@
 		"ioredis": "^5.3.2",
 		"lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/5cb6fc8e9b9798595d1a4652b9148afcbfaaed1f/framework/dist/lisk-service-framework-1.6.11.tgz",
 		"lodash": "^4.17.21",
-		"octokit": "^2.0.4",
+		"octokit": "^3.1.2",
 		"tar": "^6.1.11"
 	},
 	"devDependencies": {
