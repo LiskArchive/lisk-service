@@ -31,7 +31,7 @@ const CLIENT_ALIVE_ASSUMPTION_TIME = config.apiClient.aliveAssumptionTime;
 const HEARTBEAT_ACK_MAX_WAIT_TIME = config.apiClient.heartbeatAckMaxWaitTime;
 const CONNECTION_LIMIT = config.apiClient.connectionLimit;
 
-// Pool of cached api clients
+// Pool of cached API clients
 const cachedApiClients = [];
 
 const checkIsClientAlive = async clientCache =>
@@ -108,7 +108,7 @@ const instantiateAndCacheClient = async () => {
 
 const getApiClient = async () => {
 	if (cachedApiClients.length === 0) {
-		throw new Error(`No api client is alive!`);
+		throw new Error(`No API client is alive!`);
 	}
 	return cachedApiClients[0];
 };
@@ -195,11 +195,11 @@ const refreshClientsCache = async () => {
 		try {
 			await instantiateAndCacheClient();
 		} catch (err) {
-			logger.info(`Failed to instantiate new api client.\nError:${err.message}`);
+			logger.info(`Failed to instantiate new API client.\nError:${err.message}`);
 		}
 	}
 
-	// Reset event listeners if active api client was destroyed
+	// Reset event listeners if active API client was destroyed
 	if (activeClientNotAvailable && cachedApiClients.length > 0) {
 		Signals.get('newApiClient').dispatch();
 	}
@@ -227,7 +227,7 @@ Signals.get('resetApiClient').add(resetApiClientListener);
 		const cacheRefreshStartTime = Date.now();
 		await refreshClientsCache();
 		logger.debug(
-			`Refreshed api client cached in ${Date.now() - cacheRefreshStartTime}ms. There are ${
+			`Refreshed API client cached in ${Date.now() - cacheRefreshStartTime}ms. There are ${
 				cachedApiClients.length
 			} API client(s) in the pool.`,
 		);
