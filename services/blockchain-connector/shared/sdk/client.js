@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger, Signals } = require('lisk-service-framework');
+const { Logger, Signals, HTTP } = require('lisk-service-framework');
 const { createWSClient, createIPCClient } = require('@liskhq/lisk-api-client');
 
 const config = require('../../config');
@@ -23,7 +23,8 @@ const logger = Logger();
 
 // Constants
 const timeoutMessage = 'Response not received in';
-const liskAddress = config.endpoints.liskWs;
+const liskAddressWs = config.endpoints.liskWs;
+const liskAddresshttp = liskAddressWs.replace('ws', 'http');
 const NUM_REQUEST_RETRIES = config.apiClient.request.maxRetries;
 const ENDPOINT_INVOKE_RETRY_DELAY = config.apiClient.request.retryDelay;
 const CLIENT_ALIVE_ASSUMPTION_TIME = config.apiClient.aliveAssumptionTime;
@@ -82,7 +83,7 @@ const instantiateAndCacheClient = async () => {
 		const instantiationBeginTime = Date.now();
 		const clientCache = config.isUseLiskIPCClient
 			? await createIPCClient(config.liskAppDataPath)
-			: await createWSClient(`${liskAddress}/rpc-ws`);
+			: await createWSClient(`${liskAddressWs}/rpc-ws`);
 
 		cachedApiClients.push(clientCache);
 
@@ -95,7 +96,7 @@ const instantiateAndCacheClient = async () => {
 		// Nullify the apiClient cache and unset isInstantiating, so that it can be re-instantiated properly
 		const errMessage = config.isUseLiskIPCClient
 			? `Error instantiating IPC client at ${config.liskAppDataPath}.`
-			: `Error instantiating WS client to ${liskAddress}.`;
+			: `Error instantiating WS client to ${liskAddressWs}.`;
 
 		logger.error(errMessage);
 		logger.error(err.message);
@@ -112,11 +113,37 @@ const getApiClient = async () => {
 	return cachedApiClients[0];
 };
 
+const isResponse2XX = input => !!(input.status === 200);
+
+let id = 0;
 // eslint-disable-next-line consistent-return
 const invokeEndpoint = async (endpoint, params = {}, numRetries = NUM_REQUEST_RETRIES) => {
 	let retries = numRetries;
 	do {
 		try {
+			if (config.useHttpApi) {
+				const rpcRequest = {
+					jsonrpc: '2.0',
+					id,
+					method: endpoint,
+					params,
+				};
+
+				const response = await HTTP.post(`${liskAddresshttp}/rpc`, rpcRequest);
+				return isResponse2XX(response)
+					? (() => {
+							id++;
+							return response.data.result;
+					  })()
+					: (() => {
+							logger.trace(
+								`Error when invoking endpoint ${endpoint} with params ${JSON.stringify(params)}: ${
+									response.data.error.message
+								}`,
+							);
+							throw new Error(response.data.error);
+					  })();
+			}
 			const apiClient = await getApiClient();
 			const response = await apiClient._channel.invoke(endpoint, params);
 			return response;

@@ -130,4 +130,6 @@ config.clientConnVerifyInterval =
 const exitDelay = Number(process.env.CONNECTOR_EXIT_DELAY_IN_HOURS); // in hours
 config.appExitDelay = (Number.isNaN(exitDelay) ? 0 : exitDelay) * (60 * 60 * 1000);
 
+config.useHttpApi = Boolean(String(process.env.USE_HTTP_API).toLowerCase() !== 'false'); // Enabled by default
+
 module.exports = config;
