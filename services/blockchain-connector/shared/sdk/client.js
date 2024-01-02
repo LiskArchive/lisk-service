@@ -108,7 +108,7 @@ const instantiateAndCacheClient = async () => {
 
 const getApiClient = async () => {
 	if (cachedApiClients.length === 0) {
-		throw new Error(`No API client is alive!`);
+		await instantiateAndCacheClient();
 	}
 	return cachedApiClients[0];
 };
@@ -222,12 +222,14 @@ Signals.get('resetApiClient').add(resetApiClientListener);
 
 // Check periodically for client aliveness and refill cached clients pool
 (async () => {
+	if (config.useHttpApi) return;
+
 	// eslint-disable-next-line no-constant-condition
 	while (true) {
 		const cacheRefreshStartTime = Date.now();
 		await refreshClientsCache();
 		logger.debug(
-			`Refreshed API client cached in ${Date.now() - cacheRefreshStartTime}ms. There are ${
+			`Refreshed API client cache in ${Date.now() - cacheRefreshStartTime}ms. There are ${
 				cachedApiClients.length
 			} API client(s) in the pool.`,
 		);

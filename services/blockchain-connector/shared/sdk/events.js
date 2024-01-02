@@ -21,8 +21,15 @@ const config = require('../../config');
 
 const { getApiClient } = require('./client');
 const { formatEvent } = require('./formatter');
-const { getRegisteredEvents, getEventsByHeight, getNodeInfo } = require('./endpoints');
+const {
+	getRegisteredEvents,
+	getEventsByHeight,
+	getNodeInfo,
+	getBlockByHeight,
+	getGenerators,
+} = require('./endpoints');
 const { updateTokenInfo } = require('./token');
+const { getPosConstants } = require('./pos');
 
 const logger = Logger();
 
@@ -41,6 +48,7 @@ const events = [
 ];
 
 let eventsCounter;
+let lastBlockHeightEvent;
 
 const logError = (method, err) => {
 	logger.warn(`Invocation for ${method} failed with error: ${err.message}`);
@@ -48,6 +56,8 @@ const logError = (method, err) => {
 };
 
 const subscribeToAllRegisteredEvents = async () => {
+	if (!config.useHttpApi) return;
+
 	// Reset eventsCounter first
 	eventsCounter = 0;
 
@@ -121,6 +131,36 @@ const genesisBlockDownloadedListener = () => {
 
 Signals.get('nodeIsSynced').add(nodeIsSyncedListener);
 Signals.get('genesisBlockDownloaded').add(genesisBlockDownloadedListener);
+
+const emitNodeEvents = async nodeInfo => {
+	if (config.useHttpApi) {
+		setInterval(async () => {
+			const latestNodeInfo = await getNodeInfo(true);
+			const { syncing } = latestNodeInfo;
+			const isNodeSyncComplete = !syncing;
+
+			if (isNodeSyncComplete) {
+				if (!lastBlockHeightEvent || latestNodeInfo.height > lastBlockHeightEvent) {
+					lastBlockHeightEvent = latestNodeInfo.height;
+					const newBlock = await getBlockByHeight(latestNodeInfo.height);
+					Signals.get(EVENT_CHAIN_BLOCK_NEW).dispatch({ blockHeader: newBlock.header });
+
+					const posConstants = await getPosConstants();
+					if (
+						(latestNodeInfo.height - latestNodeInfo.genesisHeight) % posConstants.roundLength ===
+						1
+					) {
+						const { list: validators } = await getGenerators();
+						Signals.get(EVENT_CHAIN_VALIDATORS_CHANGE).dispatch({ nextValidators: validators });
+					}
+				}
+			}
+		}, nodeInfo.genesis.blockTime * 1000);
+	}
+};
+
+// TODO: Add retry logic in case of failure
+getNodeInfo().then(nodeInfo => emitNodeEvents(nodeInfo));
 
 module.exports = {
 	events,
