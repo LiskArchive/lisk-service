@@ -58,7 +58,7 @@ const logError = (method, err) => {
 const emitEngineEvents = async () => {
 	getNodeInfo().then(async nodeInfo => {
 		const { roundLength } = await getPosConstants();
-		const blockTime = nodeInfo?.genesis?.blockTime || 10;
+		const blockTime = (nodeInfo && nodeInfo.genesis && nodeInfo.genesis.blockTime) || 10;
 
 		setInterval(async () => {
 			const latestNodeInfo = await getNodeInfo(true);
