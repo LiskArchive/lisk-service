@@ -35,6 +35,8 @@ config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 10; // in s
  * External endpoints
  */
 config.endpoints.liskWs = process.env.LISK_APP_WS || 'ws://127.0.0.1:7887';
+config.endpoints.liskHttp =
+	process.env.LISK_APP_HTTP || config.endpoints.liskWs.replace('ws', 'http');
 config.endpoints.geoip = process.env.GEOIP_JSON || 'https://geoip.lisk.com/json';
 
 /**

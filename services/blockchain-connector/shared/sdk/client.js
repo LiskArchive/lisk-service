@@ -24,7 +24,7 @@ const logger = Logger();
 // Constants
 const timeoutMessage = 'Response not received in';
 const liskAddressWs = config.endpoints.liskWs;
-const liskAddresshttp = liskAddressWs.replace('ws', 'http');
+const liskAddressHttp = config.endpoints.liskHttp;
 const NUM_REQUEST_RETRIES = config.apiClient.request.maxRetries;
 const ENDPOINT_INVOKE_RETRY_DELAY = config.apiClient.request.retryDelay;
 const CLIENT_ALIVE_ASSUMPTION_TIME = config.apiClient.aliveAssumptionTime;
@@ -129,7 +129,7 @@ const invokeEndpoint = async (endpoint, params = {}, numRetries = NUM_REQUEST_RE
 					params,
 				};
 
-				const response = await HTTP.post(`${liskAddresshttp}/rpc`, rpcRequest);
+				const response = await HTTP.post(`${liskAddressHttp}/rpc`, rpcRequest);
 				return isResponse2XX(response)
 					? (() => {
 							id++;

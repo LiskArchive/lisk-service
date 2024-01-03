@@ -56,7 +56,7 @@ const logError = (method, err) => {
 };
 
 const subscribeToAllRegisteredEvents = async () => {
-	if (!config.useHttpApi) return;
+	if (config.useHttpApi) return;
 
 	// Reset eventsCounter first
 	eventsCounter = 0;
@@ -92,6 +92,8 @@ let isNodeSynced = false;
 let isGenesisBlockDownloaded = false;
 
 const ensureAPIClientLiveness = () => {
+	if (config.useHttpApi) return;
+
 	if (isNodeSynced && isGenesisBlockDownloaded) {
 		setInterval(() => {
 			if (typeof eventsCounter === 'number' && eventsCounter > 0) {
