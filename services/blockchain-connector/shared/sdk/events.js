@@ -26,7 +26,7 @@ const {
 	getEventsByHeight,
 	getNodeInfo,
 	getBlockByHeight,
-	getGenerators,
+	getBFTParameters,
 } = require('./endpoints');
 const { updateTokenInfo } = require('./token');
 const { getPosConstants } = require('./pos');
@@ -73,8 +73,12 @@ const emitNodeEvents = async () => {
 						(latestNodeInfo.height - latestNodeInfo.genesisHeight) % posConstants.roundLength ===
 						1
 					) {
-						const { list: validators } = await getGenerators();
-						Signals.get(EVENT_CHAIN_VALIDATORS_CHANGE).dispatch({ nextValidators: validators });
+						const bftParameters = await getBFTParameters(latestNodeInfo.height);
+						Signals.get(EVENT_CHAIN_VALIDATORS_CHANGE).dispatch({
+							nextValidators: bftParameters.validators,
+							certificateThreshold: bftParameters.certificateThreshold,
+							precommitThreshold: bftParameters.precommitThreshold,
+						});
 					}
 				}
 			}

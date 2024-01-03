@@ -303,6 +303,18 @@ const getGenerators = async () => {
 	}
 };
 
+const getBFTParameters = async height => {
+	try {
+		const bftParameters = await invokeEndpoint('consensus_getBFTParameters', { height });
+		return bftParameters;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException("Request timed out when calling 'getBFTParameters'.");
+		}
+		throw err;
+	}
+};
+
 module.exports = {
 	invokeEndpoint,
 	getSchemas,
@@ -328,4 +340,5 @@ module.exports = {
 	postTransaction,
 	dryRunTransaction,
 	getGenerators,
+	getBFTParameters,
 };
