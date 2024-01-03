@@ -195,7 +195,7 @@ const refreshClientsCache = async () => {
 		try {
 			await instantiateAndCacheClient();
 		} catch (err) {
-			logger.info(`Failed to instantiate new API client.\nError:${err.message}`);
+			logger.warn(`Failed to instantiate new API client.\nError: ${err.message}`);
 		}
 	}
 

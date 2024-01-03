@@ -363,12 +363,14 @@ module.exports = {
 
 | `LISK_APP_WS`
 | string
-| URL to connect with the Lisk application node over WebSocket.
+| URL to connect with the Lisk application node over WebSocket. 
+By default, it is set to `ws://127.0.0.1:7887`.
 | ws://127.0.0.1:7887
 
 | `LISK_APP_HTTP`
 | string
-| URL to connect with the Lisk application node over HTTP.
+| URL to connect with the Lisk application node over HTTP(s). 
+By default, it is set to `http://127.0.0.1:7887`.
 | http://127.0.0.1:7887
 
 | `USE_HTTP_API`

@@ -42,6 +42,7 @@ config.endpoints.geoip = process.env.GEOIP_JSON || 'https://geoip.lisk.com/json'
 /**
  * API Client related settings
  */
+config.useHttpApi = Boolean(String(process.env.USE_HTTP_API).toLowerCase() !== 'false'); // Enabled by default
 config.isUseLiskIPCClient = Boolean(
 	String(process.env.USE_LISK_IPC_CLIENT).toLowerCase() === 'true',
 );
@@ -131,7 +132,5 @@ config.clientConnVerifyInterval =
 // Backdoor config to restart the connector if the stall issue pops up - disabled by default
 const exitDelay = Number(process.env.CONNECTOR_EXIT_DELAY_IN_HOURS); // in hours
 config.appExitDelay = (Number.isNaN(exitDelay) ? 0 : exitDelay) * (60 * 60 * 1000);
-
-config.useHttpApi = Boolean(String(process.env.USE_HTTP_API).toLowerCase() !== 'false'); // Enabled by default
 
 module.exports = config;

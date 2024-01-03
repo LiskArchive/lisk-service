@@ -55,8 +55,36 @@ const logError = (method, err) => {
 	logger.debug(err.stack);
 };
 
+const emitNodeEvents = async () => {
+	getNodeInfo().then(nodeInfo => {
+		setInterval(async () => {
+			const latestNodeInfo = await getNodeInfo(true);
+			const { syncing } = latestNodeInfo;
+			const isNodeSyncComplete = !syncing;
+
+			if (isNodeSyncComplete) {
+				if (!lastBlockHeightEvent || latestNodeInfo.height > lastBlockHeightEvent) {
+					lastBlockHeightEvent = latestNodeInfo.height;
+					const newBlock = await getBlockByHeight(latestNodeInfo.height);
+					Signals.get(EVENT_CHAIN_BLOCK_NEW).dispatch({ blockHeader: newBlock.header });
+
+					const posConstants = await getPosConstants();
+					if (
+						(latestNodeInfo.height - latestNodeInfo.genesisHeight) % posConstants.roundLength ===
+						1
+					) {
+						const { list: validators } = await getGenerators();
+						Signals.get(EVENT_CHAIN_VALIDATORS_CHANGE).dispatch({ nextValidators: validators });
+					}
+				}
+			}
+		}, (nodeInfo.genesis.blockTime * 1000) / 2);
+	});
+};
+
+// eslint-disable-next-line consistent-return
 const subscribeToAllRegisteredEvents = async () => {
-	if (config.useHttpApi) return;
+	if (config.useHttpApi) return emitNodeEvents();
 
 	// Reset eventsCounter first
 	eventsCounter = 0;
@@ -133,36 +161,6 @@ const genesisBlockDownloadedListener = () => {
 
 Signals.get('nodeIsSynced').add(nodeIsSyncedListener);
 Signals.get('genesisBlockDownloaded').add(genesisBlockDownloadedListener);
-
-const emitNodeEvents = async nodeInfo => {
-	if (config.useHttpApi) {
-		setInterval(async () => {
-			const latestNodeInfo = await getNodeInfo(true);
-			const { syncing } = latestNodeInfo;
-			const isNodeSyncComplete = !syncing;
-
-			if (isNodeSyncComplete) {
-				if (!lastBlockHeightEvent || latestNodeInfo.height > lastBlockHeightEvent) {
-					lastBlockHeightEvent = latestNodeInfo.height;
-					const newBlock = await getBlockByHeight(latestNodeInfo.height);
-					Signals.get(EVENT_CHAIN_BLOCK_NEW).dispatch({ blockHeader: newBlock.header });
-
-					const posConstants = await getPosConstants();
-					if (
-						(latestNodeInfo.height - latestNodeInfo.genesisHeight) % posConstants.roundLength ===
-						1
-					) {
-						const { list: validators } = await getGenerators();
-						Signals.get(EVENT_CHAIN_VALIDATORS_CHANGE).dispatch({ nextValidators: validators });
-					}
-				}
-			}
-		}, nodeInfo.genesis.blockTime * 1000);
-	}
-};
-
-// TODO: Add retry logic in case of failure
-getNodeInfo().then(nodeInfo => emitNodeEvents(nodeInfo));
 
 module.exports = {
 	events,
