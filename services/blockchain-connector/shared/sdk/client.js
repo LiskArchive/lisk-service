@@ -13,7 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger, Signals, HTTP } = require('lisk-service-framework');
+const {
+	Logger,
+	Signals,
+	HTTP,
+	Exceptions: { TimeoutException },
+} = require('lisk-service-framework');
 const { createWSClient, createIPCClient } = require('@liskhq/lisk-api-client');
 
 const config = require('../../config');
@@ -113,13 +118,14 @@ const getApiClient = async () => {
 	return cachedApiClients[0];
 };
 
-const isResponse2XX = input => !!(input.status === 200);
+const isResponse2XX = response => !!String(response.status).startsWith('2');
 
-let id = 0;
+let id = -1;
 // eslint-disable-next-line consistent-return
 const invokeEndpoint = async (endpoint, params = {}, numRetries = NUM_REQUEST_RETRIES) => {
 	let retries = numRetries;
 	do {
+		id++;
 		try {
 			if (config.useHttpApi) {
 				const rpcRequest = {
@@ -131,10 +137,7 @@ const invokeEndpoint = async (endpoint, params = {}, numRetries = NUM_REQUEST_RE
 
 				const response = await HTTP.post(`${liskAddressHttp}/rpc`, rpcRequest);
 				return isResponse2XX(response)
-					? (() => {
-							id++;
-							return response.data.result;
-					  })()
+					? response.data.result
 					: (() => {
 							logger.trace(
 								`Error when invoking endpoint ${endpoint} with params ${JSON.stringify(params)}: ${
@@ -148,9 +151,29 @@ const invokeEndpoint = async (endpoint, params = {}, numRetries = NUM_REQUEST_RE
 			const response = await apiClient._channel.invoke(endpoint, params);
 			return response;
 		} catch (err) {
-			if (retries && err.message.includes(timeoutMessage)) {
+			if (err.message.includes(timeoutMessage)) {
+				if (!retries) {
+					const exceptionMsg = Object.getOwnPropertyNames(params).length
+						? `Request timed out when calling '${endpoint}' with params:\n${JSON.stringify(
+								params,
+								null,
+								'\t',
+						  )}.`
+						: `Request timed out when calling '${endpoint}'.`;
+
+					throw new TimeoutException(exceptionMsg);
+				}
 				await delay(ENDPOINT_INVOKE_RETRY_DELAY);
 			} else {
+				if (Object.getOwnPropertyNames(params).length) {
+					logger.warn(
+						`Error invoking '${endpoint}' with params:\n${JSON.stringify(params, null, ' ')}.\n${
+							err.stack
+						}`,
+					);
+				}
+
+				logger.warn(`Error occurred when calling '${endpoint}' :\n${err.stack}`);
 				throw err;
 			}
 		}

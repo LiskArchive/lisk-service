@@ -55,25 +55,23 @@ const logError = (method, err) => {
 	logger.debug(err.stack);
 };
 
-const emitNodeEvents = async () => {
-	getNodeInfo().then(nodeInfo => {
+const emitEngineEvents = async () => {
+	getNodeInfo().then(async nodeInfo => {
+		const { roundLength } = await getPosConstants();
+
 		setInterval(async () => {
 			const latestNodeInfo = await getNodeInfo(true);
-			const { syncing } = latestNodeInfo;
+			const { syncing, height, genesisHeight } = latestNodeInfo;
 			const isNodeSyncComplete = !syncing;
 
 			if (isNodeSyncComplete) {
-				if (!lastBlockHeightEvent || latestNodeInfo.height > lastBlockHeightEvent) {
-					lastBlockHeightEvent = latestNodeInfo.height;
-					const newBlock = await getBlockByHeight(latestNodeInfo.height);
+				if (!lastBlockHeightEvent || height > lastBlockHeightEvent) {
+					lastBlockHeightEvent = height;
+					const newBlock = await getBlockByHeight(height);
 					Signals.get(EVENT_CHAIN_BLOCK_NEW).dispatch({ blockHeader: newBlock.header });
 
-					const posConstants = await getPosConstants();
-					if (
-						(latestNodeInfo.height - latestNodeInfo.genesisHeight) % posConstants.roundLength ===
-						1
-					) {
-						const bftParameters = await getBFTParameters(latestNodeInfo.height);
+					if ((height - genesisHeight) % roundLength === 1) {
+						const bftParameters = await getBFTParameters(height);
 						Signals.get(EVENT_CHAIN_VALIDATORS_CHANGE).dispatch({
 							nextValidators: bftParameters.validators,
 							certificateThreshold: bftParameters.certificateThreshold,
@@ -82,13 +80,13 @@ const emitNodeEvents = async () => {
 					}
 				}
 			}
-		}, (nodeInfo.genesis.blockTime * 1000) / 2);
+		}, Math.min(2, nodeInfo.genesis.blockTime) * 1000);
 	});
 };
 
 // eslint-disable-next-line consistent-return
 const subscribeToAllRegisteredEvents = async () => {
-	if (config.useHttpApi) return emitNodeEvents();
+	if (config.useHttpApi) return emitEngineEvents();
 
 	// Reset eventsCounter first
 	eventsCounter = 0;

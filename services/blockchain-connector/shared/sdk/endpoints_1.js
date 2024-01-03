@@ -13,16 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	Exceptions: { TimeoutException },
-	Signals,
-} = require('lisk-service-framework');
+const { Signals } = require('lisk-service-framework');
 const { invokeEndpoint } = require('./client');
 
 const { engineEndpoints } = require('./constants/endpoints');
-
-// Constants
-const timeoutMessage = 'Response not received in';
 
 // Caching for constants from SDK application
 let metadata;
@@ -33,90 +27,48 @@ let registeredEvents;
 let registeredModules;
 
 const getSchemas = async () => {
-	try {
-		if (!schema) {
-			schema = await invokeEndpoint('system_getSchema');
-			schema.ccm = (await invokeEndpoint('interoperability_getCCMSchema')).schema;
-		}
-		return schema;
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException("Request timed out when calling 'getSchema'.");
-		}
-		throw err;
+	if (!schema) {
+		schema = await invokeEndpoint('system_getSchema');
+		schema.ccm = (await invokeEndpoint('interoperability_getCCMSchema')).schema;
 	}
+	return schema;
 };
 
 const getRegisteredEndpoints = async () => {
-	try {
-		if (!registeredEndpoints) {
-			registeredEndpoints = await invokeEndpoint('app_getRegisteredEndpoints');
-		}
-		return registeredEndpoints;
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException("Request timed out when calling 'getRegisteredEndpoints'.");
-		}
-		throw err;
+	if (!registeredEndpoints) {
+		registeredEndpoints = await invokeEndpoint('app_getRegisteredEndpoints');
 	}
+	return registeredEndpoints;
 };
 
 const getRegisteredEvents = async () => {
-	try {
-		if (!registeredEvents) {
-			registeredEvents = await invokeEndpoint('app_getRegisteredEvents');
-		}
-		return registeredEvents;
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException("Request timed out when calling 'getRegisteredEvents'.");
-		}
-		throw err;
+	if (!registeredEvents) {
+		registeredEvents = await invokeEndpoint('app_getRegisteredEvents');
 	}
+	return registeredEvents;
 };
 
 const getNodeInfo = async (isForceUpdate = false) => {
-	try {
-		if (isForceUpdate || !nodeInfo) {
-			nodeInfo = await invokeEndpoint('system_getNodeInfo');
-			Signals.get('systemNodeInfo').dispatch(nodeInfo);
-		}
-		return nodeInfo;
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException("Request timed out when calling 'getNodeInfo'.");
-		}
-		throw err;
+	if (isForceUpdate || !nodeInfo) {
+		nodeInfo = await invokeEndpoint('system_getNodeInfo');
+		Signals.get('systemNodeInfo').dispatch(nodeInfo);
 	}
+	return nodeInfo;
 };
 
 const getSystemMetadata = async () => {
-	try {
-		if (!metadata) {
-			metadata = await invokeEndpoint('system_getMetadata');
-		}
-		return metadata;
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException("Request timed out when calling 'getSystemMetadata'.");
-		}
-		throw err;
+	if (!metadata) {
+		metadata = await invokeEndpoint('system_getMetadata');
 	}
+	return metadata;
 };
 
 const getRegisteredModules = async () => {
-	try {
-		if (!registeredModules) {
-			const systemMetadata = await getSystemMetadata();
-			registeredModules = systemMetadata.modules.map(module => module.name);
-		}
-		return registeredModules;
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException("Request timed out when calling 'getRegisteredModules'.");
-		}
-		throw err;
+	if (!registeredModules) {
+		const systemMetadata = await getSystemMetadata();
+		registeredModules = systemMetadata.modules.map(module => module.name);
 	}
+	return registeredModules;
 };
 
 const getEngineEndpoints = () => engineEndpoints;

@@ -13,12 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	Logger,
-	Exceptions: { TimeoutException },
-} = require('lisk-service-framework');
+const { Logger } = require('lisk-service-framework');
 
-const { timeoutMessage, invokeEndpoint } = require('./client');
+const { invokeEndpoint } = require('./client');
 
 const logger = Logger();
 
@@ -26,37 +23,21 @@ let feeTokenID;
 let minFeePerByte;
 
 const cacheFeeTokenID = async () => {
-	try {
-		logger.trace('Attempting to update feeTokenID.');
-		const response = await invokeEndpoint('fee_getFeeTokenID');
-		if (response.error) throw response.error;
+	logger.trace('Attempting to update feeTokenID.');
+	const response = await invokeEndpoint('fee_getFeeTokenID');
+	if (response.error) throw response.error;
 
-		feeTokenID = response.tokenID;
-		logger.info(`Updated feeTokenID to ${feeTokenID}.`);
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException("Request timed out when calling 'cacheFeeTokenID'.");
-		}
-		logger.warn(`Error occurred when calling 'cacheFeeTokenID':\n${err.stack}`);
-		throw err;
-	}
+	feeTokenID = response.tokenID;
+	logger.info(`Updated feeTokenID to ${feeTokenID}.`);
 };
 
 const cacheMinFeePerByte = async () => {
-	try {
-		logger.trace('Attempting to update minFeePerByte.');
-		const response = await invokeEndpoint('fee_getMinFeePerByte');
-		if (response.error) throw response.error;
+	logger.trace('Attempting to update minFeePerByte.');
+	const response = await invokeEndpoint('fee_getMinFeePerByte');
+	if (response.error) throw response.error;
 
-		minFeePerByte = response.minFeePerByte;
-		logger.info(`Updated minFeePerByte to ${minFeePerByte}.`);
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException("Request timed out when calling 'cacheMinFeePerByte'.");
-		}
-		logger.warn(`Error occurred when calling 'cacheMinFeePerByte':\n${err.stack}`);
-		throw err;
-	}
+	minFeePerByte = response.minFeePerByte;
+	logger.info(`Updated minFeePerByte to ${minFeePerByte}.`);
 };
 
 const cacheFeeConstants = async () => {
