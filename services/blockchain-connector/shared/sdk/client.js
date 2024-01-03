@@ -118,16 +118,16 @@ const getApiClient = async () => {
 	return cachedApiClients[0];
 };
 
-const isResponse2XX = response => !!String(response.status).startsWith('2');
+const isResponse2XX = response => String(response.status).startsWith('2');
 
 let id = -1;
 // eslint-disable-next-line consistent-return
 const invokeEndpoint = async (endpoint, params = {}, numRetries = NUM_REQUEST_RETRIES) => {
-	let retries = numRetries;
+	let retriesLeft = numRetries;
 	do {
 		id++;
 		try {
-			if (config.useHttpApi) {
+			if (config.isUseHttpApi) {
 				const rpcRequest = {
 					jsonrpc: '2.0',
 					id,
@@ -152,7 +152,7 @@ const invokeEndpoint = async (endpoint, params = {}, numRetries = NUM_REQUEST_RE
 			return response;
 		} catch (err) {
 			if (err.message.includes(timeoutMessage)) {
-				if (!retries) {
+				if (!retriesLeft) {
 					const exceptionMsg = Object.getOwnPropertyNames(params).length
 						? `Request timed out when calling '${endpoint}' with params:\n${JSON.stringify(
 								params,
@@ -177,7 +177,7 @@ const invokeEndpoint = async (endpoint, params = {}, numRetries = NUM_REQUEST_RE
 				throw err;
 			}
 		}
-	} while (retries--);
+	} while (retriesLeft--);
 };
 
 const disconnectClient = async cachedClient => {
@@ -245,7 +245,7 @@ Signals.get('resetApiClient').add(resetApiClientListener);
 
 // Check periodically for client aliveness and refill cached clients pool
 (async () => {
-	if (config.useHttpApi) return;
+	if (config.isUseHttpApi) return;
 
 	// eslint-disable-next-line no-constant-condition
 	while (true) {

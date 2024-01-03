@@ -58,6 +58,7 @@ const logError = (method, err) => {
 const emitEngineEvents = async () => {
 	getNodeInfo().then(async nodeInfo => {
 		const { roundLength } = await getPosConstants();
+		const blockTime = nodeInfo?.genesis?.blockTime || 10;
 
 		setInterval(async () => {
 			const latestNodeInfo = await getNodeInfo(true);
@@ -80,13 +81,13 @@ const emitEngineEvents = async () => {
 					}
 				}
 			}
-		}, Math.min(2, nodeInfo.genesis.blockTime) * 1000);
+		}, Math.min(3, blockTime) * 1000);
 	});
 };
 
 // eslint-disable-next-line consistent-return
 const subscribeToAllRegisteredEvents = async () => {
-	if (config.useHttpApi) return emitEngineEvents();
+	if (config.isUseHttpApi) return emitEngineEvents();
 
 	// Reset eventsCounter first
 	eventsCounter = 0;
@@ -122,7 +123,7 @@ let isNodeSynced = false;
 let isGenesisBlockDownloaded = false;
 
 const ensureAPIClientLiveness = () => {
-	if (config.useHttpApi) return;
+	if (config.isUseHttpApi) return;
 
 	if (isNodeSynced && isGenesisBlockDownloaded) {
 		setInterval(() => {

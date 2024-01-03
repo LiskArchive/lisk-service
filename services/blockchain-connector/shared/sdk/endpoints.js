@@ -78,7 +78,7 @@ const getBlocksByHeightBetween = async ({ from, to }) => {
 		throw new Error(`'from' cannot be lower than the genesis height (${gHeight}).`);
 	}
 
-	// File based Genesis block handling
+	// File-based genesis block handling
 	if (Number(from) === gHeight) {
 		blocksNestedList[0] = await getBlockByHeight(gHeight);
 		from++;
@@ -94,7 +94,7 @@ const getBlocksByHeightBetween = async ({ from, to }) => {
 };
 
 const getBlockByID = async (id, includeGenesisAssets = false) => {
-	// File based Genesis block handling
+	// File-based genesis block handling
 	if (id === (await getGenesisBlockID())) {
 		return getGenesisBlock(includeGenesisAssets);
 	}
@@ -108,7 +108,7 @@ const getBlockByID = async (id, includeGenesisAssets = false) => {
 };
 
 const getBlocksByIDs = async ids => {
-	// File based Genesis block handling
+	// File-based genesis block handling
 	const genesisBlockId = await getGenesisBlockID();
 	const genesisBlockIndex = ids.indexOf(genesisBlockId);
 	if (genesisBlockIndex !== -1) {
