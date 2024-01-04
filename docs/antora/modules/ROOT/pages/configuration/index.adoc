@@ -373,7 +373,7 @@ By default, it is set to `ws://127.0.0.1:7887`.
 By default, it is set to `http://127.0.0.1:7887`.
 | http://127.0.0.1:7887
 
-| `USE_HTTP_API`
+| `USE_LISK_HTTP_API`
 | boolean
 | Boolean flag to enable HTTP-API based connection to the Lisk application node.
 | true

@@ -21,7 +21,7 @@ const {
 const { getNodeInfo } = require('./endpoints_1');
 const { getGenesisBlockFromFS } = require('./blocksUtils');
 
-const { timeoutMessage, invokeEndpoint } = require('./client');
+const { TIMEOUT_REGEX, invokeEndpoint } = require('./client');
 const { formatBlock } = require('./formatter');
 
 const logger = Logger();
@@ -57,7 +57,7 @@ const getGenesisBlock = async (isIncludeAssets = false) => {
 		const block = await invokeEndpoint('chain_getBlockByHeight', { height });
 		return block;
 	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
+		if (TIMEOUT_REGEX.test(err.message)) {
 			throw new TimeoutException("Request timed out when calling 'getGenesisBlock'.");
 		}
 		throw err;
@@ -85,7 +85,7 @@ const getGenesisConfig = async () => {
 		}
 		return genesisConfig;
 	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
+		if (TIMEOUT_REGEX.test(err.message)) {
 			throw new TimeoutException("Request timed out when calling 'getGenesisConfig'.");
 		}
 		throw err;

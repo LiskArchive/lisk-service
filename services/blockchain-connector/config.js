@@ -42,7 +42,7 @@ config.endpoints.geoip = process.env.GEOIP_JSON || 'https://geoip.lisk.com/json'
 /**
  * API Client related settings
  */
-config.isUseHttpApi = Boolean(String(process.env.USE_HTTP_API).toLowerCase() === 'true'); // Disabled by default
+config.isUseHttpApi = Boolean(String(process.env.USE_LISK_HTTP_API).toLowerCase() === 'true'); // Disabled by default
 config.isUseLiskIPCClient = Boolean(
 	String(process.env.USE_LISK_IPC_CLIENT).toLowerCase() === 'true',
 );
