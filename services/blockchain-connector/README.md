@@ -36,10 +36,11 @@ A list of the most commonly used environment variables is presented below:
 - `GEOIP_JSON`: URL of GeoIP server.
 - `ENABLE_BLOCK_CACHING`: Boolean flag to enable the block caching. Enabled by default. To disable, set it to `false`.
 - `EXPIRY_IN_HOURS`: Expiry time (in hours) for block cache. By default, it is set to 12.
-- `CLIENT_ALIVE_ASSUMPTION_TIME`: Interval (in milliseconds) for which the WS API Client is assumed to be alive since the last ping/pong success check. By default, it is set to 5000.
-- `HEARTBEAT_ACK_MAX_WAIT_TIME`: Maximum time (in milliseconds) within which the checkIsClientAlive's algorithm expects a corresponding `pong` for the `ping` sent to the WS server. By default, it is set to 1000.
+- `CLIENT_POOL_SIZE`: Number of active API clients to be maintained in the pool. Only applicable when using the IPC or WS clients to connect with the Lisk node. By default, it is set to 10.
+- `WS_SERVER_PING_INTERVAL`: Interval (in milliseconds) at which the WS server checks for liveliness of all the connected clients. This should not be modified unless explicitly recommended by the development team. By default, it is set to `3000`.
+- `WS_SERVER_PING_INTERVAL_BUFFER`: A conservative assumption of the latency (in milliseconds) for WS server ping checks to arrive at the client. By default, it is set to `1000`.
 - `ENDPOINT_INVOKE_MAX_RETRIES`: Maximum number of endpoint invocation request retries to the node. By default, it is set to 3.
-- `ENDPOINT_INVOKE_RETRY_DELAY`: Delay (in milliseconds) between each endpoint invocation request retry. By default, it is set to 10.
+- `ENDPOINT_INVOKE_RETRY_DELAY`: Delay (in milliseconds) between each endpoint invocation request retry. By default, it is set to 50.
 - `CONNECTOR_EXIT_DELAY_IN_HOURS`: Delay (in hours) after which the blockchain-connector microservice exits. The service should restart automatically if deployed using Docker or PM2. To be removed eventually. To enable it, set it higher than `0`. By default, it is set to `0`.
 - `JOB_INTERVAL_CACHE_CLEANUP`: Job run interval to cleanup block cache. By default, it is set to 0.
 - `JOB_SCHEDULE_CACHE_CLEANUP`: Job run cron schedule to cleanup block cache. By default, it is set to run every 12 hours (`0 */12 * * *`).

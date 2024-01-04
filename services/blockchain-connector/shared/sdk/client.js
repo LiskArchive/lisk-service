@@ -18,9 +18,11 @@ const {
 	Signals,
 	HTTP,
 	Exceptions: { TimeoutException },
-	Utils: { waitForIt },
+	Utils: { isObject, waitForIt },
 } = require('lisk-service-framework');
 const { createWSClient, createIPCClient } = require('@liskhq/lisk-api-client');
+
+const crypto = require('crypto');
 
 const config = require('../../config');
 const delay = require('../utils/delay');
@@ -32,98 +34,181 @@ const liskAddressWs = config.endpoints.liskWs;
 const liskAddressHttp = config.endpoints.liskHttp;
 
 // Constants
-const HTTP_TIMEOUT_STATUS = 'ETIMEDOUT';
-const RPC_TIMEOUT_MESSAGE = 'Response not received in';
-const TIMEOUT_REGEX_STR = `(?:${HTTP_TIMEOUT_STATUS}|${RPC_TIMEOUT_MESSAGE})`;
+const ERROR_CONN_REFUSED = 'ECONNREFUSED';
+const STATUS_HTTP_TIMEOUT = 'ETIMEDOUT';
+const MESSAGE_RPC_TIMEOUT = 'Response not received in';
+const TIMEOUT_REGEX_STR = `(?:${STATUS_HTTP_TIMEOUT}|${MESSAGE_RPC_TIMEOUT})`;
 const TIMEOUT_REGEX = new RegExp(TIMEOUT_REGEX_STR);
 
-const RETRY_INTERVAL = config.apiClient.instantiation.retryInterval;
-const MAX_INSTANTIATION_WAIT_TIME = config.apiClient.instantiation.maxWaitTime;
+const MAX_CLIENT_POOL_SIZE = config.apiClient.poolSize;
 const NUM_REQUEST_RETRIES = config.apiClient.request.maxRetries;
 const ENDPOINT_INVOKE_RETRY_DELAY = config.apiClient.request.retryDelay;
 const WS_SERVER_PING_INTERVAL = config.apiClient.wsServerPingInterval;
 const WS_SERVER_PING_BUFFER = config.apiClient.pingIntervalBuffer; // In case the server is under stress
+const WS_SERVER_PING_THRESHOLD = WS_SERVER_PING_INTERVAL + WS_SERVER_PING_BUFFER;
 
 // Caching
-let clientCache;
-let pingTimeout;
-let lastPingAt;
-let instantiationBeginTime;
-let isInstantiating = false;
-
-const pingListener = () => {
-	const now = Date.now();
-	clearTimeout(pingTimeout);
-	logger.trace(`Server ping received at ${now}.`);
-
-	pingTimeout = setTimeout(() => {
-		const timeSinceLastPing = now - lastPingAt;
-		// Do not reset if the ping was delayed and just received
-		if (timeSinceLastPing) {
-			logger.warn(`No ping from server in ${timeSinceLastPing}ms (last ping: ${lastPingAt}).`);
-			clientCache._channel.isAlive = false;
-			Signals.get('resetApiClient').dispatch();
-		}
-	}, WS_SERVER_PING_INTERVAL + WS_SERVER_PING_BUFFER);
-
-	lastPingAt = now;
+const clientPool = [];
+const clientInstantiationStats = {
+	requests: 0,
+	success: 0,
+	fail: 0,
 };
 
-const checkIsClientAlive = () =>
-	clientCache && clientCache._channel && clientCache._channel.isAlive;
+const checkIsClientAlive = client => client && client._channel && client._channel.isAlive;
 
-// eslint-disable-next-line consistent-return
-const instantiateClient = async (isForceReInstantiate = false) => {
+const pingListener = apiClient => {
+	if (!isObject(apiClient)) {
+		logger.warn(`apiClient is ${JSON.stringify(apiClient)}. Cannot register a pingListener.`);
+		return;
+	}
+
+	const now = Date.now();
+	logger.trace(`Client ${apiClient.poolIndex} received server ping at ${now}.`);
+	clearTimeout(apiClient.pingTimeout);
+
+	apiClient.pingTimeout = setTimeout(() => {
+		// Do not reset if the ping was delayed and just received
+		const timeSinceLastPing = now - apiClient.lastPingAt;
+		if (timeSinceLastPing) {
+			logger.warn(
+				`No ping for client ${apiClient.poolIndex} from server in ${timeSinceLastPing}ms (last ping: ${apiClient.lastPingAt}).`,
+			);
+			apiClient._channel.isAlive = false;
+			Signals.get('resetApiClient').dispatch(apiClient);
+		}
+	}, WS_SERVER_PING_THRESHOLD);
+
+	apiClient.lastPingAt = now;
+};
+
+const instantiateNewClient = async () => {
+	clientInstantiationStats.requests++;
 	try {
-		if (!isInstantiating || isForceReInstantiate) {
-			if (!checkIsClientAlive() || isForceReInstantiate) {
-				isInstantiating = true;
-				instantiationBeginTime = Date.now();
-				if (clientCache) await clientCache.disconnect();
+		const newClient = config.isUseLiskIPCClient
+			? await createIPCClient(config.liskAppDataPath)
+			: await (async () => {
+					const client = await createWSClient(`${liskAddressWs}/rpc-ws`);
+					client._channel._ws.on('ping', pingListener.bind(null, client));
+					return client;
+			  })();
 
-				clientCache = config.isUseLiskIPCClient
-					? await createIPCClient(config.liskAppDataPath)
-					: await (async () => {
-							const client = await createWSClient(`${liskAddressWs}/rpc-ws`);
-							client._channel._ws.on('ping', pingListener);
-							return client;
-					  })();
-
-				if (isForceReInstantiate) logger.info('Re-instantiated the API client forcefully.');
-
-				// Inform listeners about the newly instantiated ApiClient
-				Signals.get('newApiClient').dispatch();
-
-				isInstantiating = false;
-			}
-			return clientCache;
-		}
-
-		if (Date.now() - instantiationBeginTime > MAX_INSTANTIATION_WAIT_TIME) {
-			// Waited too long, reset the flag to re-attempt client instantiation
-			isInstantiating = false;
-		}
+		clientInstantiationStats.success++;
+		return newClient;
 	} catch (err) {
-		// Nullify the apiClient cache, so that it can be re-instantiated properly
-		clientCache = null;
-
+		clientInstantiationStats.fail++;
 		const errMessage = config.isUseLiskIPCClient
-			? `Error instantiating IPC client at ${config.liskAppDataPath}.`
-			: `Error instantiating WS client to ${liskAddressWs}.`;
+			? `Error instantiating IPC client at ${config.liskAppDataPath}`
+			: `Error instantiating WS client to ${liskAddressWs}`;
 
 		logger.error(`${errMessage}: ${err.message}`);
-		if (err.message.includes('ECONNREFUSED')) {
-			throw new Error('ECONNREFUSED: Unable to reach a network node.');
+		if (err.message.includes(ERROR_CONN_REFUSED)) {
+			throw new Error('Unable to connect to the node.');
 		}
 
-		return null;
+		throw err;
 	}
 };
 
-const getApiClient = async () => {
-	const apiClient = await waitForIt(instantiateClient, RETRY_INTERVAL);
-	return checkIsClientAlive() ? apiClient : getApiClient();
+const initClientPool = async poolSize => {
+	// Set the intervals only at application init
+	if (clientPool.length === 0) {
+		setInterval(() => {
+			logger.info(`API client instantiation stats: ${JSON.stringify(clientInstantiationStats)}`);
+		}, 5 * 60 * 1000);
+
+		setInterval(() => {
+			clientPool.forEach(async (apiClient, index) => {
+				if (isObject(apiClient)) return;
+
+				// Re-instantiate when null
+				clientPool[index] = await instantiateNewClient()
+					.then(client => {
+						client.poolIndex = index;
+						return client;
+					})
+					.catch(() => null);
+			});
+		}, WS_SERVER_PING_INTERVAL);
+	}
+
+	try {
+		const startTime = Date.now();
+		for (let i = 0; i < poolSize; i++) {
+			// Do not instantiate new clients if enough clients already cached
+			if (clientPool.length >= poolSize) break;
+
+			const newApiClient = await instantiateNewClient();
+			newApiClient.poolIndex = clientPool.length;
+			clientPool.push(newApiClient);
+		}
+		logger.info(
+			`Initialized client pool in ${Date.now() - startTime}ms with ${clientPool.length} instances.`,
+		);
+	} catch (err) {
+		logger.warn(
+			clientPool.length
+				? `API client pool initialization failed due to: ${err.message}\nManaged to initialize the pool with only ${clientPool.length} instead of expected ${poolSize} clients.`
+				: `API client pool initialization failed due to: ${err.message}`,
+		);
+		throw err;
+	}
 };
+
+const getApiClient = async poolIndex => {
+	if (!clientPool.length) await initClientPool(MAX_CLIENT_POOL_SIZE);
+
+	const index = Number.isNaN(Number(poolIndex))
+		? crypto.randomInt(Math.min(clientPool.length, MAX_CLIENT_POOL_SIZE))
+		: poolIndex;
+
+	const apiClient = clientPool[index];
+	return checkIsClientAlive(apiClient)
+		? apiClient
+		: (() => {
+				if (apiClient) Signals.get('resetApiClient').dispatch(apiClient);
+				return waitForIt(getApiClient, 10);
+		  })();
+};
+
+const resetApiClient = async (apiClient, isEventSubscriptionClient = false) => {
+	// Replace the dead API client in the pool
+	if (!isObject(apiClient)) {
+		logger.warn(`apiClient is ${JSON.stringify(apiClient)}. Cannot reset.`);
+		return;
+	}
+
+	// Do not attempt reset if last ping was within the acceptable threshold
+	if (Date.now() - (apiClient.lastPingAt || 0) < WS_SERVER_PING_THRESHOLD) {
+		return;
+	}
+
+	const { poolIndex } = apiClient;
+
+	if (isEventSubscriptionClient) {
+		logger.info(`Attempting to reset the eventSubscriptionClient: apiClient ${poolIndex}.`);
+		Signals.get('eventSubscriptionClientReset').dispatch();
+	} else {
+		logger.info(`Attempting to reset apiClient ${poolIndex}.`);
+	}
+
+	await apiClient
+		.disconnect()
+		.catch(err => logger.warn(`Error disconnecting apiClient: ${err.message}. Will proceed.`));
+
+	const newApiClient = await instantiateNewClient()
+		.then(client => {
+			client.poolIndex = poolIndex;
+			logger.info(`Successfully reset apiClient ${poolIndex}.`);
+			return client;
+		})
+		.catch(() => null);
+
+	clientPool[poolIndex] = newApiClient;
+
+	if (newApiClient) Signals.get('newApiClient').dispatch();
+};
+Signals.get('resetApiClient').add(resetApiClient);
 
 const is2XXResponse = response => String(response.status).startsWith('2');
 const isSuccessResponse = response => is2XXResponse(response) && response.data.result;
@@ -168,17 +253,17 @@ const invokeEndpoint = async (endpoint, params = {}, numRetries = NUM_REQUEST_RE
 			if (TIMEOUT_REGEX.test(err.message)) {
 				if (!retriesLeft) {
 					const exceptionMsg = Object.getOwnPropertyNames(params).length
-						? `Invocation timed out for '${endpoint}'.`
-						: `Invocation timed out for '${endpoint}' with params:\n${JSON.stringify(params)}.`;
+						? `Invocation timed out for '${endpoint}' with params:\n${JSON.stringify(params)}.`
+						: `Invocation timed out for '${endpoint}'.`;
 
 					throw new TimeoutException(exceptionMsg);
 				}
 				await delay(ENDPOINT_INVOKE_RETRY_DELAY);
 			} else {
 				logger.warn(
-					Object.getOwnPropertyNames(params).length === 0
-						? `Error invoking '${endpoint}':\n${err.stack}`
-						: `Error invoking '${endpoint}' with params:\n${JSON.stringify(params)}.\n${err.stack}`,
+					Object.getOwnPropertyNames(params).length
+						? `Error invoking '${endpoint}' with params:\n${JSON.stringify(params)}.\n${err.stack}`
+						: `Error invoking '${endpoint}'.\n${err.stack}`,
 				);
 
 				throw err;
@@ -186,9 +271,6 @@ const invokeEndpoint = async (endpoint, params = {}, numRetries = NUM_REQUEST_RE
 		}
 	} while (retriesLeft--);
 };
-
-const resetApiClientListener = async () => instantiateClient(true);
-Signals.get('resetApiClient').add(resetApiClientListener);
 
 module.exports = {
 	TIMEOUT_REGEX,

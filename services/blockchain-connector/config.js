@@ -116,12 +116,9 @@ config.job = {
 };
 
 config.apiClient = {
-	wsServerPingInterval: 3 * 1000, // in millisecs
-	pingIntervalBuffer: 1000, // in millisecs
-	instantiation: {
-		maxWaitTime: Number(process.env.CLIENT_INSTANTIATION_MAX_WAIT_TIME) || 5 * 1000, // in millisecs
-		retryInterval: Number(process.env.CLIENT_INSTANTIATION_RETRY_INTERVAL) || 1, // in millisecs
-	},
+	poolSize: Number(process.env.CLIENT_POOL_SIZE) || 10,
+	wsServerPingInterval: Number(process.env.WS_SERVER_PING_INTERVAL) || 3 * 1000, // in millisecs
+	pingIntervalBuffer: Number(process.env.WS_SERVER_PING_INTERVAL_BUFFER) || 1000, // in millisecs
 	request: {
 		maxRetries: Number(process.env.ENDPOINT_INVOKE_MAX_RETRIES) || 3,
 		retryDelay: Number(process.env.ENDPOINT_INVOKE_RETRY_DELAY) || 50, // in millisecs

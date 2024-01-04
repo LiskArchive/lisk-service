@@ -413,15 +413,23 @@ To disable it, set it to `false`.
 By default, it is set to `12` hours.
 | 12
 
-| `CLIENT_ALIVE_ASSUMPTION_TIME`
+| `CLIENT_POOL_SIZE`
 | number
-| Interval (in milliseconds) for which the WS API Client is assumed to be alive since the last ping/pong success check.
-By default, it is set to `5000`.
-| 5000
+| Number of active API clients to be maintained in the pool.
+Only applicable when using the IPC or WS clients to connect with the Lisk node.
+By default, it is set to `10`.
+| 10
 
-| `HEARTBEAT_ACK_MAX_WAIT_TIME`
+| `WS_SERVER_PING_INTERVAL`
 | number
-| Maximum time (in milliseconds) within which the checkIsClientAlive's algorithm expects a corresponding `pong` for the `ping` sent to the WS server.
+| Interval (in milliseconds) at which the WS server checks for liveliness of all the connected clients.
+This should not be modified unless explicitly recommended by the development team.
+By default, it is set to `3000`.
+| 3000
+
+| `WS_SERVER_PING_INTERVAL_BUFFER`
+| number
+| A conservative assumption of the latency (in milliseconds) for WS server ping checks to arrive at the client.
 By default, it is set to `1000`.
 | 1000
 
@@ -434,8 +442,8 @@ By default, it is set to `3`.
 | `ENDPOINT_INVOKE_RETRY_DELAY`
 | number
 | Delay (in milliseconds) between each endpoint invocation request retry.
-By default, it is set to `10`.
-| 10
+By default, it is set to `50`.
+| 50
 
 | `CONNECTOR_EXIT_DELAY_IN_HOURS`
 | number
