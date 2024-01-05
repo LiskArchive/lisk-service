@@ -30,39 +30,44 @@ const { indexAccountPublicKey } = require('../../indexer/accountIndex');
 
 let pendingTransactionsList = [];
 
+const formatPendingTransaction = async transaction => {
+	const normalizedTransaction = await normalizeTransaction(transaction);
+	const senderAddress = getLisk32AddressFromPublicKey(normalizedTransaction.senderPublicKey);
+	const account = await getIndexedAccountInfo({ address: senderAddress }, ['name']);
+
+	normalizedTransaction.sender = {
+		address: senderAddress,
+		publicKey: normalizedTransaction.senderPublicKey,
+		name: account.name || null,
+	};
+
+	if (normalizedTransaction.params.recipientAddress) {
+		const recipientAccount = await getIndexedAccountInfo(
+			{ address: normalizedTransaction.params.recipientAddress },
+			['publicKey', 'name'],
+		);
+
+		normalizedTransaction.meta = {
+			recipient: {
+				address: normalizedTransaction.params.recipientAddress,
+				publicKey: recipientAccount ? recipientAccount.publicKey : null,
+				name: recipientAccount ? recipientAccount.name : null,
+			},
+		};
+	}
+
+	indexAccountPublicKey(normalizedTransaction.senderPublicKey);
+	normalizedTransaction.executionStatus = 'pending';
+	return normalizedTransaction;
+};
+
 const getPendingTransactionsFromCore = async () => {
 	const response = await requestConnector('getTransactionsFromPool');
 	const pendingTx = await BluebirdPromise.map(
 		response,
 		async transaction => {
-			const normalizedTransaction = await normalizeTransaction(transaction);
-			const senderAddress = getLisk32AddressFromPublicKey(normalizedTransaction.senderPublicKey);
-			const account = await getIndexedAccountInfo({ address: senderAddress }, ['name']);
-
-			normalizedTransaction.sender = {
-				address: senderAddress,
-				publicKey: normalizedTransaction.senderPublicKey,
-				name: account.name || null,
-			};
-
-			if (normalizedTransaction.params.recipientAddress) {
-				const recipientAccount = await getIndexedAccountInfo(
-					{ address: normalizedTransaction.params.recipientAddress },
-					['publicKey', 'name'],
-				);
-
-				normalizedTransaction.meta = {
-					recipient: {
-						address: normalizedTransaction.params.recipientAddress,
-						publicKey: recipientAccount ? recipientAccount.publicKey : null,
-						name: recipientAccount ? recipientAccount.name : null,
-					},
-				};
-			}
-
-			indexAccountPublicKey(normalizedTransaction.senderPublicKey);
-			normalizedTransaction.executionStatus = 'pending';
-			return normalizedTransaction;
+			const formattedTransaction = await formatPendingTransaction(transaction);
+			return formattedTransaction;
 		},
 		{ concurrency: response.length },
 	);
@@ -172,6 +177,7 @@ const getPendingTransactions = async params => {
 module.exports = {
 	getPendingTransactions,
 	loadAllPendingTransactions,
+	formatPendingTransaction,
 
 	// For unit test
 	validateParams,

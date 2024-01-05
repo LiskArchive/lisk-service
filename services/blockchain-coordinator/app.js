@@ -47,6 +47,10 @@ const app = Microservice({
 			logger.debug("Received a 'systemNodeInfo' moleculer event from connecter.");
 			Signals.get('nodeInfo').dispatch(payload);
 		},
+		txpoolNewTransaction: async payload => {
+			logger.debug("Received a 'txpoolNewTransaction' moleculer event from connecter.");
+			Signals.get('txpoolNewTransaction').dispatch(payload);
+		},
 	},
 	dependencies: ['connector', 'indexer'],
 });

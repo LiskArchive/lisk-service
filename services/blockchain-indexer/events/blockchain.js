@@ -82,7 +82,11 @@ module.exports = [
 					logger.error(`Error occurred when processing 'transactions.new' event:\n${err.stack}`);
 				}
 			};
+
+			const txPoolNewTransactionListener = async payload => callback(payload);
+
 			Signals.get('newBlock').add(newTransactionsListener);
+			Signals.get('txPoolNewTransaction').add(txPoolNewTransactionListener);
 		},
 	},
 	{
