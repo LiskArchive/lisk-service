@@ -13,84 +13,39 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	Logger,
-	Exceptions: { TimeoutException },
-} = require('lisk-service-framework');
-
-const { timeoutMessage, invokeEndpoint } = require('./client');
+const { invokeEndpoint } = require('./client');
 const { getNodeInfo } = require('./endpoints_1');
-
-const logger = Logger();
 
 let mainchainID;
 let registrationFee;
 
 const getChainAccount = async chainID => {
-	try {
-		const chainAccount = await invokeEndpoint('interoperability_getChainAccount', { chainID });
-		return chainAccount;
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException("Request timed out when calling 'getChainAccount'.");
-		}
-		logger.warn(
-			`Error returned when invoking 'interoperability_getChainAccount' with chainID: ${chainID}.\n${err.stack}`,
-		);
-		throw err;
-	}
+	const chainAccount = await invokeEndpoint('interoperability_getChainAccount', { chainID });
+	return chainAccount;
 };
 
 const getMainchainID = async () => {
-	try {
-		if (!mainchainID) {
-			const { chainID } = await getNodeInfo();
-			const response = await invokeEndpoint('interoperability_getMainchainID', { chainID });
-			mainchainID =
-				response.error && response.error.message.includes('not registered to bus')
-					? chainID
-					: response.mainchainID;
-		}
-		return mainchainID;
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException("Request timed out when calling 'getMainchainID'.");
-		}
-		logger.warn(`Error returned when invoking 'interoperability_getMainchainID'.\n${err.stack}`);
-		throw err;
+	if (!mainchainID) {
+		const { chainID } = await getNodeInfo();
+		const response = await invokeEndpoint('interoperability_getMainchainID', { chainID });
+		mainchainID =
+			response.error && response.error.message.includes('not registered to bus')
+				? chainID
+				: response.mainchainID;
 	}
+	return mainchainID;
 };
 
 const getChannel = async chainID => {
-	try {
-		const channelInfo = await invokeEndpoint('interoperability_getChannel', { chainID });
-		return channelInfo;
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException("Request timed out when calling 'getChannel'.");
-		}
-		logger.warn(
-			`Error returned when invoking 'interoperability_getChannel' with chainID: ${chainID}.\n${err.stack}`,
-		);
-		throw err;
-	}
+	const channelInfo = await invokeEndpoint('interoperability_getChannel', { chainID });
+	return channelInfo;
 };
 
 const getRegistrationFee = async () => {
-	try {
-		if (!registrationFee) {
-			registrationFee = await invokeEndpoint('interoperability_getRegistrationFee');
-		}
-		return registrationFee;
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException("Request timed out when calling 'getRegistrationFee'.");
-		}
-		logger.warn(
-			`Error returned when invoking 'interoperability_getRegistrationFee'.\n${err.stack}`,
-		);
-		throw err;
+	if (!registrationFee) {
+		registrationFee = await invokeEndpoint('interoperability_getRegistrationFee');
 	}
+	return registrationFee;
 };
 
 module.exports = {

@@ -13,7 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger, Signals } = require('lisk-service-framework');
+const {
+	Logger,
+	Signals,
+	HTTP,
+	Exceptions: { TimeoutException },
+} = require('lisk-service-framework');
 const { createWSClient, createIPCClient } = require('@liskhq/lisk-api-client');
 
 const config = require('../../config');
@@ -22,15 +27,20 @@ const delay = require('../utils/delay');
 const logger = Logger();
 
 // Constants
-const timeoutMessage = 'Response not received in';
-const liskAddress = config.endpoints.liskWs;
+const HTTP_TIMEOUT_STATUS = 'ETIMEDOUT';
+const RPC_TIMEOUT_MESSAGE = 'Response not received in';
+const TIMEOUT_REGEX_STR = `(?:${HTTP_TIMEOUT_STATUS}|${RPC_TIMEOUT_MESSAGE})`;
+const TIMEOUT_REGEX = new RegExp(TIMEOUT_REGEX_STR);
+
+const liskAddressWs = config.endpoints.liskWs;
+const liskAddressHttp = config.endpoints.liskHttp;
 const NUM_REQUEST_RETRIES = config.apiClient.request.maxRetries;
 const ENDPOINT_INVOKE_RETRY_DELAY = config.apiClient.request.retryDelay;
 const CLIENT_ALIVE_ASSUMPTION_TIME = config.apiClient.aliveAssumptionTime;
 const HEARTBEAT_ACK_MAX_WAIT_TIME = config.apiClient.heartbeatAckMaxWaitTime;
 const CONNECTION_LIMIT = config.apiClient.connectionLimit;
 
-// Pool of cached api clients
+// Pool of cached API clients
 const cachedApiClients = [];
 
 const checkIsClientAlive = async clientCache =>
@@ -40,22 +50,21 @@ const checkIsClientAlive = async clientCache =>
 			return resolve(false);
 		}
 
-		// Skip heartbeat check for IPC client
 		if (config.isUseLiskIPCClient) {
-			return resolve(true);
+			return resolve(clientCache._channel.isAlive);
 		}
 
 		const heartbeatCheckBeginTime = Date.now();
-		const wsInstance = clientCache._channel._ws;
+		const wsClientInstance = clientCache._channel._ws;
 
 		// eslint-disable-next-line no-use-before-define
 		const boundPongListener = () => pongListener(resolve);
-		wsInstance.on('pong', boundPongListener);
-		wsInstance.ping(() => {});
+		wsClientInstance.on('pong', boundPongListener);
+		wsClientInstance.ping(() => {});
 
 		// eslint-disable-next-line consistent-return
 		const timeout = setTimeout(() => {
-			wsInstance.removeListener('pong', boundPongListener);
+			wsClientInstance.removeListener('pong', boundPongListener);
 			logger.debug(
 				`Did not receive API client pong after ${Date.now() - heartbeatCheckBeginTime}ms.`,
 			);
@@ -64,7 +73,7 @@ const checkIsClientAlive = async clientCache =>
 
 		const pongListener = res => {
 			clearTimeout(timeout);
-			wsInstance.removeListener('pong', boundPongListener);
+			wsClientInstance.removeListener('pong', boundPongListener);
 			logger.debug(`Received API client pong in ${Date.now() - heartbeatCheckBeginTime}ms.`);
 			return res(true);
 		};
@@ -82,7 +91,7 @@ const instantiateAndCacheClient = async () => {
 		const instantiationBeginTime = Date.now();
 		const clientCache = config.isUseLiskIPCClient
 			? await createIPCClient(config.liskAppDataPath)
-			: await createWSClient(`${liskAddress}/rpc-ws`);
+			: await createWSClient(`${liskAddressWs}/rpc-ws`);
 
 		cachedApiClients.push(clientCache);
 
@@ -95,7 +104,7 @@ const instantiateAndCacheClient = async () => {
 		// Nullify the apiClient cache and unset isInstantiating, so that it can be re-instantiated properly
 		const errMessage = config.isUseLiskIPCClient
 			? `Error instantiating IPC client at ${config.liskAppDataPath}.`
-			: `Error instantiating WS client to ${liskAddress}.`;
+			: `Error instantiating WS client to ${liskAddressWs}.`;
 
 		logger.error(errMessage);
 		logger.error(err.message);
@@ -107,27 +116,78 @@ const instantiateAndCacheClient = async () => {
 
 const getApiClient = async () => {
 	if (cachedApiClients.length === 0) {
-		throw new Error(`No api client is alive!`);
+		await instantiateAndCacheClient();
 	}
 	return cachedApiClients[0];
 };
 
+const is2XXResponse = response => String(response.status).startsWith('2');
+const isSuccessResponse = response => is2XXResponse(response) && response.data.result;
+
+const buildHTTPResponse = (endpoint, params, response) => {
+	if (isSuccessResponse(response)) return response.data.result;
+
+	const errorMessage =
+		response.data && response.data.error
+			? response.data.error.message
+			: `${response.status}: ${response.message}`;
+	logger.trace(
+		`Error invoking endpoint '${endpoint}' with params ${JSON.stringify(params)}:\n${errorMessage}`,
+	);
+	throw new Error(errorMessage);
+};
+
+let id = 0;
 // eslint-disable-next-line consistent-return
 const invokeEndpoint = async (endpoint, params = {}, numRetries = NUM_REQUEST_RETRIES) => {
-	let retries = numRetries;
+	let retriesLeft = numRetries;
 	do {
 		try {
+			if (config.isUseHttpApi) {
+				// HTTP API-based communication with the Lisk app node
+				const rpcRequest = {
+					jsonrpc: '2.0',
+					id: id++,
+					method: endpoint,
+					params,
+				};
+
+				const response = await HTTP.post(`${liskAddressHttp}/rpc`, rpcRequest);
+				return buildHTTPResponse(endpoint, params, response);
+			}
+
+			// WS and IPC client-based communication with the Lisk app node
 			const apiClient = await getApiClient();
 			const response = await apiClient._channel.invoke(endpoint, params);
 			return response;
 		} catch (err) {
-			if (retries && err.message.includes(timeoutMessage)) {
+			if (TIMEOUT_REGEX.test(err.message)) {
+				if (!retriesLeft) {
+					const exceptionMsg = Object.getOwnPropertyNames(params).length
+						? `Request timed out when calling '${endpoint}' with params:\n${JSON.stringify(
+								params,
+								null,
+								'\t',
+						  )}.`
+						: `Request timed out when calling '${endpoint}'.`;
+
+					throw new TimeoutException(exceptionMsg);
+				}
 				await delay(ENDPOINT_INVOKE_RETRY_DELAY);
 			} else {
+				if (Object.getOwnPropertyNames(params).length) {
+					logger.warn(
+						`Error invoking '${endpoint}' with params:\n${JSON.stringify(params, null, ' ')}.\n${
+							err.stack
+						}`,
+					);
+				}
+
+				logger.warn(`Error occurred when calling '${endpoint}' :\n${err.stack}`);
 				throw err;
 			}
 		}
-	} while (retries--);
+	} while (retriesLeft--);
 };
 
 const disconnectClient = async cachedClient => {
@@ -168,11 +228,11 @@ const refreshClientsCache = async () => {
 		try {
 			await instantiateAndCacheClient();
 		} catch (err) {
-			logger.info(`Failed to instantiate new api client.\nError:${err.message}`);
+			logger.warn(`Failed to instantiate new API client.\nError: ${err.message}`);
 		}
 	}
 
-	// Reset event listeners if active api client was destroyed
+	// Reset event listeners if active API client was destroyed
 	if (activeClientNotAvailable && cachedApiClients.length > 0) {
 		Signals.get('newApiClient').dispatch();
 	}
@@ -193,23 +253,23 @@ const resetApiClientListener = async () => {
 };
 Signals.get('resetApiClient').add(resetApiClientListener);
 
-// Check periodically for client aliveness and refill cached clients pool
-(async () => {
-	// eslint-disable-next-line no-constant-condition
-	while (true) {
+if (!config.isUseHttpApi) {
+	refreshClientsCache(); // Initialize the client cache
+
+	// Periodically ensure API client liveliness
+	setInterval(async () => {
 		const cacheRefreshStartTime = Date.now();
 		await refreshClientsCache();
 		logger.debug(
-			`Refreshed api client cached in ${Date.now() - cacheRefreshStartTime}ms. There are ${
+			`Refreshed API client cache in ${Date.now() - cacheRefreshStartTime}ms. There are ${
 				cachedApiClients.length
 			} API client(s) in the pool.`,
 		);
-		await delay(CLIENT_ALIVE_ASSUMPTION_TIME);
-	}
-})();
+	}, CLIENT_ALIVE_ASSUMPTION_TIME);
+}
 
 module.exports = {
-	timeoutMessage,
+	TIMEOUT_REGEX,
 
 	getApiClient,
 	invokeEndpoint,

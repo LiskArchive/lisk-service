@@ -13,22 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	Exceptions: { TimeoutException },
-} = require('lisk-service-framework');
-
-const { timeoutMessage, invokeEndpoint } = require('./client');
+const { invokeEndpoint } = require('./client');
 
 const getLegacyAccount = async publicKey => {
-	try {
-		const legacyAccount = await invokeEndpoint('legacy_getLegacyAccount', { publicKey });
-		return legacyAccount;
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException("Request timed out when calling 'getLegacyAccount'.");
-		}
-		throw err;
-	}
+	const legacyAccount = await invokeEndpoint('legacy_getLegacyAccount', { publicKey });
+	return legacyAccount;
 };
 
 module.exports = {

@@ -13,15 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	Logger,
-	Exceptions: { TimeoutException },
-} = require('lisk-service-framework');
-
-const { timeoutMessage, invokeEndpoint } = require('./client');
+const { invokeEndpoint } = require('./client');
 const { getRegisteredModules } = require('./endpoints_1');
-
-const logger = Logger();
 
 let registeredRewardModule;
 let rewardTokenID;
@@ -38,60 +31,26 @@ const cacheRegisteredRewardModule = async () => {
 };
 
 const getRewardTokenID = async () => {
-	try {
-		if (!rewardTokenID) {
-			const response = await invokeEndpoint(`${registeredRewardModule}_getRewardTokenID`);
-			rewardTokenID = response.tokenID;
-		}
-		return rewardTokenID;
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException("Request timed out when calling 'getRewardTokenID'.");
-		}
-		logger.warn(
-			`Error returned when invoking '${registeredRewardModule}_getRewardTokenID'.\n${err.stack}`,
-		);
-		throw err;
+	if (!rewardTokenID) {
+		const response = await invokeEndpoint(`${registeredRewardModule}_getRewardTokenID`);
+		rewardTokenID = response.tokenID;
 	}
+	return rewardTokenID;
 };
 
 const getAnnualInflation = async height => {
-	try {
-		const annualInflation = await invokeEndpoint(`${registeredRewardModule}_getAnnualInflation`, {
-			height,
-		});
-		return annualInflation;
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException(
-				`Request timed out when calling 'getAnnualInflation' with block height:${height}.`,
-			);
-		}
-		logger.warn(
-			`Error returned when invoking '${registeredRewardModule}_getAnnualInflation' with block height:${height}.\n${err.stack}`,
-		);
-		throw err;
-	}
+	const annualInflation = await invokeEndpoint(`${registeredRewardModule}_getAnnualInflation`, {
+		height,
+	});
+	return annualInflation;
 };
 
 const getDefaultRewardAtHeight = async height => {
-	try {
-		const defaultRewardResponse = await invokeEndpoint(
-			`${registeredRewardModule}_getDefaultRewardAtHeight`,
-			{ height },
-		);
-		return defaultRewardResponse;
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException(
-				`Request timed out when calling 'getDefaultRewardAtHeight' for block height:${height}`,
-			);
-		}
-		logger.warn(
-			`Error returned when invoking '${registeredRewardModule}_getDefaultRewardAtHeight' with height: ${height}.\n${err.stack}`,
-		);
-		throw err;
-	}
+	const defaultRewardResponse = await invokeEndpoint(
+		`${registeredRewardModule}_getDefaultRewardAtHeight`,
+		{ height },
+	);
+	return defaultRewardResponse;
 };
 
 module.exports = {

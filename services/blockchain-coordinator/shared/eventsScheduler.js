@@ -39,7 +39,6 @@ const scheduleDeleteBlock = async payload => {
 };
 
 const scheduleUpdatesOnNewRound = async payload => {
-	const { validators } = payload;
 	logger.debug('Scheduling updates on new round.');
 	await eventMessageQueue.add({ validators, isNewRound: true });
 	logger.debug('Finished scheduling updates on new round.');
