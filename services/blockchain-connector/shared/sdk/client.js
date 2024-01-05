@@ -55,6 +55,12 @@ const clientInstantiationStats = {
 	fail: 0,
 };
 
+const getApiClientStats = () => ({
+	...clientInstantiationStats,
+	currentPoolSize: clientPool.length,
+	expectedPoolSize: MAX_CLIENT_POOL_SIZE,
+});
+
 const checkIsClientAlive = client => client && client._channel && client._channel.isAlive;
 
 const pingListener = apiClient => {
@@ -114,7 +120,7 @@ const initClientPool = async poolSize => {
 	// Set the intervals only at application init
 	if (clientPool.length === 0) {
 		setInterval(() => {
-			logger.info(`API client instantiation stats: ${JSON.stringify(clientInstantiationStats)}`);
+			logger.info(`API client instantiation stats: ${JSON.stringify(getApiClientStats())}`);
 		}, 5 * 60 * 1000);
 
 		setInterval(() => {
