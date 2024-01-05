@@ -13,38 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	Exceptions: { TimeoutException },
-	Logger,
-} = require('lisk-service-framework');
-
-const { timeoutMessage, invokeEndpoint } = require('./client');
-
-const logger = Logger();
+const { invokeEndpoint } = require('./client');
 
 const getAuthAccount = async address => {
-	try {
-		const authAccountInfo = await invokeEndpoint('auth_getAuthAccount', { address });
-		return authAccountInfo;
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException("Request timed out when calling 'getAuthAccount'.");
-		}
-		throw err;
-	}
+	const authAccountInfo = await invokeEndpoint('auth_getAuthAccount', { address });
+	return authAccountInfo;
 };
 
 const getAuthMultiSigRegMsgSchema = async () => {
-	try {
-		const multiSigRegMsgSchema = await invokeEndpoint('auth_getMultiSigRegMsgSchema');
-		return multiSigRegMsgSchema;
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException("Request timed out when calling 'getMultiSigRegMsgSchema'.");
-		}
-		logger.warn(`Error returned when invoking 'auth_getMultiSigRegMsgSchema'.\n${err.stack}`);
-		throw err;
-	}
+	const multiSigRegMsgSchema = await invokeEndpoint('auth_getMultiSigRegMsgSchema');
+	return multiSigRegMsgSchema;
 };
 
 module.exports = {

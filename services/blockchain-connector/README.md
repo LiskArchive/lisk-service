@@ -27,7 +27,9 @@ To configure the different microservices, there are several environment variable
 A list of the most commonly used environment variables is presented below:
 
 - `SERVICE_BROKER`: URL of the microservice message broker (NATS or Redis).
-- `LISK_APP_WS`: URL to connect with the Lisk SDK-based application node over WebSocket.
+- `LISK_APP_WS`: URL to connect with the Lisk SDK-based application node over WebSocket. By default, it is set to `ws://127.0.0.1:7887`.
+- `LISK_APP_HTTP`: URL to connect with the Lisk SDK-based application node over HTTP(s). By default, it is set to `http://127.0.0.1:7887`.
+- `USE_LISK_HTTP_API`: Boolean flag to enable HTTP-API based connection to the Lisk SDK-based application node.
 - `USE_LISK_IPC_CLIENT`: Boolean flag to enable IPC-based connection to the Lisk SDK-based application node. Not applicable to a docker-based setup.
 - `LISK_APP_DATA_PATH`: Data path to connect with the Lisk SDK-based application node over IPC. Not applicable to a docker-based setup.
 - `GENESIS_BLOCK_URL`: URL of the Lisk SDK-based application' genesis block. Only to be used when the genesis block is large enough to be transmitted over API calls within the timeout.

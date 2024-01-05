@@ -114,6 +114,8 @@ module.exports = {
 				SERVICE_BROKER: 'redis://lisk:password@127.0.0.1:6379/0',
 				// USE_LISK_IPC_CLIENT: true,
 				// LISK_APP_DATA_PATH: '~/.lisk/lisk-core',
+				// USE_LISK_HTTP_API: true,
+				// LISK_APP_HTTP: 'http://127.0.0.1:7887',
 				// LISK_APP_WS: 'ws://127.0.0.1:7887',
 				// GEOIP_JSON: 'https://geoip.lisk.com/json',
 				// ENABLE_BLOCK_CACHING: true,

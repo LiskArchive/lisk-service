@@ -21,8 +21,15 @@ const config = require('../../config');
 
 const { getApiClient } = require('./client');
 const { formatEvent } = require('./formatter');
-const { getRegisteredEvents, getEventsByHeight, getNodeInfo } = require('./endpoints');
+const {
+	getRegisteredEvents,
+	getEventsByHeight,
+	getNodeInfo,
+	getBlockByHeight,
+	getBFTParameters,
+} = require('./endpoints');
 const { updateTokenInfo } = require('./token');
+const { getPosConstants } = require('./pos');
 
 const logger = Logger();
 
@@ -41,13 +48,47 @@ const events = [
 ];
 
 let eventsCounter;
+let lastBlockHeightEvent;
 
 const logError = (method, err) => {
 	logger.warn(`Invocation for ${method} failed with error: ${err.message}`);
 	logger.debug(err.stack);
 };
 
+const emitEngineEvents = async () => {
+	getNodeInfo().then(async nodeInfo => {
+		const { roundLength } = await getPosConstants();
+		const blockTime = (nodeInfo && nodeInfo.genesis && nodeInfo.genesis.blockTime) || 10;
+
+		setInterval(async () => {
+			const latestNodeInfo = await getNodeInfo(true);
+			const { syncing, height, genesisHeight } = latestNodeInfo;
+			const isNodeSyncComplete = !syncing;
+
+			if (isNodeSyncComplete) {
+				if (!lastBlockHeightEvent || height > lastBlockHeightEvent) {
+					lastBlockHeightEvent = height;
+					const newBlock = await getBlockByHeight(height);
+					Signals.get(EVENT_CHAIN_BLOCK_NEW).dispatch({ blockHeader: newBlock.header });
+
+					if ((height - genesisHeight) % roundLength === 1) {
+						const bftParameters = await getBFTParameters(height);
+						Signals.get(EVENT_CHAIN_VALIDATORS_CHANGE).dispatch({
+							nextValidators: bftParameters.validators,
+							certificateThreshold: bftParameters.certificateThreshold,
+							precommitThreshold: bftParameters.precommitThreshold,
+						});
+					}
+				}
+			}
+		}, Math.min(3, blockTime) * 1000);
+	});
+};
+
+// eslint-disable-next-line consistent-return
 const subscribeToAllRegisteredEvents = async () => {
+	if (config.isUseHttpApi) return emitEngineEvents();
+
 	// Reset eventsCounter first
 	eventsCounter = 0;
 
@@ -82,6 +123,8 @@ let isNodeSynced = false;
 let isGenesisBlockDownloaded = false;
 
 const ensureAPIClientLiveness = () => {
+	if (config.isUseHttpApi) return;
+
 	if (isNodeSynced && isGenesisBlockDownloaded) {
 		setInterval(() => {
 			if (typeof eventsCounter === 'number' && eventsCounter > 0) {

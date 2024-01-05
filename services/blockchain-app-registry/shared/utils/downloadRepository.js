@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const fetch = require('node-fetch');
 const path = require('path');
 const BluebirdPromise = require('bluebird');
 const { Octokit } = require('octokit');
@@ -53,7 +54,7 @@ const { FILENAME } = config;
 
 const logger = Logger();
 
-const octokit = new Octokit({ auth: config.gitHub.accessToken });
+const octokit = new Octokit({ auth: config.gitHub.accessToken, request: { fetch } });
 
 const GITHUB_FILE_STATUS = Object.freeze({
 	ADDED: 'added',
