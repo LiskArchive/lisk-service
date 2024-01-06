@@ -152,13 +152,8 @@ const ensureAPIClientLiveness = () => {
 					const subscribedApiClient = await getApiClient(eventSubscribeClientPoolIndex);
 					Signals.get('resetApiClient').dispatch(subscribedApiClient, true);
 					logger.info(
-						`Dispatched 'resetApiClient' signal to re-instantiate the API client ${eventSubscribeClientPoolIndex}.`,
+						`Dispatched 'resetApiClient' signal to re-instantiate the event subscription API client ${subscribedApiClient.poolIndex}.`,
 					);
-
-					const eventSubscriptionClientResetListener = () => {
-						eventSubscribeClientPoolIndex = null;
-					};
-					Signals.get('eventSubscriptionClientReset').add(eventSubscriptionClientResetListener);
 				}
 			}
 		}, config.clientConnVerifyInterval);
@@ -179,8 +174,13 @@ const genesisBlockDownloadedListener = () => {
 	ensureAPIClientLiveness();
 };
 
+const eventSubscriptionClientResetListener = () => {
+	eventSubscribeClientPoolIndex = null;
+};
+
 Signals.get('nodeIsSynced').add(nodeIsSyncedListener);
 Signals.get('genesisBlockDownloaded').add(genesisBlockDownloadedListener);
+Signals.get('eventSubscriptionClientReset').add(eventSubscriptionClientResetListener);
 
 module.exports = {
 	events,

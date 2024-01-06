@@ -50,15 +50,17 @@ const WS_SERVER_PING_THRESHOLD = WS_SERVER_PING_INTERVAL + WS_SERVER_PING_BUFFER
 // Caching
 const clientPool = [];
 const clientInstantiationStats = {
-	requests: 0,
+	attempts: 0,
 	success: 0,
 	fail: 0,
 };
+let requestCount = 0;
 
 const getApiClientStats = () => ({
 	...clientInstantiationStats,
 	currentPoolSize: clientPool.length,
 	expectedPoolSize: MAX_CLIENT_POOL_SIZE,
+	numEndpointInvocations: requestCount,
 });
 
 const checkIsClientAlive = client => client && client._channel && client._channel.isAlive;
@@ -89,7 +91,7 @@ const pingListener = apiClient => {
 };
 
 const instantiateNewClient = async () => {
-	clientInstantiationStats.requests++;
+	clientInstantiationStats.attempts++;
 	try {
 		const newClient = config.isUseLiskIPCClient
 			? await createIPCClient(config.liskAppDataPath)
@@ -185,6 +187,7 @@ const resetApiClient = async (apiClient, isEventSubscriptionClient = false) => {
 	}
 
 	// Do not attempt reset if last ping was within the acceptable threshold
+	// This is to avoid unnecessary socket creation
 	if (Date.now() - (apiClient.lastPingAt || 0) < WS_SERVER_PING_THRESHOLD) {
 		return;
 	}
@@ -232,17 +235,17 @@ const buildHTTPResponse = (endpoint, params, response) => {
 	throw new Error(errorMessage);
 };
 
-let id = 0;
 // eslint-disable-next-line consistent-return
 const invokeEndpoint = async (endpoint, params = {}, numRetries = NUM_REQUEST_RETRIES) => {
 	let retriesLeft = numRetries;
 	do {
 		try {
+			requestCount++;
 			if (config.isUseHttpApi) {
 				// HTTP API-based communication with the Lisk app node
 				const rpcRequest = {
 					jsonrpc: '2.0',
-					id: id++,
+					id: requestCount,
 					method: endpoint,
 					params,
 				};
