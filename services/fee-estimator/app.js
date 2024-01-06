@@ -32,6 +32,7 @@ const app = Microservice({
 	logger: config.log,
 	events: {
 		chainNewBlock: async payload => Signals.get('newBlock').dispatch(payload),
+		chainDeleteBlock: async payload => Signals.get('deleteBlock').dispatch(payload),
 	},
 	dependencies: ['connector'],
 });

@@ -87,11 +87,16 @@ const emitEngineEvents = async () => {
 };
 
 // eslint-disable-next-line consistent-return
-const subscribeToAllRegisteredEvents = async () => {
+const subscribeToAllRegisteredEvents = async (newClientPoolIndex = null) => {
 	if (config.isUseHttpApi) return emitEngineEvents();
 
 	// Active client subscription available, skip invocation
-	if (typeof eventSubscribeClientPoolIndex === 'number') return null;
+	if (
+		typeof eventSubscribeClientPoolIndex === 'number' &&
+		eventSubscribeClientPoolIndex !== newClientPoolIndex
+	) {
+		return null;
+	}
 
 	// Reset eventsCounter first
 	eventsCounter = 0;
@@ -149,10 +154,10 @@ const ensureAPIClientLiveness = () => {
 				}
 
 				if (typeof eventSubscribeClientPoolIndex === 'number') {
-					const subscribedApiClient = await getApiClient(eventSubscribeClientPoolIndex);
-					Signals.get('resetApiClient').dispatch(subscribedApiClient, true);
-					logger.info(
-						`Dispatched 'resetApiClient' signal to re-instantiate the event subscription API client ${subscribedApiClient.poolIndex}.`,
+					const apiClient = await getApiClient(eventSubscribeClientPoolIndex);
+					Signals.get('resetApiClient').dispatch(apiClient, true);
+					logger.debug(
+						`Dispatched 'resetApiClient' signal for the event subscription API client ${apiClient.poolIndex}.`,
 					);
 				}
 			}

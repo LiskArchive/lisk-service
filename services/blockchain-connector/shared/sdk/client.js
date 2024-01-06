@@ -84,6 +84,9 @@ const pingListener = apiClient => {
 			);
 			apiClient._channel.isAlive = false;
 			Signals.get('resetApiClient').dispatch(apiClient);
+			logger.debug(
+				`Dispatched 'resetApiClient' signal from pingListener for API client ${apiClient.poolIndex}.`,
+			);
 		}
 	}, WS_SERVER_PING_THRESHOLD);
 
@@ -174,7 +177,12 @@ const getApiClient = async poolIndex => {
 	return checkIsClientAlive(apiClient)
 		? apiClient
 		: (() => {
-				if (apiClient) Signals.get('resetApiClient').dispatch(apiClient);
+				if (apiClient) {
+					Signals.get('resetApiClient').dispatch(apiClient);
+					logger.debug(
+						`Dispatched 'resetApiClient' signal from getApiClient for API client ${apiClient.poolIndex}.`,
+					);
+				}
 				return waitForIt(getApiClient, 10);
 		  })();
 };
@@ -186,13 +194,14 @@ const resetApiClient = async (apiClient, isEventSubscriptionClient = false) => {
 		return;
 	}
 
+	const { poolIndex } = apiClient;
+
 	// Do not attempt reset if last ping was within the acceptable threshold
 	// This is to avoid unnecessary socket creation
 	if (Date.now() - (apiClient.lastPingAt || 0) < WS_SERVER_PING_THRESHOLD) {
+		logger.debug(`Not resetting apiClient ${poolIndex}. Received a late ping from the server.`);
 		return;
 	}
-
-	const { poolIndex } = apiClient;
 
 	if (isEventSubscriptionClient) {
 		logger.info(`Attempting to reset the eventSubscriptionClient: apiClient ${poolIndex}.`);
@@ -215,7 +224,7 @@ const resetApiClient = async (apiClient, isEventSubscriptionClient = false) => {
 
 	clientPool[poolIndex] = newApiClient;
 
-	if (newApiClient) Signals.get('newApiClient').dispatch();
+	if (newApiClient) Signals.get('newApiClient').dispatch(newApiClient.poolIndex);
 };
 Signals.get('resetApiClient').add(resetApiClient);
 
