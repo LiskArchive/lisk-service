@@ -140,6 +140,7 @@ const COMMAND = Object.freeze({
 	REGISTER_VALIDATOR: 'registerValidator',
 	STAKE: 'stake',
 	CHANGE_COMMISSION: 'changeCommission',
+	REPORT_MISBEHAVIOR: 'reportMisbehavior',
 	TRANSFER: 'transfer',
 	TRANSFER_CROSS_CHAIN: 'transferCrossChain',
 	REGISTER_SIDECHAIN: 'registerSidechain',

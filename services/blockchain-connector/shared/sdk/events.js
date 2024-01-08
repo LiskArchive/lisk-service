@@ -47,6 +47,7 @@ const events = [
 	EVENT_TX_POOL_TRANSACTION_NEW,
 ];
 
+let eventSubscribeClientPoolIndex;
 let eventsCounter;
 let lastBlockHeightEvent;
 
@@ -86,13 +87,24 @@ const emitEngineEvents = async () => {
 };
 
 // eslint-disable-next-line consistent-return
-const subscribeToAllRegisteredEvents = async () => {
+const subscribeToAllRegisteredEvents = async (newClientPoolIndex = null) => {
 	if (config.isUseHttpApi) return emitEngineEvents();
+
+	// Active client subscription available, skip invocation
+	if (
+		typeof eventSubscribeClientPoolIndex === 'number' &&
+		eventSubscribeClientPoolIndex !== newClientPoolIndex
+	) {
+		return null;
+	}
 
 	// Reset eventsCounter first
 	eventsCounter = 0;
 
 	const apiClient = await getApiClient();
+	eventSubscribeClientPoolIndex = apiClient.poolIndex;
+	logger.info(`Subscribing events with apiClient ${eventSubscribeClientPoolIndex}.`);
+
 	const registeredEvents = await getRegisteredEvents();
 	const allEvents = registeredEvents.concat(events);
 	allEvents.forEach(event => {
@@ -126,7 +138,7 @@ const ensureAPIClientLiveness = () => {
 	if (config.isUseHttpApi) return;
 
 	if (isNodeSynced && isGenesisBlockDownloaded) {
-		setInterval(() => {
+		setInterval(async () => {
 			if (typeof eventsCounter === 'number' && eventsCounter > 0) {
 				eventsCounter = 0;
 			} else {
@@ -141,8 +153,13 @@ const ensureAPIClientLiveness = () => {
 					eventsCounter = 0;
 				}
 
-				Signals.get('resetApiClient').dispatch();
-				logger.info("Dispatched 'resetApiClient' signal to re-instantiate the API client.");
+				if (typeof eventSubscribeClientPoolIndex === 'number') {
+					const apiClient = await getApiClient(eventSubscribeClientPoolIndex);
+					Signals.get('resetApiClient').dispatch(apiClient, true);
+					logger.debug(
+						`Dispatched 'resetApiClient' signal for the event subscription API client ${apiClient.poolIndex}.`,
+					);
+				}
 			}
 		}, config.clientConnVerifyInterval);
 	} else {
@@ -162,8 +179,13 @@ const genesisBlockDownloadedListener = () => {
 	ensureAPIClientLiveness();
 };
 
+const eventSubscriptionClientResetListener = () => {
+	eventSubscribeClientPoolIndex = null;
+};
+
 Signals.get('nodeIsSynced').add(nodeIsSyncedListener);
 Signals.get('genesisBlockDownloaded').add(genesisBlockDownloadedListener);
+Signals.get('eventSubscriptionClientReset').add(eventSubscriptionClientResetListener);
 
 module.exports = {
 	events,
