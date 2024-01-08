@@ -17,6 +17,7 @@ const BluebirdPromise = require('bluebird');
 const {
 	Logger,
 	Exceptions: { ValidationException },
+	Signals,
 } = require('lisk-service-framework');
 
 const logger = Logger();
@@ -26,44 +27,47 @@ const { normalizeTransaction } = require('./transactions');
 const { getIndexedAccountInfo } = require('../utils/account');
 const { requestConnector } = require('../../utils/request');
 const { getLisk32AddressFromPublicKey } = require('../../utils/account');
+const { TRANSACTION_STATUS } = require('../../constants');
 const { indexAccountPublicKey } = require('../../indexer/accountIndex');
 
 let pendingTransactionsList = [];
 
-const getPendingTransactionsFromCore = async () => {
+const formatPendingTransaction = async transaction => {
+	const normalizedTransaction = await normalizeTransaction(transaction);
+	const senderAddress = getLisk32AddressFromPublicKey(normalizedTransaction.senderPublicKey);
+	const account = await getIndexedAccountInfo({ address: senderAddress }, ['name']);
+
+	normalizedTransaction.sender = {
+		address: senderAddress,
+		publicKey: normalizedTransaction.senderPublicKey,
+		name: account.name || null,
+	};
+
+	if (normalizedTransaction.params.recipientAddress) {
+		const recipientAccount = await getIndexedAccountInfo(
+			{ address: normalizedTransaction.params.recipientAddress },
+			['publicKey', 'name'],
+		);
+
+		normalizedTransaction.meta = {
+			recipient: {
+				address: normalizedTransaction.params.recipientAddress,
+				publicKey: recipientAccount ? recipientAccount.publicKey : null,
+				name: recipientAccount ? recipientAccount.name : null,
+			},
+		};
+	}
+
+	indexAccountPublicKey(normalizedTransaction.senderPublicKey);
+	normalizedTransaction.executionStatus = TRANSACTION_STATUS.PENDING;
+	return normalizedTransaction;
+};
+
+const getPendingTransactionsFromNode = async () => {
 	const response = await requestConnector('getTransactionsFromPool');
 	const pendingTx = await BluebirdPromise.map(
 		response,
-		async transaction => {
-			const normalizedTransaction = await normalizeTransaction(transaction);
-			const senderAddress = getLisk32AddressFromPublicKey(normalizedTransaction.senderPublicKey);
-			const account = await getIndexedAccountInfo({ address: senderAddress }, ['name']);
-
-			normalizedTransaction.sender = {
-				address: senderAddress,
-				publicKey: normalizedTransaction.senderPublicKey,
-				name: account.name || null,
-			};
-
-			if (normalizedTransaction.params.recipientAddress) {
-				const recipientAccount = await getIndexedAccountInfo(
-					{ address: normalizedTransaction.params.recipientAddress },
-					['publicKey', 'name'],
-				);
-
-				normalizedTransaction.meta = {
-					recipient: {
-						address: normalizedTransaction.params.recipientAddress,
-						publicKey: recipientAccount ? recipientAccount.publicKey : null,
-						name: recipientAccount ? recipientAccount.name : null,
-					},
-				};
-			}
-
-			indexAccountPublicKey(normalizedTransaction.senderPublicKey);
-			normalizedTransaction.executionStatus = 'pending';
-			return normalizedTransaction;
-		},
+		async transaction => formatPendingTransaction(transaction),
 		{ concurrency: response.length },
 	);
 	return pendingTx;
@@ -71,7 +75,7 @@ const getPendingTransactionsFromCore = async () => {
 
 const loadAllPendingTransactions = async () => {
 	try {
-		pendingTransactionsList = await getPendingTransactionsFromCore();
+		pendingTransactionsList = await getPendingTransactionsFromNode();
 		logger.info(
 			`Updated pending transaction cache with ${pendingTransactionsList.length} transactions.`,
 		);
@@ -156,7 +160,7 @@ const getPendingTransactions = async params => {
 			.slice(offset, offset + limit)
 			.map(transaction => {
 				// Set the 'executionStatus'
-				transaction.executionStatus = 'pending';
+				transaction.executionStatus = TRANSACTION_STATUS.PENDING;
 				return transaction;
 			});
 
@@ -169,9 +173,16 @@ const getPendingTransactions = async params => {
 	return pendingTransactions;
 };
 
+const txPoolNewTransactionListener = async payload => {
+	const [transaction] = payload.data;
+	pendingTransactionsList.push(transaction);
+};
+Signals.get('txPoolNewTransaction').add(txPoolNewTransactionListener);
+
 module.exports = {
 	getPendingTransactions,
 	loadAllPendingTransactions,
+	formatPendingTransaction,
 
 	// For unit test
 	validateParams,

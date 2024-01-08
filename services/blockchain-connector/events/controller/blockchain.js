@@ -17,7 +17,10 @@ const { Logger, Signals } = require('lisk-service-framework');
 const { MODULE_NAME_POS } = require('../../shared/sdk/constants/names');
 
 const { getBlockByID } = require('../../shared/sdk/endpoints');
-const { formatBlock: formatBlockFromFormatter } = require('../../shared/sdk/formatter');
+const {
+	formatBlock: formatBlockFromFormatter,
+	formatTransaction,
+} = require('../../shared/sdk/formatter');
 
 const EMPTY_TREE_ROOT_HASH = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
 const logger = Logger();
@@ -43,7 +46,11 @@ const appNetworkEventController = async cb => {
 };
 
 const txpoolNewTransactionController = async cb => {
-	const txpoolNewTransactionListener = async payload => cb(payload);
+	const txpoolNewTransactionListener = async payload =>
+		cb({
+			...payload,
+			transaction: formatTransaction(payload.transaction),
+		});
 	Signals.get('txpoolNewTransaction').add(txpoolNewTransactionListener);
 };
 

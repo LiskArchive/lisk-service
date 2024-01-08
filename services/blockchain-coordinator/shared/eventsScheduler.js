@@ -41,7 +41,13 @@ const scheduleDeleteBlock = async payload => {
 const scheduleUpdatesOnNewRound = async payload => {
 	logger.debug('Scheduling updates on new round.');
 	await eventMessageQueue.add({ ...payload, isNewRound: true });
-	logger.debug('Finished scheduling updates on new round}.');
+	logger.debug('Finished scheduling updates on new round.');
+};
+
+const scheduleUpdatesOnNewTransaction = async payload => {
+	logger.debug('Scheduling updates on new transaction in the pool.');
+	await eventMessageQueue.add({ ...payload, isTxPoolNewTransaction: true });
+	logger.debug('Finished scheduling updates on new transaction in the pool.');
 };
 
 const initEventsScheduler = async () => {
@@ -53,6 +59,9 @@ const initEventsScheduler = async () => {
 
 	const newRoundListener = async payload => scheduleUpdatesOnNewRound(payload);
 	Signals.get('newRound').add(newRoundListener);
+
+	const txpoolNewTransactionListener = async payload => scheduleUpdatesOnNewTransaction(payload);
+	Signals.get('txpoolNewTransaction').add(txpoolNewTransactionListener);
 };
 
 module.exports = {

@@ -36,6 +36,7 @@ const {
 	reloadValidatorCache,
 	getGenerators,
 	getNumberOfGenerators,
+	formatPendingTransaction,
 } = require('./dataService');
 const { accountAddrUpdateQueue } = require('./indexer/accountIndex');
 
@@ -117,6 +118,15 @@ const newRoundProcessor = async () => {
 	logger.info(`Finished performing all updates on new round.`);
 };
 
+const txPoolNewTransactionProcessor = async transaction => {
+	logger.debug(`New transaction (${transaction.id}) received.`);
+	const formattedTransaction = await formatPendingTransaction(transaction);
+	Signals.get('txPoolNewTransaction').dispatch({
+		data: [formattedTransaction],
+		meta: { count: 1, total: 1, offset: 0 },
+	});
+};
+
 const initMessageProcessors = async () => {
 	logger.info(`Registering job processor for ${accountMessageQueue.name} message queue.`);
 	accountMessageQueue.process(async job => {
@@ -138,7 +148,7 @@ const initMessageProcessors = async () => {
 
 	eventMessageQueue.process(async job => {
 		logger.debug('Subscribed to the events from coordinator.');
-		const { isNewBlock, isDeleteBlock, isNewRound } = job.data;
+		const { isNewBlock, isDeleteBlock, isNewRound, isTxPoolNewTransaction } = job.data;
 
 		if (isNewBlock) {
 			const { block } = job.data;
@@ -154,6 +164,9 @@ const initMessageProcessors = async () => {
 			}
 		} else if (isNewRound) {
 			await newRoundProcessor();
+		} else if (isTxPoolNewTransaction) {
+			const { transaction } = job.data;
+			await txPoolNewTransactionProcessor(transaction);
 		}
 	});
 

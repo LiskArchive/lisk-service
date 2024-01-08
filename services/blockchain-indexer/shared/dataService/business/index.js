@@ -35,7 +35,11 @@ const {
 	formatTransactionsInBlock,
 } = require('./transactions');
 
-const { getPendingTransactions, loadAllPendingTransactions } = require('./pendingTransactions');
+const {
+	getPendingTransactions,
+	loadAllPendingTransactions,
+	formatPendingTransaction,
+} = require('./pendingTransactions');
 
 const {
 	getBlockchainApps,
@@ -127,6 +131,7 @@ module.exports = {
 	normalizeTransaction,
 	getPendingTransactions,
 	loadAllPendingTransactions,
+	formatPendingTransaction,
 	postTransactions,
 	dryRunTransactions,
 	estimateTransactionFees,
