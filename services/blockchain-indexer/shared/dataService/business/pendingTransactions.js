@@ -17,6 +17,7 @@ const BluebirdPromise = require('bluebird');
 const {
 	Logger,
 	Exceptions: { ValidationException },
+	Signals,
 } = require('lisk-service-framework');
 
 const logger = Logger();
@@ -26,6 +27,7 @@ const { normalizeTransaction } = require('./transactions');
 const { getIndexedAccountInfo } = require('../utils/account');
 const { requestConnector } = require('../../utils/request');
 const { getLisk32AddressFromPublicKey } = require('../../utils/account');
+const { TRANSACTION_STATUS } = require('../../constants');
 const { indexAccountPublicKey } = require('../../indexer/accountIndex');
 
 let pendingTransactionsList = [];
@@ -57,18 +59,15 @@ const formatPendingTransaction = async transaction => {
 	}
 
 	indexAccountPublicKey(normalizedTransaction.senderPublicKey);
-	normalizedTransaction.executionStatus = 'pending';
+	normalizedTransaction.executionStatus = TRANSACTION_STATUS.PENDING;
 	return normalizedTransaction;
 };
 
-const getPendingTransactionsFromCore = async () => {
+const getPendingTransactionsFromNode = async () => {
 	const response = await requestConnector('getTransactionsFromPool');
 	const pendingTx = await BluebirdPromise.map(
 		response,
-		async transaction => {
-			const formattedTransaction = await formatPendingTransaction(transaction);
-			return formattedTransaction;
-		},
+		async transaction => formatPendingTransaction(transaction),
 		{ concurrency: response.length },
 	);
 	return pendingTx;
@@ -76,7 +75,7 @@ const getPendingTransactionsFromCore = async () => {
 
 const loadAllPendingTransactions = async () => {
 	try {
-		pendingTransactionsList = await getPendingTransactionsFromCore();
+		pendingTransactionsList = await getPendingTransactionsFromNode();
 		logger.info(
 			`Updated pending transaction cache with ${pendingTransactionsList.length} transactions.`,
 		);
@@ -161,7 +160,7 @@ const getPendingTransactions = async params => {
 			.slice(offset, offset + limit)
 			.map(transaction => {
 				// Set the 'executionStatus'
-				transaction.executionStatus = 'pending';
+				transaction.executionStatus = TRANSACTION_STATUS.PENDING;
 				return transaction;
 			});
 
@@ -173,6 +172,12 @@ const getPendingTransactions = async params => {
 	}
 	return pendingTransactions;
 };
+
+const txPoolNewTransactionListener = async payload => {
+	const [transaction] = payload.data;
+	pendingTransactionsList.push(transaction);
+};
+Signals.get('txPoolNewTransaction').add(txPoolNewTransactionListener);
 
 module.exports = {
 	getPendingTransactions,

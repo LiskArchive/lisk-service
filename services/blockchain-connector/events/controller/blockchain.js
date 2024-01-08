@@ -48,6 +48,7 @@ const appNetworkEventController = async cb => {
 const txpoolNewTransactionController = async cb => {
 	const txpoolNewTransactionListener = async payload =>
 		cb({
+			...payload,
 			transaction: formatTransaction(payload.transaction),
 		});
 	Signals.get('txpoolNewTransaction').add(txpoolNewTransactionListener);
