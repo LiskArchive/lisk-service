@@ -113,10 +113,10 @@ const downloadFile = (url, dirPath) =>
 	});
 
 const verifyFileChecksum = async (filePath, checksumPath) => {
-	// Validate existance of both files
+	// Validate the existence of both the files
 	if (!(await exists(filePath)) || !(await exists(checksumPath))) {
 		logger.info(
-			`Checksum verification failed. One of the following files does not exist:\nfilePath:${filePath}\nchecksumPath:${checksumPath}`,
+			`Checksum verification failed. One of the following files does not exist:\nfilePath: ${filePath}\nchecksumPath: ${checksumPath}`,
 		);
 		return false;
 	}
@@ -141,11 +141,12 @@ const verifyFileChecksum = async (filePath, checksumPath) => {
 	const fileChecksum = fileHash.toString('hex');
 	if (fileChecksum !== expectedChecksum) {
 		logger.info(
-			`Checksum verification failed for file:${filePath}\nExpected: ${expectedChecksum}, Actual: ${fileChecksum}`,
+			`Checksum verification failed for file: ${filePath}\nExpected: ${expectedChecksum}, Actual: ${fileChecksum}`,
 		);
 		return false;
 	}
 
+	logger.info(`Checksum verification successful for file: ${filePath}`);
 	return true;
 };
 

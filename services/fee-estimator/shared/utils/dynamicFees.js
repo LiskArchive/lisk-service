@@ -17,8 +17,8 @@ const BluebirdPromise = require('bluebird');
 
 const { CacheRedis, Logger } = require('lisk-service-framework');
 
+const { getGenesisHeight, getBlockByHeight } = require('./chain');
 const { getEstimateFeePerByteForBlock } = require('./dynamicFeesLIP');
-const { requestConnector } = require('./request');
 
 const config = require('../../config');
 
@@ -34,11 +34,11 @@ const cacheRedisFees = CacheRedis('fees', config.endpoints.cache);
 const logger = Logger();
 
 const getEstimateFeePerByteForBatch = async (fromHeight, toHeight, cacheKey) => {
-	const genesisHeight = await requestConnector('getGenesisHeight');
+	const genesisHeight = await getGenesisHeight();
 	const { defaultStartBlockHeight } = config.feeEstimates;
 
 	// Check if the starting height is permitted by config or adjust acc.
-	// Use incrementation to skip the genesis block - it is not needed
+	// Skip the genesis block for calculation - it is not needed
 	fromHeight = Math.max(
 		...[defaultStartBlockHeight, genesisHeight + 1, fromHeight].filter(n => !Number.isNaN(n)),
 	);
@@ -70,9 +70,9 @@ const getEstimateFeePerByteForBatch = async (fromHeight, toHeight, cacheKey) => 
 		blockBatch.data = await BluebirdPromise.map(
 			range(finalEMABatchSize),
 			async i => {
-				const { header, transactions } = await requestConnector('getBlockByHeight', {
-					height: prevFeeEstPerByte.blockHeight + 1 - i,
-				});
+				const { header, transactions } = await getBlockByHeight(
+					prevFeeEstPerByte.blockHeight + 1 - i,
+				);
 				return { ...header, transactions };
 			},
 			{ concurrency: 50 },

@@ -16,20 +16,18 @@
 const util = require('util');
 const { CacheRedis, Logger, Signals } = require('lisk-service-framework');
 
-const { requestConnector } = require('./utils/request');
-
 const config = require('../config');
 
 const { getFeeConstants } = require('./feeConstants');
-
+const { getLatestBlock } = require('./utils/chain');
 const { checkAndProcessExecution, isFeeCalculationRunningInMode } = require('./utils/dynamicFees');
 
 const cacheRedisFees = CacheRedis('fees', config.endpoints.cache);
 
 const logger = Logger();
 
-const calculateEstimateFeePerByteFull = async () => {
-	const { header: latestBlock } = await requestConnector('getLastBlock');
+const calculateEstimateFeePerByteFull = async newBlock => {
+	const { header: latestBlock } = newBlock;
 	const fromHeight = config.feeEstimates.defaultStartBlockHeight;
 	const toHeight = latestBlock.height;
 
@@ -50,9 +48,9 @@ const calculateEstimateFeePerByteFull = async () => {
 	return cachedFeeEstPerByteFull;
 };
 
-const calculateEstimateFeePerByteQuick = async () => {
+const calculateEstimateFeePerByteQuick = async newBlock => {
 	// For the cold start scenario
-	const { header: latestBlock } = await requestConnector('getLastBlock');
+	const { header: latestBlock } = newBlock;
 	const batchSize = config.feeEstimates.coldStartBatchSize;
 	const toHeight = latestBlock.height;
 	const fromHeight = toHeight - batchSize;
@@ -81,7 +79,7 @@ const getEstimateFeePerByte = async () => {
 		};
 	}
 
-	const { header: latestBlock } = await requestConnector('getLastBlock');
+	const { header: latestBlock } = await getLatestBlock();
 	const validate = (feeEstPerByte, allowedLag = 0) =>
 		feeEstPerByte &&
 		['low', 'med', 'high', 'updated', 'blockHeight', 'blockID'].every(key =>
@@ -111,15 +109,15 @@ const getEstimateFeePerByte = async () => {
 	};
 };
 
-const newBlockListener = async () => {
+const newBlockListener = async newBlock => {
 	try {
 		if (config.feeEstimates.fullAlgorithmEnabled) {
 			logger.debug('Initiate the dynamic fee estimates computation (full computation).');
-			calculateEstimateFeePerByteFull();
+			calculateEstimateFeePerByteFull(newBlock);
 		}
 		if (config.feeEstimates.quickAlgorithmEnabled) {
 			logger.debug('Initiate the dynamic fee estimates computation (quick algorithm).');
-			const feeEstimate = await calculateEstimateFeePerByteQuick();
+			const feeEstimate = await calculateEstimateFeePerByteQuick(newBlock);
 			logger.debug(
 				`============== 'newFeeEstimate' signal: ${Signals.get('newFeeEstimate')} ==============.`,
 			);
