@@ -16,6 +16,7 @@
 const BluebirdPromise = require('bluebird');
 const Transactions = require('@liskhq/lisk-transactions');
 
+const { codec } = require('@liskhq/lisk-codec');
 const {
 	CacheRedis,
 	Logger,
@@ -28,6 +29,7 @@ const {
 const business = require('../business');
 const config = require('../../../config');
 
+const { getSchemas } = require('../schemas');
 const { getLastBlock } = require('../blocks');
 const { isSubstringInArray } = require('../../utils/array');
 const { getHexAddress } = require('../utils/account');
@@ -265,7 +267,10 @@ const updateValidatorListEveryBlock = () => {
 		const [block] = data.data;
 		try {
 			if (block && block.transactions && Array.isArray(block.transactions)) {
-				block.transactions.forEach(tx => {
+				let includesMisbehaviorTx = false;
+
+				// eslint-disable-next-line no-restricted-syntax
+				for (const tx of block.transactions) {
 					if (tx.module === MODULE.POS) {
 						if ([COMMAND.REGISTER_VALIDATOR, COMMAND.CHANGE_COMMISSION].includes(tx.command)) {
 							updatedValidatorAddresses.push(getLisk32AddressFromPublicKey(tx.senderPublicKey));
@@ -273,9 +278,18 @@ const updateValidatorListEveryBlock = () => {
 							tx.params.stakes.forEach(stake =>
 								updatedValidatorAddresses.push(stake.validatorAddress),
 							);
+						} else if (tx.command === COMMAND.REPORT_MISBEHAVIOR) {
+							includesMisbehaviorTx = true;
+							const { data: schemas } = await getSchemas();
+							const blockHeaderSchema = schemas.header.schema;
+							const header = codec.decodeJSON(
+								blockHeaderSchema,
+								Buffer.from(tx.params.header1, 'hex'),
+							);
+							updatedValidatorAddresses.push(header.generatorAddress);
 						}
 					}
-				});
+				}
 
 				if (updatedValidatorAddresses.length) {
 					const updatedValidatorAccounts = await business.getPosValidators({
@@ -304,6 +318,9 @@ const updateValidatorListEveryBlock = () => {
 
 					// Rank is impacted only when a validator gets (un-)voted
 					await computeValidatorRank();
+
+					// Validator status changes only when gets punished/banned
+					if (includesMisbehaviorTx) await computeValidatorStatus();
 				}
 
 				// Update validator cache with generatedBlocks and rewards
