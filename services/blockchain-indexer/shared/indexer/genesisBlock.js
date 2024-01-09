@@ -72,7 +72,7 @@ const indexTokenModuleAssets = async dbTrx => {
 	for (const userInfo of userSubStoreInfos) {
 		const { address, availableBalance: balance, tokenID } = userInfo;
 
-		// Add entry to index the genesis account's balance
+		// Add entry to index the genesis account balances
 		const accountBalanceEntry = { address, tokenID, balance };
 		genesisAccountBalances.push(accountBalanceEntry);
 

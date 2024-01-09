@@ -16,6 +16,7 @@
 const { invokeEndpoint } = require('./client');
 const { getNodeInfo } = require('./endpoints_1');
 
+let isThisMainchain;
 let mainchainID;
 let registrationFee;
 
@@ -36,6 +37,14 @@ const getMainchainID = async () => {
 	return mainchainID;
 };
 
+const isMainchain = async () => {
+	if (typeof isThisMainchain !== 'boolean') {
+		const { chainID } = await getNodeInfo();
+		isThisMainchain = chainID === (await getMainchainID());
+	}
+	return isThisMainchain;
+};
+
 const getChannel = async chainID => {
 	const channelInfo = await invokeEndpoint('interoperability_getChannel', { chainID });
 	return channelInfo;
@@ -51,6 +60,7 @@ const getRegistrationFee = async () => {
 module.exports = {
 	getChainAccount,
 	getMainchainID,
+	isMainchain,
 	getChannel,
 	getRegistrationFee,
 };

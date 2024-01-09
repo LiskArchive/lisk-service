@@ -14,6 +14,7 @@
  *
  */
 const { invokeEndpoint } = require('./client');
+const { isMainchain } = require('./interoperability');
 
 let escrowedAmounts;
 let supportedTokens;
@@ -68,7 +69,7 @@ const hasEscrowAccount = async ({ tokenID, escrowChainID }) =>
 
 const updateTokenInfo = async () => {
 	escrowedAmounts = await getEscrowedAmounts(true);
-	supportedTokens = await getSupportedTokens(true);
+	if (!(await isMainchain()) || !supportedTokens) supportedTokens = await getSupportedTokens(true);
 	totalSupply = await getTotalSupply(true);
 };
 
