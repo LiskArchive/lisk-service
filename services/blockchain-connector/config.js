@@ -127,7 +127,7 @@ config.apiClient = {
 
 // Every n milliseconds, verify if client connection is alive
 config.clientConnVerifyInterval =
-	Number(process.env.CLIENT_CONNECTION_VERIFY_INTERVAL) || 30 * 1000; // in millisecs
+	Number(process.env.CLIENT_CONNECTION_VERIFY_INTERVAL) || 60 * 1000; // in millisecs
 
 // Backdoor config to restart the connector if the stall issue pops up - disabled by default
 const exitDelay = Number(process.env.CONNECTOR_EXIT_DELAY_IN_HOURS); // in hours

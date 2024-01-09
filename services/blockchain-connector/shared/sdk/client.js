@@ -191,6 +191,7 @@ const resetApiClient = async (apiClient, isEventSubscriptionClient = false) => {
 	// Replace the dead API client in the pool
 	if (!isObject(apiClient)) {
 		logger.warn(`apiClient is ${JSON.stringify(apiClient)}. Cannot reset.`);
+		if (isEventSubscriptionClient) Signals.get('eventSubscriptionClientReset').dispatch();
 		return;
 	}
 
