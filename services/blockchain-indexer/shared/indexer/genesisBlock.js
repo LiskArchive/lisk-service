@@ -48,6 +48,7 @@ const getAccountBalancesTable = () => getTableInstance(accountBalancesTableSchem
 const getCommissionsTable = () => getTableInstance(commissionsTableSchema, MYSQL_ENDPOINT);
 
 let intervalTimeout;
+const genesisAccountBalances = [];
 
 const getGenesisAssetIntervalTimeout = () => intervalTimeout;
 
@@ -67,14 +68,13 @@ const indexTokenModuleAssets = async dbTrx => {
 	const userSubStoreInfos = tokenModuleData[MODULE_SUB_STORE.TOKEN.USER];
 	const tokenIDLockedAmountChangeMap = {};
 
-	const accountBalancesTable = await getAccountBalancesTable();
 	// eslint-disable-next-line no-restricted-syntax
 	for (const userInfo of userSubStoreInfos) {
 		const { address, availableBalance: balance, tokenID } = userInfo;
 
-		// Index account balance
+		// Add entry to index the genesis account's balance
 		const accountBalanceEntry = { address, tokenID, balance };
-		await accountBalancesTable.upsert(accountBalanceEntry, dbTrx);
+		genesisAccountBalances.push(accountBalanceEntry);
 
 		// eslint-disable-next-line no-restricted-syntax
 		for (const lockedBalance of userInfo.lockedBalances) {
@@ -209,6 +209,43 @@ const indexGenesisBlockAssets = async dbTrx => {
 	clearInterval(intervalTimeout);
 	logger.info('Finished indexing all the genesis assets.');
 };
+
+let indexedGenesisAccountBalances;
+const interval = setInterval(async () => {
+	try {
+		if (genesisAccountBalances.length) {
+			if (indexedGenesisAccountBalances === false) return;
+		} else {
+			if (indexedGenesisAccountBalances === true) clearInterval(interval);
+			return;
+		}
+		indexedGenesisAccountBalances = false;
+
+		logger.info('Started indexing genesis account balances.');
+		let numEntries = 0;
+		const accountBalancesTable = await getAccountBalancesTable();
+		while (genesisAccountBalances.length) {
+			const accountBalanceEntry = genesisAccountBalances.shift();
+			await accountBalancesTable
+				.upsert(accountBalanceEntry)
+				.then(() => {
+					numEntries++;
+				})
+				.catch(err => {
+					numEntries--;
+					genesisAccountBalances.push(accountBalanceEntry);
+					logger.warn(
+						`Updating account balance for ${accountBalanceEntry.address} failed. Will retry.\nError: ${err.message}`,
+					);
+				});
+		}
+
+		indexedGenesisAccountBalances = true;
+		logger.info(`Finished indexing genesis account balances. Added ${numEntries} entries.`);
+	} catch (_) {
+		// No actions required
+	}
+}, 5 * 60 * 1000);
 
 module.exports = {
 	getGenesisAssetIntervalTimeout,
