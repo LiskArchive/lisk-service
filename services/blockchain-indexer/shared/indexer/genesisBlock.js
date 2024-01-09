@@ -19,20 +19,18 @@ const {
 	DB: {
 		MySQL: { getTableInstance },
 	},
-	Signals,
 	Logger,
 } = require('lisk-service-framework');
 
 const { MODULE, MODULE_SUB_STORE, getGenesisHeight } = require('../constants');
 const { updateTotalStake, updateTotalSelfStake } = require('./transactionProcessor/pos/stake');
-const { updateAccountBalances } = require('./accountBalanceIndex');
 const { indexAccountPublicKey, triggerAccountUpdates } = require('./accountIndex');
 const { updateTotalLockedAmounts } = require('./utils/blockchainIndex');
-const { getIndexStats } = require('./indexStatus');
 
 const requestAll = require('../utils/requestAll');
 const config = require('../../config');
 const accountsTableSchema = require('../database/schema/accounts');
+const accountBalancesTableSchema = require('../database/schema/accountBalances');
 const stakesTableSchema = require('../database/schema/stakes');
 const commissionsTableSchema = require('../database/schema/commissions');
 
@@ -46,11 +44,10 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getStakesTable = () => getTableInstance(stakesTableSchema, MYSQL_ENDPOINT);
 const getAccountsTable = () => getTableInstance(accountsTableSchema, MYSQL_ENDPOINT);
+const getAccountBalancesTable = () => getTableInstance(accountBalancesTableSchema, MYSQL_ENDPOINT);
 const getCommissionsTable = () => getTableInstance(commissionsTableSchema, MYSQL_ENDPOINT);
 
-const allAccountsAddresses = [];
 let intervalTimeout;
-let isTokensBalanceIndexed = false;
 
 const getGenesisAssetIntervalTimeout = () => intervalTimeout;
 
@@ -70,9 +67,14 @@ const indexTokenModuleAssets = async dbTrx => {
 	const userSubStoreInfos = tokenModuleData[MODULE_SUB_STORE.TOKEN.USER];
 	const tokenIDLockedAmountChangeMap = {};
 
+	const accountBalancesTable = await getAccountBalancesTable();
 	// eslint-disable-next-line no-restricted-syntax
 	for (const userInfo of userSubStoreInfos) {
-		const { tokenID } = userInfo;
+		const { address, availableBalance: balance, tokenID } = userInfo;
+
+		// Index account balance
+		const accountBalanceEntry = { address, tokenID, balance };
+		await accountBalancesTable.upsert(accountBalanceEntry, dbTrx);
 
 		// eslint-disable-next-line no-restricted-syntax
 		for (const lockedBalance of userInfo.lockedBalances) {
@@ -81,9 +83,6 @@ const indexTokenModuleAssets = async dbTrx => {
 			}
 			tokenIDLockedAmountChangeMap[tokenID] += BigInt(lockedBalance.amount);
 		}
-
-		// Index account balance
-		allAccountsAddresses.push(userInfo.address);
 	}
 
 	await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
@@ -95,6 +94,7 @@ const isGeneratorKeyValid = generatorKey => generatorKey !== INVALID_ED25519_KEY
 const indexPosValidatorsInfo = async (numValidators, dbTrx) => {
 	logger.debug('Starting to index the validators information from the genesis PoS module assets.');
 	if (numValidators > 0) {
+		const accountsTable = await getAccountsTable();
 		const commissionsTable = await getCommissionsTable();
 
 		const posModuleData = await requestAll(
@@ -117,7 +117,6 @@ const indexPosValidatorsInfo = async (numValidators, dbTrx) => {
 						publicKey: validator.generatorKey,
 					};
 
-					const accountsTable = await getAccountsTable();
 					await accountsTable
 						.upsert(account)
 						.catch(() => indexAccountPublicKey(validator.generatorKey));
@@ -210,28 +209,6 @@ const indexGenesisBlockAssets = async dbTrx => {
 	clearInterval(intervalTimeout);
 	logger.info('Finished indexing all the genesis assets.');
 };
-
-const indexTokenBalances = async () => {
-	// eslint-disable-next-line no-restricted-syntax
-	for (const address of allAccountsAddresses) {
-		await updateAccountBalances(address).catch(err => {
-			const errorMessage = `Updating account balance for ${address} failed. Retrying.\nError: ${err.message}`;
-			logger.warn(errorMessage);
-			logger.debug(err.stack);
-
-			allAccountsAddresses.push(address);
-		});
-	}
-	isTokensBalanceIndexed = true;
-};
-
-const indexTokenBalancesListener = async () => {
-	const indexStatus = await getIndexStats();
-	if (Number(indexStatus.percentage) === 100 && !isTokensBalanceIndexed) {
-		indexTokenBalances();
-	}
-};
-Signals.get('chainNewBlock').add(indexTokenBalancesListener);
 
 module.exports = {
 	getGenesisAssetIntervalTimeout,
