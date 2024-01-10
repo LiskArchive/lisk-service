@@ -139,27 +139,34 @@ const ensureAPIClientLiveness = () => {
 
 	if (isNodeSynced && isGenesisBlockDownloaded) {
 		setInterval(async () => {
-			if (typeof eventsCounter === 'number' && eventsCounter > 0) {
-				eventsCounter = 0;
-			} else {
-				if (typeof eventsCounter !== 'number') {
-					logger.warn(
-						`eventsCounter ended up with non-numeric value: ${JSON.stringify(
-							eventsCounter,
-							null,
-							'\t',
-						)}.`,
-					);
+			try {
+				if (typeof eventsCounter === 'number' && eventsCounter > 0) {
 					eventsCounter = 0;
-				}
+				} else {
+					if (typeof eventsCounter !== 'number') {
+						logger.warn(
+							`eventsCounter ended up with non-numeric value: ${JSON.stringify(
+								eventsCounter,
+								null,
+								'\t',
+							)}.`,
+						);
+						eventsCounter = 0;
+					}
 
-				if (typeof eventSubscribeClientPoolIndex === 'number') {
-					const apiClient = await getApiClient(eventSubscribeClientPoolIndex);
-					Signals.get('resetApiClient').dispatch(apiClient, true);
-					logger.debug(
-						`Dispatched 'resetApiClient' signal for the event subscription API client ${apiClient.poolIndex}.`,
-					);
+					if (typeof eventSubscribeClientPoolIndex === 'number') {
+						const apiClient = await getApiClient(eventSubscribeClientPoolIndex);
+						Signals.get('resetApiClient').dispatch(apiClient, true);
+						logger.debug(
+							`Dispatched 'resetApiClient' signal for the event subscription API client ${apiClient.poolIndex}.`,
+						);
+					} else {
+						logger.debug('Triggered subscribeToAllRegisteredEvents from ensureAPIClientLiveness.');
+						await subscribeToAllRegisteredEvents();
+					}
 				}
+			} catch (_) {
+				// No action required
 			}
 		}, config.clientConnVerifyInterval);
 	} else {
@@ -170,11 +177,13 @@ const ensureAPIClientLiveness = () => {
 };
 
 const nodeIsSyncedListener = () => {
+	logger.debug('Node is now synced with the network.');
 	isNodeSynced = true;
 	ensureAPIClientLiveness();
 };
 
 const genesisBlockDownloadedListener = () => {
+	logger.debug('Genesis block is now downloaded.');
 	isGenesisBlockDownloaded = true;
 	ensureAPIClientLiveness();
 };

@@ -46,7 +46,13 @@ const getAllPosValidators = async isForceReload => {
 	return allPosValidators;
 };
 
-Signals.get('reloadAllPosValidators').add(() => getAllPosValidators(true));
+Signals.get('reloadAllPosValidators').add(() =>
+	getAllPosValidators(true).catch(err => {
+		logger.warn(
+			`Could not force reload the PoS validators list. Will retry again later.\nError: ${err.message}`,
+		);
+	}),
+);
 
 const getPosValidatorsByStake = async limit => {
 	const validators = await invokeEndpoint('pos_getValidatorsByStake', { limit });

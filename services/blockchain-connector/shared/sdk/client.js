@@ -18,14 +18,13 @@ const {
 	Signals,
 	HTTP,
 	Exceptions: { TimeoutException },
-	Utils: { isObject, waitForIt },
+	Utils: { delay, isObject, waitForIt },
 } = require('lisk-service-framework');
 const { createWSClient, createIPCClient } = require('@liskhq/lisk-api-client');
 
 const crypto = require('crypto');
 
 const config = require('../../config');
-const delay = require('../utils/delay');
 
 const logger = Logger();
 
@@ -56,14 +55,14 @@ const clientInstantiationStats = {
 };
 let requestCount = 0;
 
+const checkIsClientAlive = client => client && client._channel && client._channel.isAlive;
+
 const getApiClientStats = () => ({
 	...clientInstantiationStats,
-	currentPoolSize: clientPool.length,
+	activePoolSize: clientPool.filter(client => checkIsClientAlive(client)).length,
 	expectedPoolSize: MAX_CLIENT_POOL_SIZE,
 	numEndpointInvocations: requestCount,
 });
-
-const checkIsClientAlive = client => client && client._channel && client._channel.isAlive;
 
 const pingListener = apiClient => {
 	if (!isObject(apiClient)) {
@@ -121,25 +120,45 @@ const instantiateNewClient = async () => {
 	}
 };
 
+let isReInstantiateIntervalRunning = false;
 const initClientPool = async poolSize => {
 	// Set the intervals only at application init
 	if (clientPool.length === 0) {
 		setInterval(() => {
-			logger.info(`API client instantiation stats: ${JSON.stringify(getApiClientStats())}`);
+			const stats = getApiClientStats();
+			logger.info(`API client instantiation stats: ${JSON.stringify(stats)}`);
+			if (stats.activePoolSize < stats.expectedPoolSize) {
+				logger.warn(
+					'activePoolSize should catch up with the expectedPoolSize, once the node is under less stress.',
+				);
+			}
 		}, 5 * 60 * 1000);
 
-		setInterval(() => {
-			clientPool.forEach(async (apiClient, index) => {
-				if (isObject(apiClient)) return;
+		// Re-instantiate interval: Replaces nulls in clientPool with new active apiClients
+		// isReInstantiateIntervalRunning is the safety check to skip callback execution if the previous one is already in-progress
+		setInterval(async () => {
+			if (isReInstantiateIntervalRunning) return;
+			isReInstantiateIntervalRunning = true;
+
+			for (let index = 0; index < clientPool.length; index++) {
+				const apiClient = clientPool[index];
+
+				// eslint-disable-next-line no-continue
+				if (isObject(apiClient)) continue;
 
 				// Re-instantiate when null
-				clientPool[index] = await instantiateNewClient()
+				const newApiClient = await instantiateNewClient()
 					.then(client => {
 						client.poolIndex = index;
 						return client;
 					})
-					.catch(() => null);
-			});
+					// Delay to lower stress on the node
+					.catch(() => delay(Math.ceil(2 * WS_SERVER_PING_INTERVAL), null));
+				clientPool[index] = newApiClient;
+				if (newApiClient) Signals.get('newApiClient').dispatch(newApiClient.poolIndex);
+			}
+
+			isReInstantiateIntervalRunning = false;
 		}, WS_SERVER_PING_INTERVAL);
 	}
 
@@ -183,7 +202,7 @@ const getApiClient = async poolIndex => {
 						`Dispatched 'resetApiClient' signal from getApiClient for API client ${apiClient.poolIndex}.`,
 					);
 				}
-				return waitForIt(getApiClient, 10);
+				return waitForIt(getApiClient, Math.ceil(WS_SERVER_PING_INTERVAL / MAX_CLIENT_POOL_SIZE));
 		  })();
 };
 
@@ -191,6 +210,7 @@ const resetApiClient = async (apiClient, isEventSubscriptionClient = false) => {
 	// Replace the dead API client in the pool
 	if (!isObject(apiClient)) {
 		logger.warn(`apiClient is ${JSON.stringify(apiClient)}. Cannot reset.`);
+		if (isEventSubscriptionClient) Signals.get('eventSubscriptionClientReset').dispatch();
 		return;
 	}
 
