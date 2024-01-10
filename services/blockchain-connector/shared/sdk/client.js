@@ -18,14 +18,13 @@ const {
 	Signals,
 	HTTP,
 	Exceptions: { TimeoutException },
-	Utils: { isObject, waitForIt },
+	Utils: { delay, isObject, waitForIt },
 } = require('lisk-service-framework');
 const { createWSClient, createIPCClient } = require('@liskhq/lisk-api-client');
 
 const crypto = require('crypto');
 
 const config = require('../../config');
-const delay = require('../utils/delay');
 
 const logger = Logger();
 
@@ -121,6 +120,7 @@ const instantiateNewClient = async () => {
 	}
 };
 
+let isReInstantiateIntervalRunning = false;
 const initClientPool = async poolSize => {
 	// Set the intervals only at application init
 	if (clientPool.length === 0) {
@@ -134,9 +134,17 @@ const initClientPool = async poolSize => {
 			}
 		}, 5 * 60 * 1000);
 
-		setInterval(() => {
-			clientPool.forEach(async (apiClient, index) => {
-				if (isObject(apiClient)) return;
+		// Re-instantiate interval: Replaces nulls in clientPool with new active apiClients
+		// isReInstantiateIntervalRunning is the safety check to skip callback execution if the previous one is already in-progress
+		setInterval(async () => {
+			if (isReInstantiateIntervalRunning) return;
+			isReInstantiateIntervalRunning = true;
+
+			for (let index = 0; index < clientPool.length; index++) {
+				const apiClient = clientPool[index];
+
+				// eslint-disable-next-line no-continue
+				if (isObject(apiClient)) continue;
 
 				// Re-instantiate when null
 				const newApiClient = await instantiateNewClient()
@@ -144,10 +152,13 @@ const initClientPool = async poolSize => {
 						client.poolIndex = index;
 						return client;
 					})
-					.catch(() => null);
+					// Delay to lower stress on the node
+					.catch(() => delay(Math.ceil(2 * WS_SERVER_PING_INTERVAL), null));
 				clientPool[index] = newApiClient;
 				if (newApiClient) Signals.get('newApiClient').dispatch(newApiClient.poolIndex);
-			});
+			}
+
+			isReInstantiateIntervalRunning = false;
 		}, WS_SERVER_PING_INTERVAL);
 	}
 
