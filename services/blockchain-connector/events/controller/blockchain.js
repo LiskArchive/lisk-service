@@ -46,11 +46,15 @@ const appNetworkEventController = async cb => {
 };
 
 const txpoolNewTransactionController = async cb => {
-	const txpoolNewTransactionListener = async payload =>
-		cb({
-			...payload,
-			transaction: formatTransaction(payload.transaction),
-		});
+	const txpoolNewTransactionListener = async payload => {
+		try {
+			const transaction = formatTransaction(payload.transaction);
+			cb({ ...payload, transaction });
+		} catch (_) {
+			// No actions necessary
+			// Safety check added in case txpool_newTransaction event arrives before init is called
+		}
+	};
 	Signals.get('txpoolNewTransaction').add(txpoolNewTransactionListener);
 };
 
@@ -73,37 +77,42 @@ const formatBlock = payload =>
 
 const chainNewBlockController = async cb => {
 	const chainNewBlockListener = async payload => {
-		const { blockHeader } = payload;
-		let transactions = [];
-		let assets = [];
+		try {
+			const { blockHeader } = payload;
+			let transactions = [];
+			let assets = [];
 
-		if (
-			blockHeader.transactionRoot !== EMPTY_TREE_ROOT_HASH ||
-			blockHeader.assetRoot !== EMPTY_TREE_ROOT_HASH
-		) {
-			try {
-				const block = await getBlockByID(blockHeader.id);
-				transactions = block.transactions;
-				assets = block.assets;
-			} catch (err) {
-				logger.warn(
-					`Could not fetch block ${blockHeader.id} within chainNewBlockListener due to: ${err.message}`,
-				);
-				logger.debug(err.stack);
+			if (
+				blockHeader.transactionRoot !== EMPTY_TREE_ROOT_HASH ||
+				blockHeader.assetRoot !== EMPTY_TREE_ROOT_HASH
+			) {
+				try {
+					const block = await getBlockByID(blockHeader.id);
+					transactions = block.transactions;
+					assets = block.assets;
+				} catch (err) {
+					logger.warn(
+						`Could not fetch block ${blockHeader.id} within chainNewBlockListener due to: ${err.message}`,
+					);
+					logger.debug(err.stack);
+				}
 			}
-		}
 
-		cb(
-			formatBlock({
-				blockHeader,
-				assets,
-				transactions,
-			}),
-		);
+			cb(
+				formatBlock({
+					blockHeader,
+					assets,
+					transactions,
+				}),
+			);
 
-		// Reload validators cache on pos module transactions
-		if (transactions.some(t => t.module === MODULE_NAME_POS)) {
-			Signals.get('reloadAllPosValidators').dispatch();
+			// Reload validators cache on pos module transactions
+			if (transactions.some(t => t.module === MODULE_NAME_POS)) {
+				Signals.get('reloadAllPosValidators').dispatch();
+			}
+		} catch (_) {
+			// No actions necessary
+			// Safety check added in case txpool_newTransaction event arrives before init is called
 		}
 	};
 	Signals.get('chainNewBlock').add(chainNewBlockListener);
@@ -111,8 +120,13 @@ const chainNewBlockController = async cb => {
 
 const chainDeleteBlockController = async cb => {
 	const chainDeleteBlockListener = async payload => {
-		cb(formatBlock(payload));
-		Signals.get('reloadAllPosValidators').dispatch();
+		try {
+			cb(formatBlock(payload));
+			Signals.get('reloadAllPosValidators').dispatch();
+		} catch (_) {
+			// No actions necessary
+			// Safety check added in case txpool_newTransaction event arrives before init is called
+		}
 	};
 	Signals.get('chainDeleteBlock').add(chainDeleteBlockListener);
 };

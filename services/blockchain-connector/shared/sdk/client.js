@@ -191,7 +191,7 @@ const getApiClient = async poolIndex => {
 						`Dispatched 'resetApiClient' signal from getApiClient for API client ${apiClient.poolIndex}.`,
 					);
 				}
-				return waitForIt(getApiClient, 10);
+				return waitForIt(getApiClient, Math.ceil(WS_SERVER_PING_INTERVAL / MAX_CLIENT_POOL_SIZE));
 		  })();
 };
 
