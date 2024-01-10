@@ -160,6 +160,9 @@ const ensureAPIClientLiveness = () => {
 						logger.debug(
 							`Dispatched 'resetApiClient' signal for the event subscription API client ${apiClient.poolIndex}.`,
 						);
+					} else {
+						logger.debug('Triggered subscribeToAllRegisteredEvents from ensureAPIClientLiveness.');
+						await subscribeToAllRegisteredEvents();
 					}
 				}
 			} catch (_) {
@@ -174,11 +177,13 @@ const ensureAPIClientLiveness = () => {
 };
 
 const nodeIsSyncedListener = () => {
+	logger.debug('Node is now synced with the network.');
 	isNodeSynced = true;
 	ensureAPIClientLiveness();
 };
 
 const genesisBlockDownloadedListener = () => {
+	logger.debug('Genesis block is now downloaded.');
 	isGenesisBlockDownloaded = true;
 	ensureAPIClientLiveness();
 };

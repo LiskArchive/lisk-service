@@ -56,14 +56,14 @@ const clientInstantiationStats = {
 };
 let requestCount = 0;
 
+const checkIsClientAlive = client => client && client._channel && client._channel.isAlive;
+
 const getApiClientStats = () => ({
 	...clientInstantiationStats,
-	currentPoolSize: clientPool.length,
+	activePoolSize: clientPool.filter(client => checkIsClientAlive(client)).length,
 	expectedPoolSize: MAX_CLIENT_POOL_SIZE,
 	numEndpointInvocations: requestCount,
 });
-
-const checkIsClientAlive = client => client && client._channel && client._channel.isAlive;
 
 const pingListener = apiClient => {
 	if (!isObject(apiClient)) {
@@ -125,7 +125,13 @@ const initClientPool = async poolSize => {
 	// Set the intervals only at application init
 	if (clientPool.length === 0) {
 		setInterval(() => {
-			logger.info(`API client instantiation stats: ${JSON.stringify(getApiClientStats())}`);
+			const stats = getApiClientStats();
+			logger.info(`API client instantiation stats: ${JSON.stringify(stats)}`);
+			if (stats.activePoolSize < stats.expectedPoolSize) {
+				logger.warn(
+					'activePoolSize should catch up with the expectedPoolSize, once the node is under less stress.',
+				);
+			}
 		}, 5 * 60 * 1000);
 
 		setInterval(() => {
@@ -133,12 +139,14 @@ const initClientPool = async poolSize => {
 				if (isObject(apiClient)) return;
 
 				// Re-instantiate when null
-				clientPool[index] = await instantiateNewClient()
+				const newApiClient = await instantiateNewClient()
 					.then(client => {
 						client.poolIndex = index;
 						return client;
 					})
 					.catch(() => null);
+				clientPool[index] = newApiClient;
+				if (newApiClient) Signals.get('newApiClient').dispatch(newApiClient.poolIndex);
 			});
 		}, WS_SERVER_PING_INTERVAL);
 	}
