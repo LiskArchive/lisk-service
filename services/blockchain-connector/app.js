@@ -14,7 +14,7 @@
  *
  */
 const path = require('path');
-const { Signals, Microservice, Logger, LoggerConfig } = require('lisk-service-framework');
+const { Microservice, Logger, LoggerConfig } = require('lisk-service-framework');
 
 const config = require('./config');
 
@@ -31,12 +31,6 @@ const app = Microservice({
 	transporter: config.transporter,
 	brokerTimeout: config.brokerTimeout, // in seconds
 	logger: config.log,
-	events: {
-		'update.index.status': async payload => {
-			logger.debug("Received a 'update.index.status' moleculer event from indexer.");
-			Signals.get('updateIndexStatus').dispatch(payload);
-		},
-	},
 });
 
 nodeStatus.waitForNode().then(async () => {

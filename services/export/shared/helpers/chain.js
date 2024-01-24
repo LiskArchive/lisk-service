@@ -45,9 +45,15 @@ const getUniqueChainIDs = async txs => {
 	return Array.from(chainIDs);
 };
 
+const getBlocks = async params => requestIndexer('blocks', params);
+
+const getTransactions = async params => requestIndexer('transactions', params);
+
 module.exports = {
 	getCurrentChainID,
 	resolveReceivingChainID,
 	getNetworkStatus,
 	getUniqueChainIDs,
+	getBlocks,
+	getTransactions,
 };

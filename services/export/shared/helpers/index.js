@@ -25,6 +25,8 @@ const {
 	resolveReceivingChainID,
 	getNetworkStatus,
 	getUniqueChainIDs,
+	getBlocks,
+	getTransactions,
 } = require('./chain');
 
 const { MODULE, COMMAND, EVENT, MODULE_SUB_STORE } = require('./constants');
@@ -48,7 +50,7 @@ const {
 	requestAppRegistry,
 } = require('./request');
 
-const { getDaysInMilliseconds, dateFromTimestamp, timeFromTimestamp } = require('./time');
+const { getToday, getDaysInMilliseconds, dateFromTimestamp, timeFromTimestamp } = require('./time');
 
 const {
 	normalizeTransactionAmount,
@@ -66,6 +68,8 @@ module.exports = {
 	resolveReceivingChainID,
 	getNetworkStatus,
 	getUniqueChainIDs,
+	getBlocks,
+	getTransactions,
 
 	MODULE,
 	COMMAND,
@@ -87,6 +91,7 @@ module.exports = {
 	requestConnector,
 	requestAppRegistry,
 
+	getToday,
 	getDaysInMilliseconds,
 	dateFromTimestamp,
 	timeFromTimestamp,

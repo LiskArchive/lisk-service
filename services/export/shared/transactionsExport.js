@@ -27,6 +27,11 @@ const {
 	HTTP,
 } = require('lisk-service-framework');
 
+const config = require('../config');
+const FilesystemCache = require('./csvCache');
+const regex = require('./regex');
+const fields = require('./excelFieldMappings');
+
 const {
 	getLisk32AddressFromPublicKey,
 	getCurrentChainID,
@@ -39,6 +44,7 @@ const {
 	requestIndexer,
 	requestConnector,
 	requestAppRegistry,
+	getToday,
 	getDaysInMilliseconds,
 	dateFromTimestamp,
 	timeFromTimestamp,
@@ -46,14 +52,12 @@ const {
 	normalizeTransactionFee,
 	checkIfSelfTokenTransfer,
 	getUniqueChainIDs,
+	getBlocks,
+	getTransactions,
 } = require('./helpers');
 
-const config = require('../config');
-const fields = require('./excelFieldMappings');
-
+const { checkIfIndexReadyForInterval } = require('./utils/ready');
 const { requestAllCustom, requestAllStandard } = require('./requestAll');
-const FilesystemCache = require('./csvCache');
-const regex = require('./regex');
 
 const partials = FilesystemCache(config.cache.partials);
 const staticFiles = FilesystemCache(config.cache.exports);
@@ -66,11 +70,6 @@ const MAX_NUM_TRANSACTIONS = 10000;
 let tokenModuleData;
 let feeTokenID;
 let defaultStartDate;
-
-const getTransactions = async params => requestIndexer('transactions', params);
-const getBlocks = async params => requestIndexer('blocks', params);
-
-const getGenesisBlock = async height => requestIndexer('blocks', { height });
 
 const getAddressFromParams = params =>
 	params.address || getLisk32AddressFromPublicKey(params.publicKey);
@@ -269,14 +268,12 @@ const getDefaultStartDate = async () => {
 		} = await getNetworkStatus();
 		const {
 			data: [block],
-		} = await getGenesisBlock(genesisHeight);
+		} = await getBlocks({ height: genesisHeight });
 		defaultStartDate = moment(block.timestamp * 1000).format(DATE_FORMAT);
 	}
 
 	return defaultStartDate;
 };
-
-const getToday = () => moment().format(DATE_FORMAT);
 
 const standardizeIntervalFromParams = async ({ interval }) => {
 	let from;
@@ -488,10 +485,13 @@ const scheduleTransactionExportQueue = Queue(
 );
 
 const scheduleTransactionHistoryExport = async params => {
-	// Schedule only when index is completely built
-	const isBlockchainIndexReady = await requestIndexer('isBlockchainFullyIndexed');
-	if (!isBlockchainIndexReady)
-		throw new ValidationException('The blockchain index is not yet ready. Please retry later.');
+	const requestInterval = await standardizeIntervalFromParams(params);
+	const isBlockchainIndexReady = await checkIfIndexReadyForInterval(requestInterval);
+	if (!isBlockchainIndexReady) {
+		throw new ValidationException(
+			'The blockchain index is not yet ready for the requested interval. Please retry later.',
+		);
+	}
 
 	const exportResponse = {
 		data: {},
@@ -509,7 +509,7 @@ const scheduleTransactionHistoryExport = async params => {
 
 	exportResponse.data.address = address;
 	exportResponse.data.publicKey = publicKey;
-	exportResponse.data.interval = await standardizeIntervalFromParams(params);
+	exportResponse.data.interval = requestInterval;
 
 	const currentChainID = await getCurrentChainID();
 	const excelFilename = await getExcelFilenameFromParams(params, currentChainID);
