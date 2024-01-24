@@ -120,6 +120,10 @@ const getPendingTransactions = async params => {
 		meta: { total: 0 },
 	};
 
+	if ('blockID' in params || 'timestamp' in params || 'height' in params) {
+		return pendingTransactions;
+	}
+
 	const offset = Number(params.offset) || 0;
 	const limit = Number(params.limit) || 10;
 
