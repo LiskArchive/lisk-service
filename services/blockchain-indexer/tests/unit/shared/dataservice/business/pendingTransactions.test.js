@@ -70,7 +70,6 @@ describe('Test validateParams method', () => {
 		const params = {
 			moduleCommand: 'token:transfer',
 			address: 'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo',
-			sort: 'timestamp:desc',
 		};
 
 		const result = await validateParams(params);
