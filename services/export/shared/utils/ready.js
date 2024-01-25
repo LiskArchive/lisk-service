@@ -41,6 +41,7 @@ const getIndexStatus = async () => {
 	return indexStatusCache;
 };
 
+// TODO: Write tests
 const checkIfIndexReadyForInterval = async interval => {
 	try {
 		// Blockchain fully indexed
@@ -56,7 +57,7 @@ const checkIfIndexReadyForInterval = async interval => {
 			const [lastIndexedBlock] = response.data;
 			const lastIndexedBlockGeneratedTime = lastIndexedBlock.timestamp;
 
-			if (moment(lastIndexedBlockGeneratedTime * 1000) <= today) return true;
+			if (to <= moment(lastIndexedBlockGeneratedTime * 1000)) return true;
 		}
 
 		// Allow job scheduling if the last few blocks have not been indexed yet
