@@ -109,8 +109,6 @@ const validateParams = async params => {
 		}
 	}
 
-	if (params.sort) validatedParams.sort = params.sort;
-
 	return validatedParams;
 };
 
@@ -120,21 +118,14 @@ const getPendingTransactions = async params => {
 		meta: { total: 0 },
 	};
 
+	if ('blockID' in params || 'timestamp' in params || 'height' in params) {
+		return pendingTransactions;
+	}
+
 	const offset = Number(params.offset) || 0;
 	const limit = Number(params.limit) || 10;
 
 	const validatedParams = await validateParams(params);
-
-	const sortComparator = sortParam => {
-		const sortProp = sortParam.split(':')[0];
-		const sortOrder = sortParam.split(':')[1];
-
-		const comparator = (a, b) =>
-			sortOrder === 'asc'
-				? Number(a[sortProp] || 0) - Number(b[sortProp] || 0)
-				: Number(b[sortProp] || 0) - Number(a[sortProp] || 0);
-		return comparator;
-	};
 
 	if (pendingTransactionsList.length) {
 		// Filter according to the request params
@@ -155,14 +146,11 @@ const getPendingTransactions = async params => {
 				(!validatedParams.currentChainTransactions || !transaction.params.receivingChainID),
 		);
 
-		pendingTransactions.data = filteredPendingTxs
-			.sort(sortComparator(validatedParams.sort))
-			.slice(offset, offset + limit)
-			.map(transaction => {
-				// Set the 'executionStatus'
-				transaction.executionStatus = TRANSACTION_STATUS.PENDING;
-				return transaction;
-			});
+		pendingTransactions.data = filteredPendingTxs.slice(offset, offset + limit).map(transaction => {
+			// Set the 'executionStatus'
+			transaction.executionStatus = TRANSACTION_STATUS.PENDING;
+			return transaction;
+		});
 
 		pendingTransactions.meta = {
 			count: pendingTransactions.data.length,
