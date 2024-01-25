@@ -14,7 +14,7 @@
  *
  */
 /* eslint-disable mocha/max-top-level-suites */
-
+/* eslint-disable import/no-dynamic-require */
 const { resolve } = require('path');
 const moment = require('moment');
 
@@ -72,31 +72,19 @@ const partialFilenameExtension = '.json';
 
 describe('Test getOpeningBalance method', () => {
 	it('should return opening balance when called with valid address', async () => {
-		const mockUserSubstore = [
-			{
-				address: 'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo',
-				availableBalance: '100000000000000',
-				lockedBalances: [],
-				tokenID: '0400000000000000',
-			},
-		];
-
-		jest.mock(mockedRequestAllFilePath, () => {
-			const actual = jest.requireActual(mockedRequestAllFilePath);
-			return {
-				...actual,
-				requestAllCustom() {
-					return { userSubstore: mockUserSubstore };
-				},
-			};
-		});
+		const mockUserSubstore = {
+			address: 'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo',
+			availableBalance: '100000000000000',
+			lockedBalances: [],
+			tokenID: '0400000000000000',
+		};
 
 		jest.mock(mockedRequestFilePath, () => {
 			const actual = jest.requireActual(mockedRequestFilePath);
 			return {
 				...actual,
 				requestConnector() {
-					return { token: { userSubstore: mockUserSubstore } };
+					return mockUserSubstore;
 				},
 			};
 		});
@@ -112,7 +100,7 @@ describe('Test getOpeningBalance method', () => {
 		expect(openingBalance).toEqual(expectedResponse);
 	});
 
-	it('should throw error when called with undefined', async () => {
+	it('should return null when called with undefined', async () => {
 		jest.mock(mockedRequestFilePath, () => {
 			const actual = jest.requireActual(mockedRequestFilePath);
 			return {
@@ -124,7 +112,7 @@ describe('Test getOpeningBalance method', () => {
 		});
 
 		const { getOpeningBalance } = require('../../../shared/transactionsExport');
-		expect(getOpeningBalance(undefined)).rejects.toThrow();
+		expect(async () => getOpeningBalance(undefined).toBeNull());
 	});
 });
 
@@ -156,15 +144,9 @@ describe('Test getCrossChainTransferTransactionInfo method', () => {
 			},
 		];
 
-		jest.mock(mockedRequestAllFilePath, () => {
-			const actual = jest.requireActual(mockedRequestAllFilePath);
-			return {
-				...actual,
-				requestAllStandard() {
-					return mockEventData;
-				},
-			};
-		});
+		jest.mock(mockedRequestAllFilePath);
+		const requestAll = require(mockedRequestAllFilePath);
+		requestAll.mockReturnValueOnce(mockEventData);
 
 		jest.mock(mockedRequestFilePath, () => {
 			const actual = jest.requireActual(mockedRequestFilePath);
@@ -259,15 +241,9 @@ describe('Test getRewardAssignedInfo method', () => {
 			},
 		];
 
-		jest.mock(mockedRequestAllFilePath, () => {
-			const actual = jest.requireActual(mockedRequestAllFilePath);
-			return {
-				...actual,
-				requestAllStandard() {
-					return mockEventData;
-				},
-			};
-		});
+		jest.mock(mockedRequestAllFilePath);
+		const requestAll = require(mockedRequestAllFilePath);
+		requestAll.mockReturnValueOnce(mockEventData);
 
 		jest.mock(mockedRequestFilePath, () => {
 			const actual = jest.requireActual(mockedRequestFilePath);

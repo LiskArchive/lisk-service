@@ -13,13 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { resolve } = require('path');
-
-const { transactions } = require('../../constants/transaction');
-
 const requestAll = require('../../../shared/requestAll');
-
-const mockedRequestFilePath = resolve(`${__dirname}/../../../shared/helpers/request`);
 
 const getResponseOfLength = (n, singleRequestLimit) =>
 	new Array(n).fill().map((e, i) => ({
