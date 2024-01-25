@@ -15,6 +15,8 @@
  */
 const { invokeEndpoint } = require('./client');
 const { isMainchain } = require('./interoperability');
+const { getGenesisAssetByModule } = require('./genesisBlock');
+const { MODULE_NAME_TOKEN } = require('./constants/names');
 
 let escrowedAmounts;
 let supportedTokens;
@@ -73,6 +75,20 @@ const updateTokenInfo = async () => {
 	totalSupply = await getTotalSupply(true);
 };
 
+const getTokenBalanceAtGenesis = async address => {
+	const MODULE_TOKEN_SUBSTORE_USER = 'userSubstore';
+
+	const tokenModuleGenesisAssets = await getGenesisAssetByModule({
+		module: MODULE_NAME_TOKEN,
+		subStore: MODULE_TOKEN_SUBSTORE_USER,
+	});
+
+	const balancesAtGenesis = tokenModuleGenesisAssets[MODULE_TOKEN_SUBSTORE_USER];
+	const balancesByAddress = balancesAtGenesis.find(e => e.address === address);
+
+	return balancesByAddress;
+};
+
 module.exports = {
 	tokenHasUserAccount: hasUserAccount,
 	tokenHasEscrowAccount: hasEscrowAccount,
@@ -83,4 +99,5 @@ module.exports = {
 	getTotalSupply,
 	getTokenInitializationFees,
 	updateTokenInfo,
+	getTokenBalanceAtGenesis,
 };

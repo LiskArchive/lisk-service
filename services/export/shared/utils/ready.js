@@ -41,7 +41,6 @@ const getIndexStatus = async () => {
 	return indexStatusCache;
 };
 
-// TODO: Write tests
 const checkIfIndexReadyForInterval = async interval => {
 	try {
 		// Blockchain fully indexed

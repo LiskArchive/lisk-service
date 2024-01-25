@@ -29,8 +29,9 @@ const {
 } = require('lisk-service-framework');
 
 const config = require('../config');
-const FilesystemCache = require('./csvCache');
 const regex = require('./regex');
+const requestAll = require('./requestAll');
+const FilesystemCache = require('./csvCache');
 const fields = require('./excelFieldMappings');
 
 const {
@@ -41,7 +42,6 @@ const {
 	MODULE,
 	COMMAND,
 	EVENT,
-	MODULE_SUB_STORE,
 	requestIndexer,
 	requestConnector,
 	requestAppRegistry,
@@ -58,7 +58,6 @@ const {
 } = require('./helpers');
 
 const { checkIfIndexReadyForInterval } = require('./utils/ready');
-const { requestAllCustom, requestAllStandard } = require('./requestAll');
 
 const partials = FilesystemCache(config.cache.partials);
 const staticFiles = FilesystemCache(config.cache.exports);
@@ -71,7 +70,6 @@ const MAX_NUM_TRANSACTIONS = 10e5;
 
 const logger = Logger();
 
-let tokenModuleData;
 let feeTokenID;
 let defaultStartDate;
 
@@ -93,7 +91,7 @@ const validateIfAccountExists = async address => {
 };
 
 const getEvents = async params =>
-	requestAllStandard(requestIndexer.bind(null, 'events'), {
+	requestAll(requestIndexer.bind(null, 'events'), {
 		topic: params.address,
 		timestamp: params.timestamp,
 		module: params.module,
@@ -177,7 +175,7 @@ const getBlocksInAsc = async params => {
 		})
 	).meta.total;
 
-	const blocks = await requestAllStandard(
+	const blocks = await requestAll(
 		getBlocks,
 		{
 			generatorAddress: params.address,
@@ -221,26 +219,9 @@ const getChainInfo = async chainID => {
 };
 
 const getOpeningBalance = async address => {
-	if (!tokenModuleData) {
-		const genesisBlockAssetsLength = await requestConnector('getGenesisAssetsLength', {
-			module: MODULE.TOKEN,
-			subStore: MODULE_SUB_STORE.TOKEN.USER,
-		});
-		const totalUsers = genesisBlockAssetsLength[MODULE.TOKEN][MODULE_SUB_STORE.TOKEN.USER];
-
-		tokenModuleData = (
-			await requestAllCustom(
-				requestConnector,
-				'getGenesisAssetByModule',
-				{ module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER },
-				totalUsers,
-			)
-		).userSubstore;
-	}
-
-	const filteredAccount = tokenModuleData.find(e => e.address === address);
-	const openingBalance = filteredAccount
-		? { tokenID: filteredAccount.tokenID, amount: filteredAccount.availableBalance }
+	const accountInfo = await requestConnector('getTokenBalanceAtGenesis', { address });
+	const openingBalance = accountInfo
+		? { tokenID: accountInfo.tokenID, amount: accountInfo.availableBalance }
 		: null;
 
 	return openingBalance;
@@ -445,7 +426,7 @@ const exportTransactions = async job => {
 			const fromTimestamp = moment(day, DATE_FORMAT).startOf('day').unix();
 			const toTimestamp = moment(day, DATE_FORMAT).endOf('day').unix();
 			const timestampRange = `${fromTimestamp}:${toTimestamp}`;
-			const transactions = await requestAllStandard(
+			const transactions = await requestAll(
 				getTransactionsInAsc,
 				{ ...params, timestamp: timestampRange },
 				MAX_NUM_TRANSACTIONS,

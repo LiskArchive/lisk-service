@@ -13,9 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Utils } = require('lisk-service-framework');
 
-const requestAllStandard = async (fn, params, limit) => {
+const requestAll = async (fn, params, limit) => {
 	const defaultMaxAmount = limit || 1000;
 	const oneRequestLimit = params.limit || 100;
 	const firstRequest = await fn({
@@ -48,57 +47,4 @@ const requestAllStandard = async (fn, params, limit) => {
 	return data;
 };
 
-const requestAllCustom = async (fn, method, params, limit) => {
-	const maxAmount = limit || Number.MAX_SAFE_INTEGER;
-	const oneRequestLimit = params.limit || 100;
-	const firstRequest = await fn(method, {
-		...params,
-		...{
-			limit: oneRequestLimit,
-			offset: 0,
-		},
-	});
-	const totalResponse = firstRequest;
-	if (totalResponse && !totalResponse.error) {
-		if (maxAmount > oneRequestLimit) {
-			for (let page = 1; page < Math.ceil(maxAmount / oneRequestLimit); page++) {
-				const curOffset = oneRequestLimit * page;
-
-				const result = await fn(method, {
-					...params,
-					...{
-						limit: Math.min(oneRequestLimit, maxAmount - curOffset),
-						offset: curOffset,
-					},
-				});
-
-				// This check needs to be updated for dynamic exit based on emptiness of object properties
-				if (!result || Utils.isEmptyArray(result) || Utils.isEmptyObject(result)) {
-					break;
-				}
-
-				if (Array.isArray(totalResponse)) totalResponse.push(...result);
-				else if (Utils.isObject(totalResponse)) {
-					// When response is an object, we should traverse the properties and merge the values.
-					// We can safely assume that the properties would be of type array, so concatenation will
-					// result in the whole response. If property is not an array, the latest value is kept.
-					Object.entries(totalResponse).forEach(([dataKey, dataVal]) => {
-						if (Array.isArray(dataVal)) {
-							totalResponse[dataKey].push(...result[dataKey]);
-						} else if (Utils.isObject(dataVal)) {
-							totalResponse[dataKey] = { ...totalResponse[dataKey], ...result[dataKey] };
-						} else {
-							totalResponse[dataKey] = result[dataKey];
-						}
-					});
-				}
-			}
-		}
-	}
-	return totalResponse;
-};
-
-module.exports = {
-	requestAllStandard,
-	requestAllCustom,
-};
+module.exports = requestAll;

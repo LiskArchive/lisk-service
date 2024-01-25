@@ -65,6 +65,7 @@ const {
 	getTotalSupply,
 	getTokenInitializationFees,
 	updateTokenInfo,
+	getTokenBalanceAtGenesis,
 } = require('./token');
 
 const {
@@ -178,7 +179,7 @@ module.exports = {
 	dryRunTransaction,
 	formatTransaction,
 
-	// Tokens
+	// Token
 	tokenHasUserAccount,
 	tokenHasEscrowAccount,
 	getTokenBalance,
@@ -187,6 +188,7 @@ module.exports = {
 	getSupportedTokens,
 	getTotalSupply,
 	getTokenInitializationFees,
+	getTokenBalanceAtGenesis,
 
 	// PoS
 	getAllPosValidators,
