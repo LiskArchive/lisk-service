@@ -25,6 +25,7 @@ const {
 	Exceptions: { NotFoundException, ValidationException },
 	Queue,
 	HTTP,
+	Logger,
 } = require('lisk-service-framework');
 
 const config = require('../config');
@@ -67,6 +68,8 @@ const jobScheduledCache = CacheRedis('jobScheduled', config.endpoints.volatileRe
 
 const DATE_FORMAT = config.excel.dateFormat;
 const MAX_NUM_TRANSACTIONS = 10e5;
+
+const logger = Logger();
 
 let tokenModuleData;
 let feeTokenID;
@@ -375,7 +378,29 @@ const normalizeTransaction = (address, tx, currentChainID, txFeeTokenID) => {
 	};
 };
 
+const rescheduleOnTimeout = async params => {
+	try {
+		const currentChainID = await getCurrentChainID();
+		const excelFilename = await getExcelFilenameFromParams(params, currentChainID);
+
+		// Clear the flag to allow proper execution on user request if auto re-scheduling fails
+		await jobScheduledCache.delete(excelFilename);
+
+		const { address } = params;
+		const requestInterval = await standardizeIntervalFromParams(params);
+		logger.info(`Original job timed out. Re-scheduling job for ${address} (${requestInterval}).`);
+
+		// eslint-disable-next-line no-use-before-define
+		await scheduleTransactionExportQueue.add({ params });
+	} catch (err) {
+		logger.warn(`History export job Re-scheduling failed due to: ${err.message}`);
+		logger.debug(err.stack);
+	}
+};
+
 const exportTransactions = async job => {
+	let timeout;
+
 	const { params } = job.data;
 
 	const allTransactions = [];
@@ -384,6 +409,14 @@ const exportTransactions = async job => {
 	// Validate if account has transactions
 	const isAccountHasTransactions = await validateIfAccountHasTransactions(params.address);
 	if (isAccountHasTransactions) {
+		// Add a timeout to automatically re-schedule, if the current job run times out on the last attempt
+		if (job.attemptsMade === job.opts.attempts - 1) {
+			timeout = setTimeout(
+				rescheduleOnTimeout.bind(null, params),
+				config.queue.scheduleTransactionExport.options.defaultJobOptions.timeout,
+			);
+		}
+
 		const interval = await standardizeIntervalFromParams(params);
 		const [from, to] = interval.split(':');
 		const range = moment.range(moment(from, DATE_FORMAT), moment(to, DATE_FORMAT));
@@ -487,6 +520,9 @@ const exportTransactions = async job => {
 
 	await workBook.xlsx.writeFile(`${config.cache.exports.dirPath}/${excelFilename}`);
 	await jobScheduledCache.delete(excelFilename); // Remove the entry from cache to free up memory
+
+	// Clear the auto re-schedule timeout on successful completion
+	clearTimeout(timeout);
 };
 
 const scheduleTransactionExportQueue = Queue(
