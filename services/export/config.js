@@ -79,11 +79,20 @@ config.queue = {
 	scheduleTransactionExport: {
 		name: 'ScheduleTransactionExportQueue',
 		concurrency: 5, // TODO: Add env support
+		options: {
+			defaultJobOptions: {
+				attempts: 5,
+				timeout: 15 * 60 * 1000, // millisecs
+				removeOnComplete: true,
+				removeOnFail: true,
+				stackTraceLimit: 0,
+			},
+		},
 	},
 	defaults: {
 		jobOptions: {
 			attempts: 5,
-			timeout: 15 * 60 * 1000, // millisecs
+			timeout: 5 * 60 * 1000, // millisecs
 			removeOnComplete: true,
 			removeOnFail: true,
 			stackTraceLimit: 0,

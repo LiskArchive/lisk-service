@@ -494,6 +494,7 @@ const scheduleTransactionExportQueue = Queue(
 	config.queue.scheduleTransactionExport.name,
 	exportTransactions,
 	config.queue.scheduleTransactionExport.concurrency,
+	config.queue.scheduleTransactionExport.options,
 );
 
 const scheduleTransactionHistoryExport = async params => {
@@ -545,11 +546,10 @@ const scheduleTransactionHistoryExport = async params => {
 	await scheduleTransactionExportQueue.add({ params: { ...params, address } });
 	exportResponse.status = 'ACCEPTED';
 
-	await jobScheduledCache.set(
-		excelFilename,
-		true,
-		config.queue.defaults.jobOptions.timeout * config.queue.defaults.jobOptions.attempts,
-	);
+	const ttl =
+		config.queue.scheduleTransactionExport.options.defaultJobOptions.timeout *
+		config.queue.scheduleTransactionExport.options.defaultJobOptions.attempts;
+	await jobScheduledCache.set(excelFilename, true, ttl);
 
 	return exportResponse;
 };
