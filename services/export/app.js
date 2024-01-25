@@ -42,6 +42,7 @@ const app = Microservice({
 			Signals.get('updateIndexStatus').dispatch(payload);
 		},
 	},
+	dependencies: ['connector', 'indexer', 'app-registry'],
 });
 
 setAppContext(app);
