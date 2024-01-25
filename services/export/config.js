@@ -78,7 +78,7 @@ config.excel.sheets = {
 config.queue = {
 	scheduleTransactionExport: {
 		name: 'ScheduleTransactionExportQueue',
-		concurrency: 50,
+		concurrency: 5, // TODO: Add env support
 	},
 	defaults: {
 		jobOptions: {

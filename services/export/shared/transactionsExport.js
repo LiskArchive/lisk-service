@@ -63,6 +63,7 @@ const partials = FilesystemCache(config.cache.partials);
 const staticFiles = FilesystemCache(config.cache.exports);
 
 const noTransactionsCache = CacheRedis('noTransactions', config.endpoints.volatileRedis);
+const jobScheduledCache = CacheRedis('jobScheduled', config.endpoints.volatileRedis);
 
 const DATE_FORMAT = config.excel.dateFormat;
 const MAX_NUM_TRANSACTIONS = 10000;
@@ -475,6 +476,7 @@ const exportTransactions = async job => {
 	metadataSheet.addRows(metadata);
 
 	await workBook.xlsx.writeFile(`${config.cache.exports.dirPath}/${excelFilename}`);
+	await jobScheduledCache.delete(excelFilename); // Remove the entry from cache to free up memory
 };
 
 const scheduleTransactionExportQueue = Queue(
@@ -517,9 +519,15 @@ const scheduleTransactionHistoryExport = async params => {
 		exportResponse.data.fileName = excelFilename;
 		exportResponse.data.fileUrl = await getExcelFileUrlFromParams(params, currentChainID);
 		exportResponse.meta.ready = true;
-	} else {
+	} else if ((await jobScheduledCache.get(excelFilename)) !== true) {
 		await scheduleTransactionExportQueue.add({ params: { ...params, address } });
 		exportResponse.status = 'ACCEPTED';
+
+		await jobScheduledCache.set(
+			excelFilename,
+			true,
+			config.queue.defaults.jobOptions.timeout * config.queue.defaults.jobOptions.attempts,
+		);
 	}
 
 	return exportResponse;
