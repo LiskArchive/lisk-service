@@ -66,7 +66,7 @@ const noTransactionsCache = CacheRedis('noTransactions', config.endpoints.volati
 const jobScheduledCache = CacheRedis('jobScheduled', config.endpoints.volatileRedis);
 
 const DATE_FORMAT = config.excel.dateFormat;
-const MAX_NUM_TRANSACTIONS = 10000;
+const MAX_NUM_TRANSACTIONS = 100_000;
 
 let tokenModuleData;
 let feeTokenID;
@@ -487,14 +487,6 @@ const scheduleTransactionExportQueue = Queue(
 );
 
 const scheduleTransactionHistoryExport = async params => {
-	const requestInterval = await standardizeIntervalFromParams(params);
-	const isBlockchainIndexReady = await checkIfIndexReadyForInterval(requestInterval);
-	if (!isBlockchainIndexReady) {
-		throw new ValidationException(
-			'The blockchain index is not yet ready for the requested interval. Please retry later.',
-		);
-	}
-
 	const exportResponse = {
 		data: {},
 		meta: {
@@ -504,10 +496,7 @@ const scheduleTransactionHistoryExport = async params => {
 
 	const { publicKey } = params;
 	const address = getAddressFromParams(params);
-
-	// Validate if account exists
-	const isAccountExists = await validateIfAccountExists(address);
-	if (!isAccountExists) throw new NotFoundException(`Account ${address} not found.`);
+	const requestInterval = await standardizeIntervalFromParams(params);
 
 	exportResponse.data.address = address;
 	exportResponse.data.publicKey = publicKey;
@@ -515,20 +504,42 @@ const scheduleTransactionHistoryExport = async params => {
 
 	const currentChainID = await getCurrentChainID();
 	const excelFilename = await getExcelFilenameFromParams(params, currentChainID);
+
+	// Job already scheduled, skip remaining checks
+	if ((await jobScheduledCache.get(excelFilename)) === true) {
+		return exportResponse;
+	}
+
+	// Request already processed and the history is ready to be downloaded
 	if (await staticFiles.fileExists(excelFilename)) {
 		exportResponse.data.fileName = excelFilename;
 		exportResponse.data.fileUrl = await getExcelFileUrlFromParams(params, currentChainID);
 		exportResponse.meta.ready = true;
-	} else if ((await jobScheduledCache.get(excelFilename)) !== true) {
-		await scheduleTransactionExportQueue.add({ params: { ...params, address } });
-		exportResponse.status = 'ACCEPTED';
 
-		await jobScheduledCache.set(
-			excelFilename,
-			true,
-			config.queue.defaults.jobOptions.timeout * config.queue.defaults.jobOptions.attempts,
+		return exportResponse;
+	}
+
+	// Validate if account exists
+	const isAccountExists = await validateIfAccountExists(address);
+	if (!isAccountExists) throw new NotFoundException(`Account ${address} not found.`);
+
+	// Validate if the index is ready enough to serve the user request
+	const isBlockchainIndexReady = await checkIfIndexReadyForInterval(requestInterval);
+	if (!isBlockchainIndexReady) {
+		throw new ValidationException(
+			`The blockchain index is not yet ready for the requested interval (${requestInterval}). Please retry later.`,
 		);
 	}
+
+	// Schedule a new job to process the history export
+	await scheduleTransactionExportQueue.add({ params: { ...params, address } });
+	exportResponse.status = 'ACCEPTED';
+
+	await jobScheduledCache.set(
+		excelFilename,
+		true,
+		config.queue.defaults.jobOptions.timeout * config.queue.defaults.jobOptions.attempts,
+	);
 
 	return exportResponse;
 };

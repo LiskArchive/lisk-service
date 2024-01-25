@@ -83,7 +83,7 @@ config.queue = {
 	defaults: {
 		jobOptions: {
 			attempts: 5,
-			timeout: 5 * 60 * 1000, // millisecs
+			timeout: 15 * 60 * 1000, // millisecs
 			removeOnComplete: true,
 			removeOnFail: true,
 			stackTraceLimit: 0,
