@@ -66,7 +66,7 @@ const noTransactionsCache = CacheRedis('noTransactions', config.endpoints.volati
 const jobScheduledCache = CacheRedis('jobScheduled', config.endpoints.volatileRedis);
 
 const DATE_FORMAT = config.excel.dateFormat;
-const MAX_NUM_TRANSACTIONS = 100_000;
+const MAX_NUM_TRANSACTIONS = 10e5;
 
 let tokenModuleData;
 let feeTokenID;
@@ -389,54 +389,64 @@ const exportTransactions = async job => {
 		const range = moment.range(moment(from, DATE_FORMAT), moment(to, DATE_FORMAT));
 		const arrayOfDates = Array.from(range.by('day')).map(d => d.format(DATE_FORMAT));
 
-		for (let i = 0; i < arrayOfDates.length; i++) {
-			const day = arrayOfDates[i];
+		// eslint-disable-next-line no-restricted-syntax
+		for (const day of arrayOfDates) {
 			const partialFilename = await getPartialFilenameFromParams(params, day);
+
+			// No history available for the specified day
+			if ((await noTransactionsCache.get(partialFilename)) === true) {
+				// eslint-disable-next-line no-continue
+				continue;
+			}
+
+			// History available as a partial file for the specified day
 			if (await partials.fileExists(partialFilename)) {
 				const transactions = JSON.parse(await partials.read(partialFilename));
 				allTransactions.push(...transactions);
-			} else if ((await noTransactionsCache.get(partialFilename)) !== true) {
-				const fromTimestamp = moment(day, DATE_FORMAT).startOf('day').unix();
-				const toTimestamp = moment(day, DATE_FORMAT).endOf('day').unix();
-				const timestampRange = `${fromTimestamp}:${toTimestamp}`;
-				const transactions = await requestAllStandard(
-					getTransactionsInAsc,
-					{ ...params, timestamp: timestampRange },
-					MAX_NUM_TRANSACTIONS,
-				);
-				allTransactions.push(...transactions);
 
-				const incomingCrossChainTransferTxs = await getCrossChainTransferTransactionInfo({
-					...params,
-					timestamp: timestampRange,
-				});
+				// eslint-disable-next-line no-continue
+				continue;
+			}
 
-				const blocks = await getBlocksInAsc({
-					...params,
-					timestamp: timestampRange,
-				});
-				allBlocks.push(...blocks);
+			// Query for history and build the partial
+			const fromTimestamp = moment(day, DATE_FORMAT).startOf('day').unix();
+			const toTimestamp = moment(day, DATE_FORMAT).endOf('day').unix();
+			const timestampRange = `${fromTimestamp}:${toTimestamp}`;
+			const transactions = await requestAllStandard(
+				getTransactionsInAsc,
+				{ ...params, timestamp: timestampRange },
+				MAX_NUM_TRANSACTIONS,
+			);
+			allTransactions.push(...transactions);
 
-				const rewardAssignedInfo = await getRewardAssignedInfo({
-					...params,
-					timestamp: timestampRange,
-				});
+			const incomingCrossChainTransferTxs = await getCrossChainTransferTransactionInfo({
+				...params,
+				timestamp: timestampRange,
+			});
 
-				if (incomingCrossChainTransferTxs.length || rewardAssignedInfo.length) {
-					allTransactions.push(...incomingCrossChainTransferTxs, ...rewardAssignedInfo);
-					allTransactions.sort((a, b) => a.block.height - b.block.height);
-				}
+			const blocks = await getBlocksInAsc({
+				...params,
+				timestamp: timestampRange,
+			});
+			allBlocks.push(...blocks);
 
-				if (day !== getToday()) {
-					if (transactions.length) {
-						partials.write(partialFilename, JSON.stringify(allTransactions));
-					} else {
-						// Flag to prevent unnecessary calls to core/storage space usage on the file cache
-						const RETENTION_PERIOD_MS = getDaysInMilliseconds(
-							config.cache.partials.retentionInDays,
-						);
-						await noTransactionsCache.set(partialFilename, true, RETENTION_PERIOD_MS);
-					}
+			const rewardAssignedInfo = await getRewardAssignedInfo({
+				...params,
+				timestamp: timestampRange,
+			});
+
+			if (incomingCrossChainTransferTxs.length || rewardAssignedInfo.length) {
+				allTransactions.push(...incomingCrossChainTransferTxs, ...rewardAssignedInfo);
+				allTransactions.sort((a, b) => a.block.height - b.block.height);
+			}
+
+			if (day !== getToday()) {
+				if (transactions.length) {
+					partials.write(partialFilename, JSON.stringify(allTransactions));
+				} else {
+					// Flag to prevent unnecessary calls to the node/file cache
+					const RETENTION_PERIOD_MS = getDaysInMilliseconds(config.cache.partials.retentionInDays);
+					await noTransactionsCache.set(partialFilename, true, RETENTION_PERIOD_MS);
 				}
 			}
 		}
