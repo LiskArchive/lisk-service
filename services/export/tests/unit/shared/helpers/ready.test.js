@@ -53,10 +53,10 @@ describe('Test getIndexStatus method', () => {
 });
 
 describe('Test checkIfIndexReadyForInterval method', () => {
+	beforeEach(() => jest.resetModules());
+
 	describe('when indexing is at 100 percent', () => {
 		beforeEach(() => {
-			jest.resetModules();
-
 			const mockIndexStatus = {
 				data: {
 					genesisHeight: 23390992,
@@ -110,8 +110,6 @@ describe('Test checkIfIndexReadyForInterval method', () => {
 
 	describe('when indexing is below 100 percent', () => {
 		beforeEach(() => {
-			jest.resetModules();
-
 			const mockIndexStatus = {
 				data: {
 					genesisHeight: 23390992,
@@ -176,8 +174,6 @@ describe('Test checkIfIndexReadyForInterval method', () => {
 	});
 
 	describe('when indexing is around 99.99 percent', () => {
-		beforeEach(() => jest.resetModules());
-
 		it('should return true when interval ends today and the indexing lags by 2 blocks', async () => {
 			const mockIndexStatus = {
 				data: {
