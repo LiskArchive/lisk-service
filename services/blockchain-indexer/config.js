@@ -103,6 +103,19 @@ config.queue = {
 		name: 'IndexBlocks',
 		concurrency: 1,
 		scheduledJobsMaxCount: Number(process.env.INDEX_BLOCKS_QUEUE_SCHEDULED_JOB_MAX_COUNT) || 100000,
+		options: {
+			defaultJobOptions: {
+				attempts: 5,
+				timeout: 5 * 60 * 1000, // millisecs
+				removeOnComplete: true,
+				removeOnFail: true,
+				stackTraceLimit: 0,
+			},
+			limiter: {
+				max: 600,
+				duration: 1 * 60 * 1000,
+			},
+		},
 	},
 	indexAccountPublicKey: {
 		name: 'PendingPublickeyUpdates',

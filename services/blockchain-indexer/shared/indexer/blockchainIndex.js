@@ -699,6 +699,7 @@ const initBlockProcessingQueues = async () => {
 		config.queue.indexBlocks.name,
 		indexBlock,
 		config.queue.indexBlocks.concurrency,
+		config.queue.indexBlocks.options,
 	);
 
 	deleteIndexedBlocksQueue = Queue(

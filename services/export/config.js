@@ -82,7 +82,11 @@ config.queue = {
 		options: {
 			defaultJobOptions: {
 				attempts: 5,
-				timeout: 15 * 60 * 1000, // millisecs
+				backoff: {
+					type: 'exponential',
+					delay: 1 * 60 * 1000, // millisecs
+				},
+				timeout: 5 * 60 * 1000, // millisecs
 				removeOnComplete: true,
 				removeOnFail: true,
 				stackTraceLimit: 0,
