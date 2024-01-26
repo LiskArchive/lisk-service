@@ -30,7 +30,6 @@ const {
 
 const config = require('../config');
 const regex = require('./regex');
-const requestAll = require('./requestAll');
 const FilesystemCache = require('./csvCache');
 const fields = require('./excelFieldMappings');
 
@@ -42,6 +41,7 @@ const {
 	MODULE,
 	COMMAND,
 	EVENT,
+	MODULE_SUB_STORE,
 	requestIndexer,
 	requestConnector,
 	requestAppRegistry,
@@ -58,6 +58,7 @@ const {
 } = require('./helpers');
 
 const { checkIfIndexReadyForInterval } = require('./helpers/ready');
+const { requestAllCustom, requestAllStandard } = require('./requestAll');
 
 const partials = FilesystemCache(config.cache.partials);
 const staticFiles = FilesystemCache(config.cache.exports);
@@ -72,6 +73,8 @@ const logger = Logger();
 
 let feeTokenID;
 let defaultStartDate;
+let tokenModuleData;
+let loadingAssets = false;
 
 const getAddressFromParams = params =>
 	params.address || getLisk32AddressFromPublicKey(params.publicKey);
@@ -92,7 +95,7 @@ const validateIfAccountExists = async address => {
 };
 
 const getEvents = async params =>
-	requestAll(requestIndexer.bind(null, 'events'), {
+	requestAllStandard(requestIndexer.bind(null, 'events'), {
 		topic: params.address,
 		timestamp: params.timestamp,
 		module: params.module,
@@ -176,7 +179,7 @@ const getBlocksInAsc = async params => {
 		})
 	).meta.total;
 
-	const blocks = await requestAll(
+	const blocks = await requestAllStandard(
 		getBlocks,
 		{
 			generatorAddress: params.address,
@@ -219,8 +222,41 @@ const getChainInfo = async chainID => {
 	return { chainID, chainName };
 };
 
+const getTokenBalancesAtGenesis = async () => {
+	if (!tokenModuleData && !loadingAssets) {
+		loadingAssets = true; // loadingAssets avoids repeated invocations
+
+		// Asynchronously fetch the token module genesis assets and cache locally
+		requestConnector('getGenesisAssetsLength', {
+			module: MODULE.TOKEN,
+			subStore: MODULE_SUB_STORE.TOKEN.USER,
+		})
+			.then(async genesisBlockAssetsLength => {
+				const totalUsers = genesisBlockAssetsLength[MODULE.TOKEN][MODULE_SUB_STORE.TOKEN.USER];
+
+				const response = await requestAllCustom(
+					requestConnector,
+					'getGenesisAssetByModule',
+					{ module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER },
+					totalUsers,
+				);
+
+				tokenModuleData = response[MODULE_SUB_STORE.TOKEN.USER];
+			})
+			.catch(() => {
+				loadingAssets = false;
+			});
+	}
+
+	return tokenModuleData;
+};
+
 const getOpeningBalance = async address => {
-	const accountInfo = await requestConnector('getTokenBalanceAtGenesis', { address });
+	const balancesAtGenesis = await getTokenBalancesAtGenesis();
+	const accountInfo = balancesAtGenesis
+		? balancesAtGenesis.find(e => e.address === address)
+		: await requestConnector('getTokenBalanceAtGenesis', { address });
+
 	const openingBalance = accountInfo
 		? { tokenID: accountInfo.tokenID, amount: accountInfo.availableBalance }
 		: null;
@@ -427,7 +463,7 @@ const exportTransactions = async job => {
 			const fromTimestamp = moment(day, DATE_FORMAT).startOf('day').unix();
 			const toTimestamp = moment(day, DATE_FORMAT).endOf('day').unix();
 			const timestampRange = `${fromTimestamp}:${toTimestamp}`;
-			const transactions = await requestAll(
+			const transactions = await requestAllStandard(
 				getTransactionsInAsc,
 				{ ...params, timestamp: timestampRange },
 				MAX_NUM_TRANSACTIONS,
@@ -602,6 +638,7 @@ module.exports = {
 	exportTransactions,
 	scheduleTransactionHistoryExport,
 	downloadTransactionHistory,
+	getTokenBalancesAtGenesis,
 
 	// For functional tests
 	getAddressFromParams,

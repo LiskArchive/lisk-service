@@ -22,6 +22,7 @@ LoggerConfig(config.log);
 
 const packageJson = require('./package.json');
 const { setAppContext } = require('./shared/helpers');
+const { getTokenBalancesAtGenesis } = require('./shared/transactionsExport');
 
 const logger = Logger();
 
@@ -54,8 +55,9 @@ app.addJobs(path.join(__dirname, 'jobs'));
 // Run the application
 app
 	.run()
-	.then(() => {
+	.then(async () => {
 		logger.info(`Service started ${packageJson.name}.`);
+		await getTokenBalancesAtGenesis();
 	})
 	.catch(err => {
 		logger.fatal(`Failed to start service ${packageJson.name} due to: ${err.message}`);
