@@ -86,8 +86,9 @@ const getTransactionsInAsc = async params =>
 	});
 
 const validateIfAccountExists = async address => {
-	const { data: tokenBalances } = await requestIndexer('token.balances', { address });
-	return !!tokenBalances.length;
+	const response = await requestIndexer('token.account.exists', { address });
+	const { isExists } = response.data;
+	return isExists;
 };
 
 const getEvents = async params =>
