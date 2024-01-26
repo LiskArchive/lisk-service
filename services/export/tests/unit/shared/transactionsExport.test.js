@@ -435,3 +435,27 @@ describe('Test normalizeBlocks method', () => {
 		expect(normalizeBlocks(undefined)).rejects.toThrow();
 	});
 });
+
+describe('Test validateIfAccountExists method', () => {
+	it('should return true when account exists', async () => {
+		jest.mock(mockedRequestFilePath, () => {
+			const actual = jest.requireActual(mockedRequestFilePath);
+			return {
+				...actual,
+				requestIndexer() {
+					return {
+						data: { isExists: true },
+						meta: {},
+					};
+				},
+			};
+		});
+
+		const { validateIfAccountExists } = require('../../../shared/transactionsExport');
+
+		const isAccountExists = await validateIfAccountExists(
+			'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo',
+		);
+		expect(isAccountExists).toEqual(true);
+	});
+});

@@ -663,4 +663,5 @@ module.exports = {
 	getMetadata,
 	resolveChainIDs,
 	normalizeBlocks,
+	validateIfAccountExists,
 };
