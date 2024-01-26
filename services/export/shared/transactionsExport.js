@@ -238,7 +238,7 @@ const getTokenBalancesAtGenesis = async () => {
 				const response = await requestAllCustom(
 					requestConnector,
 					'getGenesisAssetByModule',
-					{ module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER },
+					{ module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER, limit: 1000 },
 					totalUsers,
 				);
 
