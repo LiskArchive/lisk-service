@@ -20,7 +20,7 @@ const { Signals, Logger } = require('lisk-service-framework');
 
 const config = require('../../config');
 
-const { requestIndexer, getToday, getBlocks } = require('../helpers');
+const { requestIndexer, getToday, getBlocks } = require('.');
 
 const moment = MomentRange.extendMoment(Moment);
 const DATE_FORMAT = config.excel.dateFormat;
@@ -49,8 +49,9 @@ const checkIfIndexReadyForInterval = async interval => {
 
 		// Requested history for only until yesterday and blockchain index can already serve the information
 		const [, toDate] = interval.split(':');
-		const to = moment(toDate, DATE_FORMAT);
+		const to = moment(toDate, DATE_FORMAT).endOf('day');
 		const today = moment(getToday(), DATE_FORMAT);
+
 		if (to < today) {
 			const response = await getBlocks({ height: indexStatus.lastIndexedBlockHeight });
 			const [lastIndexedBlock] = response.data;
@@ -60,7 +61,7 @@ const checkIfIndexReadyForInterval = async interval => {
 		}
 
 		// Allow job scheduling if the last few blocks have not been indexed yet
-		if (indexStatus.chainLength - indexStatus.numBlocksIndexed <= 5) {
+		if (indexStatus.chainLength - indexStatus.numBlocksIndexed <= 10) {
 			return true;
 		}
 	} catch (err) {
@@ -72,5 +73,6 @@ const checkIfIndexReadyForInterval = async interval => {
 };
 
 module.exports = {
+	getIndexStatus,
 	checkIfIndexReadyForInterval,
 };

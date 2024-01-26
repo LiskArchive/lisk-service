@@ -57,7 +57,7 @@ const {
 	getTransactions,
 } = require('./helpers');
 
-const { checkIfIndexReadyForInterval } = require('./utils/ready');
+const { checkIfIndexReadyForInterval } = require('./helpers/ready');
 
 const partials = FilesystemCache(config.cache.partials);
 const staticFiles = FilesystemCache(config.cache.exports);
