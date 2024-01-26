@@ -227,6 +227,7 @@ const getTokenBalancesAtGenesis = async () => {
 		loadingAssets = true; // loadingAssets avoids repeated invocations
 
 		// Asynchronously fetch the token module genesis assets and cache locally
+		logger.info('Attempting to fetch and cache the token module genesis assets.');
 		requestConnector('getGenesisAssetsLength', {
 			module: MODULE.TOKEN,
 			subStore: MODULE_SUB_STORE.TOKEN.USER,
@@ -242,8 +243,15 @@ const getTokenBalancesAtGenesis = async () => {
 				);
 
 				tokenModuleData = response[MODULE_SUB_STORE.TOKEN.USER];
+				loadingAssets = false;
+				logger.info('Successfully cached token module genesis assets.');
 			})
-			.catch(() => {
+			.catch(err => {
+				logger.warn(
+					`Failed to fetch token module genesis assets. Will retry later.\nError: ${err.message}`,
+				);
+				logger.debug(err.stack);
+
 				loadingAssets = false;
 			});
 	}
