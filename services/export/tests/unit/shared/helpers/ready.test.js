@@ -171,6 +171,50 @@ describe('Test checkIfIndexReadyForInterval method', () => {
 			const got = await checkIfIndexReadyForInterval('2023-12-04:2024-01-26');
 			expect(got).toEqual(want);
 		});
+
+		it('should return false when getBlocks does not return proper response', async () => {
+			const mockIndexStatus = {
+				data: {
+					genesisHeight: 23390992,
+					lastBlockHeight: 23827963,
+					lastIndexedBlockHeight: 23631326,
+					chainLength: 436972,
+					numBlocksIndexed: 15523,
+					percentageIndexed: 55,
+					isIndexingInProgress: true,
+				},
+				meta: { lastUpdate: 1706252683 },
+			};
+
+			jest.mock(mockedRequestFilePath, () => {
+				const actual = jest.requireActual(mockedRequestFilePath);
+				return {
+					...actual,
+					requestIndexer() {
+						return mockIndexStatus;
+					},
+				};
+			});
+
+			jest.mock(mockedHelpersPath, () => {
+				const actual = jest.requireActual(mockedHelpersPath);
+				return {
+					...actual,
+					getToday() {
+						return '2024-01-26';
+					},
+					getBlocks() {
+						return { error: true, message: 'mocked error' };
+					},
+				};
+			});
+
+			const { checkIfIndexReadyForInterval } = require('../../../../shared/helpers/ready');
+			const want = false;
+
+			const got = await checkIfIndexReadyForInterval('2023-12-05:2023-12-31');
+			expect(got).toEqual(want);
+		});
 	});
 
 	describe('when indexing is around 99.99 percent', () => {
