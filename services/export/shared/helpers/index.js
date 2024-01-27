@@ -29,7 +29,14 @@ const {
 	getTransactions,
 } = require('./chain');
 
-const { MODULE, COMMAND, EVENT, MODULE_SUB_STORE } = require('./constants');
+const {
+	MODULE,
+	COMMAND,
+	EVENT,
+	MODULE_SUB_STORE,
+	LENGTH_ID,
+	EVENT_TOPIC_PREFIX,
+} = require('./constants');
 
 const {
 	init,
@@ -75,6 +82,8 @@ module.exports = {
 	COMMAND,
 	EVENT,
 	MODULE_SUB_STORE,
+	LENGTH_ID,
+	EVENT_TOPIC_PREFIX,
 
 	init,
 	write,

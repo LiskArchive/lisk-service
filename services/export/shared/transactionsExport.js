@@ -42,6 +42,8 @@ const {
 	COMMAND,
 	EVENT,
 	MODULE_SUB_STORE,
+	LENGTH_ID,
+	EVENT_TOPIC_PREFIX,
 	requestIndexer,
 	requestConnector,
 	requestAppRegistry,
@@ -117,7 +119,11 @@ const getCrossChainTransferTransactionInfo = async params => {
 
 	for (let i = 0; i < ccmTransferEvents.length; i++) {
 		const ccmTransferEvent = ccmTransferEvents[i];
-		const [ccuTransactionID] = ccmTransferEvent.topics;
+		const [ccuTransactionIDTopic] = ccmTransferEvent.topics;
+		const ccuTransactionID =
+			ccuTransactionIDTopic.length === EVENT_TOPIC_PREFIX.TX_ID.length + LENGTH_ID
+				? ccuTransactionIDTopic.slice(EVENT_TOPIC_PREFIX.TX_ID.length)
+				: ccuTransactionIDTopic;
 		const [transaction] = (await requestIndexer('transactions', { id: ccuTransactionID })).data;
 		transactions.push({
 			id: ccuTransactionID,
@@ -150,7 +156,11 @@ const getRewardAssignedInfo = async params => {
 
 	for (let i = 0; i < rewardsAssignedEvents.length; i++) {
 		const rewardsAssignedEvent = rewardsAssignedEvents[i];
-		const [transactionID] = rewardsAssignedEvent.topics;
+		const [transactionIDTopic] = rewardsAssignedEvent.topics;
+		const transactionID =
+			transactionIDTopic.length === EVENT_TOPIC_PREFIX.TX_ID.length + LENGTH_ID
+				? transactionIDTopic.slice(EVENT_TOPIC_PREFIX.TX_ID.length)
+				: transactionIDTopic;
 		const [transaction] = (await requestIndexer('transactions', { id: transactionID })).data;
 
 		transactions.push({

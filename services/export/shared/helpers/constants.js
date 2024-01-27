@@ -39,9 +39,19 @@ const MODULE_SUB_STORE = Object.freeze({
 	},
 });
 
+const LENGTH_BYTE_ID = 32;
+const LENGTH_ID = LENGTH_BYTE_ID * 2; // Each byte is represented with 2 nibbles
+
+const EVENT_TOPIC_PREFIX = Object.freeze({
+	TX_ID: '04',
+	CCM_ID: '05',
+});
+
 module.exports = {
 	MODULE,
 	COMMAND,
 	EVENT,
 	MODULE_SUB_STORE,
+	LENGTH_ID,
+	EVENT_TOPIC_PREFIX,
 };
