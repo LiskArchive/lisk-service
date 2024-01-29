@@ -138,14 +138,14 @@ const requireAllJsonExpectedResponse = {
 				fileName: {
 					type: 'string',
 					format: 'fileName',
-					example: 'transactions_<currentChainID>_<address>_<from>_<to>.csv',
+					example: 'transactions_<currentChainID>_<address>_<from>_<to>.xlsx',
 					description:
 						'The name of the file containing the exported account transaction history.\n',
 				},
 				fileUrl: {
 					type: 'string',
 					format: 'fileUrl',
-					example: '/api/v3/exports/transactions_<currentChainID>_<address>_<from>_<to>.csv',
+					example: '/api/v3/exports/transactions_<currentChainID>_<address>_<from>_<to>.xlsx',
 					description: 'The file URL path containing the exported account transaction history.\n',
 				},
 			},

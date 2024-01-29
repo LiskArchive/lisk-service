@@ -198,7 +198,7 @@ const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
 			i === 0 || !(await transactionStatisticsTable.find({ date, limit: 1 }, ['id'])).length;
 
 		if (shouldUpdate || forceReload) {
-			const formattedDate = moment.unix(date).format('YYYY-MM-DD');
+			const formattedDate = moment.unix(date).format(DATE_FORMAT.DAY);
 			logger.debug(`Adding day ${i + 1}, ${formattedDate} to the queue.`);
 			await transactionStatisticsQueue.add({ date });
 			logger.info(`Added day ${i + 1}, ${formattedDate} to the queue.`);

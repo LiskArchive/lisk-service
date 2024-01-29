@@ -26,7 +26,7 @@ const MYSQL_ENDPOINT = config.endpoints.mysqlReplica;
 
 const getAccountBalancesTable = () => getTableInstance(accountBalancesTableSchema, MYSQL_ENDPOINT);
 
-const getAvailableTokenIDs = async params => {
+const getAvailableTokenIDs = async (params = {}) => {
 	const response = {
 		data: {},
 		meta: {},

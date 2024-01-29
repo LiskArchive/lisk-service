@@ -17,22 +17,28 @@ const moment = require('moment');
 
 const config = require('../../config');
 
-const DAY_IN_MILLISEC = moment().endOf('day').valueOf() - moment().startOf('day').valueOf() + 1;
-const getDaysInMilliseconds = days => days * DAY_IN_MILLISEC;
+const DATE_FORMAT = config.excel.dateFormat;
+const TIME_FORMAT = config.excel.timeFormat;
+
+const getToday = () => moment().format(DATE_FORMAT);
+
+const DAY_IN_MILLISECS = moment().endOf('day').valueOf() - moment().startOf('day').valueOf() + 1;
+const getDaysInMilliseconds = days => days * DAY_IN_MILLISECS;
 
 const momentFromTimestamp = timestamp => moment.unix(timestamp);
 
 const dateFromTimestamp = timestamp => {
 	const dateTime = momentFromTimestamp(timestamp);
-	return dateTime.utcOffset(0).format(config.excel.dateFormat);
+	return dateTime.utcOffset(0).format(DATE_FORMAT);
 };
 
 const timeFromTimestamp = timestamp => {
 	const dateTime = momentFromTimestamp(timestamp);
-	return dateTime.utcOffset(0).format(config.excel.timeFormat);
+	return dateTime.utcOffset(0).format(TIME_FORMAT);
 };
 
 module.exports = {
+	getToday,
 	getDaysInMilliseconds,
 	dateFromTimestamp,
 	timeFromTimestamp,

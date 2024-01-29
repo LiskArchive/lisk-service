@@ -28,7 +28,9 @@ const getTransactionExecutionStatus = (tx, events) => {
 		e => e.topics.includes(EVENT_TOPIC_PREFIX.TX_ID.concat(tx.id)) || e.topics.includes(tx.id),
 	);
 	if (!txExecResultEvent)
-		throw Error(`Event unavailable to determine execution status for transaction: ${tx.id}.`);
+		throw Error(
+			`Event unavailable to determine execution status for transaction: ${tx.id}.\nEnsure that you have set 'system.keepEventsForHeights: -1' in your node config before syncing it with the network.`,
+		);
 
 	return txExecResultEvent.data.success ? TRANSACTION_STATUS.SUCCESSFUL : TRANSACTION_STATUS.FAILED;
 };

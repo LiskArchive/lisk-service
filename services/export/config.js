@@ -78,7 +78,20 @@ config.excel.sheets = {
 config.queue = {
 	scheduleTransactionExport: {
 		name: 'ScheduleTransactionExportQueue',
-		concurrency: 50,
+		concurrency: 10,
+		options: {
+			defaultJobOptions: {
+				attempts: 5,
+				timeout: 5 * 60 * 1000, // millisecs
+				backoff: {
+					type: 'exponential',
+					delay: 1 * 60 * 1000, // millisecs
+				},
+				removeOnComplete: true,
+				removeOnFail: true,
+				stackTraceLimit: 0,
+			},
+		},
 	},
 	defaults: {
 		jobOptions: {
