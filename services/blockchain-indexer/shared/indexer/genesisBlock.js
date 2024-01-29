@@ -70,10 +70,18 @@ const indexTokenModuleAssets = async dbTrx => {
 
 	// eslint-disable-next-line no-restricted-syntax
 	for (const userInfo of userSubStoreInfos) {
-		const { address, availableBalance: balance, tokenID } = userInfo;
+		const { address, tokenID, availableBalance, lockedBalances } = userInfo;
+		const totalLockedBalance = lockedBalances.reduce(
+			(acc, entry) => BigInt(acc) + BigInt(entry.amount),
+			BigInt('0'),
+		);
 
 		// Add entry to index the genesis account balances
-		const accountBalanceEntry = { address, tokenID, balance };
+		const accountBalanceEntry = {
+			address,
+			tokenID,
+			balance: BigInt(availableBalance) + BigInt(totalLockedBalance),
+		};
 		genesisAccountBalances.push(accountBalanceEntry);
 
 		// eslint-disable-next-line no-restricted-syntax
