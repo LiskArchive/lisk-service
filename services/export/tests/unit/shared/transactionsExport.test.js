@@ -19,19 +19,12 @@ const { resolve } = require('path');
 
 const { tokenTransfer } = require('../../constants/csvExport');
 
-const { transactions } = require('../../constants/transaction');
-
 const { blocks } = require('../../constants/blocks');
 
 const fieldMappings = require('../../../shared/excelFieldMappings');
 
-const {
-	normalizeTransaction,
-	resolveChainIDs,
-	normalizeBlocks,
-} = require('../../../shared/transactionsExport');
-
 const { dateFromTimestamp, timeFromTimestamp } = require('../../../shared/helpers/time');
+const { formatTransaction, formatBlocks } = require('../../../shared/transactionsExport');
 
 const mockedRequestFilePath = resolve(`${__dirname}/../../../shared/helpers/request`);
 const mockedRequestAllFilePath = resolve(`${__dirname}/../../../shared/helpers/requestAll`);
@@ -61,7 +54,7 @@ beforeEach(() => jest.resetModules());
 const chainID = '04000000';
 const txFeeTokenID = '0400000000000000';
 
-describe('Test getCrossChainTransferTransactionInfo method', () => {
+describe('Test getCCTransferTransactionInfo method', () => {
 	it('should return transaction info when called with valid address (event topic contains transaction prefix)', async () => {
 		const mockEventData = [
 			{
@@ -116,9 +109,9 @@ describe('Test getCrossChainTransferTransactionInfo method', () => {
 			};
 		});
 
-		const { getCrossChainTransferTransactionInfo } = require('../../../shared/transactionsExport');
+		const { getCCTransferTransactionInfo } = require('../../../shared/transactionsExport');
 
-		const crossChainTransferTxs = await getCrossChainTransferTransactionInfo({
+		const crossChainTransferTxs = await getCCTransferTransactionInfo({
 			address: 'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo',
 		});
 		const expectedResponse = [
@@ -204,9 +197,9 @@ describe('Test getCrossChainTransferTransactionInfo method', () => {
 			};
 		});
 
-		const { getCrossChainTransferTransactionInfo } = require('../../../shared/transactionsExport');
+		const { getCCTransferTransactionInfo } = require('../../../shared/transactionsExport');
 
-		const crossChainTransferTxs = await getCrossChainTransferTransactionInfo({
+		const crossChainTransferTxs = await getCCTransferTransactionInfo({
 			address: 'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo',
 		});
 		const expectedResponse = [
@@ -249,8 +242,8 @@ describe('Test getCrossChainTransferTransactionInfo method', () => {
 			};
 		});
 
-		const { getCrossChainTransferTransactionInfo } = require('../../../shared/transactionsExport');
-		expect(getCrossChainTransferTransactionInfo(undefined)).rejects.toThrow();
+		const { getCCTransferTransactionInfo } = require('../../../shared/transactionsExport');
+		expect(getCCTransferTransactionInfo(undefined)).rejects.toThrow();
 	});
 });
 
@@ -463,9 +456,9 @@ describe('Test getRewardAssignedInfo method', () => {
 	});
 });
 
-describe('Test normalizeTransaction method', () => {
+describe('Test formatTransaction method', () => {
 	it('should return a transaction normalized', async () => {
-		const normalizedTx = await normalizeTransaction(
+		const formattedTx = await formatTransaction(
 			tokenTransfer.toOther.sender,
 			tokenTransfer.toOther.transaction,
 			chainID,
@@ -474,40 +467,13 @@ describe('Test normalizeTransaction method', () => {
 		const expectedFields = Object.values(fieldMappings.transactionMappings).map(v =>
 			v.key !== 'blockReward' ? v.key : undefined,
 		);
-		expect(Object.keys(normalizedTx)).toEqual(
-			expect.arrayContaining(expectedFields.filter(e => e)),
-		);
+		expect(Object.keys(formattedTx)).toEqual(expect.arrayContaining(expectedFields.filter(e => e)));
 	});
 });
 
-describe('Test resolveChainIDs method', () => {
-	it('should return same sendingChainID and receivingChainID when called with token transfer transaction', async () => {
-		const response = resolveChainIDs(transactions.tokenTransfer, chainID);
-		const expectedResponse = {
-			receivingChainID: '04000000',
-			sendingChainID: '04000000',
-		};
-		expect(response).toEqual(expectedResponse);
-	});
-
-	it('should return sendingChainID and receivingChainID when called with token transferCrossChain transaction', async () => {
-		const response = resolveChainIDs(transactions.tokenTransferCrossChain, chainID);
-		const expectedResponse = {
-			receivingChainID: '04000001',
-			sendingChainID: '04000000',
-		};
-		expect(response).toEqual(expectedResponse);
-	});
-
-	it('should return empty object when called with non-token transferCrossChain transaction', async () => {
-		const response = resolveChainIDs(transactions.stake, chainID);
-		expect(Object.getOwnPropertyNames(response).length).toBe(0);
-	});
-});
-
-describe('Test normalizeBlocks method', () => {
+describe('Test formatBlocks method', () => {
 	it('should return a blocks normalized when called with valid blocks', async () => {
-		const normalizedBlocks = await normalizeBlocks(blocks);
+		const normalizedBlocks = await formatBlocks(blocks);
 		const expectedResponse = [
 			{
 				blockHeight: blocks[0].height,
@@ -526,10 +492,10 @@ describe('Test normalizeBlocks method', () => {
 	});
 
 	it('should throw error when called with null', async () => {
-		expect(normalizeBlocks(null)).rejects.toThrow();
+		expect(formatBlocks(null)).rejects.toThrow();
 	});
 
 	it('should throw error when called with undefined', async () => {
-		expect(normalizeBlocks(undefined)).rejects.toThrow();
+		expect(formatBlocks(undefined)).rejects.toThrow();
 	});
 });

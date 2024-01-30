@@ -35,35 +35,46 @@ const fields = require('./excelFieldMappings');
 
 const {
 	getCurrentChainID,
-	resolveReceivingChainID,
-
 	getToday,
 	getDaysInMilliseconds,
 	dateFromTimestamp,
 	timeFromTimestamp,
-	normalizeTransactionAmount,
-	normalizeTransactionFee,
-	checkIfSelfTokenTransfer,
 	getUniqueChainIDs,
 } = require('./helpers');
 
-const { requestAllStandard } = require('./helpers/requestAll');
 const { checkIfIndexReadyForInterval } = require('./helpers/ready');
 const { standardizeIntervalFromParams } = require('./helpers/time');
 const { requestIndexer, requestAppRegistry } = require('./helpers/request');
-const { MODULE, COMMAND, EVENT, LENGTH_ID, EVENT_TOPIC_PREFIX } = require('./helpers/constants');
+const { getTransactionIDFromTopic0, getCcmIDFromTopic0 } = require('./helpers/event');
 const {
-	getBlocksInAsc,
-	getTransactionsInAsc,
-	getEventsInAsc,
+	MODULE,
+	EVENT,
+	LENGTH_ID,
+	EVENT_TOPIC_PREFIX,
+	LENGTH_DEFAULT_TOPIC,
+	COMMAND,
+} = require('./helpers/constants');
+const {
+	resolveChainIDs,
+	getAllBlocksInAsc,
+	getAllTransactionsInAsc,
+	getAllEventsInAsc,
 	getFeeTokenID,
+	getPosTokenID,
 } = require('./helpers/chain');
 const {
 	getAddressFromParams,
 	checkIfAccountExists,
 	checkIfAccountHasTransactions,
+	checkIfAccountIsValidator,
 	getOpeningBalance,
 } = require('./helpers/account');
+const {
+	normalizeTransactionAmount,
+	normalizeTransactionFee,
+	normalizeMessageFee,
+	checkIfSelfTokenTransfer,
+} = require('./helpers/transaction');
 const {
 	getPartialFilenameFromParams,
 	getExcelFilenameFromParams,
@@ -73,90 +84,14 @@ const {
 const partials = FilesystemCache(config.cache.partials);
 const staticFiles = FilesystemCache(config.cache.exports);
 
-const noTransactionsCache = CacheRedis('noTransactions', config.endpoints.volatileRedis);
+const noHistoryCache = CacheRedis('noHistory', config.endpoints.volatileRedis);
 const jobScheduledCache = CacheRedis('jobScheduled', config.endpoints.volatileRedis);
 
 const DATE_FORMAT = config.excel.dateFormat;
-const MAX_NUM_TRANSACTIONS = 10e5;
 
 const logger = Logger();
 
-const getCrossChainTransferTransactionInfo = async params => {
-	const allEvents = await getEventsInAsc({
-		...params,
-		module: MODULE.TOKEN,
-		name: EVENT.CCM_TRANSFER,
-	});
-
-	const transactions = [];
-	const ccmTransferEvents = allEvents.filter(
-		event => event.data.recipientAddress === params.address,
-	);
-
-	for (let i = 0; i < ccmTransferEvents.length; i++) {
-		const ccmTransferEvent = ccmTransferEvents[i];
-		const [ccuTransactionIDTopic] = ccmTransferEvent.topics;
-		const ccuTransactionID =
-			ccuTransactionIDTopic.length === EVENT_TOPIC_PREFIX.TX_ID.length + LENGTH_ID
-				? ccuTransactionIDTopic.slice(EVENT_TOPIC_PREFIX.TX_ID.length)
-				: ccuTransactionIDTopic;
-		const [transaction] = (await requestIndexer('transactions', { id: ccuTransactionID })).data;
-		transactions.push({
-			id: ccuTransactionID,
-			moduleCommand: transaction.moduleCommand,
-			sender: { address: ccmTransferEvent.data.senderAddress },
-			block: ccmTransferEvent.block,
-			params: {
-				...ccmTransferEvent.data,
-				data: `This entry was generated from '${EVENT.CCM_TRANSFER}' event emitted from the specified CCU transactionID.`,
-			},
-			sendingChainID: transaction.params.sendingChainID,
-			isIncomingCrossChainTransferTransaction: true,
-		});
-	}
-
-	return transactions;
-};
-
-const getRewardAssignedInfo = async params => {
-	const allEvents = await getEventsInAsc({
-		...params,
-		module: MODULE.POS,
-		name: EVENT.REWARDS_ASSIGNED,
-	});
-
-	const transactions = [];
-	const rewardsAssignedEvents = allEvents.filter(
-		event => event.data.stakerAddress === params.address,
-	);
-
-	for (let i = 0; i < rewardsAssignedEvents.length; i++) {
-		const rewardsAssignedEvent = rewardsAssignedEvents[i];
-		const [transactionIDTopic] = rewardsAssignedEvent.topics;
-		const transactionID =
-			transactionIDTopic.length === EVENT_TOPIC_PREFIX.TX_ID.length + LENGTH_ID
-				? transactionIDTopic.slice(EVENT_TOPIC_PREFIX.TX_ID.length)
-				: transactionIDTopic;
-		const [transaction] = (await requestIndexer('transactions', { id: transactionID })).data;
-
-		transactions.push({
-			id: transactionID,
-			moduleCommand: transaction.moduleCommand,
-			sender: { address: rewardsAssignedEvent.data.stakerAddress },
-			block: rewardsAssignedEvent.block,
-			params: {
-				...rewardsAssignedEvent.data,
-				data: `This entry was generated from '${EVENT.REWARDS_ASSIGNED}' event emitted from the specified transactionID.`,
-			},
-			rewardTokenID: rewardsAssignedEvent.data.tokenID,
-			rewardAmount: rewardsAssignedEvent.data.amount,
-		});
-	}
-
-	return transactions;
-};
-
-const normalizeBlocks = async blocks => {
+const formatBlocks = async blocks => {
 	const normalizedBlocks = blocks.map(block => ({
 		blockHeight: block.height,
 		date: dateFromTimestamp(block.timestamp),
@@ -193,30 +128,13 @@ const getMetadata = async (params, chainID, currentChainID) => ({
 	openingBalance: await getOpeningBalance(params.address),
 });
 
-const resolveChainIDs = (tx, currentChainID) => {
-	if (
-		tx.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER}` ||
-		tx.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER_CROSS_CHAIN}` ||
-		tx.isIncomingCrossChainTransferTransaction
-	) {
-		const sendingChainID = tx.sendingChainID || currentChainID;
-		const receivingChainID = resolveReceivingChainID(tx, currentChainID);
-
-		return {
-			sendingChainID,
-			receivingChainID,
-		};
-	}
-	return {};
-};
-
-const normalizeTransaction = (address, tx, currentChainID, txFeeTokenID) => {
+const formatTransaction = (addressFromParams, tx, currentChainID, txFeeTokenID) => {
 	const { moduleCommand, senderPublicKey } = tx;
 
 	const date = dateFromTimestamp(tx.block.timestamp);
 	const time = timeFromTimestamp(tx.block.timestamp);
-	const amount = normalizeTransactionAmount(address, tx);
-	const fee = normalizeTransactionFee(address, tx);
+	const amount = normalizeTransactionAmount(addressFromParams, tx, currentChainID);
+	const fee = normalizeTransactionFee(addressFromParams, tx);
 	const amountTokenID = tx.params.tokenID;
 	const senderAddress = tx.sender.address;
 	const recipientAddress = tx.params.recipientAddress || null;
@@ -225,36 +143,501 @@ const normalizeTransaction = (address, tx, currentChainID, txFeeTokenID) => {
 	const note = tx.params.data || null;
 	const transactionID = tx.id;
 	const { sendingChainID, receivingChainID } = resolveChainIDs(tx, currentChainID);
-	const { messageFeeTokenID } = tx.params;
-	const { messageFee } = tx.params;
-	const { rewardTokenID } = tx;
-	const { rewardAmount } = tx;
 
 	return {
 		date,
 		time,
-		amount,
+		blockHeight,
+		transactionID,
+		moduleCommand,
 		fee,
 		txFeeTokenID,
+		amount,
 		amountTokenID,
-		moduleCommand,
 		senderAddress,
-		recipientAddress,
 		senderPublicKey,
+		recipientAddress,
 		recipientPublicKey,
-		blockHeight,
 		note,
-		transactionID,
 		sendingChainID,
 		receivingChainID,
-		messageFeeTokenID,
-		messageFee,
-		rewardTokenID,
-		rewardAmount,
 	};
 };
 
-const rescheduleOnTimeout = async params => {
+const getGeneratorFeeEntries = async (addressFromParams, genFeeEvent, tx, block) => {
+	const entries = [];
+
+	const { senderAddress, generatorAddress } = genFeeEvent.data;
+	if (generatorAddress !== addressFromParams) {
+		return entries;
+	}
+
+	const generatorAmount = BigInt(genFeeEvent.data.generatorAmount);
+	if (generatorAmount !== BigInt('0')) {
+		entries.push({
+			date: dateFromTimestamp(block.timestamp),
+			time: timeFromTimestamp(block.timestamp),
+			blockHeight: block.height,
+			transactionID: tx.id,
+			moduleCommand: null,
+			fee: null,
+			txFeeTokenID: null,
+			amount: generatorAmount.toString(),
+			amountTokenID: await getFeeTokenID(),
+			senderAddress,
+			senderPublicKey: tx.sender.publicKey || null,
+			recipientAddress: generatorAddress,
+			recipientPublicKey: null, // TODO: getPublicKeyByAddress()
+			note: 'Generator Fee',
+			sendingChainID: await getCurrentChainID(),
+			receivingChainID: await getCurrentChainID(),
+		});
+	}
+
+	return entries;
+};
+
+const getOutgoingTransferCCEntries = async (
+	addressFromParams,
+	transferCrossChainEvent,
+	ccmSendSuccessEvent,
+	tx,
+	block,
+) => {
+	const entries = [];
+
+	const currentChainID = await getCurrentChainID();
+	entries.push({
+		date: dateFromTimestamp(block.timestamp),
+		time: timeFromTimestamp(block.timestamp),
+		blockHeight: block.height,
+		transactionID: tx.id,
+		moduleCommand: tx.moduleCommand,
+		fee: normalizeTransactionFee(tx),
+		txFeeTokenID: await getFeeTokenID(),
+		amount: normalizeTransactionAmount(addressFromParams, tx, currentChainID),
+		amountTokenID: tx.params.tokenID,
+		senderAddress: addressFromParams,
+		senderPublicKey: tx.sender.publicKey || null,
+		recipientAddress: tx.params.recipientAddress,
+		recipientPublicKey: (tx.meta && tx.meta.recipient && tx.meta.recipient.publicKey) || null,
+		note: tx.params.data,
+		sendingChainID: currentChainID,
+		receivingChainID: transferCrossChainEvent.data.receivingChainID,
+	});
+
+	if (ccmSendSuccessEvent) {
+		// TODO: Confirm with Ishan if message fee is only deducted when ccmSendSuccess
+		entries.push({
+			date: dateFromTimestamp(block.timestamp),
+			time: timeFromTimestamp(block.timestamp),
+			blockHeight: block.height,
+			transactionID: tx.id,
+			moduleCommand: null,
+			fee: null,
+			txFeeTokenID: null,
+			amount: normalizeMessageFee(tx),
+			amountTokenID: tx.params.messageFeeTokenID,
+			senderAddress: tx.sender.address,
+			senderPublicKey: tx.sender.publicKey || null,
+			recipientAddress: null,
+			recipientPublicKey: null,
+			note: 'Message Fee',
+			sendingChainID: await getCurrentChainID(),
+			receivingChainID: ccmSendSuccessEvent.data.ccm.receivingChainID,
+		});
+	}
+	return entries;
+};
+
+// TODO: Check with Ishan if the CCM is successfully processed later
+const getIncomingTransferCCEntries = async (addressFromParams, ccmTransferEvent, tx, block) => {
+	const entries = [];
+
+	// TODO: Add constant for CCM result
+	if (ccmTransferEvent.data.result !== 0) return entries;
+
+	entries.push({
+		date: dateFromTimestamp(block.timestamp),
+		time: timeFromTimestamp(block.timestamp),
+		blockHeight: block.height,
+		transactionID: tx.id,
+		moduleCommand: null,
+		fee: null,
+		txFeeTokenID: null,
+		amount: ccmTransferEvent.data.amount,
+		amountTokenID: ccmTransferEvent.data.tokenID,
+		senderAddress: ccmTransferEvent.data.senderAddress,
+		senderPublicKey: null,
+		recipientAddress: addressFromParams,
+		recipientPublicKey: null,
+		note: 'Incoming CCM from specified CCU transactionID', // TODO: Highlight internal transaction
+		sendingChainID: tx.params.sendingChainID,
+		receivingChainID: ccmTransferEvent.data.receivingChainID,
+	});
+
+	return entries;
+};
+
+// TODO: Check with Ishan if the CCM is successfully processed later
+const getMessageFeeEntries = async (
+	addressFromParams,
+	relayerFeeProcessedEvent,
+	tx,
+	block,
+	messageFeeTokenID,
+	sendingChainID,
+	receivingChainID,
+) => {
+	const entries = [];
+
+	const relayerAmount = BigInt(relayerFeeProcessedEvent.data.relayerAmount);
+	if (relayerAmount !== BigInt('0')) return entries;
+
+	entries.push({
+		date: dateFromTimestamp(block.timestamp),
+		time: timeFromTimestamp(block.timestamp),
+		blockHeight: block.height,
+		transactionID: tx.id,
+		moduleCommand: tx.moduleCommand,
+		fee: null,
+		txFeeTokenID: null,
+		amount: relayerAmount,
+		amountTokenID: messageFeeTokenID,
+		senderAddress: null,
+		senderPublicKey: null,
+		recipientAddress: addressFromParams,
+		recipientPublicKey: null,
+		note: 'Message fee for relayer',
+		sendingChainID,
+		receivingChainID,
+	});
+
+	return entries;
+};
+
+const getSharedRewardsAssignedEntries = async (
+	addressFromParams,
+	isStaker,
+	rewardsAssignedEvent,
+	tx,
+	block,
+) => {
+	const entries = [];
+
+	entries.push({
+		date: dateFromTimestamp(block.timestamp),
+		time: timeFromTimestamp(block.timestamp),
+		blockHeight: block.height,
+		transactionID: tx.id,
+		moduleCommand: tx.moduleCommand,
+		fee: normalizeTransactionFee(addressFromParams, tx),
+		txFeeTokenID: await getFeeTokenID(),
+		// because amount increases the staker balance and reduces the validator balance
+		amount: (BigInt(isStaker ? '1' : '-1') * BigInt(rewardsAssignedEvent.data.amount)).toString(),
+		amountTokenID: await getPosTokenID(),
+		senderAddress: rewardsAssignedEvent.data.validatorAddress,
+		senderPublicKey: null,
+		recipientAddress: rewardsAssignedEvent.data.stakerAddress,
+		recipientPublicKey: tx.sender.publicKey || null,
+		note: 'Shared custodial reward transfer',
+		sendingChainID: await getCurrentChainID(),
+		receivingChainID: await getCurrentChainID(),
+	});
+
+	return entries;
+};
+
+const getBlockRewardEntries = async (
+	addressFromParams,
+	tokenMintedEvent,
+	tokenLockedEvent,
+	block,
+) => {
+	const entries = [];
+
+	const sharedReward = tokenLockedEvent ? BigInt(tokenLockedEvent.data.amount) : BigInt('0');
+	const commissionAndSelfStakeReward = BigInt(tokenMintedEvent.data.amount) - sharedReward;
+
+	const commonEntryProperties = {
+		date: dateFromTimestamp(block.timestamp),
+		time: timeFromTimestamp(block.timestamp),
+		blockHeight: block.height,
+		transactionID: null,
+		moduleCommand: null,
+		fee: null,
+		txFeeTokenID: null,
+		amountTokenID: await getPosTokenID(),
+		senderAddress: null,
+		senderPublicKey: null,
+		recipientAddress: addressFromParams,
+		recipientPublicKey: block.generator.publicKey,
+		sendingChainID: await getCurrentChainID(),
+		receivingChainID: await getCurrentChainID(),
+	};
+
+	entries.push({
+		...commonEntryProperties,
+		amount: commissionAndSelfStakeReward.toString(),
+		note: 'Block generation reward (commission + self-stake)',
+	});
+
+	if (tokenLockedEvent) {
+		entries.push({
+			...commonEntryProperties,
+			amount: sharedReward.toString(),
+			note: 'Block generation reward (Shared custodial reward locking)',
+		});
+	}
+
+	return entries;
+};
+
+const getEntriesByChronology = async (params, sortedBlocks, sortedTransactions, sortedEvents) => {
+	const entries = [];
+
+	const currentChainID = await getCurrentChainID();
+	const txFeeTokenID = await getFeeTokenID();
+	const addressFromParams = getAddressFromParams(params);
+
+	// Loop through each event and process the corresponding event, transaction, block
+	for (let i = 0; i < sortedEvents.length; i++) {
+		const e = sortedEvents[i];
+		const [topic0] = e.topics;
+		const lengthTopic0 = topic0.length;
+
+		if (
+			lengthTopic0 === LENGTH_ID + EVENT_TOPIC_PREFIX.TX_ID.length ||
+			lengthTopic0 === LENGTH_ID + EVENT_TOPIC_PREFIX.CCM_ID.length
+		) {
+			const ccmID = getCcmIDFromTopic0(topic0);
+			const tx = await (async () => {
+				const transactionID = ccmID
+					? (() => {
+							// If current event's topic0 is a ccmID, determine the CCU transaction ID from the corresponding beforeCCCExecution event
+							let j = i - 1;
+							while (j--) {
+								const prevEvent = sortedEvents[j];
+								if (
+									prevEvent.module === MODULE.TOKEN &&
+									prevEvent.name === EVENT.BEFORE_CCC_EXECUTION &&
+									prevEvent.data.ccmID === ccmID
+								) {
+									return getTransactionIDFromTopic0(prevEvent.topics[0]);
+								}
+							}
+							logger.warn(
+								`Cannot determine CCU transactionID for ccmID ${ccmID} from event:\n${JSON.stringify(
+									e,
+									null,
+									'\t',
+								)}`,
+							);
+							throw Error(`CCU transactionID cannot be determined for ccmID ${ccmID}.`);
+					  })()
+					: getTransactionIDFromTopic0(topic0);
+
+				const txInList = sortedTransactions.find(t => t.id === transactionID);
+				if (txInList) return txInList;
+
+				// because transaction may not be available for validator custodial reward reduction in the sorted list
+				const [txFromIndexer] = (await requestIndexer('transactions', { id: transactionID })).data;
+				return txFromIndexer;
+			})();
+			const block = await (async () => {
+				const blockID = tx.block.id;
+				const blockInList = sortedBlocks.find(b => b.id === blockID);
+				if (blockInList) return blockInList;
+
+				// because block may not be available for validator custodial reward reduction in the sorted list
+				const [blockFromIndexer] = (await requestIndexer('blocks', { id: blockID })).data;
+				return blockFromIndexer;
+			})();
+
+			// Handle transaction and CCM related events
+			if (
+				(topic0.startsWith(EVENT_TOPIC_PREFIX.TX_ID) &&
+					lengthTopic0 === LENGTH_ID + EVENT_TOPIC_PREFIX.TX_ID.length) ||
+				(topic0.startsWith(EVENT_TOPIC_PREFIX.CCM_ID) &&
+					lengthTopic0 === LENGTH_ID + EVENT_TOPIC_PREFIX.CCM_ID.length)
+			) {
+				// Every transaction first emits a token lock event
+				if (
+					e.module === MODULE.TOKEN &&
+					e.name === EVENT.LOCK &&
+					// token:transferCrossChain transaction is addressed separately
+					tx.moduleCommand !== `${MODULE.TOKEN}:${COMMAND.TRANSFER_CROSS_CHAIN}`
+				) {
+					entries.push(formatTransaction(addressFromParams, tx, currentChainID, txFeeTokenID));
+
+					// Add duplicate entry with zero fees for self token transfer transactions
+					if (checkIfSelfTokenTransfer(tx)) {
+						const dupTx = { ...tx, fee: null, isSelfTokenTransferCredit: true };
+						entries.push(formatTransaction(addressFromParams, dupTx, currentChainID, txFeeTokenID));
+					}
+				}
+
+				// generatorAmount is the (excessive) transaction fee left after burning the transaction minFee
+				if (e.module === MODULE.FEE && e.name === EVENT.GENERATOR_FEE_PROCESSED) {
+					const generatorFeeEntries = getGeneratorFeeEntries(addressFromParams, e, tx, block);
+					entries.push(...generatorFeeEntries);
+				}
+
+				// Outgoing cross-chain transfers
+				if (
+					e.module === MODULE.TOKEN &&
+					e.name === EVENT.TRANSFER_CROSS_CHAIN &&
+					e.data.senderAddress === addressFromParams
+				) {
+					const transferCrossChainEvent = e;
+					const ccmSendSuccessEvent = await (async () => {
+						const txID = tx.id;
+						const topicTxID = EVENT_TOPIC_PREFIX.TX_ID.concat(txID);
+						const txHeight = tx.block.height;
+						const allBlockEvents = await getAllEventsInAsc({ height: txHeight });
+						return allBlockEvents.find(
+							ev =>
+								ev.module === MODULE.INTEROPERABILITY &&
+								ev.name === EVENT.CCM_SEND_SUCCESS &&
+								ev.topics.includes(topicTxID),
+						);
+					})();
+					const outgoingCCTransferEntries = await getOutgoingTransferCCEntries(
+						addressFromParams,
+						transferCrossChainEvent,
+						ccmSendSuccessEvent,
+						tx,
+						block,
+					);
+					entries.push(...outgoingCCTransferEntries);
+				}
+
+				// Incoming cross-chain transfers
+				if (
+					e.module === MODULE.TOKEN &&
+					e.name === EVENT.CCM_TRANSFER &&
+					e.data.recipientAddress === addressFromParams
+				) {
+					const incomingCCTransferEntries = await getIncomingTransferCCEntries(
+						addressFromParams,
+						e,
+						tx,
+						block,
+					);
+					entries.push(...incomingCCTransferEntries);
+				}
+
+				// messageFee is the (excessive) transaction fee left after burning the necessary CCM execution fee
+				if (e.module === MODULE.FEE && e.name === EVENT.RELAYER_FEE_PROCESSED) {
+					const messageFeeTokenID = (() => {
+						// Determine the messageFeeTokenID from the corresponding token:beforeCCCExecution event
+						let j = i - 1;
+						while (j--) {
+							const prevEvent = sortedEvents[j];
+							if (
+								prevEvent.module === MODULE.TOKEN &&
+								prevEvent.name === EVENT.BEFORE_CCC_EXECUTION &&
+								prevEvent.data.ccmID === e.data.ccmID
+							) {
+								return prevEvent.data.messageFeeTokenID;
+							}
+						}
+						logger.warn(
+							`Cannot determine messageFeeTokenID for ccmID ${ccmID} from event:\n${JSON.stringify(
+								e,
+								null,
+								'\t',
+							)}`,
+						);
+						throw Error(`messageFeeTokenID cannot be determined for ccmID ${ccmID}.`);
+					})();
+					const { sendingChainID, receivingChainID } = (() => {
+						// Determine the sendingChainID from the corresponding interoperability:ccmProcessed event
+						let j = i - 1;
+						while (j--) {
+							const prevEvent = sortedEvents[j];
+							if (
+								prevEvent.module === MODULE.INTEROPERABILITY &&
+								prevEvent.name === EVENT.CCM_PROCESSED &&
+								prevEvent.topics[0] === e.topics[0]
+							) {
+								return {
+									sendingChainID: prevEvent.data.ccm.sendingChainID,
+									receivingChainID: prevEvent.data.ccm.receivingChainID,
+								};
+							}
+						}
+						logger.warn(
+							`Cannot determine sendingChainID & receivingChainID for ccmID ${ccmID} from event:\n${JSON.stringify(
+								e,
+								null,
+								'\t',
+							)}`,
+						);
+						throw Error(
+							`sendingChainID & receivingChainID cannot be determined for ccmID ${ccmID}.`,
+						);
+					})();
+
+					const messageFeeEntries = getMessageFeeEntries(
+						addressFromParams,
+						e,
+						tx,
+						block,
+						messageFeeTokenID,
+						sendingChainID,
+						receivingChainID,
+					);
+					entries.push(...messageFeeEntries);
+				}
+			}
+
+			// Shared custodial reward received/sent
+			if (e.module === MODULE.POS && e.name === EVENT.REWARDS_ASSIGNED) {
+				const isStaker = addressFromParams === e.data.stakerAddress;
+				const rewardAssignedEntries = getSharedRewardsAssignedEntries(
+					addressFromParams,
+					isStaker,
+					e,
+					tx,
+					block,
+				);
+				entries.push(...rewardAssignedEntries);
+			}
+		} else if (lengthTopic0 === LENGTH_DEFAULT_TOPIC) {
+			// Handle block rewards starting from token:mint until (dynamic)reward:rewardMinted events
+			if (e.module === MODULE.TOKEN && e.name === EVENT.MINT && e.topics[1] === addressFromParams) {
+				const tokenMintedEvent = e;
+				const nextEvent = sortedEvents[i + 1];
+				const tokenLockedEvent =
+					nextEvent.module === MODULE.TOKEN &&
+					nextEvent.name === EVENT.LOCK &&
+					nextEvent.data.address === addressFromParams
+						? nextEvent
+						: null;
+
+				const block = sortedBlocks.find(b => b.id === e.block.id);
+
+				// Split block generation reward to 2 entries:
+				// 	- commission + self-stake reward
+				// 	- shared custodial reward (only when validator has received stakes from others)
+				const blockRewardEntries = await getBlockRewardEntries(
+					addressFromParams,
+					tokenMintedEvent,
+					tokenLockedEvent,
+					block,
+				);
+				entries.push(...blockRewardEntries);
+			}
+		} else {
+			logger.warn(`Unhandled event encountered:\n${JSON.stringify(e, null, '\t')}`);
+		}
+	}
+
+	return entries;
+};
+
+const rescheduleExportOnTimeout = async params => {
 	try {
 		const currentChainID = await getCurrentChainID();
 		const excelFilename = await getExcelFilenameFromParams(params, currentChainID);
@@ -276,19 +659,19 @@ const rescheduleOnTimeout = async params => {
 
 const exportTransactions = async job => {
 	let timeout;
+	const allEntriesForInterval = [];
 
 	const { params } = job.data;
 
-	const allTransactions = [];
-	const allBlocks = [];
-
-	// Validate if account has transactions
+	// Validate if account has transactions or is a generator
 	const isAccountHasTransactions = await checkIfAccountHasTransactions(params.address);
-	if (isAccountHasTransactions) {
-		// Add a timeout to automatically re-schedule, if the current job run times out on the last attempt
+	const isAccountValidator = await checkIfAccountIsValidator(params.address);
+	if (isAccountHasTransactions || isAccountValidator) {
+		// Add a timeout to automatically re-schedule, if the current job times out on its last attempt
 		if (job.attemptsMade === job.opts.attempts - 1) {
+			// TODO: See if prev error can be determined and adjust the condition accordingly
 			timeout = setTimeout(
-				rescheduleOnTimeout.bind(null, params),
+				rescheduleExportOnTimeout.bind(null, params),
 				config.queue.scheduleTransactionExport.options.defaultJobOptions.timeout,
 			);
 		}
@@ -302,98 +685,70 @@ const exportTransactions = async job => {
 		for (const day of arrayOfDates) {
 			const partialFilename = await getPartialFilenameFromParams(params, day);
 
+			/* eslint-disable no-continue */
 			// No history available for the specified day
-			if ((await noTransactionsCache.get(partialFilename)) === true) {
-				// eslint-disable-next-line no-continue
+			if ((await noHistoryCache.get(partialFilename)) === true) {
 				continue;
 			}
 
 			// History available as a partial file for the specified day
 			if (await partials.fileExists(partialFilename)) {
-				const transactions = JSON.parse(await partials.read(partialFilename));
-				allTransactions.push(...transactions);
-
-				// eslint-disable-next-line no-continue
+				const entriesForDay = JSON.parse(await partials.read(partialFilename));
+				allEntriesForInterval.push(...entriesForDay);
 				continue;
 			}
+			/* eslint-enable no-continue */
 
-			// Query for history and build the partial
+			// Query for history and build the partial for the day
 			const fromTimestamp = moment(day, DATE_FORMAT).startOf('day').unix();
 			const toTimestamp = moment(day, DATE_FORMAT).endOf('day').unix();
 			const timestampRange = `${fromTimestamp}:${toTimestamp}`;
-			const transactions = await requestAllStandard(
-				getTransactionsInAsc,
-				{ ...params, timestamp: timestampRange },
-				MAX_NUM_TRANSACTIONS,
+
+			// Fetch all the related blocks, transactions and events for the day
+			const timeBoxedParams = { ...params, timestamp: timestampRange };
+			const sortedBlocks = await getAllBlocksInAsc(timeBoxedParams);
+			const sortedTransactions = await getAllTransactionsInAsc(timeBoxedParams);
+			const sortedEvents = await getAllEventsInAsc(timeBoxedParams);
+			const entriesForDay = await getEntriesByChronology(
+				timeBoxedParams,
+				sortedBlocks,
+				sortedTransactions,
+				sortedEvents,
 			);
-			allTransactions.push(...transactions);
-
-			const incomingCrossChainTransferTxs = await getCrossChainTransferTransactionInfo({
-				...params,
-				timestamp: timestampRange,
-			});
-
-			const blocks = await getBlocksInAsc({
-				...params,
-				timestamp: timestampRange,
-			});
-			allBlocks.push(...blocks);
-
-			const rewardAssignedInfo = await getRewardAssignedInfo({
-				...params,
-				timestamp: timestampRange,
-			});
-
-			if (incomingCrossChainTransferTxs.length || rewardAssignedInfo.length) {
-				allTransactions.push(...incomingCrossChainTransferTxs, ...rewardAssignedInfo);
-				allTransactions.sort((a, b) => a.block.height - b.block.height);
-			}
 
 			if (day !== getToday()) {
-				if (transactions.length) {
-					partials.write(partialFilename, JSON.stringify(allTransactions));
+				if (entriesForDay.length) {
+					partials.write(partialFilename, JSON.stringify(entriesForDay));
 				} else {
 					// Flag to prevent unnecessary calls to the node/file cache
 					const RETENTION_PERIOD_MS = getDaysInMilliseconds(config.cache.partials.retentionInDays);
-					await noTransactionsCache.set(partialFilename, true, RETENTION_PERIOD_MS);
+					await noHistoryCache.set(partialFilename, true, RETENTION_PERIOD_MS);
 				}
 			}
+
+			allEntriesForInterval.push(...entriesForDay);
 		}
 	}
 
+	// Create the workbook
+	const workBook = new excelJS.Workbook();
+
+	// Build the account history sheet
+	const transactionExportSheet = workBook.addWorksheet(config.excel.sheets.TRANSACTION_HISTORY);
+	transactionExportSheet.columns = fields.transactionMappings;
+	transactionExportSheet.addRows(allEntriesForInterval);
+
+	// Build the metadata sheet
 	const currentChainID = await getCurrentChainID();
-	const txFeeTokenID = await getFeeTokenID();
-	const excelFilename = await getExcelFilenameFromParams(params, currentChainID);
-
-	// Add duplicate entry with zero fees for self token transfer transactions
-	allTransactions.forEach((tx, i, arr) => {
-		if (checkIfSelfTokenTransfer(tx) && !tx.isSelfTokenTransferCredit) {
-			arr.splice(i + 1, 0, { ...tx, fee: '0', isSelfTokenTransferCredit: true });
-		}
-	});
-
-	const normalizedTransactions = await Promise.all(
-		allTransactions.map(t =>
-			normalizeTransaction(getAddressFromParams(params), t, currentChainID, txFeeTokenID),
-		),
-	);
-
-	const normalizedBlocks = await normalizeBlocks(allBlocks);
-
-	const uniqueChainIDs = await getUniqueChainIDs(normalizedTransactions);
+	const uniqueChainIDs = await getUniqueChainIDs(allEntriesForInterval);
 	const metadata = await Promise.all(
 		uniqueChainIDs.map(async chainID => getMetadata(params, chainID, currentChainID)),
 	);
-
-	const workBook = new excelJS.Workbook();
-	const transactionExportSheet = workBook.addWorksheet(config.excel.sheets.TRANSACTION_HISTORY);
 	const metadataSheet = workBook.addWorksheet(config.excel.sheets.METADATA);
-	transactionExportSheet.columns = fields.transactionMappings;
-	metadataSheet.columns = fields.metadataMappings;
-
-	transactionExportSheet.addRows([...normalizedTransactions, ...normalizedBlocks]);
+	metadataSheet.columns = fields.metadataMappings; // TODO: Split Opening balance & tokenID into separate columns
 	metadataSheet.addRows(metadata);
 
+	const excelFilename = await getExcelFilenameFromParams(params, currentChainID);
 	await workBook.xlsx.writeFile(`${config.cache.exports.dirPath}/${excelFilename}`);
 	await jobScheduledCache.delete(excelFilename); // Remove the entry from cache to free up memory
 
@@ -498,11 +853,7 @@ module.exports = {
 	downloadTransactionHistory,
 
 	// For functional tests
-	normalizeTransaction,
-
-	getCrossChainTransferTransactionInfo,
-	getRewardAssignedInfo,
+	formatTransaction,
+	formatBlocks,
 	getMetadata,
-	resolveChainIDs,
-	normalizeBlocks,
 };

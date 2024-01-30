@@ -56,6 +56,11 @@ const checkIfAccountHasTransactions = async address => {
 	return !!response.data.length;
 };
 
+const checkIfAccountIsValidator = async address => {
+	const response = await requestIndexer('pos.validators', { address });
+	return !!response.data.length;
+};
+
 const getTokenBalancesAtGenesis = async () => {
 	if (!tokenModuleData && !loadingAssets) {
 		loadingAssets = true; // loadingAssets avoids repeated invocations
@@ -114,6 +119,7 @@ module.exports = {
 	getAddressFromParams,
 	checkIfAccountExists,
 	checkIfAccountHasTransactions,
+	checkIfAccountIsValidator,
 	getTokenBalancesAtGenesis,
 	getOpeningBalance,
 };

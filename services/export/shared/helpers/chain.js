@@ -20,6 +20,7 @@ const { requestConnector, requestIndexer } = require('./request');
 
 let networkStatus;
 let feeTokenID;
+let posTokenID;
 
 const getNetworkStatus = async () => {
 	if (!networkStatus) {
@@ -48,13 +49,30 @@ const getUniqueChainIDs = async txs => {
 	return Array.from(chainIDs);
 };
 
+const resolveChainIDs = (tx, currentChainID) => {
+	if (
+		tx.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER}` ||
+		tx.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER_CROSS_CHAIN}` ||
+		tx.isIncomingCrossChainTransferTransaction
+	) {
+		const sendingChainID = tx.sendingChainID || currentChainID;
+		const receivingChainID = resolveReceivingChainID(tx, currentChainID);
+
+		return {
+			sendingChainID,
+			receivingChainID,
+		};
+	}
+	return {};
+};
+
 const getBlocks = async params => requestIndexer('blocks', params);
 
 const getTransactions = async params => requestIndexer('transactions', params);
 
 const getEvents = async params => requestIndexer('events', params);
 
-const getBlocksInAsc = async params => {
+const getAllBlocksInAsc = async params => {
 	const totalBlocks = (
 		await getBlocks({
 			generatorAddress: params.address,
@@ -76,10 +94,10 @@ const getBlocksInAsc = async params => {
 	return blocks;
 };
 
-const getTransactionsInAsc = async params => {
+const getAllTransactionsInAsc = async params => {
 	const totalTransactions = (
 		await getTransactions({
-			generatorAddress: params.address,
+			address: params.address,
 			timestamp: params.timestamp,
 			limit: 1,
 		})
@@ -89,10 +107,9 @@ const getTransactionsInAsc = async params => {
 		getTransactions,
 		{
 			address: getAddressFromParams(params),
-			sort: 'height:asc',
 			timestamp: params.timestamp,
-			limit: params.limit || 10,
-			offset: params.offset || 0,
+			sort: 'height:asc',
+			order: 'index:asc',
 		},
 		totalTransactions,
 	);
@@ -100,16 +117,16 @@ const getTransactionsInAsc = async params => {
 	return transactions;
 };
 
-const getEventsInAsc = async params => {
+const getAllEventsInAsc = async params => {
 	const totalEvents = (
 		await getEvents({
-			generatorAddress: params.address,
+			topic: params.address,
 			timestamp: params.timestamp,
 			limit: 1,
 		})
 	).meta.total;
 
-	const events = requestAllStandard(
+	const events = await requestAllStandard(
 		getEvents,
 		{
 			topic: params.address,
@@ -117,6 +134,7 @@ const getEventsInAsc = async params => {
 			module: params.module,
 			name: params.name,
 			sort: 'height:asc',
+			order: 'index:asc',
 		},
 		totalEvents,
 	);
@@ -126,10 +144,19 @@ const getEventsInAsc = async params => {
 
 const getFeeTokenID = async () => {
 	if (!feeTokenID) {
-		feeTokenID = requestConnector('getFeeTokenID');
+		feeTokenID = await requestConnector('getFeeTokenID');
 	}
 
 	return feeTokenID;
+};
+
+const getPosTokenID = async () => {
+	if (!posTokenID) {
+		const posModuleConstants = await requestConnector('getPosConstants');
+		posTokenID = posModuleConstants.posTokenID;
+	}
+
+	return posTokenID;
 };
 
 module.exports = {
@@ -137,11 +164,13 @@ module.exports = {
 	resolveReceivingChainID,
 	getNetworkStatus,
 	getUniqueChainIDs,
+	resolveChainIDs,
 	getBlocks,
 	getTransactions,
 	getEvents,
-	getBlocksInAsc,
-	getTransactionsInAsc,
-	getEventsInAsc,
+	getAllBlocksInAsc,
+	getAllTransactionsInAsc,
+	getAllEventsInAsc,
 	getFeeTokenID,
+	getPosTokenID,
 };

@@ -180,6 +180,7 @@ const EVENT = Object.freeze({
 	UNLOCK: 'unlock',
 	COMMAND_EXECUTION_RESULT: 'commandExecutionResult',
 	REWARD_MINTED: 'rewardMinted',
+	REWARDS_ASSIGNED: 'rewardsAssigned',
 	CCM_SEND_SUCCESS: 'ccmSendSuccess',
 	CCM_SENT_FAILED: 'ccmSentFailed',
 });
