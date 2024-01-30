@@ -23,7 +23,10 @@ const {
 	Exceptions: { ValidationException },
 } = require('lisk-service-framework');
 
-const { getDaysInMilliseconds } = require('./time');
+const config = require('../../config');
+
+const { getAddressFromParams } = require('./account');
+const { getDaysInMilliseconds, standardizeIntervalFromParams } = require('./time');
 
 const logger = Logger();
 
@@ -69,6 +72,26 @@ const purge = async (dirPath, days) => {
 
 const init = async params => mkdir(params.dirPath);
 
+const getPartialFilenameFromParams = async (params, day) => {
+	const address = getAddressFromParams(params);
+	const filename = `${address}_${day}.json`;
+	return filename;
+};
+
+const getExcelFilenameFromParams = async (params, chainID) => {
+	const address = getAddressFromParams(params);
+	const [from, to] = (await standardizeIntervalFromParams(params)).split(':');
+
+	const filename = `transactions_${chainID}_${address}_${from}_${to}.xlsx`;
+	return filename;
+};
+
+const getExcelFileUrlFromParams = async (params, chainID) => {
+	const filename = await getExcelFilenameFromParams(params, chainID);
+	const url = `${config.excel.baseURL}?filename=${filename}`;
+	return url;
+};
+
 module.exports = {
 	init,
 	write,
@@ -79,4 +102,8 @@ module.exports = {
 	fileExists,
 	isFile,
 	isFilePathInDirectory,
+
+	getPartialFilenameFromParams,
+	getExcelFilenameFromParams,
+	getExcelFileUrlFromParams,
 };

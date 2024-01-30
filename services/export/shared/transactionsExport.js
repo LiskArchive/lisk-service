@@ -34,19 +34,9 @@ const FilesystemCache = require('./csvCache');
 const fields = require('./excelFieldMappings');
 
 const {
-	getLisk32AddressFromPublicKey,
 	getCurrentChainID,
 	resolveReceivingChainID,
-	getNetworkStatus,
-	MODULE,
-	COMMAND,
-	EVENT,
-	MODULE_SUB_STORE,
-	LENGTH_ID,
-	EVENT_TOPIC_PREFIX,
-	requestIndexer,
-	requestConnector,
-	requestAppRegistry,
+
 	getToday,
 	getDaysInMilliseconds,
 	dateFromTimestamp,
@@ -55,12 +45,30 @@ const {
 	normalizeTransactionFee,
 	checkIfSelfTokenTransfer,
 	getUniqueChainIDs,
-	getBlocks,
-	getTransactions,
 } = require('./helpers');
 
+const { requestAllStandard } = require('./helpers/requestAll');
 const { checkIfIndexReadyForInterval } = require('./helpers/ready');
-const { requestAllCustom, requestAllStandard } = require('./requestAll');
+const { standardizeIntervalFromParams } = require('./helpers/time');
+const { requestIndexer, requestAppRegistry } = require('./helpers/request');
+const { MODULE, COMMAND, EVENT, LENGTH_ID, EVENT_TOPIC_PREFIX } = require('./helpers/constants');
+const {
+	getBlocksInAsc,
+	getTransactionsInAsc,
+	getEventsInAsc,
+	getFeeTokenID,
+} = require('./helpers/chain');
+const {
+	getAddressFromParams,
+	checkIfAccountExists,
+	checkIfAccountHasTransactions,
+	getOpeningBalance,
+} = require('./helpers/account');
+const {
+	getPartialFilenameFromParams,
+	getExcelFilenameFromParams,
+	getExcelFileUrlFromParams,
+} = require('./helpers/file');
 
 const partials = FilesystemCache(config.cache.partials);
 const staticFiles = FilesystemCache(config.cache.exports);
@@ -73,40 +81,8 @@ const MAX_NUM_TRANSACTIONS = 10e5;
 
 const logger = Logger();
 
-let feeTokenID;
-let defaultStartDate;
-let tokenModuleData;
-let loadingAssets = false;
-
-const getAddressFromParams = params =>
-	params.address || getLisk32AddressFromPublicKey(params.publicKey);
-
-const getTransactionsInAsc = async params =>
-	getTransactions({
-		address: getAddressFromParams(params),
-		sort: 'timestamp:asc',
-		timestamp: params.timestamp,
-		limit: params.limit || 10,
-		offset: params.offset || 0,
-	});
-
-const validateIfAccountExists = async address => {
-	const response = await requestIndexer('token.account.exists', { address });
-	const { isExists } = response.data;
-	return isExists;
-};
-
-const getEvents = async params =>
-	requestAllStandard(requestIndexer.bind(null, 'events'), {
-		topic: params.address,
-		timestamp: params.timestamp,
-		module: params.module,
-		name: params.name,
-		sort: 'timestamp:desc',
-	});
-
 const getCrossChainTransferTransactionInfo = async params => {
-	const allEvents = await getEvents({
+	const allEvents = await getEventsInAsc({
 		...params,
 		module: MODULE.TOKEN,
 		name: EVENT.CCM_TRANSFER,
@@ -143,7 +119,7 @@ const getCrossChainTransferTransactionInfo = async params => {
 };
 
 const getRewardAssignedInfo = async params => {
-	const allEvents = await getEvents({
+	const allEvents = await getEventsInAsc({
 		...params,
 		module: MODULE.POS,
 		name: EVENT.REWARDS_ASSIGNED,
@@ -180,28 +156,6 @@ const getRewardAssignedInfo = async params => {
 	return transactions;
 };
 
-const getBlocksInAsc = async params => {
-	const totalBlocks = (
-		await getBlocks({
-			generatorAddress: params.address,
-			timestamp: params.timestamp,
-			limit: 1,
-		})
-	).meta.total;
-
-	const blocks = await requestAllStandard(
-		getBlocks,
-		{
-			generatorAddress: params.address,
-			timestamp: params.timestamp,
-			sort: 'timestamp:desc',
-		},
-		totalBlocks,
-	);
-
-	return blocks;
-};
-
 const normalizeBlocks = async blocks => {
 	const normalizedBlocks = blocks.map(block => ({
 		blockHeight: block.height,
@@ -227,67 +181,10 @@ const getBlockchainAppsMeta = async chainID => {
 		return appMetadata;
 	}
 };
+
 const getChainInfo = async chainID => {
 	const { chainName } = await getBlockchainAppsMeta(chainID);
 	return { chainID, chainName };
-};
-
-const getTokenBalancesAtGenesis = async () => {
-	if (!tokenModuleData && !loadingAssets) {
-		loadingAssets = true; // loadingAssets avoids repeated invocations
-
-		// Asynchronously fetch the token module genesis assets and cache locally
-		logger.info('Attempting to fetch and cache the token module genesis assets.');
-		requestConnector('getGenesisAssetsLength', {
-			module: MODULE.TOKEN,
-			subStore: MODULE_SUB_STORE.TOKEN.USER,
-		})
-			.then(async genesisBlockAssetsLength => {
-				const totalUsers = genesisBlockAssetsLength[MODULE.TOKEN][MODULE_SUB_STORE.TOKEN.USER];
-
-				const response = await requestAllCustom(
-					requestConnector,
-					'getGenesisAssetByModule',
-					{ module: MODULE.TOKEN, subStore: MODULE_SUB_STORE.TOKEN.USER, limit: 1000 },
-					totalUsers,
-				);
-
-				tokenModuleData = response[MODULE_SUB_STORE.TOKEN.USER];
-				loadingAssets = false;
-				logger.info('Successfully cached token module genesis assets.');
-			})
-			.catch(err => {
-				logger.warn(
-					`Failed to fetch token module genesis assets. Will retry later.\nError: ${err.message}`,
-				);
-				logger.debug(err.stack);
-
-				loadingAssets = false;
-			});
-	}
-
-	return tokenModuleData;
-};
-
-const getOpeningBalance = async address => {
-	const balancesAtGenesis = await getTokenBalancesAtGenesis();
-	const accountInfo = balancesAtGenesis
-		? balancesAtGenesis.find(e => e.address === address)
-		: await requestConnector('getTokenBalanceAtGenesis', { address });
-
-	const openingBalance = accountInfo
-		? { tokenID: accountInfo.tokenID, amount: accountInfo.availableBalance }
-		: null;
-
-	return openingBalance;
-};
-
-const getFeeTokenID = async () => {
-	if (!feeTokenID) {
-		feeTokenID = requestConnector('getFeeTokenID');
-	}
-
-	return feeTokenID;
 };
 
 const getMetadata = async (params, chainID, currentChainID) => ({
@@ -295,63 +192,6 @@ const getMetadata = async (params, chainID, currentChainID) => ({
 	note: `Current Chain ID: ${currentChainID}`,
 	openingBalance: await getOpeningBalance(params.address),
 });
-
-const validateIfAccountHasTransactions = async address => {
-	const response = await getTransactions({ address, limit: 1 });
-	return !!response.data.length;
-};
-
-const getDefaultStartDate = async () => {
-	if (!defaultStartDate) {
-		const {
-			data: { genesisHeight },
-		} = await getNetworkStatus();
-		const {
-			data: [block],
-		} = await getBlocks({ height: genesisHeight });
-		defaultStartDate = moment(block.timestamp * 1000).format(DATE_FORMAT);
-	}
-
-	return defaultStartDate;
-};
-
-const standardizeIntervalFromParams = async ({ interval }) => {
-	let from;
-	let to;
-	if (interval && interval.includes(':')) {
-		[from, to] = interval.split(':');
-		if (moment(to, DATE_FORMAT).diff(moment(from, DATE_FORMAT)) < 0) {
-			throw new ValidationException(`Invalid interval supplied: ${interval}.`);
-		}
-	} else if (interval) {
-		from = interval;
-		to = getToday();
-	} else {
-		from = await getDefaultStartDate();
-		to = getToday();
-	}
-	return `${from}:${to}`;
-};
-
-const getPartialFilenameFromParams = async (params, day) => {
-	const address = getAddressFromParams(params);
-	const filename = `${address}_${day}.json`;
-	return filename;
-};
-
-const getExcelFilenameFromParams = async (params, chainID) => {
-	const address = getAddressFromParams(params);
-	const [from, to] = (await standardizeIntervalFromParams(params)).split(':');
-
-	const filename = `transactions_${chainID}_${address}_${from}_${to}.xlsx`;
-	return filename;
-};
-
-const getExcelFileUrlFromParams = async (params, chainID) => {
-	const filename = await getExcelFilenameFromParams(params, chainID);
-	const url = `${config.excel.baseURL}?filename=${filename}`;
-	return url;
-};
 
 const resolveChainIDs = (tx, currentChainID) => {
 	if (
@@ -443,7 +283,7 @@ const exportTransactions = async job => {
 	const allBlocks = [];
 
 	// Validate if account has transactions
-	const isAccountHasTransactions = await validateIfAccountHasTransactions(params.address);
+	const isAccountHasTransactions = await checkIfAccountHasTransactions(params.address);
 	if (isAccountHasTransactions) {
 		// Add a timeout to automatically re-schedule, if the current job run times out on the last attempt
 		if (job.attemptsMade === job.opts.attempts - 1) {
@@ -603,7 +443,7 @@ const scheduleTransactionHistoryExport = async params => {
 	}
 
 	// Validate if account exists
-	const isAccountExists = await validateIfAccountExists(address);
+	const isAccountExists = await checkIfAccountExists(address);
 	if (!isAccountExists) throw new NotFoundException(`Account ${address} not found.`);
 
 	// Validate if the index is ready enough to serve the user request
@@ -656,22 +496,13 @@ module.exports = {
 	exportTransactions,
 	scheduleTransactionHistoryExport,
 	downloadTransactionHistory,
-	getTokenBalancesAtGenesis,
 
 	// For functional tests
-	getAddressFromParams,
-	getToday,
 	normalizeTransaction,
 
-	standardizeIntervalFromParams,
-	getPartialFilenameFromParams,
-	getExcelFilenameFromParams,
-	getExcelFileUrlFromParams,
 	getCrossChainTransferTransactionInfo,
 	getRewardAssignedInfo,
-	getOpeningBalance,
 	getMetadata,
 	resolveChainIDs,
 	normalizeBlocks,
-	validateIfAccountExists,
 };

@@ -13,9 +13,19 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { dateFromTimestamp, timeFromTimestamp } = require('../../../../shared/helpers/time');
+const moment = require('moment');
 
+const config = require('../../../../config');
+
+const { interval } = require('../../../constants/csvExport');
+const { STANDARDIZED_INTERVAL } = require('../../../../shared/regex');
 const { timestamp, expectedDate, expectedTime } = require('../../../constants/time');
+const {
+	dateFromTimestamp,
+	timeFromTimestamp,
+	getToday,
+	standardizeIntervalFromParams,
+} = require('../../../../shared/helpers/time');
 
 describe('Time utils', () => {
 	it('returns ISO format UTC Date from unix timestamp', async () => {
@@ -26,5 +36,35 @@ describe('Time utils', () => {
 	it('returns ISO format UTC Time from unix timestamp', async () => {
 		const time = timeFromTimestamp(timestamp);
 		expect(time).toBe(expectedTime);
+	});
+});
+
+describe('Test getToday method', () => {
+	it(`should return current date in '${config.excel.dateFormat}' format`, async () => {
+		const today = getToday();
+		expect(today).toBe(moment().format(config.excel.dateFormat));
+	});
+});
+
+describe('Test standardizeIntervalFromParams method', () => {
+	it('should return standardized interval when both start and end date supplied', async () => {
+		const result = await standardizeIntervalFromParams({ interval: interval.startEnd });
+		expect(typeof result).toBe('string');
+		expect(result.length).toBe(2 * config.excel.dateFormat.length + 1);
+		expect(result).toMatch(STANDARDIZED_INTERVAL);
+	});
+
+	it('should return standardized interval when only start date supplied', async () => {
+		const result = await standardizeIntervalFromParams({ interval: interval.onlyStart });
+		expect(typeof result).toBe('string');
+		expect(result.length).toBe(2 * config.excel.dateFormat.length + 1);
+		expect(result).toMatch(STANDARDIZED_INTERVAL);
+	});
+
+	xit('should return standardized interval when dates not supplied', async () => {
+		const result = await standardizeIntervalFromParams({});
+		expect(typeof result).toBe('string');
+		expect(result.length).toBe(2 * config.excel.dateFormat.length + 1);
+		expect(result).toMatch(STANDARDIZED_INTERVAL);
 	});
 });

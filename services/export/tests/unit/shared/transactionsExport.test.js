@@ -16,23 +16,17 @@
 /* eslint-disable mocha/max-top-level-suites */
 /* eslint-disable import/no-dynamic-require */
 const { resolve } = require('path');
-const moment = require('moment');
 
-const { interval, tokenTransfer } = require('../../constants/csvExport');
+const { tokenTransfer } = require('../../constants/csvExport');
 
 const { transactions } = require('../../constants/transaction');
 
 const { blocks } = require('../../constants/blocks');
 
-const config = require('../../../config');
 const fieldMappings = require('../../../shared/excelFieldMappings');
-const { PARTIAL_FILENAME } = require('../../../shared/regex');
 
 const {
-	getAddressFromParams,
-	getToday,
 	normalizeTransaction,
-	getPartialFilenameFromParams,
 	resolveChainIDs,
 	normalizeBlocks,
 } = require('../../../shared/transactionsExport');
@@ -40,7 +34,7 @@ const {
 const { dateFromTimestamp, timeFromTimestamp } = require('../../../shared/helpers/time');
 
 const mockedRequestFilePath = resolve(`${__dirname}/../../../shared/helpers/request`);
-const mockedRequestAllFilePath = resolve(`${__dirname}/../../../shared/requestAll`);
+const mockedRequestAllFilePath = resolve(`${__dirname}/../../../shared/helpers/requestAll`);
 
 jest.mock('lisk-service-framework', () => {
 	const actualLiskServiceFramework = jest.requireActual('lisk-service-framework');
@@ -64,51 +58,8 @@ jest.mock('lisk-service-framework', () => {
 
 beforeEach(() => jest.resetModules());
 
-const address = 'lskpg7qukha2nmu9483huwk8oty7q3pyevh3bohr4';
-const publicKey = '86cbecb2a176934e454f63e7ffa05783be6960d90002c5558dfd31397cd8f020';
 const chainID = '04000000';
 const txFeeTokenID = '0400000000000000';
-const partialFilenameExtension = '.json';
-
-describe('Test getOpeningBalance method', () => {
-	it('should return opening balance when called with valid address', async () => {
-		const mockUserSubstore = {
-			address: 'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo',
-			availableBalance: '100000000000000',
-			lockedBalances: [],
-			tokenID: '0400000000000000',
-		};
-
-		jest.mock(mockedRequestFilePath);
-		const { requestConnector } = require(mockedRequestFilePath);
-		requestConnector.mockResolvedValueOnce(undefined).mockResolvedValueOnce(mockUserSubstore);
-
-		const { getOpeningBalance } = require('../../../shared/transactionsExport');
-
-		const openingBalance = await getOpeningBalance('lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo');
-		const expectedResponse = {
-			tokenID: '0400000000000000',
-			amount: '100000000000000',
-		};
-
-		expect(openingBalance).toEqual(expectedResponse);
-	});
-
-	it('should throw error when called with undefined', async () => {
-		jest.mock(mockedRequestFilePath, () => {
-			const actual = jest.requireActual(mockedRequestFilePath);
-			return {
-				...actual,
-				requestConnector() {
-					return undefined;
-				},
-			};
-		});
-
-		const { getOpeningBalance } = require('../../../shared/transactionsExport');
-		expect(getOpeningBalance(undefined)).rejects.toThrow();
-	});
-});
 
 describe('Test getCrossChainTransferTransactionInfo method', () => {
 	it('should return transaction info when called with valid address (event topic contains transaction prefix)', async () => {
@@ -512,25 +463,6 @@ describe('Test getRewardAssignedInfo method', () => {
 	});
 });
 
-describe('Test getAddressFromParams method', () => {
-	it('should return address from address in params', async () => {
-		const result = getAddressFromParams({ address });
-		expect(result).toBe(address);
-	});
-
-	it('should return address from publicKey in params', async () => {
-		const result = getAddressFromParams({ publicKey });
-		expect(result).toBe(address);
-	});
-});
-
-describe('Test getToday method', () => {
-	it(`should return current date in '${config.excel.dateFormat}' format`, async () => {
-		const today = getToday();
-		expect(today).toBe(moment().format(config.excel.dateFormat));
-	});
-});
-
 describe('Test normalizeTransaction method', () => {
 	it('should return a transaction normalized', async () => {
 		const normalizedTx = await normalizeTransaction(
@@ -545,24 +477,6 @@ describe('Test normalizeTransaction method', () => {
 		expect(Object.keys(normalizedTx)).toEqual(
 			expect.arrayContaining(expectedFields.filter(e => e)),
 		);
-	});
-});
-
-describe('Test getPartialFilenameFromParams method', () => {
-	it('should return partial filename when called with address', async () => {
-		const params = { address, interval: interval.startEnd };
-		const partialFilename = await getPartialFilenameFromParams(params, interval.onlyStart);
-		expect(partialFilename.endsWith(partialFilenameExtension)).toBeTruthy();
-		expect(partialFilename).toContain(address);
-		expect(partialFilename).toMatch(PARTIAL_FILENAME);
-	});
-
-	it('should return partial filename when called with publicKey', async () => {
-		const params = { publicKey, interval: interval.onlyStart };
-		const partialFilename = await getPartialFilenameFromParams(params, interval.onlyStart);
-		expect(partialFilename.endsWith(partialFilenameExtension)).toBeTruthy();
-		expect(partialFilename).toContain(address);
-		expect(partialFilename).toMatch(PARTIAL_FILENAME);
 	});
 });
 
@@ -617,29 +531,5 @@ describe('Test normalizeBlocks method', () => {
 
 	it('should throw error when called with undefined', async () => {
 		expect(normalizeBlocks(undefined)).rejects.toThrow();
-	});
-});
-
-describe('Test validateIfAccountExists method', () => {
-	it('should return true when account exists', async () => {
-		jest.mock(mockedRequestFilePath, () => {
-			const actual = jest.requireActual(mockedRequestFilePath);
-			return {
-				...actual,
-				requestIndexer() {
-					return {
-						data: { isExists: true },
-						meta: {},
-					};
-				},
-			};
-		});
-
-		const { validateIfAccountExists } = require('../../../shared/transactionsExport');
-
-		const isAccountExists = await validateIfAccountExists(
-			'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo',
-		);
-		expect(isAccountExists).toEqual(true);
 	});
 });

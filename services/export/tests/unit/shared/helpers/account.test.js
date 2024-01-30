@@ -13,13 +13,18 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { resolve } = require('path');
+
 const {
 	validateLisk32Address,
 	validatePublicKey,
 	getLisk32AddressFromPublicKey,
+	getAddressFromParams,
 } = require('../../../../shared/helpers/account');
 
 const { valid, invalid } = require('../../../constants/account');
+
+const mockedRequestFilePath = resolve(`${__dirname}/../../../../shared/helpers/request`);
 
 describe('Account utils', () => {
 	describe('Validate address', () => {
@@ -50,6 +55,86 @@ describe('Account utils', () => {
 		it('returns correct Lisk32 address from a valid publicKey', async () => {
 			const address = getLisk32AddressFromPublicKey(valid.publicKey);
 			expect(address).toBe(valid.address);
+		});
+	});
+
+	describe('Test getAddressFromParams method', () => {
+		const address = 'lskpg7qukha2nmu9483huwk8oty7q3pyevh3bohr4';
+		const publicKey = '86cbecb2a176934e454f63e7ffa05783be6960d90002c5558dfd31397cd8f020';
+
+		it('should return address from address in params', async () => {
+			const result = getAddressFromParams({ address });
+			expect(result).toBe(address);
+		});
+
+		it('should return address from publicKey in params', async () => {
+			const result = getAddressFromParams({ publicKey });
+			expect(result).toBe(address);
+		});
+	});
+
+	describe('Test checkIfAccountExists method', () => {
+		it('should return true when account exists', async () => {
+			jest.mock(mockedRequestFilePath, () => {
+				const actual = jest.requireActual(mockedRequestFilePath);
+				return {
+					...actual,
+					requestIndexer() {
+						return {
+							data: { isExists: true },
+							meta: {},
+						};
+					},
+				};
+			});
+
+			const { checkIfAccountExists } = require('../../../../shared/helpers/account');
+
+			const isAccountExists = await checkIfAccountExists(
+				'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo',
+			);
+			expect(isAccountExists).toEqual(true);
+		});
+	});
+
+	describe('Test getOpeningBalance method', () => {
+		it('should return opening balance when called with valid address', async () => {
+			const mockUserSubstore = {
+				address: 'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo',
+				availableBalance: '100000000000000',
+				lockedBalances: [],
+				tokenID: '0400000000000000',
+			};
+
+			jest.mock(mockedRequestFilePath);
+			// eslint-disable-next-line import/no-dynamic-require
+			const { requestConnector } = require(mockedRequestFilePath);
+			requestConnector.mockResolvedValueOnce(undefined).mockResolvedValueOnce(mockUserSubstore);
+
+			const { getOpeningBalance } = require('../../../../shared/helpers/account');
+
+			const openingBalance = await getOpeningBalance('lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo');
+			const expectedResponse = {
+				tokenID: '0400000000000000',
+				amount: '100000000000000',
+			};
+
+			expect(openingBalance).toEqual(expectedResponse);
+		});
+
+		it('should throw error when called with undefined', async () => {
+			jest.mock(mockedRequestFilePath, () => {
+				const actual = jest.requireActual(mockedRequestFilePath);
+				return {
+					...actual,
+					requestConnector() {
+						return undefined;
+					},
+				};
+			});
+
+			const { getOpeningBalance } = require('../../../../shared/helpers/account');
+			expect(getOpeningBalance(undefined)).rejects.toThrow();
 		});
 	});
 });

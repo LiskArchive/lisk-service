@@ -15,11 +15,11 @@
  */
 const { resolve } = require('path');
 
-const { transactions } = require('../../constants/transaction');
+const { transactions } = require('../../../constants/transaction');
 
-const { requestAllStandard, requestAllCustom } = require('../../../shared/requestAll');
+const { requestAllStandard, requestAllCustom } = require('../../../../shared/helpers/requestAll');
 
-const mockedRequestFilePath = resolve(`${__dirname}/../../../shared/helpers/request`);
+const mockedRequestFilePath = resolve(`${__dirname}/../../../../shared/helpers/request`);
 
 const getResponseOfLength = (n, singleRequestLimit) =>
 	new Array(n).fill().map((e, i) => ({

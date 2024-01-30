@@ -15,10 +15,18 @@
  */
 const moment = require('moment');
 
+const {
+	Exceptions: { ValidationException },
+} = require('lisk-service-framework');
+
 const config = require('../../config');
+
+const { getNetworkStatus, getBlocks } = require('./chain');
 
 const DATE_FORMAT = config.excel.dateFormat;
 const TIME_FORMAT = config.excel.timeFormat;
+
+let defaultStartDate;
 
 const getToday = () => moment().format(DATE_FORMAT);
 
@@ -37,9 +45,43 @@ const timeFromTimestamp = timestamp => {
 	return dateTime.utcOffset(0).format(TIME_FORMAT);
 };
 
+const getDefaultStartDate = async () => {
+	if (!defaultStartDate) {
+		const {
+			data: { genesisHeight },
+		} = await getNetworkStatus();
+		const {
+			data: [block],
+		} = await getBlocks({ height: genesisHeight });
+		defaultStartDate = moment(block.timestamp * 1000).format(DATE_FORMAT);
+	}
+
+	return defaultStartDate;
+};
+
+const standardizeIntervalFromParams = async ({ interval }) => {
+	let from;
+	let to;
+	if (interval && interval.includes(':')) {
+		[from, to] = interval.split(':');
+		if (moment(to, DATE_FORMAT).diff(moment(from, DATE_FORMAT)) < 0) {
+			throw new ValidationException(`Invalid interval supplied: ${interval}.`);
+		}
+	} else if (interval) {
+		from = interval;
+		to = getToday();
+	} else {
+		from = await getDefaultStartDate();
+		to = getToday();
+	}
+	return `${from}:${to}`;
+};
+
 module.exports = {
 	getToday,
 	getDaysInMilliseconds,
 	dateFromTimestamp,
 	timeFromTimestamp,
+	getDefaultStartDate,
+	standardizeIntervalFromParams,
 };

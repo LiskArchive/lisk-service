@@ -13,10 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { requestAllStandard } = require('./requestAll');
 const { MODULE, COMMAND } = require('./constants');
-const { requestIndexer } = require('./request');
+const { getAddressFromParams } = require('./account');
+const { requestConnector, requestIndexer } = require('./request');
 
 let networkStatus;
+let feeTokenID;
 
 const getNetworkStatus = async () => {
 	if (!networkStatus) {
@@ -49,6 +52,86 @@ const getBlocks = async params => requestIndexer('blocks', params);
 
 const getTransactions = async params => requestIndexer('transactions', params);
 
+const getEvents = async params => requestIndexer('events', params);
+
+const getBlocksInAsc = async params => {
+	const totalBlocks = (
+		await getBlocks({
+			generatorAddress: params.address,
+			timestamp: params.timestamp,
+			limit: 1,
+		})
+	).meta.total;
+
+	const blocks = await requestAllStandard(
+		getBlocks,
+		{
+			generatorAddress: getAddressFromParams(params),
+			timestamp: params.timestamp,
+			sort: 'height:asc',
+		},
+		totalBlocks,
+	);
+
+	return blocks;
+};
+
+const getTransactionsInAsc = async params => {
+	const totalTransactions = (
+		await getTransactions({
+			generatorAddress: params.address,
+			timestamp: params.timestamp,
+			limit: 1,
+		})
+	).meta.total;
+
+	const transactions = await requestAllStandard(
+		getTransactions,
+		{
+			address: getAddressFromParams(params),
+			sort: 'height:asc',
+			timestamp: params.timestamp,
+			limit: params.limit || 10,
+			offset: params.offset || 0,
+		},
+		totalTransactions,
+	);
+
+	return transactions;
+};
+
+const getEventsInAsc = async params => {
+	const totalEvents = (
+		await getEvents({
+			generatorAddress: params.address,
+			timestamp: params.timestamp,
+			limit: 1,
+		})
+	).meta.total;
+
+	const events = requestAllStandard(
+		getEvents,
+		{
+			topic: params.address,
+			timestamp: params.timestamp,
+			module: params.module,
+			name: params.name,
+			sort: 'height:asc',
+		},
+		totalEvents,
+	);
+
+	return events;
+};
+
+const getFeeTokenID = async () => {
+	if (!feeTokenID) {
+		feeTokenID = requestConnector('getFeeTokenID');
+	}
+
+	return feeTokenID;
+};
+
 module.exports = {
 	getCurrentChainID,
 	resolveReceivingChainID,
@@ -56,4 +139,9 @@ module.exports = {
 	getUniqueChainIDs,
 	getBlocks,
 	getTransactions,
+	getEvents,
+	getBlocksInAsc,
+	getTransactionsInAsc,
+	getEventsInAsc,
+	getFeeTokenID,
 };
