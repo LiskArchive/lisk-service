@@ -38,11 +38,19 @@ const updateAccountBalances = async address => {
 	const accountBalancesTable = await getAccountBalancesTable();
 	const { data: balanceInfos } = await getTokenBalances({ address });
 
-	const updatedTokenBalances = balanceInfos.map(balanceInfo => ({
-		address,
-		tokenID: balanceInfo.tokenID,
-		balance: balanceInfo.availableBalance,
-	}));
+	const updatedTokenBalances = balanceInfos.map(balanceInfo => {
+		const { tokenID, availableBalance, lockedBalances } = balanceInfo;
+		const totalLockedBalance = lockedBalances.reduce(
+			(acc, entry) => BigInt(acc) + BigInt(entry.amount),
+			BigInt('0'),
+		);
+
+		return {
+			address,
+			tokenID,
+			balance: BigInt(availableBalance) + BigInt(totalLockedBalance),
+		};
+	});
 
 	// Update all token balances of the address
 	await accountBalancesTable.upsert(updatedTokenBalances);
