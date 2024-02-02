@@ -53,6 +53,7 @@ const {
 	EVENT_TOPIC_PREFIX,
 	LENGTH_DEFAULT_TOPIC,
 	COMMAND,
+	STATUS,
 } = require('./helpers/constants');
 const {
 	resolveChainIDs,
@@ -284,8 +285,9 @@ const getOutgoingTransferCCEntries = async (
 const getIncomingTransferCCEntries = async (addressFromParams, ccmTransferEvent, tx, block) => {
 	const entries = [];
 
-	// TODO: Add constant for CCM result
-	if (ccmTransferEvent.data.result !== 0) return entries;
+	if (ccmTransferEvent.data.result !== STATUS.EVENT_CCM_TRANSFER_RESULT.SUCCESSFUL) {
+		return entries;
+	}
 
 	entries.push({
 		date: dateFromTimestamp(block.timestamp),
@@ -301,7 +303,7 @@ const getIncomingTransferCCEntries = async (addressFromParams, ccmTransferEvent,
 		senderPublicKey: await getPublicKeyByAddress(ccmTransferEvent.data.senderAddress),
 		recipientAddress: addressFromParams,
 		recipientPublicKey: await getPublicKeyByAddress(addressFromParams),
-		note: 'Incoming CCM from specified CCU transactionID', // TODO: Highlight internal transaction
+		note: 'Incoming CCM from specified CCU transactionID',
 		sendingChainID: tx.params.sendingChainID,
 		receivingChainID: ccmTransferEvent.data.receivingChainID,
 	});
@@ -688,7 +690,7 @@ const rescheduleExportOnTimeout = async params => {
 		logger.info(`Original job timed out. Re-scheduling job for ${address} (${requestInterval}).`);
 
 		// eslint-disable-next-line no-use-before-define
-		await scheduleTransactionExportQueue.add({ params });
+		await scheduleTransactionExportQueue.add({ params, isRescheduled: true });
 	} catch (err) {
 		logger.warn(`History export job Re-scheduling failed due to: ${err.message}`);
 		logger.debug(err.stack);
@@ -699,15 +701,15 @@ const exportTransactions = async job => {
 	let timeout;
 	const allEntriesForInterval = [];
 
-	const { params } = job.data;
+	const { params, isRescheduled } = job.data;
 
 	// Validate if account has transactions or is a generator
 	const isAccountHasTransactions = await checkIfAccountHasTransactions(params.address);
 	const isAccountValidator = await checkIfAccountIsValidator(params.address);
 	if (isAccountHasTransactions || isAccountValidator) {
 		// Add a timeout to automatically re-schedule, if the current job times out on its last attempt
-		if (job.attemptsMade === job.opts.attempts - 1) {
-			// TODO: See if prev error can be determined and adjust the condition accordingly
+		// Reschedule only once if all the current retries fail. Failsafe to avoid redundant scheduling and memory leaks
+		if (!isRescheduled && job.attemptsMade === job.opts.attempts - 1) {
 			timeout = setTimeout(
 				rescheduleExportOnTimeout.bind(null, params),
 				config.queue.scheduleTransactionExport.options.defaultJobOptions.timeout,

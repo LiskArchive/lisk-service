@@ -69,6 +69,12 @@ const EVENT_TOPIC_PREFIX = Object.freeze({
 	CCM_ID: '05',
 });
 
+const STATUS = Object.freeze({
+	EVENT_CCM_TRANSFER_RESULT: {
+		SUCCESSFUL: 0,
+	},
+});
+
 module.exports = {
 	MODULE,
 	COMMAND,
@@ -78,4 +84,5 @@ module.exports = {
 	LENGTH_ID,
 	EVENT_TOPIC_PREFIX,
 	LENGTH_DEFAULT_TOPIC,
+	STATUS,
 };
