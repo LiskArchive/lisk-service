@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger } = require('lisk-service-framework');
+const { Logger, CacheLRU } = require('lisk-service-framework');
 const {
 	utils: { hash },
 	address: { getLisk32AddressFromPublicKey: getLisk32AddressFromPublicKeyHelper },
@@ -27,6 +27,8 @@ const { MODULE, MODULE_SUB_STORE } = require('./constants');
 const { requestConnector, requestIndexer } = require('./request');
 
 const logger = Logger();
+
+const publicKeyCache = CacheLRU('publicKey', { max: 100000 });
 
 let tokenModuleData;
 let loadingAssets = false;
@@ -111,6 +113,18 @@ const getOpeningBalance = async address => {
 	return openingBalance;
 };
 
+const cachePublicKey = async publicKey => {
+	const address = getLisk32AddressFromPublicKey(publicKey);
+	await publicKeyCache.set(address, publicKey);
+};
+
+const getPublicKeyByAddress = async address => {
+	const publicKey = await publicKeyCache.get(address);
+	if (publicKey) return publicKey;
+
+	return null;
+};
+
 module.exports = {
 	validateLisk32Address,
 	validatePublicKey,
@@ -122,4 +136,6 @@ module.exports = {
 	checkIfAccountIsValidator,
 	getTokenBalancesAtGenesis,
 	getOpeningBalance,
+	cachePublicKey,
+	getPublicKeyByAddress,
 };

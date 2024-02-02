@@ -68,6 +68,8 @@ const {
 	checkIfAccountHasTransactions,
 	checkIfAccountIsValidator,
 	getOpeningBalance,
+	cachePublicKey,
+	getPublicKeyByAddress,
 } = require('./helpers/account');
 const {
 	normalizeTransactionAmount,
@@ -128,7 +130,7 @@ const getMetadata = async (params, chainID, currentChainID) => ({
 	openingBalance: await getOpeningBalance(params.address),
 });
 
-const formatTransaction = (addressFromParams, tx, currentChainID, txFeeTokenID) => {
+const formatTransaction = async (addressFromParams, tx, currentChainID, txFeeTokenID) => {
 	const { moduleCommand, senderPublicKey } = tx;
 
 	const date = dateFromTimestamp(tx.block.timestamp);
@@ -138,11 +140,16 @@ const formatTransaction = (addressFromParams, tx, currentChainID, txFeeTokenID) 
 	const amountTokenID = tx.params.tokenID;
 	const senderAddress = tx.sender.address;
 	const recipientAddress = tx.params.recipientAddress || null;
-	const recipientPublicKey = (tx.meta && tx.meta.recipient && tx.meta.recipient.publicKey) || null;
+	const recipientPublicKey =
+		(tx.meta && tx.meta.recipient && tx.meta.recipient.publicKey) ||
+		(await getPublicKeyByAddress(recipientAddress));
 	const blockHeight = tx.block.height;
 	const note = tx.params.data || null;
 	const transactionID = tx.id;
 	const { sendingChainID, receivingChainID } = resolveChainIDs(tx, currentChainID);
+
+	if (senderPublicKey) cachePublicKey(senderPublicKey);
+	if (recipientPublicKey) cachePublicKey(recipientPublicKey);
 
 	return {
 		date,
@@ -167,6 +174,9 @@ const formatTransaction = (addressFromParams, tx, currentChainID, txFeeTokenID) 
 const getGeneratorFeeEntries = async (addressFromParams, genFeeEvent, tx, block) => {
 	const entries = [];
 
+	const senderPublicKey = tx.sender.publicKey;
+	cachePublicKey(senderPublicKey);
+
 	const { senderAddress, generatorAddress } = genFeeEvent.data;
 	if (generatorAddress !== addressFromParams) {
 		return entries;
@@ -185,9 +195,9 @@ const getGeneratorFeeEntries = async (addressFromParams, genFeeEvent, tx, block)
 			amount: generatorAmount.toString(),
 			amountTokenID: await getFeeTokenID(),
 			senderAddress,
-			senderPublicKey: tx.sender.publicKey || null,
+			senderPublicKey,
 			recipientAddress: generatorAddress,
-			recipientPublicKey: null, // TODO: getPublicKeyByAddress()
+			recipientPublicKey: await getPublicKeyByAddress(generatorAddress),
 			note: 'Generator Fee',
 			sendingChainID: await getCurrentChainID(),
 			receivingChainID: await getCurrentChainID(),
@@ -207,6 +217,13 @@ const getOutgoingTransferCCEntries = async (
 	const entries = [];
 
 	const currentChainID = await getCurrentChainID();
+
+	const senderPublicKey = tx.sender.publicKey;
+	const recipientPublicKey = tx.meta && tx.meta.recipient && tx.meta.recipient.publicKey;
+
+	if (senderPublicKey) cachePublicKey(senderPublicKey);
+	if (recipientPublicKey) cachePublicKey(recipientPublicKey);
+
 	entries.push({
 		date: dateFromTimestamp(block.timestamp),
 		time: timeFromTimestamp(block.timestamp),
@@ -218,16 +235,16 @@ const getOutgoingTransferCCEntries = async (
 		amount: normalizeTransactionAmount(addressFromParams, tx, currentChainID),
 		amountTokenID: tx.params.tokenID,
 		senderAddress: addressFromParams,
-		senderPublicKey: tx.sender.publicKey || null,
+		senderPublicKey,
 		recipientAddress: tx.params.recipientAddress,
-		recipientPublicKey: (tx.meta && tx.meta.recipient && tx.meta.recipient.publicKey) || null,
+		recipientPublicKey:
+			recipientPublicKey || (await getPublicKeyByAddress(tx.params.recipientAddress)),
 		note: tx.params.data,
 		sendingChainID: currentChainID,
 		receivingChainID: transferCrossChainEvent.data.receivingChainID,
 	});
 
 	if (ccmSendSuccessEvent) {
-		// TODO: Confirm with Ishan if message fee is only deducted when ccmSendSuccess
 		entries.push({
 			date: dateFromTimestamp(block.timestamp),
 			time: timeFromTimestamp(block.timestamp),
@@ -239,7 +256,7 @@ const getOutgoingTransferCCEntries = async (
 			amount: normalizeMessageFee(tx),
 			amountTokenID: tx.params.messageFeeTokenID,
 			senderAddress: tx.sender.address,
-			senderPublicKey: tx.sender.publicKey || null,
+			senderPublicKey,
 			recipientAddress: null,
 			recipientPublicKey: null,
 			note: 'Message Fee',
@@ -250,7 +267,6 @@ const getOutgoingTransferCCEntries = async (
 	return entries;
 };
 
-// TODO: Check with Ishan if the CCM is successfully processed later
 const getIncomingTransferCCEntries = async (addressFromParams, ccmTransferEvent, tx, block) => {
 	const entries = [];
 
@@ -268,9 +284,9 @@ const getIncomingTransferCCEntries = async (addressFromParams, ccmTransferEvent,
 		amount: ccmTransferEvent.data.amount,
 		amountTokenID: ccmTransferEvent.data.tokenID,
 		senderAddress: ccmTransferEvent.data.senderAddress,
-		senderPublicKey: null,
+		senderPublicKey: await getPublicKeyByAddress(ccmTransferEvent.data.senderAddress),
 		recipientAddress: addressFromParams,
-		recipientPublicKey: null,
+		recipientPublicKey: await getPublicKeyByAddress(addressFromParams),
 		note: 'Incoming CCM from specified CCU transactionID', // TODO: Highlight internal transaction
 		sendingChainID: tx.params.sendingChainID,
 		receivingChainID: ccmTransferEvent.data.receivingChainID,
@@ -279,7 +295,6 @@ const getIncomingTransferCCEntries = async (addressFromParams, ccmTransferEvent,
 	return entries;
 };
 
-// TODO: Check with Ishan if the CCM is successfully processed later
 const getMessageFeeEntries = async (
 	addressFromParams,
 	relayerFeeProcessedEvent,
@@ -307,7 +322,7 @@ const getMessageFeeEntries = async (
 		senderAddress: null,
 		senderPublicKey: null,
 		recipientAddress: addressFromParams,
-		recipientPublicKey: null,
+		recipientPublicKey: await getPublicKeyByAddress(addressFromParams),
 		note: 'Message fee for relayer',
 		sendingChainID,
 		receivingChainID,
@@ -325,6 +340,9 @@ const getSharedRewardsAssignedEntries = async (
 ) => {
 	const entries = [];
 
+	const recipientPublicKey = tx.sender.publicKey;
+	if (recipientPublicKey) cachePublicKey(recipientPublicKey);
+
 	entries.push({
 		date: dateFromTimestamp(block.timestamp),
 		time: timeFromTimestamp(block.timestamp),
@@ -337,9 +355,9 @@ const getSharedRewardsAssignedEntries = async (
 		amount: (BigInt(isStaker ? '1' : '-1') * BigInt(rewardsAssignedEvent.data.amount)).toString(),
 		amountTokenID: await getPosTokenID(),
 		senderAddress: rewardsAssignedEvent.data.validatorAddress,
-		senderPublicKey: null,
+		senderPublicKey: await getPublicKeyByAddress(rewardsAssignedEvent.data.validatorAddress),
 		recipientAddress: rewardsAssignedEvent.data.stakerAddress,
-		recipientPublicKey: tx.sender.publicKey || null,
+		recipientPublicKey,
 		note: 'Shared custodial reward transfer',
 		sendingChainID: await getCurrentChainID(),
 		receivingChainID: await getCurrentChainID(),
@@ -375,6 +393,8 @@ const getBlockRewardEntries = async (
 		sendingChainID: await getCurrentChainID(),
 		receivingChainID: await getCurrentChainID(),
 	};
+
+	cachePublicKey(block.generator.publicKey);
 
 	entries.push({
 		...commonEntryProperties,
@@ -468,12 +488,16 @@ const getEntriesByChronology = async (params, sortedBlocks, sortedTransactions, 
 					// token:transferCrossChain transaction is addressed separately
 					tx.moduleCommand !== `${MODULE.TOKEN}:${COMMAND.TRANSFER_CROSS_CHAIN}`
 				) {
-					entries.push(formatTransaction(addressFromParams, tx, currentChainID, txFeeTokenID));
+					entries.push(
+						await formatTransaction(addressFromParams, tx, currentChainID, txFeeTokenID),
+					);
 
 					// Add duplicate entry with zero fees for self token transfer transactions
 					if (checkIfSelfTokenTransfer(tx)) {
 						const dupTx = { ...tx, fee: null, isSelfTokenTransferCredit: true };
-						entries.push(formatTransaction(addressFromParams, dupTx, currentChainID, txFeeTokenID));
+						entries.push(
+							await formatTransaction(addressFromParams, dupTx, currentChainID, txFeeTokenID),
+						);
 					}
 				}
 
