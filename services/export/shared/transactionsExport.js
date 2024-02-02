@@ -125,24 +125,28 @@ const getChainInfo = async chainID => {
 	return { chainID, chainName };
 };
 
-const getMetadata = async (params, chainID, currentChainID) => {
+const getMetadataEntries = async (params, chainID, currentChainID) => {
 	const chainInfo = await getChainInfo(chainID);
-	const openingBalances = await getOpeningBalances(params.address);
 
-	const metadataEntries = openingBalances.map(e => ({
-		...chainInfo,
-		note: `Current Chain ID: ${currentChainID}`,
-		openingBalanceAmount: e.amount,
-		tokenID: e.tokenID,
-	}));
-	if (metadataEntries.length) return metadataEntries;
+	if (chainID === currentChainID) {
+		const openingBalances = await getOpeningBalances(params.address);
+		const metadataEntries = openingBalances.map(e => ({
+			...chainInfo,
+			note: `Current Chain ID: ${currentChainID}`,
+			openingBalanceAmount: e.amount,
+			tokenID: e.tokenID,
+		}));
+		if (metadataEntries.length) return metadataEntries;
+	}
 
-	return {
-		...chainInfo,
-		note: `Current Chain ID: ${currentChainID}`,
-		openingBalanceAmount: null,
-		tokenID: null,
-	};
+	return [
+		{
+			...chainInfo,
+			note: `Current Chain ID: ${currentChainID}`,
+			openingBalanceAmount: null,
+			tokenID: null,
+		},
+	];
 };
 
 const formatTransaction = async (addressFromParams, tx, currentChainID, txFeeTokenID) => {
@@ -781,9 +785,10 @@ const exportTransactions = async job => {
 	// Build the metadata sheet
 	const currentChainID = await getCurrentChainID();
 	const uniqueChainIDs = await getUniqueChainIDs(allEntriesForInterval);
-	const metadataEntries = await Promise.all(
-		uniqueChainIDs.map(async chainID => getMetadata(params, chainID, currentChainID)),
+	const metadataEntriesList = await Promise.all(
+		uniqueChainIDs.map(async chainID => getMetadataEntries(params, chainID, currentChainID)),
 	);
+	const metadataEntries = metadataEntriesList.flat();
 	const metadataSheet = workBook.addWorksheet(config.excel.sheets.METADATA);
 	metadataSheet.columns = fields.metadataMappings;
 	metadataSheet.addRows(metadataEntries);
@@ -895,5 +900,4 @@ module.exports = {
 	// For functional tests
 	formatTransaction,
 	formatBlocks,
-	getMetadata,
 };

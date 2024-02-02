@@ -35,9 +35,9 @@ const transactionMappings = [
 const metadataMappings = [
 	{ header: 'Chain ID', key: 'chainID' },
 	{ header: 'Chain Name', key: 'chainName' },
+	{ header: 'Note', key: 'note' },
 	{ header: 'Opening Balance Amount', key: 'openingBalanceAmount' },
 	{ header: 'Token ID', key: 'tokenID' },
-	{ header: 'Note', key: 'note' },
 ];
 
 module.exports = {
