@@ -249,7 +249,7 @@ const getOutgoingTransferCCEntries = async (
 		blockHeight: block.height,
 		transactionID: tx.id,
 		moduleCommand: tx.moduleCommand,
-		fee: normalizeTransactionFee(tx),
+		fee: normalizeTransactionFee(addressFromParams, tx),
 		txFeeTokenID: await getFeeTokenID(),
 		amount: normalizeTransactionAmount(addressFromParams, tx, currentChainID),
 		amountTokenID: tx.params.tokenID,
