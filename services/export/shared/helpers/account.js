@@ -100,17 +100,25 @@ const getTokenBalancesAtGenesis = async () => {
 	return tokenModuleData;
 };
 
-const getOpeningBalance = async address => {
+const getOpeningBalances = async address => {
 	const balancesAtGenesis = await getTokenBalancesAtGenesis();
-	const accountInfo = balancesAtGenesis
-		? balancesAtGenesis.find(e => e.address === address)
-		: await requestConnector('getTokenBalanceAtGenesis', { address });
+	const balancesByAddress = balancesAtGenesis
+		? balancesAtGenesis.filter(e => e.address === address)
+		: await requestConnector('getTokenBalancesAtGenesis', { address });
 
-	const openingBalance = accountInfo
-		? { tokenID: accountInfo.tokenID, amount: accountInfo.availableBalance }
-		: null;
+	const openingBalances = balancesByAddress.map(e => {
+		const { tokenID, availableBalance, lockedBalances } = e;
+		const totalLockedBalance = lockedBalances.reduce(
+			(total, balInfo) => total + BigInt(balInfo.amount),
+			BigInt('0'),
+		);
 
-	return openingBalance;
+		const amount = BigInt(availableBalance) + totalLockedBalance;
+
+		return { tokenID, amount: amount.toString() };
+	});
+
+	return openingBalances;
 };
 
 const cachePublicKey = async publicKey => {
@@ -135,7 +143,7 @@ module.exports = {
 	checkIfAccountHasTransactions,
 	checkIfAccountIsValidator,
 	getTokenBalancesAtGenesis,
-	getOpeningBalance,
+	getOpeningBalances,
 	cachePublicKey,
 	getPublicKeyByAddress,
 };

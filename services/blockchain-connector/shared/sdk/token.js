@@ -75,7 +75,7 @@ const updateTokenInfo = async () => {
 	totalSupply = await getTotalSupply(true);
 };
 
-const getTokenBalanceAtGenesis = async address => {
+const getTokenBalancesAtGenesis = async address => {
 	const MODULE_TOKEN_SUBSTORE_USER = 'userSubstore';
 
 	const tokenModuleGenesisAssets = await getGenesisAssetByModule({
@@ -84,7 +84,7 @@ const getTokenBalanceAtGenesis = async address => {
 	});
 
 	const balancesAtGenesis = tokenModuleGenesisAssets[MODULE_TOKEN_SUBSTORE_USER];
-	const balancesByAddress = balancesAtGenesis.find(e => e.address === address);
+	const balancesByAddress = balancesAtGenesis.filter(e => e.address === address);
 
 	return balancesByAddress;
 };
@@ -99,5 +99,5 @@ module.exports = {
 	getTotalSupply,
 	getTokenInitializationFees,
 	updateTokenInfo,
-	getTokenBalanceAtGenesis,
+	getTokenBalancesAtGenesis,
 };

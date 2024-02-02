@@ -22,7 +22,7 @@ const {
 	getTokenBalances,
 	getTokenInitializationFees,
 	tokenHasEscrowAccount,
-	getTokenBalanceAtGenesis,
+	getTokenBalancesAtGenesis,
 } = require('../shared/sdk');
 
 module.exports = [
@@ -86,8 +86,8 @@ module.exports = [
 		params: {},
 	},
 	{
-		name: 'getTokenBalanceAtGenesis',
-		controller: async ({ address }) => getTokenBalanceAtGenesis(address),
+		name: 'getTokenBalancesAtGenesis',
+		controller: async ({ address }) => getTokenBalancesAtGenesis(address),
 		params: {
 			address: { optional: false, type: 'string' },
 		},

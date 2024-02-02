@@ -67,7 +67,7 @@ const {
 	checkIfAccountExists,
 	checkIfAccountHasTransactions,
 	checkIfAccountIsValidator,
-	getOpeningBalance,
+	getOpeningBalances,
 	cachePublicKey,
 	getPublicKeyByAddress,
 } = require('./helpers/account');
@@ -124,11 +124,25 @@ const getChainInfo = async chainID => {
 	return { chainID, chainName };
 };
 
-const getMetadata = async (params, chainID, currentChainID) => ({
-	...(await getChainInfo(chainID)),
-	note: `Current Chain ID: ${currentChainID}`,
-	openingBalance: await getOpeningBalance(params.address),
-});
+const getMetadata = async (params, chainID, currentChainID) => {
+	const chainInfo = await getChainInfo(chainID);
+	const openingBalances = await getOpeningBalances(params.address);
+
+	const metadataEntries = openingBalances.map(e => ({
+		...chainInfo,
+		note: `Current Chain ID: ${currentChainID}`,
+		openingBalanceAmount: e.amount,
+		tokenID: e.tokenID,
+	}));
+	if (metadataEntries.length) return metadataEntries;
+
+	return {
+		...chainInfo,
+		note: `Current Chain ID: ${currentChainID}`,
+		openingBalanceAmount: null,
+		tokenID: null,
+	};
+};
 
 const formatTransaction = async (addressFromParams, tx, currentChainID, txFeeTokenID) => {
 	const { moduleCommand, senderPublicKey } = tx;
@@ -765,12 +779,12 @@ const exportTransactions = async job => {
 	// Build the metadata sheet
 	const currentChainID = await getCurrentChainID();
 	const uniqueChainIDs = await getUniqueChainIDs(allEntriesForInterval);
-	const metadata = await Promise.all(
+	const metadataEntries = await Promise.all(
 		uniqueChainIDs.map(async chainID => getMetadata(params, chainID, currentChainID)),
 	);
 	const metadataSheet = workBook.addWorksheet(config.excel.sheets.METADATA);
-	metadataSheet.columns = fields.metadataMappings; // TODO: Split Opening balance & tokenID into separate columns
-	metadataSheet.addRows(metadata);
+	metadataSheet.columns = fields.metadataMappings;
+	metadataSheet.addRows(metadataEntries);
 
 	const excelFilename = await getExcelFilenameFromParams(params, currentChainID);
 	await workBook.xlsx.writeFile(`${config.cache.exports.dirPath}/${excelFilename}`);
