@@ -16,14 +16,14 @@
 const { EVENT_TOPIC_PREFIX, LENGTH_ID } = require('./constants');
 
 const getTransactionIDFromTopic0 = topic0 =>
-	topic0.length === topic0.startsWith(EVENT_TOPIC_PREFIX.TX_ID) &&
-	EVENT_TOPIC_PREFIX.TX_ID.length + LENGTH_ID
+	topic0.startsWith(EVENT_TOPIC_PREFIX.TX_ID) &&
+	topic0.length === EVENT_TOPIC_PREFIX.TX_ID.length + LENGTH_ID
 		? topic0.slice(EVENT_TOPIC_PREFIX.TX_ID.length)
 		: null;
 
 const getCcmIDFromTopic0 = topic0 =>
-	topic0.length === topic0.startsWith(EVENT_TOPIC_PREFIX.CCM_ID) &&
-	EVENT_TOPIC_PREFIX.CCM_ID.length + LENGTH_ID
+	topic0.startsWith(EVENT_TOPIC_PREFIX.CCM_ID) &&
+	topic0.length === EVENT_TOPIC_PREFIX.CCM_ID.length + LENGTH_ID
 		? topic0.slice(EVENT_TOPIC_PREFIX.CCM_ID.length)
 		: null;
 
