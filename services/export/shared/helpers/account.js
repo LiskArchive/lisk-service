@@ -21,7 +21,6 @@ const {
 } = require('@liskhq/lisk-cryptography');
 
 const { PUBLIC_KEY, ADDRESS_LISK32 } = require('../regex');
-const { getTransactions } = require('./chain');
 const { requestAllCustom } = require('./requestAll');
 const { MODULE, MODULE_SUB_STORE } = require('./constants');
 const { requestConnector, requestIndexer } = require('./request');
@@ -54,12 +53,13 @@ const checkIfAccountExists = async address => {
 };
 
 const checkIfAccountHasTransactions = async address => {
-	const response = await getTransactions({ address, limit: 1 });
+	// Using getTransactions from chain.js introduces cyclic dependency
+	const response = await requestIndexer('transactions', { address, limit: 1 });
 	return !!response.data.length;
 };
 
 const checkIfAccountIsValidator = async address => {
-	const response = await requestIndexer('pos.validators', { address });
+	const response = await requestIndexer('pos.validators', { address, sort: 'commission:asc' });
 	return !!response.data.length;
 };
 
