@@ -46,14 +46,14 @@ const normalizeTransactionAmount = (address, tx, currentChainID) => {
 	return (sign * amount).toString();
 };
 
-const normalizeTransactionFee = (address, tx) => {
+const normalizeTransactionFee = (addressFromParams, tx) => {
 	const txFee = (BigInt('-1') * BigInt(tx.fee)).toString(); // Fee reduces the balance
 
 	const isTokenTransfer = tx.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER}`;
 	if (!isTokenTransfer) return txFee;
 
 	const { isIncomingCrossChainTransferTransaction } = tx;
-	const isRecipient = address === tx.params.recipientAddress;
+	const isRecipient = addressFromParams === tx.params.recipientAddress;
 	return isRecipient || isIncomingCrossChainTransferTransaction ? BigInt('0').toString() : txFee;
 };
 

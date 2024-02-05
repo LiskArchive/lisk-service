@@ -42,6 +42,7 @@ const {
 	getUniqueChainIDs,
 } = require('./helpers');
 
+const { dropDuplicatesDeep } = require('./helpers/array');
 const { checkIfIndexReadyForInterval } = require('./helpers/ready');
 const { standardizeIntervalFromParams } = require('./helpers/time');
 const { requestIndexer, requestAppRegistry } = require('./helpers/request');
@@ -678,7 +679,7 @@ const getEntriesByChronology = async (params, sortedBlocks, sortedTransactions, 
 		}
 	}
 
-	return entries;
+	return dropDuplicatesDeep(entries);
 };
 
 const rescheduleExportOnTimeout = async params => {
