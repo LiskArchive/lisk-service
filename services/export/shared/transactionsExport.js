@@ -980,4 +980,11 @@ module.exports = {
 	// For functional tests
 	formatTransaction,
 	formatBlocks,
+	getChainInfo,
+	getBlockRewardEntries,
+	getGeneratorFeeEntries,
+	getSharedRewardsAssignedEntries,
+	getMessageFeeEntries,
+	getOutgoingTransferCCEntries,
+	getIncomingTransferCCEntries,
 };

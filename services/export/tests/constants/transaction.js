@@ -177,6 +177,117 @@ const tokenTransferCrossChainTransaction = {
 	index: 1,
 };
 
+const posClaimedRewards = {
+	id: '732923c6e8780251c1dcd179e3e657827ae9318a6df920de595d743f1ed70a40',
+	moduleCommand: 'pos:claimRewards',
+	nonce: '92',
+	fee: '127000',
+	minFee: '127000',
+	size: 127,
+	block: {
+		id: 'd6be2fd9ebd06406122ed971b7638621b8f5104f84b46e21d4067fd28b3db72e',
+		height: 21304948,
+		timestamp: 1707134570,
+		isFinal: true,
+	},
+	sender: {
+		address: 'lskmg3sdmjp4smz6x9k2cuyuwags5ehgtexe4w2ds',
+		publicKey: 'f0fda0461215e4e63a68d12c79d293833c32519cfe3a5e01ca08b0a0a7493de5',
+		name: null,
+	},
+	params: {},
+	signatures: [
+		'd219f9362bd2a6fcd8357bcfdc26b66efade5526407d884e4f34750934965b1f3367f7f71e9ddfd29160f6b101a0136ee456a1b7721519d85fff6d6ca65be401',
+	],
+	executionStatus: 'successful',
+	index: 0,
+};
+
+const transferCrossChain = {
+	id: '34548b99aa37a5a450712c7e3f1e13b62be872d65dd7a8c1d54859408ca4914b',
+	moduleCommand: 'token:transferCrossChain',
+	nonce: '41',
+	fee: '10000000',
+	minFee: '194000',
+	size: 195,
+	block: {
+		id: 'bc62dabae94b2d146a9fb72424b87d65cfdc4b41d57d7e95343a8bd246b74b75',
+		height: 21016494,
+		timestamp: 1704198870,
+		isFinal: true,
+	},
+	sender: {
+		address: 'lsk56p8e53k3kar8epeqwpbxa2yd4urn8ouzhfvgs',
+		publicKey: '344c75738c096e4bd94459fe81eba45503382181d003a9d2c8be75a2f38b49fa',
+		name: null,
+	},
+	params: {
+		tokenID: '0400000000000000',
+		amount: '100000000',
+		receivingChainID: '04000002',
+		recipientAddress: 'lsk56p8e53k3kar8epeqwpbxa2yd4urn8ouzhfvgs',
+		data: '',
+		messageFee: '109000',
+		messageFeeTokenID: '0400000000000000',
+	},
+	signatures: [
+		'cbe755352a175b11a3dc4ae4b5e890ebc4ce1d5cc11c6dbdf5cf21b19f7605e7845b4650779191fdbfc1a1afe90edc1a049717b60858f140f4ae0ad67e93d505',
+	],
+	executionStatus: 'successful',
+	index: 0,
+	meta: {
+		recipient: {
+			address: 'lsk56p8e53k3kar8epeqwpbxa2yd4urn8ouzhfvgs',
+			publicKey: '344c75738c096e4bd94459fe81eba45503382181d003a9d2c8be75a2f38b49fa',
+			name: null,
+		},
+	},
+};
+
+const submitMainchainCrossChainUpdate = {
+	id: 'd16d1cb5fa32df64988b4ab5de66b7d43c8fbfdaf043aca84d649f914d66189f',
+	moduleCommand: 'interoperability: submitMainchainCrossChainUpdate',
+	nonce: '140',
+	fee: '3000000',
+	minFee: '422000',
+	size: 423,
+	block: {
+		id: '5333974cf1763909f6e63e4a419d942ae4a6a0a2f3477e620f214cf23a4c7342',
+		height: 21102804,
+		timestamp: 1705079500,
+		isFinal: true,
+	},
+	sender: {
+		address: 'lskcd7tbbhkyebmg2fhdd4w4omvnfhzp5rb7wmz4d',
+		publicKey: 'b5e96c1a5ab6f9d96eb08360cbfe4f1d8826591c515d307b9b9eeb1567a19013',
+		name: null,
+	},
+	params: {
+		sendingChainID: '04000000',
+		certificate:
+			'0a20e38e39a33032916b31c6f092047d6aa4919d88760b9185fe631c19d1669a45fc10f60418f4ac84ad0622204dd143faa3c027e456369f75c89bd32befb9229dfcc3cd0b83ecbbca1e0656a42a2076965cc0331adc28fd8d16e63a64d6520397ee3fb3397da59afe60a506bcd909320dffffffffffffffffffffffff013a60b42c2b251e7621e8fd4915167a8360967860898484f29d0faf1e5536ba74bae59da15de420e209182843f884e6aea1b7078095fbeffdbac4169ac3689d06a49e49abd9a4aa9ee78708b7978e2de477993589ed0d2114d3fca5267da867510502',
+		activeValidatorsUpdate: {
+			blsKeysUpdate: [],
+			bftWeightsUpdate: ['0'],
+			bftWeightsUpdateBitmap: '00000000000000000020000000',
+		},
+		certificateThreshold: '65',
+		inboxUpdate: {
+			crossChainMessages: [],
+			messageWitnessHashes: [],
+			outboxRootWitness: {
+				bitmap: '',
+				siblingHashes: [],
+			},
+		},
+	},
+	signatures: [
+		'ded5534277972e71ca062b3ac58ce1e6e71fe5f9b5a91c091e5e8ddc879726263c2c6cd23bc1ca1e18f5cdc36767ca243773180ee05caa7bbe724324c20a300d',
+	],
+	executionStatus: 'failed',
+	index: 0,
+};
+
 module.exports = {
 	transactions: {
 		reclaim: reclaimTransaction,
@@ -184,5 +295,8 @@ module.exports = {
 		tokenTransferSelf: tokenTransferTransactionSelf,
 		tokenTransferCrossChain: tokenTransferCrossChainTransaction,
 		stake: stakeTransaction,
+		claimedRewards: posClaimedRewards,
+		transferCrossChain,
+		submitMainchainCrossChainUpdate,
 	},
 };

@@ -22,7 +22,7 @@ const PARTIAL_FILENAME =
 const STANDARDIZED_INTERVAL =
 	/^\b((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31)):((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\b$/g;
 const EXCEL_FILE_URL =
-	/^\/api\/v3\/export\/download\?filename=transactions_(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\.xlsx$/g;
+	/^\/api\/v3\/export\/download\?filename=transactions_([a-fA-F0-9]{8})_(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\.xlsx$/g;
 const MAINCHAIN_ID = /^[a-fA-F0-9]{2}000000$/;
 
 module.exports = {

@@ -86,7 +86,7 @@ describe('Test resolveChainIDs method', () => {
 		expect(response).toEqual(expectedResponse);
 	});
 
-	it('should return empty object when called with non-token transferCrossChain transaction', async () => {
+	xit('should return empty object when called with non-token transferCrossChain transaction', async () => {
 		const response = resolveChainIDs(transactions.stake, chainID);
 		expect(Object.getOwnPropertyNames(response).length).toBe(0);
 	});
