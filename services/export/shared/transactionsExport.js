@@ -625,17 +625,16 @@ const getEntriesByChronology = async (params, sortedBlocks, sortedTransactions, 
 				if (e.module === MODULE.FEE && e.name === EVENT.RELAYER_FEE_PROCESSED) {
 					const messageFeeTokenID = (() => {
 						// Determine the messageFeeTokenID from the corresponding token:beforeCCCExecution event
-						let j = i - 1;
-						while (j--) {
-							const prevEvent = sortedEvents[j];
-							if (
-								prevEvent.module === MODULE.TOKEN &&
-								prevEvent.name === EVENT.BEFORE_CCC_EXECUTION &&
-								prevEvent.data.ccmID === e.data.ccmID
-							) {
-								return prevEvent.data.messageFeeTokenID;
-							}
+						const correspondingBeforeCCCExecutionEvent = sortedEvents.find(
+							eventForHeight =>
+								eventForHeight.module === MODULE.TOKEN &&
+								eventForHeight.name === EVENT.BEFORE_CCC_EXECUTION &&
+								eventForHeight.data.ccmID === e.data.ccmID,
+						);
+						if (correspondingBeforeCCCExecutionEvent) {
+							return getTransactionIDFromTopic0(correspondingBeforeCCCExecutionEvent.topics[0]);
 						}
+
 						logger.warn(
 							`Cannot determine messageFeeTokenID for ccmID ${ccmID} from event:\n${JSON.stringify(
 								e,
@@ -647,20 +646,19 @@ const getEntriesByChronology = async (params, sortedBlocks, sortedTransactions, 
 					})();
 					const { sendingChainID, receivingChainID } = (() => {
 						// Determine the sendingChainID from the corresponding interoperability:ccmProcessed event
-						let j = i - 1;
-						while (j--) {
-							const prevEvent = sortedEvents[j];
-							if (
-								prevEvent.module === MODULE.INTEROPERABILITY &&
-								prevEvent.name === EVENT.CCM_PROCESSED &&
-								prevEvent.topics[0] === e.topics[0]
-							) {
-								return {
-									sendingChainID: prevEvent.data.ccm.sendingChainID,
-									receivingChainID: prevEvent.data.ccm.receivingChainID,
-								};
-							}
+						const correspondingCcmProcessedEvent = sortedEvents.find(
+							eventForHeight =>
+								eventForHeight.module === MODULE.INTEROPERABILITY &&
+								eventForHeight.name === EVENT.CCM_PROCESSED &&
+								eventForHeight.topics[0] === e.topics[0],
+						);
+						if (correspondingCcmProcessedEvent) {
+							return {
+								sendingChainID: correspondingCcmProcessedEvent.data.ccm.sendingChainID,
+								receivingChainID: correspondingCcmProcessedEvent.data.ccm.receivingChainID,
+							};
 						}
+
 						logger.warn(
 							`Cannot determine sendingChainID & receivingChainID for ccmID ${ccmID} from event:\n${JSON.stringify(
 								e,
