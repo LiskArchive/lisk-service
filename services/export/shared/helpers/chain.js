@@ -63,7 +63,11 @@ const resolveChainIDs = (tx, currentChainID) => {
 			receivingChainID,
 		};
 	}
-	return {};
+
+	return {
+		sendingChainID: currentChainID,
+		receivingChainID: currentChainID,
+	};
 };
 
 const getBlocks = async params => requestIndexer('blocks', params);

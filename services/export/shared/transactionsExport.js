@@ -354,7 +354,6 @@ const getMessageFeeEntries = async (
 
 const getSharedRewardsAssignedEntries = async (
 	addressFromParams,
-	isStaker,
 	rewardsAssignedEvent,
 	tx,
 	block,
@@ -364,14 +363,15 @@ const getSharedRewardsAssignedEntries = async (
 	const recipientPublicKey = tx.sender.publicKey;
 	if (recipientPublicKey) cachePublicKey(recipientPublicKey);
 
+	const isStaker = addressFromParams === rewardsAssignedEvent.data.stakerAddress;
 	entries.push({
 		date: dateFromTimestamp(block.timestamp),
 		time: timeFromTimestamp(block.timestamp),
 		blockHeight: block.height,
 		transactionID: tx.id,
-		moduleCommand: tx.moduleCommand,
-		fee: normalizeTransactionFee(addressFromParams, tx),
-		txFeeTokenID: await getFeeTokenID(),
+		moduleCommand: null,
+		fee: null,
+		txFeeTokenID: null,
 		// because amount increases the staker balance and reduces the validator balance
 		amount: (BigInt(isStaker ? '1' : '-1') * BigInt(rewardsAssignedEvent.data.amount)).toString(),
 		amountTokenID: await getPosTokenID(),
@@ -379,7 +379,7 @@ const getSharedRewardsAssignedEntries = async (
 		senderPublicKey: await getPublicKeyByAddress(rewardsAssignedEvent.data.validatorAddress),
 		recipientAddress: rewardsAssignedEvent.data.stakerAddress,
 		recipientPublicKey,
-		note: 'Shared custodial reward transfer',
+		note: 'Custodial shared rewards transfer to the staker',
 		sendingChainID: await getCurrentChainID(),
 		receivingChainID: await getCurrentChainID(),
 	});
@@ -427,7 +427,7 @@ const getBlockRewardEntries = async (
 		entries.push({
 			...commonEntryProperties,
 			amount: sharedReward.toString(),
-			note: 'Block generation reward (Shared custodial reward locking)',
+			note: 'Block generation reward (custodial shared rewards locked)',
 		});
 	}
 
@@ -639,10 +639,8 @@ const getEntriesByChronology = async (params, sortedBlocks, sortedTransactions, 
 
 			// Shared custodial reward received/sent
 			if (e.module === MODULE.POS && e.name === EVENT.REWARDS_ASSIGNED) {
-				const isStaker = addressFromParams === e.data.stakerAddress;
 				const rewardAssignedEntries = await getSharedRewardsAssignedEntries(
 					addressFromParams,
-					isStaker,
 					e,
 					tx,
 					block,

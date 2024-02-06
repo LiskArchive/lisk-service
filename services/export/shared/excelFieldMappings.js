@@ -36,7 +36,7 @@ const metadataMappings = [
 	{ header: 'Chain ID', key: 'chainID' },
 	{ header: 'Chain Name', key: 'chainName' },
 	{ header: 'Note', key: 'note' },
-	{ header: 'Opening Balance Amount', key: 'openingBalanceAmount' },
+	{ header: 'v4 Opening Balance', key: 'openingBalanceAmount' },
 	{ header: 'Token ID', key: 'tokenID' },
 ];
 
