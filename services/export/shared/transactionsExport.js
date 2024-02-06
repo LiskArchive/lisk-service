@@ -58,6 +58,7 @@ const {
 } = require('./helpers/constants');
 const {
 	resolveChainIDs,
+	getEvents,
 	getAllBlocksInAsc,
 	getAllTransactionsInAsc,
 	getAllEventsInAsc,
@@ -352,6 +353,36 @@ const getMessageFeeEntries = async (
 	return entries;
 };
 
+const getLegacyAccountReclaimEntries = async (
+	addressFromParams,
+	accountReclaimedEvent,
+	tx,
+	block,
+) => {
+	const entries = [];
+
+	entries.push({
+		date: dateFromTimestamp(block.timestamp),
+		time: timeFromTimestamp(block.timestamp),
+		blockHeight: block.height,
+		transactionID: tx.id,
+		moduleCommand: null,
+		fee: null,
+		txFeeTokenID: null,
+		amount: accountReclaimedEvent.data.amount,
+		amountTokenID: await getFeeTokenID(),
+		senderAddress: null,
+		senderPublicKey: null,
+		recipientAddress: addressFromParams,
+		recipientPublicKey: await getPublicKeyByAddress(addressFromParams),
+		note: 'Legacy account balance reclaimed',
+		sendingChainID: await getCurrentChainID(),
+		receivingChainID: await getCurrentChainID(),
+	});
+
+	return entries;
+};
+
 const getSharedRewardsAssignedEntries = async (
 	addressFromParams,
 	rewardsAssignedEvent,
@@ -453,30 +484,47 @@ const getEntriesByChronology = async (params, sortedBlocks, sortedTransactions, 
 		) {
 			const ccmID = getCcmIDFromTopic0(topic0);
 			const tx = await (async () => {
-				const transactionID = ccmID
-					? (() => {
-							// If current event's topic0 is a ccmID, determine the CCU transaction ID from the corresponding beforeCCCExecution event
-							let j = i - 1;
-							while (j--) {
-								const prevEvent = sortedEvents[j];
-								if (
-									prevEvent.module === MODULE.TOKEN &&
-									prevEvent.name === EVENT.BEFORE_CCC_EXECUTION &&
-									prevEvent.data.ccmID === ccmID
-								) {
-									return getTransactionIDFromTopic0(prevEvent.topics[0]);
+				const transactionID =
+					ccmID === null
+						? getTransactionIDFromTopic0(topic0)
+						: await (async () => {
+								// If current event's topic0 is a ccmID, determine the CCU transaction ID from the corresponding beforeCCCExecution event
+								let j = i - 1;
+								while (j--) {
+									const prevEvent = sortedEvents[j];
+									if (
+										prevEvent.module === MODULE.TOKEN &&
+										prevEvent.name === EVENT.BEFORE_CCC_EXECUTION &&
+										prevEvent.data.ccmID === ccmID
+									) {
+										return getTransactionIDFromTopic0(prevEvent.topics[0]);
+									}
 								}
-							}
-							logger.warn(
-								`Cannot determine CCU transactionID for ccmID ${ccmID} from event:\n${JSON.stringify(
-									e,
-									null,
-									'\t',
-								)}`,
-							);
-							throw Error(`CCU transactionID cannot be determined for ccmID ${ccmID}.`);
-					  })()
-					: getTransactionIDFromTopic0(topic0);
+
+								const sortedEventsForHeight = await getEvents({
+									height: e.block.height,
+									sort: 'height:asc',
+									order: 'index:asc',
+								});
+								const correspondingBeforeCCCExecutionEvent = sortedEventsForHeight.find(
+									eventForHeight =>
+										eventForHeight.module === MODULE.TOKEN &&
+										eventForHeight.name === EVENT.BEFORE_CCC_EXECUTION &&
+										eventForHeight.data.ccmID === ccmID,
+								);
+								if (correspondingBeforeCCCExecutionEvent) {
+									return getTransactionIDFromTopic0(correspondingBeforeCCCExecutionEvent.topics[0]);
+								}
+
+								logger.warn(
+									`Cannot determine CCU transactionID for ccmID ${ccmID} from event:\n${JSON.stringify(
+										e,
+										null,
+										'\t',
+									)}`,
+								);
+								throw Error(`CCU transactionID cannot be determined for ccmID ${ccmID}.`);
+						  })();
 
 				const txInList = sortedTransactions.find(t => t.id === transactionID);
 				if (txInList) return txInList;
@@ -561,7 +609,8 @@ const getEntriesByChronology = async (params, sortedBlocks, sortedTransactions, 
 				if (
 					e.module === MODULE.TOKEN &&
 					e.name === EVENT.CCM_TRANSFER &&
-					e.data.recipientAddress === addressFromParams
+					e.data.recipientAddress === addressFromParams &&
+					e.data.receivingChainID === (await getCurrentChainID())
 				) {
 					const incomingCCTransferEntries = await getIncomingTransferCCEntries(
 						addressFromParams,
@@ -635,6 +684,24 @@ const getEntriesByChronology = async (params, sortedBlocks, sortedTransactions, 
 					);
 					entries.push(...messageFeeEntries);
 				}
+
+				// Legacy account reclaims
+				if (
+					e.module === MODULE.LEGACY &&
+					e.name === EVENT.ACCOUNT_RECLAIMED &&
+					e.topics[2] === addressFromParams
+				) {
+					const accountReclaimedEvent = e;
+					const legacyAccountReclaimEntries = await getLegacyAccountReclaimEntries(
+						addressFromParams,
+						accountReclaimedEvent,
+						tx,
+						block,
+					);
+					entries.push(...legacyAccountReclaimEntries);
+				}
+
+				// TODO: Implement for PoM transaction
 			}
 
 			// Shared custodial reward received/sent

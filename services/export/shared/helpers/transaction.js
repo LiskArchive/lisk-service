@@ -16,9 +16,17 @@
 const { MODULE, COMMAND, TRANSACTION_STATUS } = require('./constants');
 
 const normalizeTransactionAmount = (address, tx, currentChainID) => {
-	if (!('amount' in tx.params) || tx.executionStatus !== TRANSACTION_STATUS.SUCCESSFUL) {
+	// Amount normalization is only done for token:transfer & token:transferCrossChain transaction types only
+	if (
+		![
+			`${MODULE.TOKEN}:${COMMAND.TRANSFER}`,
+			`${MODULE.TOKEN}:${COMMAND.TRANSFER_CROSS_CHAIN}`,
+		].includes(tx.moduleCommand) ||
+		tx.executionStatus !== TRANSACTION_STATUS.SUCCESSFUL
+	) {
 		return null;
 	}
+
 	const amount = BigInt(tx.params.amount);
 
 	// Always a deduction for a successful token:transferCrossChain transaction

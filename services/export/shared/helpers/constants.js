@@ -47,6 +47,7 @@ const EVENT = Object.freeze({
 	RELAYER_FEE_PROCESSED: 'relayerFeeProcessed',
 	BEFORE_CCC_EXECUTION: 'beforeCCCExecution',
 	TRANSFER_CROSS_CHAIN: 'transferCrossChain',
+	ACCOUNT_RECLAIMED: 'accountReclaimed',
 });
 
 const MODULE_SUB_STORE = Object.freeze({

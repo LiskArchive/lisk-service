@@ -27,7 +27,8 @@ const { requestConnector, requestIndexer } = require('./request');
 
 const logger = Logger();
 
-const publicKeyCache = CacheLRU('publicKey', { max: 100000 });
+const NUM_MAX_CACHE_PUBLICKEY = 100000; // Approx. 30% of mainnet addresses at migration
+const publicKeyCache = CacheLRU('publicKey', { max: NUM_MAX_CACHE_PUBLICKEY });
 
 let tokenModuleData;
 let loadingAssets = false;
