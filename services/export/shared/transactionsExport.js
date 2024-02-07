@@ -539,11 +539,7 @@ const getEntriesByChronology = async (params, sortedBlocks, sortedTransactions, 
 									}
 								}
 
-								const eventsForHeight = await getEvents({
-									height: String(e.block.height),
-									sort: 'height:asc',
-									order: 'index:asc',
-								});
+								const eventsForHeight = await getEvents({ height: String(e.block.height) });
 								otherNecessaryEvents.push(...eventsForHeight.data);
 								const correspondingBeforeCCCExecutionEvent = otherNecessaryEvents.find(
 									eventForHeight =>
@@ -881,7 +877,10 @@ const exportTransactions = async job => {
 			const timeBoxedParams = { ...params, timestamp: timestampRange };
 			const sortedBlocks = await getAllBlocksInAsc(timeBoxedParams);
 			const sortedTransactions = await getAllTransactionsInAsc(timeBoxedParams);
-			const sortedEvents = await getAllEventsInAsc(timeBoxedParams);
+			const sortedEvents = await getAllEventsInAsc({
+				topic: timeBoxedParams.address,
+				timestamp: timeBoxedParams.timestamp,
+			});
 			const entriesForDay = await getEntriesByChronology(
 				timeBoxedParams,
 				sortedBlocks,

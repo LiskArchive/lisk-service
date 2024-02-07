@@ -74,7 +74,8 @@ const getBlocks = async params => requestIndexer('blocks', params);
 
 const getTransactions = async params => requestIndexer('transactions', params);
 
-const getEvents = async params => requestIndexer('events', params);
+const getEvents = async params =>
+	requestIndexer('events', { sort: 'height:asc', order: 'index:asc', ...params });
 
 const getAllBlocksInAsc = async params => {
 	const totalBlocks = (
@@ -122,27 +123,8 @@ const getAllTransactionsInAsc = async params => {
 };
 
 const getAllEventsInAsc = async params => {
-	const totalEvents = (
-		await getEvents({
-			topic: params.address,
-			timestamp: params.timestamp,
-			limit: 1,
-		})
-	).meta.total;
-
-	const events = await requestAllStandard(
-		getEvents,
-		{
-			topic: params.address,
-			timestamp: params.timestamp,
-			module: params.module,
-			name: params.name,
-			sort: 'height:asc',
-			order: 'index:asc',
-		},
-		totalEvents,
-	);
-
+	const totalEvents = (await getEvents({ ...params, limit: 1 })).meta.total;
+	const events = await requestAllStandard(getEvents, params, totalEvents);
 	return events;
 };
 
