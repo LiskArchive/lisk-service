@@ -23,24 +23,13 @@ const { transactions } = require('../../../constants/transaction');
 
 describe('Test Transaction utility', () => {
 	describe('Validate transaction amount is properly normalized', () => {
-		xit('should return amount in a standardized format for a valid transaction', async () => {
+		it('should return null amount for a non token:transfer and token:transferCrossChain transactions', async () => {
 			const amount = normalizeTransactionAmount(
 				transactions.reclaim.sender.address,
 				transactions.reclaim,
 			);
 
-			expect(amount).not.toBeNull();
-			expect(typeof amount).toBe('string');
-			expect(amount).toBe(transactions.reclaim.params.amount);
-		});
-
-		xit('should return positive amount value for reclaim transaction', async () => {
-			const amount = normalizeTransactionAmount(
-				transactions.reclaim.sender.address,
-				transactions.reclaim,
-			);
-
-			expect(Number(amount)).toBeGreaterThan(0);
+			expect(amount).toBeNull();
 		});
 
 		it('should return positive amount value for incoming token transfer transaction', async () => {

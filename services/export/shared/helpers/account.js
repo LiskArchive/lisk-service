@@ -70,7 +70,7 @@ const getTokenBalancesAtGenesis = async () => {
 
 		// Asynchronously fetch the token module genesis assets and cache locally
 		logger.info('Attempting to fetch and cache the token module genesis assets.');
-		await requestConnector('getGenesisAssetsLength', {
+		requestConnector('getGenesisAssetsLength', {
 			module: MODULE.TOKEN,
 			subStore: MODULE_SUB_STORE.TOKEN.USER,
 		})

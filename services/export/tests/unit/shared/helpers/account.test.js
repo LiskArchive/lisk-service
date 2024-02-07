@@ -15,6 +15,7 @@
  */
 const { resolve } = require('path');
 
+const delay = require('lisk-service-framework/src/delay');
 const { valid, invalid } = require('../../../constants/account');
 const { transactions } = require('../../../constants/transaction');
 
@@ -251,8 +252,15 @@ describe('Account utils', () => {
 
 			const { getTokenBalancesAtGenesis } = require('../../../../shared/helpers/account');
 
-			const tokenBalances = await getTokenBalancesAtGenesis();
-			const expectedResponse = [
+			const tokenBalances1 = await getTokenBalancesAtGenesis();
+			const expectedResponse1 = undefined;
+			expect(tokenBalances1).toEqual(expectedResponse1);
+
+			// Add delay to let the mock first resolve the async promise from requestConnector
+			await delay(10);
+
+			const tokenBalances2 = await getTokenBalancesAtGenesis();
+			const expectedResponse2 = [
 				{
 					tokenID: '0400000000000000',
 					address: 'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo',
@@ -261,7 +269,7 @@ describe('Account utils', () => {
 				},
 			];
 
-			expect(tokenBalances).toEqual(expectedResponse);
+			expect(tokenBalances2).toEqual(expectedResponse2);
 		});
 	});
 });
