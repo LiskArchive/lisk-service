@@ -388,7 +388,6 @@ describe('Test getSharedRewardsAssignedEntries method', () => {
 	});
 });
 
-// Verify implementation
 describe('Test getMessageFeeEntries method', () => {
 	const address = 'lskme8ohf9geuno8nwpvdqm8wr8bvz5nzguftwpxp';
 	const sendingChainID = '04000000';
@@ -448,11 +447,29 @@ describe('Test getMessageFeeEntries method', () => {
 
 		expect(messageFeeEntries).toEqual(expectedResult);
 	});
+
+	it('should return empty list when relayer amount is 0', async () => {
+		const { getMessageFeeEntries } = require('../../../shared/transactionsExport');
+
+		const messageFeeEntries = await getMessageFeeEntries(
+			address,
+			{
+				...events.relayerFeeProcessed,
+				data: { ...events.relayerFeeProcessed.data, relayerAmount: 0 },
+			},
+			transactions.tokenTransferCrossChain,
+			blocks[0],
+			messageFeeTokenID,
+			sendingChainID,
+			receivingChainID,
+		);
+		expect(messageFeeEntries).toHaveLength(0);
+	});
 });
 
 describe('Test getOutgoingTransferCCEntries method', () => {
 	const address = 'lsk56p8e53k3kar8epeqwpbxa2yd4urn8ouzhfvgs';
-	it('should return outgoing transfer cross chain entries', async () => {
+	it('should return outgoing transfer cross chain entries with amount deducted', async () => {
 		jest.mock(mockedRequestFilePath, () => {
 			const actual = jest.requireActual(mockedRequestFilePath);
 			return {
@@ -542,7 +559,7 @@ describe('Test getIncomingTransferCCEntries method', () => {
 	});
 
 	const address = 'lsk56p8e53k3kar8epeqwpbxa2yd4urn8ouzhfvgs';
-	it('should return incoming transfer cross chain entries', async () => {
+	it('should return incoming transfer cross chain entries with amount added', async () => {
 		const { getIncomingTransferCCEntries } = require('../../../shared/transactionsExport');
 
 		const incomingTransferCCEntries = await getIncomingTransferCCEntries(
@@ -586,5 +603,59 @@ describe('Test getIncomingTransferCCEntries method', () => {
 			blocks[2],
 		);
 		expect(incomingTransferCCEntries).toHaveLength(0);
+	});
+});
+
+describe('Test getLegacyAccountReclaimEntries method', () => {
+	const address = 'lskqz6gpqfu9tb5yc2jtqmqvqp3x8ze35g99u2zfd';
+	it('should return generator fee reward entries', async () => {
+		jest.mock(mockedRequestFilePath, () => {
+			const actual = jest.requireActual(mockedRequestFilePath);
+			return {
+				...actual,
+				requestConnector() {
+					return '0400000000000000';
+				},
+				requestIndexer() {
+					return {
+						data: {
+							chainID: '04000000',
+						},
+					};
+				},
+			};
+		});
+
+		const { getLegacyAccountReclaimEntries } = require('../../../shared/transactionsExport');
+
+		const legacyAccountReclaimEntries = await getLegacyAccountReclaimEntries(
+			address,
+			events.accountReclaimed,
+			transactions.reclaim,
+			blocks[0],
+		);
+
+		const expectedResult = [
+			{
+				amount: '100000000',
+				amountTokenID: '0400000000000000',
+				blockHeight: 15,
+				date: '2022-11-17',
+				fee: null,
+				moduleCommand: null,
+				note: 'Legacy account balance reclaimed',
+				receivingChainID: '04000000',
+				recipientAddress: 'lskqz6gpqfu9tb5yc2jtqmqvqp3x8ze35g99u2zfd',
+				recipientPublicKey: null,
+				senderAddress: null,
+				senderPublicKey: null,
+				sendingChainID: '04000000',
+				time: '11:52:28',
+				transactionID: '6cff643daaa2bd1112d1b4591abef3e62f9e4f6e37a260fcd7508ce6a06f061c',
+				txFeeTokenID: null,
+			},
+		];
+
+		expect(legacyAccountReclaimEntries).toEqual(expectedResult);
 	});
 });

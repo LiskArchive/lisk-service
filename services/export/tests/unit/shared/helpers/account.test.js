@@ -225,7 +225,7 @@ describe('Account utils', () => {
 	});
 
 	describe('Test getTokenBalancesAtGenesis method', () => {
-		xit('should return token balances at genesis', async () => {
+		it('should return token balances at genesis', async () => {
 			const mockUserSubstore = [
 				{
 					address: 'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo',
@@ -252,7 +252,14 @@ describe('Account utils', () => {
 			const { getTokenBalancesAtGenesis } = require('../../../../shared/helpers/account');
 
 			const tokenBalances = await getTokenBalancesAtGenesis();
-			const expectedResponse = [{ amount: '100000000000000', tokenID: '0400000000000000' }];
+			const expectedResponse = [
+				{
+					tokenID: '0400000000000000',
+					address: 'lskyvvam5rxyvbvofxbdfcupxetzmqxu22phm4yuo',
+					availableBalance: '100000000000000',
+					lockedBalances: [],
+				},
+			];
 
 			expect(tokenBalances).toEqual(expectedResponse);
 		});

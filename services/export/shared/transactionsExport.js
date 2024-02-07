@@ -1050,4 +1050,5 @@ module.exports = {
 	getMessageFeeEntries,
 	getOutgoingTransferCCEntries,
 	getIncomingTransferCCEntries,
+	getLegacyAccountReclaimEntries,
 };

@@ -153,6 +153,22 @@ const ccmTransfer = {
 	],
 };
 
+const accountReclaimed = {
+	id: 'fe7ff8cbfd1243f0134271c868c73abf6a726bc9965440fcffdcb4cd03b582ba',
+	module: 'legacy',
+	name: 'accountReclaimed',
+	data: {
+		legacyAddress: '15297866638783057016L',
+		address: 'lskqz6gpqfu9tb5yc2jtqmqvqp3x8ze35g99u2zfd',
+		amount: '100000000',
+	},
+	topics: [
+		'6cff643daaa2bd1112d1b4591abef3e62f9e4f6e37a260fcd7508ce6a06f061c',
+		'15297866638783057016L',
+		'lskqz6gpqfu9tb5yc2jtqmqvqp3x8ze35g99u2zfd',
+	],
+};
+
 module.exports = {
 	events: {
 		tokenMintedEvent,
@@ -163,5 +179,6 @@ module.exports = {
 		ccmSendSuccess,
 		transferCrossChain,
 		ccmTransfer,
+		accountReclaimed,
 	},
 };
