@@ -659,3 +659,115 @@ describe('Test getLegacyAccountReclaimEntries method', () => {
 		expect(legacyAccountReclaimEntries).toEqual(expectedResult);
 	});
 });
+
+describe('Test getPomEntries method', () => {
+	it('should return PoM entries reward deduction', async () => {
+		const address = 'lskmjt3zuxo6rv3oc9qyanppe76hk22m8ca2ra7h5';
+		jest.mock(mockedRequestFilePath, () => {
+			const actual = jest.requireActual(mockedRequestFilePath);
+			return {
+				...actual,
+				requestConnector() {
+					return {
+						posTokenID: '0400000000000000',
+					};
+				},
+				requestIndexer() {
+					return {
+						data: {
+							chainID: '04000000',
+						},
+					};
+				},
+			};
+		});
+
+		const { getPomEntries } = require('../../../shared/transactionsExport');
+
+		const pomEntries = await getPomEntries(
+			address,
+			events.tokenTransfer,
+			events.validatorPunished,
+			transactions.reportMisbehavior,
+			blocks[0],
+		);
+
+		const expectedResult = [
+			{
+				amount: '-100000000',
+				amountTokenID: '0400000000000000',
+				blockHeight: 15,
+				date: '2022-11-17',
+				fee: null,
+				moduleCommand: null,
+				note: 'PoM punishment validator reward deduction',
+				receivingChainID: '04000000',
+				recipientAddress: 'lskmjt3zuxo6rv3oc9qyanppe76hk22m8ca2ra7h5',
+				recipientPublicKey: null,
+				senderAddress: 'lskmjt3zuxo6rv3oc9qyanppe76hk22m8ca2ra7h5',
+				senderPublicKey: null,
+				sendingChainID: '04000000',
+				time: '11:52:28',
+				transactionID: 'ce7082673acce922263e0256e717dc151fe86a88c6827bf53d42038ee387eca1',
+				txFeeTokenID: null,
+			},
+		];
+
+		expect(pomEntries).toEqual(expectedResult);
+	});
+
+	it('should return PoM entries reward addition', async () => {
+		const address = 'lskqz6gpqfu9tb5yc2jtqmqvqp3x8ze35g99u2zfd';
+		jest.mock(mockedRequestFilePath, () => {
+			const actual = jest.requireActual(mockedRequestFilePath);
+			return {
+				...actual,
+				requestConnector() {
+					return {
+						posTokenID: '0400000000000000',
+					};
+				},
+				requestIndexer() {
+					return {
+						data: {
+							chainID: '04000000',
+						},
+					};
+				},
+			};
+		});
+
+		const { getPomEntries } = require('../../../shared/transactionsExport');
+
+		const pomEntries = await getPomEntries(
+			address,
+			events.tokenTransfer,
+			events.validatorPunished,
+			transactions.reportMisbehavior,
+			blocks[0],
+		);
+
+		const expectedResult = [
+			{
+				amount: '100000000',
+				amountTokenID: '0400000000000000',
+				blockHeight: 15,
+				date: '2022-11-17',
+				fee: null,
+				moduleCommand: null,
+				note: 'PoM successful report reward',
+				receivingChainID: '04000000',
+				recipientAddress: 'lskmjt3zuxo6rv3oc9qyanppe76hk22m8ca2ra7h5',
+				recipientPublicKey: null,
+				senderAddress: 'lskmjt3zuxo6rv3oc9qyanppe76hk22m8ca2ra7h5',
+				senderPublicKey: null,
+				sendingChainID: '04000000',
+				time: '11:52:28',
+				transactionID: 'ce7082673acce922263e0256e717dc151fe86a88c6827bf53d42038ee387eca1',
+				txFeeTokenID: null,
+			},
+		];
+
+		expect(pomEntries).toEqual(expectedResult);
+	});
+});

@@ -147,7 +147,7 @@ const ccmTransfer = {
 		result: 0,
 	},
 	topics: [
-		'd16d1cb5fa32df64988b4ab5de66b7d43c8fbfdaf043aca84d649f914d66189f',
+		'05d16d1cb5fa32df64988b4ab5de66b7d43c8fbfdaf043aca84d649f914d66189f',
 		'lsk56p8e53k3kar8epeqwpbxa2yd4urn8ouzhfvgs',
 		'lsk56p8e53k3kar8epeqwpbxa2yd4urn8ouzhfvgs',
 	],
@@ -163,9 +163,41 @@ const accountReclaimed = {
 		amount: '100000000',
 	},
 	topics: [
-		'6cff643daaa2bd1112d1b4591abef3e62f9e4f6e37a260fcd7508ce6a06f061c',
+		'046cff643daaa2bd1112d1b4591abef3e62f9e4f6e37a260fcd7508ce6a06f061c',
 		'15297866638783057016L',
 		'lskqz6gpqfu9tb5yc2jtqmqvqp3x8ze35g99u2zfd',
+	],
+};
+
+const validatorPunished = {
+	id: 'dae4b1bb546e9bdd15a05432f37ddf42ffcf1ad4dc790cb2f6391e830db49e28',
+	module: 'pos',
+	name: 'validatorPunished',
+	data: {
+		address: 'lskmjt3zuxo6rv3oc9qyanppe76hk22m8ca2ra7h5',
+		height: 1745,
+	},
+	topics: [
+		'04cd41e8fbb909fdf44ffccef6f5b0fb5edf853f0dcf699243a0a92403d2a4f1d1d',
+		'lskmjt3zuxo6rv3oc9qyanppe76hk22m8ca2ra7h5',
+	],
+};
+
+const tokenTransfer = {
+	id: '957c72e2cd0e057c7c251c35bd1149e35e9aa621ef8ab5d016373fe4ec786660',
+	module: 'token',
+	name: 'transfer',
+	data: {
+		senderAddress: 'lskmjt3zuxo6rv3oc9qyanppe76hk22m8ca2ra7h5',
+		recipientAddress: 'lskmjt3zuxo6rv3oc9qyanppe76hk22m8ca2ra7h5',
+		tokenID: '0400000000000000',
+		amount: '100000000',
+		result: 0,
+	},
+	topics: [
+		'04ce7082673acce922263e0256e717dc151fe86a88c6827bf53d42038ee387eca1',
+		'lskmjt3zuxo6rv3oc9qyanppe76hk22m8ca2ra7h5',
+		'lskmjt3zuxo6rv3oc9qyanppe76hk22m8ca2ra7h5',
 	],
 };
 
@@ -180,5 +212,7 @@ module.exports = {
 		transferCrossChain,
 		ccmTransfer,
 		accountReclaimed,
+		validatorPunished,
+		tokenTransfer,
 	},
 };

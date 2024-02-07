@@ -65,6 +65,11 @@ describe('Test standardizeIntervalFromParams method', () => {
 		expect(result).toMatch(STANDARDIZED_INTERVAL);
 	});
 
+	it('should throw error when invalid interval supplied', async () => {
+		const { standardizeIntervalFromParams } = require('../../../../shared/helpers/time');
+		expect(standardizeIntervalFromParams({ interval: interval.invalid })).rejects.toThrow();
+	});
+
 	it('should return standardized interval when dates not supplied', async () => {
 		jest.mock(mockedChainFilePath);
 		// eslint-disable-next-line import/no-dynamic-require

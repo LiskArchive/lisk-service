@@ -97,6 +97,7 @@ const selfTokenTransferTransaction = {
 const interval = {
 	startEnd: '2021-06-07:2021-09-19',
 	onlyStart: '2021-06-07',
+	invalid: '2021-06-07:20-09-2021',
 };
 
 module.exports = {

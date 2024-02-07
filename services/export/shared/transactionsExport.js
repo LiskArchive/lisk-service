@@ -1051,4 +1051,5 @@ module.exports = {
 	getOutgoingTransferCCEntries,
 	getIncomingTransferCCEntries,
 	getLegacyAccountReclaimEntries,
+	getPomEntries,
 };
