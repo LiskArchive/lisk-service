@@ -96,6 +96,15 @@ const DATE_FORMAT = config.excel.dateFormat;
 
 const logger = Logger();
 
+// Add toJSON to the BigInt and Buffer prototype for error-free serialization
+// eslint-disable-next-line no-extend-native
+BigInt.prototype.toJSON = function () {
+	return this.toString(16);
+};
+Buffer.prototype.toJSON = function () {
+	return this.toString('hex');
+};
+
 const formatBlocks = async blocks => {
 	const normalizedBlocks = blocks.map(block => ({
 		blockHeight: block.height,
@@ -109,8 +118,9 @@ const formatBlocks = async blocks => {
 
 const getBlockchainAppsMeta = async chainID => {
 	try {
+		// TODO: See if chainName can be fetched from interoperability endpoints
 		const {
-			data: [appMetadata],
+			data: [appMetadata = {}],
 		} = await requestAppRegistry('blockchain.apps.meta', { chainID });
 		return appMetadata;
 	} catch (error) {
@@ -482,6 +492,7 @@ const getEntriesByChronology = async (params, sortedBlocks, sortedTransactions, 
 			lengthTopic0 === LENGTH_ID + EVENT_TOPIC_PREFIX.TX_ID.length ||
 			lengthTopic0 === LENGTH_ID + EVENT_TOPIC_PREFIX.CCM_ID.length
 		) {
+			const sortedEventsForHeight = [];
 			const ccmID = getCcmIDFromTopic0(topic0);
 			const tx = await (async () => {
 				const transactionID =
@@ -501,11 +512,12 @@ const getEntriesByChronology = async (params, sortedBlocks, sortedTransactions, 
 									}
 								}
 
-								const sortedEventsForHeight = await getEvents({
-									height: e.block.height,
+								const eventsResponse = await getEvents({
+									height: String(e.block.height),
 									sort: 'height:asc',
 									order: 'index:asc',
 								});
+								sortedEventsForHeight.push(...eventsResponse.data);
 								const correspondingBeforeCCCExecutionEvent = sortedEventsForHeight.find(
 									eventForHeight =>
 										eventForHeight.module === MODULE.TOKEN &&
@@ -646,12 +658,14 @@ const getEntriesByChronology = async (params, sortedBlocks, sortedTransactions, 
 					})();
 					const { sendingChainID, receivingChainID } = (() => {
 						// Determine the sendingChainID from the corresponding interoperability:ccmProcessed event
-						const correspondingCcmProcessedEvent = sortedEvents.find(
-							eventForHeight =>
-								eventForHeight.module === MODULE.INTEROPERABILITY &&
-								eventForHeight.name === EVENT.CCM_PROCESSED &&
-								eventForHeight.topics[0] === e.topics[0],
-						);
+						const correspondingCcmProcessedEvent = sortedEvents
+							.concat(sortedEventsForHeight)
+							.find(
+								eventForHeight =>
+									eventForHeight.module === MODULE.INTEROPERABILITY &&
+									eventForHeight.name === EVENT.CCM_PROCESSED &&
+									eventForHeight.topics[0] === e.topics[0],
+							);
 						if (correspondingCcmProcessedEvent) {
 							return {
 								sendingChainID: correspondingCcmProcessedEvent.data.ccm.sendingChainID,
