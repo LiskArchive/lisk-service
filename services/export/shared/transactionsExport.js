@@ -99,7 +99,7 @@ const logger = Logger();
 // Add toJSON to the BigInt and Buffer prototype for error-free serialization
 // eslint-disable-next-line no-extend-native
 BigInt.prototype.toJSON = function () {
-	return this.toString(16);
+	return this.toString(10);
 };
 Buffer.prototype.toJSON = function () {
 	return this.toString('hex');
@@ -339,7 +339,7 @@ const getMessageFeeEntries = async (
 	const entries = [];
 
 	const relayerAmount = BigInt(relayerFeeProcessedEvent.data.relayerAmount);
-	if (relayerAmount !== BigInt('0')) return entries;
+	if (relayerAmount === BigInt('0')) return entries;
 
 	entries.push({
 		date: dateFromTimestamp(block.timestamp),
@@ -644,7 +644,7 @@ const getEntriesByChronology = async (params, sortedBlocks, sortedTransactions, 
 								eventForHeight.data.ccmID === e.data.ccmID,
 						);
 						if (correspondingBeforeCCCExecutionEvent) {
-							return getTransactionIDFromTopic0(correspondingBeforeCCCExecutionEvent.topics[0]);
+							return correspondingBeforeCCCExecutionEvent.data.messageFeeTokenID;
 						}
 
 						logger.warn(
