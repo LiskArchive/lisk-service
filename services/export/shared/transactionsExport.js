@@ -118,7 +118,6 @@ const formatBlocks = async blocks => {
 
 const getBlockchainAppsMeta = async chainID => {
 	try {
-		// TODO: See if chainName can be fetched from interoperability endpoints
 		const {
 			data: [appMetadata = {}],
 		} = await requestAppRegistry('blockchain.apps.meta', { chainID });
@@ -393,6 +392,43 @@ const getLegacyAccountReclaimEntries = async (
 	return entries;
 };
 
+const getPomEntries = async (
+	addressFromParams,
+	tokenTransferEvent,
+	validatorPunishedEvent,
+	tx,
+	block,
+) => {
+	const entries = [];
+
+	const isPunishedValidator = addressFromParams === validatorPunishedEvent.data.address;
+
+	entries.push({
+		date: dateFromTimestamp(block.timestamp),
+		time: timeFromTimestamp(block.timestamp),
+		blockHeight: block.height,
+		transactionID: tx.id,
+		moduleCommand: null,
+		fee: null,
+		txFeeTokenID: null,
+		amount: (
+			BigInt(isPunishedValidator ? '-1' : '1') * BigInt(tokenTransferEvent.data.amount)
+		).toString(),
+		amountTokenID: await getPosTokenID(),
+		senderAddress: tokenTransferEvent.data.senderAddress,
+		senderPublicKey: await getPublicKeyByAddress(tokenTransferEvent.data.senderAddress),
+		recipientAddress: tokenTransferEvent.data.recipientAddress,
+		recipientPublicKey: await getPublicKeyByAddress(tokenTransferEvent.data.recipientAddress),
+		note: isPunishedValidator
+			? 'PoM punishment validator reward deduction'
+			: 'PoM successful report reward',
+		sendingChainID: await getCurrentChainID(),
+		receivingChainID: await getCurrentChainID(),
+	});
+
+	return entries;
+};
+
 const getSharedRewardsAssignedEntries = async (
 	addressFromParams,
 	rewardsAssignedEvent,
@@ -492,7 +528,7 @@ const getEntriesByChronology = async (params, sortedBlocks, sortedTransactions, 
 			lengthTopic0 === LENGTH_ID + EVENT_TOPIC_PREFIX.TX_ID.length ||
 			lengthTopic0 === LENGTH_ID + EVENT_TOPIC_PREFIX.CCM_ID.length
 		) {
-			const sortedEventsForHeight = [];
+			const otherNecessaryEvents = [];
 			const ccmID = getCcmIDFromTopic0(topic0);
 			const tx = await (async () => {
 				const transactionID =
@@ -512,13 +548,13 @@ const getEntriesByChronology = async (params, sortedBlocks, sortedTransactions, 
 									}
 								}
 
-								const eventsResponse = await getEvents({
+								const eventsForHeight = await getEvents({
 									height: String(e.block.height),
 									sort: 'height:asc',
 									order: 'index:asc',
 								});
-								sortedEventsForHeight.push(...eventsResponse.data);
-								const correspondingBeforeCCCExecutionEvent = sortedEventsForHeight.find(
+								otherNecessaryEvents.push(...eventsForHeight.data);
+								const correspondingBeforeCCCExecutionEvent = otherNecessaryEvents.find(
 									eventForHeight =>
 										eventForHeight.module === MODULE.TOKEN &&
 										eventForHeight.name === EVENT.BEFORE_CCC_EXECUTION &&
@@ -637,12 +673,14 @@ const getEntriesByChronology = async (params, sortedBlocks, sortedTransactions, 
 				if (e.module === MODULE.FEE && e.name === EVENT.RELAYER_FEE_PROCESSED) {
 					const messageFeeTokenID = (() => {
 						// Determine the messageFeeTokenID from the corresponding token:beforeCCCExecution event
-						const correspondingBeforeCCCExecutionEvent = sortedEvents.find(
-							eventForHeight =>
-								eventForHeight.module === MODULE.TOKEN &&
-								eventForHeight.name === EVENT.BEFORE_CCC_EXECUTION &&
-								eventForHeight.data.ccmID === e.data.ccmID,
-						);
+						const correspondingBeforeCCCExecutionEvent = sortedEvents
+							.concat(otherNecessaryEvents)
+							.find(
+								eventForHeight =>
+									eventForHeight.module === MODULE.TOKEN &&
+									eventForHeight.name === EVENT.BEFORE_CCC_EXECUTION &&
+									eventForHeight.data.ccmID === e.data.ccmID,
+							);
 						if (correspondingBeforeCCCExecutionEvent) {
 							return correspondingBeforeCCCExecutionEvent.data.messageFeeTokenID;
 						}
@@ -659,7 +697,7 @@ const getEntriesByChronology = async (params, sortedBlocks, sortedTransactions, 
 					const { sendingChainID, receivingChainID } = (() => {
 						// Determine the sendingChainID from the corresponding interoperability:ccmProcessed event
 						const correspondingCcmProcessedEvent = sortedEvents
-							.concat(sortedEventsForHeight)
+							.concat(otherNecessaryEvents)
 							.find(
 								eventForHeight =>
 									eventForHeight.module === MODULE.INTEROPERABILITY &&
@@ -713,7 +751,27 @@ const getEntriesByChronology = async (params, sortedBlocks, sortedTransactions, 
 					entries.push(...legacyAccountReclaimEntries);
 				}
 
-				// TODO: Implement for PoM transaction
+				// PoM transactions
+				if (e.module === MODULE.POS && e.name === EVENT.VALIDATOR_PUNISHED) {
+					const tokenTransferEvent = sortedEvents
+						.concat(otherNecessaryEvents)
+						.find(
+							event =>
+								event.module === MODULE.TOKEN &&
+								event.name === EVENT.TRANSFER &&
+								event.topics[0].endsWith(tx.id),
+						);
+
+					const validatorPunishedEvent = e;
+					const pomEntries = await getPomEntries(
+						addressFromParams,
+						tokenTransferEvent,
+						validatorPunishedEvent,
+						tx,
+						block,
+					);
+					entries.push(...pomEntries);
+				}
 			}
 
 			// Shared custodial reward received/sent

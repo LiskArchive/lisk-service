@@ -46,8 +46,10 @@ const EVENT = Object.freeze({
 	GENERATOR_FEE_PROCESSED: 'generatorFeeProcessed',
 	RELAYER_FEE_PROCESSED: 'relayerFeeProcessed',
 	BEFORE_CCC_EXECUTION: 'beforeCCCExecution',
+	TRANSFER: 'transfer',
 	TRANSFER_CROSS_CHAIN: 'transferCrossChain',
 	ACCOUNT_RECLAIMED: 'accountReclaimed',
+	VALIDATOR_PUNISHED: 'validatorPunished',
 });
 
 const MODULE_SUB_STORE = Object.freeze({
