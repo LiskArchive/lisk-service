@@ -96,15 +96,6 @@ const DATE_FORMAT = config.excel.dateFormat;
 
 const logger = Logger();
 
-// Add toJSON to the BigInt and Buffer prototype for error-free serialization
-// eslint-disable-next-line no-extend-native
-BigInt.prototype.toJSON = function () {
-	return this.toString(10);
-};
-Buffer.prototype.toJSON = function () {
-	return this.toString('hex');
-};
-
 const formatBlocks = async blocks => {
 	const normalizedBlocks = blocks.map(block => ({
 		blockHeight: block.height,
@@ -348,7 +339,7 @@ const getMessageFeeEntries = async (
 		moduleCommand: tx.moduleCommand,
 		fee: null,
 		txFeeTokenID: null,
-		amount: relayerAmount,
+		amount: relayerAmount.toString(),
 		amountTokenID: messageFeeTokenID,
 		senderAddress: null,
 		senderPublicKey: null,

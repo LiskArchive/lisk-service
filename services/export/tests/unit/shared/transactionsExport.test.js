@@ -395,7 +395,7 @@ describe('Test getMessageFeeEntries method', () => {
 	const receivingChainID = '04000000';
 	const messageFeeTokenID = '0400000000000000';
 
-	it('should return medssage fee entries', async () => {
+	it('should return message fee entries', async () => {
 		jest.mock(mockedRequestFilePath, () => {
 			const actual = jest.requireActual(mockedRequestFilePath);
 			return {
@@ -427,7 +427,7 @@ describe('Test getMessageFeeEntries method', () => {
 
 		const expectedResult = [
 			{
-				amount: BigInt(0),
+				amount: '50000',
 				amountTokenID: '0400000000000000',
 				blockHeight: 15,
 				date: '2022-11-17',

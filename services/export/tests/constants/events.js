@@ -84,7 +84,7 @@ const relayerFeeProcessed = {
 		ccmID: 'e6a22f3c4489ceba8e20eeea0ce617d9c385e92aeb9a710a53eb941d34b5f92e',
 		relayerAddress: 'lskmg3sdmjp4smz6x9k2cuyuwags5ehgtexe4w2ds',
 		burntAmount: '10000000',
-		relayerAmount: '0',
+		relayerAmount: '50000',
 	},
 	topics: ['lskmg3sdmjp4smz6x9k2cuyuwags5ehgtexe4w2ds'],
 };
