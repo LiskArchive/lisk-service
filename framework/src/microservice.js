@@ -56,7 +56,7 @@ const Microservice = (config = {}) => {
 
 	const broker = new ServiceBroker({
 		transporter: moleculerConfig.transporter,
-		requestTimeout: (moleculerConfig.brokerTimeout || 5) * 1000,
+		requestTimeout: (moleculerConfig.brokerTimeout || 10) * 1000,
 		logger: {
 			type: 'Log4js',
 			options: {
