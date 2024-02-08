@@ -22,7 +22,7 @@ LoggerConfig(config.log);
 
 const packageJson = require('./package.json');
 const { setAppContext } = require('./shared/helpers');
-const { getTokenBalancesAtGenesis } = require('./shared/transactionsExport');
+const { getTokenBalancesAtGenesis } = require('./shared/helpers/account');
 
 const logger = Logger();
 

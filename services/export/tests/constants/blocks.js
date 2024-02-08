@@ -78,6 +78,41 @@ const blocks = [
 		isFinal: false,
 		reward: 0,
 	},
+
+	{
+		id: 'bc62dabae94b2d146a9fb72424b87d65cfdc4b41d57d7e95343a8bd246b74b75',
+		version: 2,
+		timestamp: 1704198870,
+		height: 21016494,
+		previousBlockID: '40cf694c59aa0f4ccddaf1b37e77c752c5b2ae17253c76dbe26a8463be204fdb',
+		generator: {
+			address: 'lskkg45aupy3mnzeko7thpgzwaqh9cjcrjfo46kjt',
+			name: 'different_dish',
+			publicKey: 'ae79e3d4fcfc8b9d7acbf2a72f2281cb85a98cd9a5b18b2164b06113032bea78',
+		},
+		transactionRoot: '5b24f16b9313b7954c086743ab784af77ecab4854cff5538c14633b50bb728fa',
+		assetRoot: 'f74d106522e5f9350edc170eb8603168438c85030d6294a37239961ab10bfd3a',
+		stateRoot: 'e0587de5aabe73bf478a9f94aeae9ee86e771d1cc01d9ee3b78d8d45aa278abd',
+		eventRoot: '907db89b436269e870cc234844fd4d26e484380d33b724d078cf65deebbe0e44',
+		maxHeightPrevoted: 21016419,
+		maxHeightGenerated: 21016363,
+		validatorsHash: 'f111c95be02cd8924791a24c97bc1a014a8aad7906b85f1f4ecc40e195234211',
+		aggregateCommit: {
+			height: 21016347,
+			aggregationBits: '',
+		},
+		certificateSignature: '',
+		numberOfTransactions: 1,
+		numberOfAssets: 1,
+		numberOfEvents: 10,
+		totalForged: '22268530',
+		totalBurnt: '194000',
+		networkFee: '9806000',
+		signature:
+			'e25aefd645ae92251e029c0679486464ed10795ee27955243e99436f977cbfec185c7cd6a66d57516a65f59b83990c9998519212e9002a43b8371245361ba606',
+		reward: '12268530',
+		isFinal: true,
+	},
 ];
 
 module.exports = {

@@ -13,13 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { resolveReceivingChainID, getUniqueChainIDs } = require('../../../../shared/helpers/chain');
-
 const { transactions } = require('../../../constants/transaction');
+
+const {
+	resolveReceivingChainID,
+	getUniqueChainIDs,
+	resolveChainIDs,
+} = require('../../../../shared/helpers/chain');
 
 describe('Test chain utils', () => {
 	const currentChainID = '04000000';
-
 	it('should return current chainID in case of non-Token-TransferCrossChain', async () => {
 		const receivingChainID = resolveReceivingChainID(transactions.tokenTransfer, currentChainID);
 		expect(receivingChainID).toBe(currentChainID);
@@ -59,5 +62,32 @@ describe('Test getUniqueChainIDs', () => {
 
 	it('should throw error when called with undefined', async () => {
 		expect(getUniqueChainIDs(undefined)).rejects.toThrow();
+	});
+});
+
+describe('Test resolveChainIDs method', () => {
+	const chainID = '04000000';
+
+	it('should return same sendingChainID and receivingChainID when called with token transfer transaction', async () => {
+		const response = resolveChainIDs(transactions.tokenTransfer, chainID);
+		const expectedResponse = {
+			receivingChainID: '04000000',
+			sendingChainID: '04000000',
+		};
+		expect(response).toEqual(expectedResponse);
+	});
+
+	it('should return sendingChainID and receivingChainID when called with token transferCrossChain transaction', async () => {
+		const response = resolveChainIDs(transactions.tokenTransferCrossChain, chainID);
+		const expectedResponse = {
+			receivingChainID: '04000001',
+			sendingChainID: '04000000',
+		};
+		expect(response).toEqual(expectedResponse);
+	});
+
+	xit('should return empty object when called with non-token transferCrossChain transaction', async () => {
+		const response = resolveChainIDs(transactions.stake, chainID);
+		expect(Object.getOwnPropertyNames(response).length).toBe(0);
 	});
 });

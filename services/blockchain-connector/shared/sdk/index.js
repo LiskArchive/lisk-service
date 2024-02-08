@@ -65,7 +65,7 @@ const {
 	getTotalSupply,
 	getTokenInitializationFees,
 	updateTokenInfo,
-	getTokenBalanceAtGenesis,
+	getTokenBalancesAtGenesis,
 } = require('./token');
 
 const {
@@ -188,7 +188,7 @@ module.exports = {
 	getSupportedTokens,
 	getTotalSupply,
 	getTokenInitializationFees,
-	getTokenBalanceAtGenesis,
+	getTokenBalancesAtGenesis,
 
 	// PoS
 	getAllPosValidators,

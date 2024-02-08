@@ -68,7 +68,11 @@ const queueInstance = (
 		});
 
 		queue.on('failed', (job, err) => {
-			logger.warn(`${job.name} job failed with error: ${err.message}`);
+			const validationMessageString =
+				err.message === 'Parameters validation error!'
+					? String('\n\t- ').concat(err.data.map(e => e.message).join('\n\t- '))
+					: '';
+			logger.warn(`${job.name} job failed with error: ${err.message}${validationMessageString}`);
 			logger.debug(`${job.name} job failed with error:\n${err.stack}`);
 		});
 

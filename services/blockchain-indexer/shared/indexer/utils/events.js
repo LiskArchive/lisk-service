@@ -27,7 +27,13 @@ const {
 	},
 } = require('lisk-service-framework');
 
-const { getGenesisHeight, EVENT, EVENT_TOPIC_PREFIX, LENGTH_ID } = require('../../constants');
+const {
+	getGenesisHeight,
+	EVENT,
+	EVENT_TOPIC_PREFIX,
+	LENGTH_ID,
+	MODULE,
+} = require('../../constants');
 
 const config = require('../../../config');
 const eventsTableSchema = require('../../database/schema/events');
@@ -99,6 +105,15 @@ const getEventsInfoToIndex = (block, events) => {
 				eventsInfoToIndex.eventTopicsInfo.push(eventTopicAdditionalInfo);
 			}
 		});
+
+		// Add validator address as a topic for rewardsAssigned events, required for export microservice
+		if (event.module === MODULE.POS && event.name === EVENT.REWARDS_ASSIGNED) {
+			const eventTopicAdditionalInfo = {
+				eventID: event.id,
+				topic: event.data.validatorAddress,
+			};
+			eventsInfoToIndex.eventTopicsInfo.push(eventTopicAdditionalInfo);
+		}
 	});
 
 	return eventsInfoToIndex;
