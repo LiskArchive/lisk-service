@@ -622,7 +622,7 @@ const getEntriesByChronology = async (params, sortedBlocks, sortedTransactions, 
 						const txID = tx.id;
 						const topicTxID = EVENT_TOPIC_PREFIX.TX_ID.concat(txID);
 						const txHeight = tx.block.height;
-						const allBlockEvents = await getAllEventsInAsc({ height: txHeight });
+						const allBlockEvents = await getAllEventsInAsc({ height: String(txHeight) });
 						return allBlockEvents.find(
 							ev =>
 								ev.module === MODULE.INTEROPERABILITY &&
