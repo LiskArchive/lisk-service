@@ -35,16 +35,13 @@ const normalizeTransactionAmount = (address, tx, currentChainID) => {
 		return (sign * amount).toString();
 	}
 
-	const isReclaim = tx.moduleCommand === `${MODULE.LEGACY}:${COMMAND.RECLAIM_LSK}`;
 	const isTokenTransfer = tx.moduleCommand === `${MODULE.TOKEN}:${COMMAND.TRANSFER}`;
 
-	const isSender = address === tx.sender.address;
 	const isRecipient = isTokenTransfer && address === tx.params.recipientAddress;
 	const isSelfTransfer = isTokenTransfer && tx.sender.address === tx.params.recipientAddress;
 	const { isSelfTokenTransferCredit, isIncomingCrossChainTransferTransaction } = tx;
 
 	const sign =
-		(isReclaim && isSender) ||
 		(isTokenTransfer && isRecipient && !isSelfTransfer) ||
 		(isTokenTransfer && isRecipient && isSelfTransfer && isSelfTokenTransferCredit) ||
 		isIncomingCrossChainTransferTransaction

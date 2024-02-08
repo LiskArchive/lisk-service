@@ -58,6 +58,8 @@ const {
 } = require('./helpers/constants');
 const {
 	resolveChainIDs,
+	getBlocks,
+	getTransactions,
 	getEvents,
 	getAllBlocksInAsc,
 	getAllTransactionsInAsc,
@@ -565,7 +567,7 @@ const getEntriesByChronology = async (params, sortedBlocks, sortedTransactions, 
 				if (txInList) return txInList;
 
 				// because transaction may not be available for validator custodial reward reduction in the sorted list
-				const [txFromIndexer] = (await requestIndexer('transactions', { id: transactionID })).data;
+				const [txFromIndexer] = (await getTransactions({ id: transactionID })).data;
 				return txFromIndexer;
 			})();
 			const block = await (async () => {
@@ -574,7 +576,7 @@ const getEntriesByChronology = async (params, sortedBlocks, sortedTransactions, 
 				if (blockInList) return blockInList;
 
 				// because block may not be available for validator custodial reward reduction in the sorted list
-				const [blockFromIndexer] = (await requestIndexer('blocks', { id: blockID })).data;
+				const [blockFromIndexer] = (await getBlocks({ id: blockID })).data;
 				return blockFromIndexer;
 			})();
 
