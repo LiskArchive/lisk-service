@@ -317,16 +317,10 @@ const validateTransactionParams = async transaction => {
 	if (transaction.params.tokenID) {
 		const senderAddress = getLisk32AddressFromPublicKey(transaction.senderPublicKey);
 		const {
-			data: { extraCommandFees },
-		} = await getTokenConstants();
-		const {
 			data: [balanceInfo],
 		} = await getTokenBalances({ address: senderAddress, tokenID: transaction.params.tokenID });
 
-		if (
-			BigInt(balanceInfo.availableBalance) <
-			BigInt(transaction.params.amount) + BigInt(extraCommandFees.userAccountInitializationFee)
-		) {
+		if (BigInt(balanceInfo.availableBalance) < BigInt(transaction.params.amount)) {
 			throw new ValidationException(
 				`${senderAddress} has insufficient balance for ${transaction.params.tokenID} to send the transaction.`,
 			);
