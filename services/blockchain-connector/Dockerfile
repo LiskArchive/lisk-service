@@ -1,6 +1,8 @@
+ARG NODEJS_VERSION=18
+
 ##### Stage 1
 
-FROM node:18-alpine AS builder
+FROM node:$NODEJS_VERSION-alpine AS builder
 
 RUN apk add --no-cache alpine-sdk=~1 python3=~3 cmake=~3 && \
     adduser -D builder && \
@@ -16,7 +18,7 @@ RUN yarn install --frozen-lockfile
 
 ##### Stage 2
 
-FROM node:18-alpine
+FROM node:$NODEJS_VERSION-alpine
 
 RUN mkdir -p /home/lisk/lisk-service/blockchain-connector/data && \
     adduser -D lisk && \

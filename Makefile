@@ -77,37 +77,37 @@ build-images: build-app-registry build-connector build-indexer build-coordinator
 build-all: build build-template build-tests
 
 build-app-registry:
-	cd ./services/blockchain-app-registry && docker buildx build --tag=lisk/service_blockchain_app_registry ./
+	cd ./services/blockchain-app-registry && docker buildx build --build-arg NODEJS_VERSION=$(shell cat .nvmrc) --tag=lisk/service_blockchain_app_registry ./
 
 build-connector:
-	cd ./services/blockchain-connector && docker buildx build --tag=lisk/service_blockchain_connector ./	
+	cd ./services/blockchain-connector && docker buildx build --build-arg NODEJS_VERSION=$(shell cat .nvmrc) --tag=lisk/service_blockchain_connector ./
 
 build-indexer:
-	cd ./services/blockchain-indexer && docker buildx build --tag=lisk/service_blockchain_indexer ./
+	cd ./services/blockchain-indexer && docker buildx build --build-arg NODEJS_VERSION=$(shell cat .nvmrc) --tag=lisk/service_blockchain_indexer ./
 
 build-coordinator:
-	cd ./services/blockchain-coordinator && docker buildx build --tag=lisk/service_blockchain_coordinator ./
+	cd ./services/blockchain-coordinator && docker buildx build --build-arg NODEJS_VERSION=$(shell cat .nvmrc) --tag=lisk/service_blockchain_coordinator ./
 
 build-statistics:
-	cd ./services/transaction-statistics && docker buildx build --tag=lisk/service_transaction_statistics ./
+	cd ./services/transaction-statistics && docker buildx build --build-arg NODEJS_VERSION=$(shell cat .nvmrc) --tag=lisk/service_transaction_statistics ./
 
 build-fees:
-	cd ./services/fee-estimator && docker buildx build --tag=lisk/service_fee_estimator ./
+	cd ./services/fee-estimator && docker buildx build --build-arg NODEJS_VERSION=$(shell cat .nvmrc) --tag=lisk/service_fee_estimator ./
 
 build-market:
-	cd ./services/market && docker buildx build --tag=lisk/service_market ./
+	cd ./services/market && docker buildx build --build-arg NODEJS_VERSION=$(shell cat .nvmrc) --tag=lisk/service_market ./
 
 build-export:
-	cd ./services/export && docker buildx build --tag=lisk/service_export ./
+	cd ./services/export && docker buildx build --build-arg NODEJS_VERSION=$(shell cat .nvmrc) --tag=lisk/service_export ./
 
 build-gateway:
-	cd ./services/gateway && docker buildx build --tag=lisk/service_gateway ./
+	cd ./services/gateway && docker buildx build --build-arg NODEJS_VERSION=$(shell cat .nvmrc) --tag=lisk/service_gateway ./
 
 build-template:
-	cd ./services/template && docker buildx build --tag=lisk/service_template ./
+	cd ./services/template && docker buildx build --build-arg NODEJS_VERSION=$(shell cat .nvmrc) --tag=lisk/service_template ./
 
 build-tests:
-	cd ./tests && docker buildx build --tag=lisk/service_tests ./
+	cd ./tests && docker buildx build --build-arg NODEJS_VERSION=$(shell cat .nvmrc) --tag=lisk/service_tests ./
 
 build-local:
 	yarn install --frozen-lockfile

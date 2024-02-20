@@ -1,6 +1,8 @@
+ARG NODEJS_VERSION=18
+
 ##### Stage 1
 
-FROM node:18-alpine AS builder
+FROM node:$NODEJS_VERSION-alpine AS builder
 
 RUN adduser -D builder && \
     mkdir /home/builder/build && \
@@ -15,7 +17,7 @@ RUN yarn install --frozen-lockfile
 
 ##### Stage 2
 
-FROM node:18-alpine
+FROM node:$NODEJS_VERSION-alpine
 
 RUN mkdir -p /home/lisk/lisk-service/blockchain-app-registry/data && \
     adduser -D lisk && \
