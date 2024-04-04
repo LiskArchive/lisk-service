@@ -67,7 +67,7 @@ WebSocket-based APIs can be used through the [Socket.IO](https://socket.io/) lib
 
 To continue the installation ensure that you have the following dependencies installed:
 
-- [NodeJS Active LTS - ^v18.19.1](https://nodejs.org/en/about/releases/)
+- [NodeJS Active LTS - ^v18.20.1](https://nodejs.org/en/about/releases/)
 - [MySQL - ^v8.0.29](https://dev.mysql.com/doc/relnotes/mysql/8.0/en/)
 - [Docker](https://www.docker.com/) with [Docker compose](https://docs.docker.com/compose/install/)
 - [GNU Make](https://www.gnu.org/software/make/) and [GNU Tar](https://www.gnu.org/software/tar/)
