@@ -62,4 +62,10 @@ xunit-report.xml
 db_data
 
 # Data download directory
-data
+data/*
+!data/00000000
+data/00000000/*
+!data/00000000/genesis_block.json
+!data/01000000
+data/01000000/*
+!data/01000000/genesis_block.json
