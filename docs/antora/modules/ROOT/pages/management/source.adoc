@@ -61,15 +61,15 @@ pm2 start ecosystem.config.js
 ┌----------------------------------------------------------------------------------------------------------------------------------------------------------------------------┐
 │ id  │ name                                    │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
 ├----------------------------------------------------------------------------------------------------------------------------------------------------------------------------┤
-│ 1   │ lisk-service-blockchain-app-registry    │ default     │ 0.7.0-… │ fork    │ 33328    │ 0s     │ 16   │ online    │ 0%       │ 65.5mb   │ XYZ      │ disabled │
-│ 2   │ lisk-service-blockchain-connector       │ default     │ 0.7.0-… │ fork    │ 33331    │ 0s     │ 0    │ online    │ 0%       │ 63.8mb   │ XYZ      │ disabled │
-│ 4   │ lisk-service-blockchain-coordinator     │ default     │ 0.7.0-… │ fork    │ 33341    │ 0s     │ 0    │ online    │ 0%       │ 54.1mb   │ XYZ      │ disabled │
-│ 3   │ lisk-service-blockchain-indexer         │ default     │ 0.7.0-… │ fork    │ 33338    │ 0s     │ 16   │ online    │ 0%       │ 54.3mb   │ XYZ      │ disabled │
-│ 8   │ lisk-service-export                     │ default     │ 0.7.0-… │ fork    │ 33355    │ 0s     │ 15   │ online    │ 0%       │ 14.1mb   │ XYZ      │ disabled │
-│ 5   │ lisk-service-fee-estimator              │ default     │ 0.7.0-… │ fork    │ 33346    │ 0s     │ 15   │ online    │ 0%       │ 46.9mb   │ XYZ      │ disabled │
-│ 0   │ lisk-service-gateway                    │ default     │ 0.7.0-… │ fork    │ 33326    │ 0s     │ 15   │ online    │ 0%       │ 65.6mb   │ XYZ      │ disabled │
-│ 7   │ lisk-service-market                     │ default     │ 0.7.0-… │ fork    │ 33351    │ 0s     │ 15   │ online    │ 0%       │ 36.9mb   │ XYZ      │ disabled │
-│ 6   │ lisk-service-transaction-statistics     │ default     │ 0.7.0-… │ fork    │ 33348    │ 0s     │ 15   │ online    │ 0%       │ 43.5mb   │ XYZ      │ disabled │
+│ 1   │ lisk-service-blockchain-app-registry    │ default     │ 0.7.7   │ fork    │ 33328    │ 0s     │ 16   │ online    │ 0%       │ 65.5mb   │ XYZ      │ disabled │
+│ 2   │ lisk-service-blockchain-connector       │ default     │ 0.7.7   │ fork    │ 33331    │ 0s     │ 0    │ online    │ 0%       │ 63.8mb   │ XYZ      │ disabled │
+│ 4   │ lisk-service-blockchain-coordinator     │ default     │ 0.7.7   │ fork    │ 33341    │ 0s     │ 0    │ online    │ 0%       │ 54.1mb   │ XYZ      │ disabled │
+│ 3   │ lisk-service-blockchain-indexer         │ default     │ 0.7.7   │ fork    │ 33338    │ 0s     │ 16   │ online    │ 0%       │ 54.3mb   │ XYZ      │ disabled │
+│ 8   │ lisk-service-export                     │ default     │ 0.7.7   │ fork    │ 33355    │ 0s     │ 15   │ online    │ 0%       │ 14.1mb   │ XYZ      │ disabled │
+│ 5   │ lisk-service-fee-estimator              │ default     │ 0.7.7   │ fork    │ 33346    │ 0s     │ 15   │ online    │ 0%       │ 46.9mb   │ XYZ      │ disabled │
+│ 0   │ lisk-service-gateway                    │ default     │ 0.7.7   │ fork    │ 33326    │ 0s     │ 15   │ online    │ 0%       │ 65.6mb   │ XYZ      │ disabled │
+│ 7   │ lisk-service-market                     │ default     │ 0.7.7   │ fork    │ 33351    │ 0s     │ 15   │ online    │ 0%       │ 36.9mb   │ XYZ      │ disabled │
+│ 6   │ lisk-service-transaction-statistics     │ default     │ 0.7.7   │ fork    │ 33348    │ 0s     │ 15   │ online    │ 0%       │ 43.5mb   │ XYZ      │ disabled │
 └----------------------------------------------------------------------------------------------------------------------------------------------------------------------------┘
 ----
 ====
@@ -90,15 +90,15 @@ pm2 list
 ┌----------------------------------------------------------------------------------------------------------------------------------------------------------------------------┐
 │ id  │ name                                    │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
 ├----------------------------------------------------------------------------------------------------------------------------------------------------------------------------┤
-│ 1   │ lisk-service-blockchain-app-registry    │ default     │ 0.7.0-… │ fork    │ 33328    │ 0s     │ 16   │ online    │ 0%       │ 65.5mb   │ XYZ      │ disabled │
-│ 2   │ lisk-service-blockchain-connector       │ default     │ 0.7.0-… │ fork    │ 33331    │ 0s     │ 0    │ online    │ 0%       │ 63.8mb   │ XYZ      │ disabled │
-│ 4   │ lisk-service-blockchain-coordinator     │ default     │ 0.7.0-… │ fork    │ 33341    │ 0s     │ 0    │ online    │ 0%       │ 54.1mb   │ XYZ      │ disabled │
-│ 3   │ lisk-service-blockchain-indexer         │ default     │ 0.7.0-… │ fork    │ 33338    │ 0s     │ 16   │ online    │ 0%       │ 54.3mb   │ XYZ      │ disabled │
-│ 8   │ lisk-service-export                     │ default     │ 0.7.0-… │ fork    │ 33355    │ 0s     │ 15   │ online    │ 0%       │ 14.1mb   │ XYZ      │ disabled │
-│ 5   │ lisk-service-fee-estimator              │ default     │ 0.7.0-… │ fork    │ 33346    │ 0s     │ 15   │ online    │ 0%       │ 46.9mb   │ XYZ      │ disabled │
-│ 0   │ lisk-service-gateway                    │ default     │ 0.7.0-… │ fork    │ 33326    │ 0s     │ 15   │ online    │ 0%       │ 65.6mb   │ XYZ      │ disabled │
-│ 7   │ lisk-service-market                     │ default     │ 0.7.0-… │ fork    │ 33351    │ 0s     │ 15   │ online    │ 0%       │ 36.9mb   │ XYZ      │ disabled │
-│ 6   │ lisk-service-transaction-statistics     │ default     │ 0.7.0-… │ fork    │ 33348    │ 0s     │ 15   │ online    │ 0%       │ 43.5mb   │ XYZ      │ disabled │
+│ 1   │ lisk-service-blockchain-app-registry    │ default     │ 0.7.7   │ fork    │ 33328    │ 0s     │ 16   │ online    │ 0%       │ 65.5mb   │ XYZ      │ disabled │
+│ 2   │ lisk-service-blockchain-connector       │ default     │ 0.7.7   │ fork    │ 33331    │ 0s     │ 0    │ online    │ 0%       │ 63.8mb   │ XYZ      │ disabled │
+│ 4   │ lisk-service-blockchain-coordinator     │ default     │ 0.7.7   │ fork    │ 33341    │ 0s     │ 0    │ online    │ 0%       │ 54.1mb   │ XYZ      │ disabled │
+│ 3   │ lisk-service-blockchain-indexer         │ default     │ 0.7.7   │ fork    │ 33338    │ 0s     │ 16   │ online    │ 0%       │ 54.3mb   │ XYZ      │ disabled │
+│ 8   │ lisk-service-export                     │ default     │ 0.7.7   │ fork    │ 33355    │ 0s     │ 15   │ online    │ 0%       │ 14.1mb   │ XYZ      │ disabled │
+│ 5   │ lisk-service-fee-estimator              │ default     │ 0.7.7   │ fork    │ 33346    │ 0s     │ 15   │ online    │ 0%       │ 46.9mb   │ XYZ      │ disabled │
+│ 0   │ lisk-service-gateway                    │ default     │ 0.7.7   │ fork    │ 33326    │ 0s     │ 15   │ online    │ 0%       │ 65.6mb   │ XYZ      │ disabled │
+│ 7   │ lisk-service-market                     │ default     │ 0.7.7   │ fork    │ 33351    │ 0s     │ 15   │ online    │ 0%       │ 36.9mb   │ XYZ      │ disabled │
+│ 6   │ lisk-service-transaction-statistics     │ default     │ 0.7.7   │ fork    │ 33348    │ 0s     │ 15   │ online    │ 0%       │ 43.5mb   │ XYZ      │ disabled │
 └----------------------------------------------------------------------------------------------------------------------------------------------------------------------------┘
 ----
 ====
@@ -183,15 +183,15 @@ pm2 stop ecosystem.config.js
 ┌------------------------------------------------------------------------------------------------------------------------------------------------------------------------┐
 │ id  │ name                                    │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem  │ user     │ watching │
 ├------------------------------------------------------------------------------------------------------------------------------------------------------------------------┤
-│ 1   │ lisk-service-blockchain-app-registry    │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 32   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
-│ 2   │ lisk-service-blockchain-connector       │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 0    │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
-│ 4   │ lisk-service-blockchain-coordinator     │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 0    │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
-│ 3   │ lisk-service-blockchain-indexer         │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 32   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
-│ 8   │ lisk-service-export                     │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 30   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
-│ 5   │ lisk-service-fee-estimator              │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 30   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
-│ 0   │ lisk-service-gateway                    │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 30   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
-│ 7   │ lisk-service-market                     │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 30   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
-│ 6   │ lisk-service-transaction-statistics     │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 30   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+│ 1   │ lisk-service-blockchain-app-registry    │ default     │ 0.7.7   │ fork    │ 0        │ 0      │ 32   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+│ 2   │ lisk-service-blockchain-connector       │ default     │ 0.7.7   │ fork    │ 0        │ 0      │ 0    │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+│ 4   │ lisk-service-blockchain-coordinator     │ default     │ 0.7.7   │ fork    │ 0        │ 0      │ 0    │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+│ 3   │ lisk-service-blockchain-indexer         │ default     │ 0.7.7   │ fork    │ 0        │ 0      │ 32   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+│ 8   │ lisk-service-export                     │ default     │ 0.7.7   │ fork    │ 0        │ 0      │ 30   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+│ 5   │ lisk-service-fee-estimator              │ default     │ 0.7.7   │ fork    │ 0        │ 0      │ 30   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+│ 0   │ lisk-service-gateway                    │ default     │ 0.7.7   │ fork    │ 0        │ 0      │ 30   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+│ 7   │ lisk-service-market                     │ default     │ 0.7.7   │ fork    │ 0        │ 0      │ 30   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+│ 6   │ lisk-service-transaction-statistics     │ default     │ 0.7.7   │ fork    │ 0        │ 0      │ 30   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
 └------------------------------------------------------------------------------------------------------------------------------------------------------------------------┘
 ----
 ====
@@ -232,15 +232,15 @@ pm2 restart ecosystem.config.js
 ┌----------------------------------------------------------------------------------------------------------------------------------------------------------------------------┐
 │ id  │ name                                    │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
 ├----------------------------------------------------------------------------------------------------------------------------------------------------------------------------┤
-│ 1   │ lisk-service-blockchain-app-registry    │ default     │ 0.7.0-… │ fork    │ 33328    │ 0s     │ 16   │ online    │ 0%       │ 65.5mb   │ XYZ      │ disabled │
-│ 2   │ lisk-service-blockchain-connector       │ default     │ 0.7.0-… │ fork    │ 33331    │ 0s     │ 0    │ online    │ 0%       │ 63.8mb   │ XYZ      │ disabled │
-│ 4   │ lisk-service-blockchain-coordinator     │ default     │ 0.7.0-… │ fork    │ 33341    │ 0s     │ 0    │ online    │ 0%       │ 54.1mb   │ XYZ      │ disabled │
-│ 3   │ lisk-service-blockchain-indexer         │ default     │ 0.7.0-… │ fork    │ 33338    │ 0s     │ 16   │ online    │ 0%       │ 54.3mb   │ XYZ      │ disabled │
-│ 8   │ lisk-service-export                     │ default     │ 0.7.0-… │ fork    │ 33355    │ 0s     │ 15   │ online    │ 0%       │ 14.1mb   │ XYZ      │ disabled │
-│ 5   │ lisk-service-fee-estimator              │ default     │ 0.7.0-… │ fork    │ 33346    │ 0s     │ 15   │ online    │ 0%       │ 46.9mb   │ XYZ      │ disabled │
-│ 0   │ lisk-service-gateway                    │ default     │ 0.7.0-… │ fork    │ 33326    │ 0s     │ 15   │ online    │ 0%       │ 65.6mb   │ XYZ      │ disabled │
-│ 7   │ lisk-service-market                     │ default     │ 0.7.0-… │ fork    │ 33351    │ 0s     │ 15   │ online    │ 0%       │ 36.9mb   │ XYZ      │ disabled │
-│ 6   │ lisk-service-transaction-statistics     │ default     │ 0.7.0-… │ fork    │ 33348    │ 0s     │ 15   │ online    │ 0%       │ 43.5mb   │ XYZ      │ disabled │
+│ 1   │ lisk-service-blockchain-app-registry    │ default     │ 0.7.7   │ fork    │ 33328    │ 0s     │ 16   │ online    │ 0%       │ 65.5mb   │ XYZ      │ disabled │
+│ 2   │ lisk-service-blockchain-connector       │ default     │ 0.7.7   │ fork    │ 33331    │ 0s     │ 0    │ online    │ 0%       │ 63.8mb   │ XYZ      │ disabled │
+│ 4   │ lisk-service-blockchain-coordinator     │ default     │ 0.7.7   │ fork    │ 33341    │ 0s     │ 0    │ online    │ 0%       │ 54.1mb   │ XYZ      │ disabled │
+│ 3   │ lisk-service-blockchain-indexer         │ default     │ 0.7.7   │ fork    │ 33338    │ 0s     │ 16   │ online    │ 0%       │ 54.3mb   │ XYZ      │ disabled │
+│ 8   │ lisk-service-export                     │ default     │ 0.7.7   │ fork    │ 33355    │ 0s     │ 15   │ online    │ 0%       │ 14.1mb   │ XYZ      │ disabled │
+│ 5   │ lisk-service-fee-estimator              │ default     │ 0.7.7   │ fork    │ 33346    │ 0s     │ 15   │ online    │ 0%       │ 46.9mb   │ XYZ      │ disabled │
+│ 0   │ lisk-service-gateway                    │ default     │ 0.7.7   │ fork    │ 33326    │ 0s     │ 15   │ online    │ 0%       │ 65.6mb   │ XYZ      │ disabled │
+│ 7   │ lisk-service-market                     │ default     │ 0.7.7   │ fork    │ 33351    │ 0s     │ 15   │ online    │ 0%       │ 36.9mb   │ XYZ      │ disabled │
+│ 6   │ lisk-service-transaction-statistics     │ default     │ 0.7.7   │ fork    │ 33348    │ 0s     │ 15   │ online    │ 0%       │ 43.5mb   │ XYZ      │ disabled │
 └----------------------------------------------------------------------------------------------------------------------------------------------------------------------------┘
 ----
 ====
@@ -405,15 +405,15 @@ pm2 stop ecosystem.config.js
 ┌------------------------------------------------------------------------------------------------------------------------------------------------------------------------┐
 │ id  │ name                                    │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem  │ user     │ watching │
 ├------------------------------------------------------------------------------------------------------------------------------------------------------------------------┤
-│ 1   │ lisk-service-blockchain-app-registry    │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 32   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
-│ 2   │ lisk-service-blockchain-connector       │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 0    │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
-│ 4   │ lisk-service-blockchain-coordinator     │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 0    │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
-│ 3   │ lisk-service-blockchain-indexer         │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 32   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
-│ 8   │ lisk-service-export                     │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 30   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
-│ 5   │ lisk-service-fee-estimator              │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 30   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
-│ 0   │ lisk-service-gateway                    │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 30   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
-│ 7   │ lisk-service-market                     │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 30   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
-│ 6   │ lisk-service-transaction-statistics     │ default     │ 0.7.0-… │ fork    │ 0        │ 0      │ 30   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+│ 1   │ lisk-service-blockchain-app-registry    │ default     │ 0.7.7   │ fork    │ 0        │ 0      │ 32   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+│ 2   │ lisk-service-blockchain-connector       │ default     │ 0.7.7   │ fork    │ 0        │ 0      │ 0    │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+│ 4   │ lisk-service-blockchain-coordinator     │ default     │ 0.7.7   │ fork    │ 0        │ 0      │ 0    │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+│ 3   │ lisk-service-blockchain-indexer         │ default     │ 0.7.7   │ fork    │ 0        │ 0      │ 32   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+│ 8   │ lisk-service-export                     │ default     │ 0.7.7   │ fork    │ 0        │ 0      │ 30   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+│ 5   │ lisk-service-fee-estimator              │ default     │ 0.7.7   │ fork    │ 0        │ 0      │ 30   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+│ 0   │ lisk-service-gateway                    │ default     │ 0.7.7   │ fork    │ 0        │ 0      │ 30   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+│ 7   │ lisk-service-market                     │ default     │ 0.7.7   │ fork    │ 0        │ 0      │ 30   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
+│ 6   │ lisk-service-transaction-statistics     │ default     │ 0.7.7   │ fork    │ 0        │ 0      │ 30   │ stopped   │ 0%       │ 0b   │ XYZ      │ disabled │
 └------------------------------------------------------------------------------------------------------------------------------------------------------------------------┘
 ----
 ====
@@ -421,7 +421,7 @@ pm2 stop ecosystem.config.js
 . Checkout the version with *`git checkout <tag>`*.
 +
 ----
-git checkout v0.7.0
+git checkout v0.7.7
 ----
 
 . Update the npm dependencies by executing the following command.
@@ -462,15 +462,15 @@ pm2 start ecosystem.config.js
 ┌----------------------------------------------------------------------------------------------------------------------------------------------------------------------------┐
 │ id  │ name                                    │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
 ├----------------------------------------------------------------------------------------------------------------------------------------------------------------------------┤
-│ 1   │ lisk-service-blockchain-app-registry    │ default     │ 0.7.0-… │ fork    │ 33328    │ 0s     │ 16   │ online    │ 0%       │ 65.5mb   │ XYZ      │ disabled │
-│ 2   │ lisk-service-blockchain-connector       │ default     │ 0.7.0-… │ fork    │ 33331    │ 0s     │ 0    │ online    │ 0%       │ 63.8mb   │ XYZ      │ disabled │
-│ 4   │ lisk-service-blockchain-coordinator     │ default     │ 0.7.0-… │ fork    │ 33341    │ 0s     │ 0    │ online    │ 0%       │ 54.1mb   │ XYZ      │ disabled │
-│ 3   │ lisk-service-blockchain-indexer         │ default     │ 0.7.0-… │ fork    │ 33338    │ 0s     │ 16   │ online    │ 0%       │ 54.3mb   │ XYZ      │ disabled │
-│ 8   │ lisk-service-export                     │ default     │ 0.7.0-… │ fork    │ 33355    │ 0s     │ 15   │ online    │ 0%       │ 14.1mb   │ XYZ      │ disabled │
-│ 5   │ lisk-service-fee-estimator              │ default     │ 0.7.0-… │ fork    │ 33346    │ 0s     │ 15   │ online    │ 0%       │ 46.9mb   │ XYZ      │ disabled │
-│ 0   │ lisk-service-gateway                    │ default     │ 0.7.0-… │ fork    │ 33326    │ 0s     │ 15   │ online    │ 0%       │ 65.6mb   │ XYZ      │ disabled │
-│ 7   │ lisk-service-market                     │ default     │ 0.7.0-… │ fork    │ 33351    │ 0s     │ 15   │ online    │ 0%       │ 36.9mb   │ XYZ      │ disabled │
-│ 6   │ lisk-service-transaction-statistics     │ default     │ 0.7.0-… │ fork    │ 33348    │ 0s     │ 15   │ online    │ 0%       │ 43.5mb   │ XYZ      │ disabled │
+│ 1   │ lisk-service-blockchain-app-registry    │ default     │ 0.7.7   │ fork    │ 33328    │ 0s     │ 16   │ online    │ 0%       │ 65.5mb   │ XYZ      │ disabled │
+│ 2   │ lisk-service-blockchain-connector       │ default     │ 0.7.7   │ fork    │ 33331    │ 0s     │ 0    │ online    │ 0%       │ 63.8mb   │ XYZ      │ disabled │
+│ 4   │ lisk-service-blockchain-coordinator     │ default     │ 0.7.7   │ fork    │ 33341    │ 0s     │ 0    │ online    │ 0%       │ 54.1mb   │ XYZ      │ disabled │
+│ 3   │ lisk-service-blockchain-indexer         │ default     │ 0.7.7   │ fork    │ 33338    │ 0s     │ 16   │ online    │ 0%       │ 54.3mb   │ XYZ      │ disabled │
+│ 8   │ lisk-service-export                     │ default     │ 0.7.7   │ fork    │ 33355    │ 0s     │ 15   │ online    │ 0%       │ 14.1mb   │ XYZ      │ disabled │
+│ 5   │ lisk-service-fee-estimator              │ default     │ 0.7.7   │ fork    │ 33346    │ 0s     │ 15   │ online    │ 0%       │ 46.9mb   │ XYZ      │ disabled │
+│ 0   │ lisk-service-gateway                    │ default     │ 0.7.7   │ fork    │ 33326    │ 0s     │ 15   │ online    │ 0%       │ 65.6mb   │ XYZ      │ disabled │
+│ 7   │ lisk-service-market                     │ default     │ 0.7.7   │ fork    │ 33351    │ 0s     │ 15   │ online    │ 0%       │ 36.9mb   │ XYZ      │ disabled │
+│ 6   │ lisk-service-transaction-statistics     │ default     │ 0.7.7   │ fork    │ 33348    │ 0s     │ 15   │ online    │ 0%       │ 43.5mb   │ XYZ      │ disabled │
 └----------------------------------------------------------------------------------------------------------------------------------------------------------------------------┘
 ----
 ====

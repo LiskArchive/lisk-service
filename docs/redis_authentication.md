@@ -2,7 +2,7 @@
 
 To prevent unauthorized access to the Redis database and mitigate unintended behavior associated with the use of Redis' passwordless `default` user.
 
-With Lisk Service [v0.7.2](https://github.com/LiskHQ/lisk-service/tree/v0.7.2), similar to our MySQL setup, we now enforce our custom authentication on Redis, by default, with the following credentials:
+Starting with Lisk Service [v0.7.2](https://github.com/LiskHQ/lisk-service/tree/v0.7.2), similar to our MySQL setup, we now enforce our custom authentication on Redis, by default, with the following credentials:
 
 > **Username**: `lisk` <br>
 > **Password**: `password`
