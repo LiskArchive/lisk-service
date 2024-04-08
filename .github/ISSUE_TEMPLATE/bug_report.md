@@ -4,7 +4,7 @@ about: Create a report to help us improve
 title: ''
 labels: 'type: bug'
 assignees: ''
-projects: 'Lisk Service Version 0.7.0'
+projects: 'Lisk Service Version 0.7'
 status: 'Backlog'
 ---
 
