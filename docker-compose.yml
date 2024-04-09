@@ -75,6 +75,7 @@ services:
       endpoint_mode: vip
     environment:
       - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=lisk
     healthcheck:
       test: ['CMD', 'mysqladmin', 'ping', '-hlocalhost', '-ppassword']
 

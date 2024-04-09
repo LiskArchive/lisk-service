@@ -1,3 +1,6 @@
+-- Create database(s).
+CREATE DATABASE IF NOT EXISTS `lisk`;
+
 -- Create `reader` user for read queries and grant read privilages.
 CREATE USER 'reader'@'%' IDENTIFIED WITH caching_sha2_password BY 'password';
 GRANT SELECT ON *.* TO 'reader'@'%';

@@ -442,8 +442,8 @@ By default, it is set to `3`.
 | `ENDPOINT_INVOKE_RETRY_DELAY`
 | number
 | Delay (in milliseconds) between each endpoint invocation request retry.
-By default, it is set to `50`.
-| 50
+By default, it is set to `1000`.
+| 1000
 
 | `CONNECTOR_EXIT_DELAY_IN_HOURS`
 | number

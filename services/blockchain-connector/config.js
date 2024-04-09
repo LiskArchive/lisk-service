@@ -121,7 +121,7 @@ config.apiClient = {
 	pingIntervalBuffer: Number(process.env.WS_SERVER_PING_INTERVAL_BUFFER) || 1000, // in millisecs
 	request: {
 		maxRetries: Number(process.env.ENDPOINT_INVOKE_MAX_RETRIES) || 3,
-		retryDelay: Number(process.env.ENDPOINT_INVOKE_RETRY_DELAY) || 50, // in millisecs
+		retryDelay: Number(process.env.ENDPOINT_INVOKE_RETRY_DELAY) || 1000, // in millisecs
 	},
 };
 

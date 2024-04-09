@@ -40,7 +40,7 @@ A list of the most commonly used environment variables is presented below:
 - `WS_SERVER_PING_INTERVAL`: Interval (in milliseconds) at which the WS server checks for liveliness of all the connected clients. This should not be modified unless explicitly recommended by the development team. By default, it is set to `3000`.
 - `WS_SERVER_PING_INTERVAL_BUFFER`: A conservative assumption of the latency (in milliseconds) for WS server pings to arrive at the client. By default, it is set to `1000`.
 - `ENDPOINT_INVOKE_MAX_RETRIES`: Maximum number of endpoint invocation request retries to the node. By default, it is set to `3`.
-- `ENDPOINT_INVOKE_RETRY_DELAY`: Delay (in milliseconds) between each endpoint invocation request retry. By default, it is set to `50`.
+- `ENDPOINT_INVOKE_RETRY_DELAY`: Delay (in milliseconds) between each endpoint invocation request retry. By default, it is set to `1000`.
 - `CONNECTOR_EXIT_DELAY_IN_HOURS`: Delay (in hours) after which the blockchain-connector microservice exits. The service should restart automatically if deployed using Docker or PM2. To be removed eventually. To enable it, set it higher than `0`. By default, it is set to `0`.
 - `JOB_INTERVAL_CACHE_CLEANUP`: Job run interval to cleanup block cache. By default, it is set to `0`.
 - `JOB_SCHEDULE_CACHE_CLEANUP`: Job run cron schedule to cleanup block cache. By default, it is set to run every 12 hours (`0 */12 * * *`).
