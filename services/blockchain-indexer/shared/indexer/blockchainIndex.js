@@ -354,7 +354,7 @@ const indexBlock = async job => {
 			await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
 
 			// Get addresses to schedule account balance updates from token module events
-			addressesToUpdateBalance = getAddressesFromTokenEvents(events);
+			addressesToUpdateBalance = await getAddressesFromTokenEvents(events);
 		}
 
 		const blockToIndex = {
@@ -624,7 +624,7 @@ const deleteIndexedBlocks = async job => {
 					await updateTotalLockedAmounts(tokenIDLockedAmountChangeMap, dbTrx);
 
 					// Get addresses to schedule account balance updates from token module events
-					addressesToUpdateBalance = getAddressesFromTokenEvents(events);
+					addressesToUpdateBalance = await getAddressesFromTokenEvents(events);
 				}
 
 				// Invalidate cached events for this block. Must be done after processing all event related calculations

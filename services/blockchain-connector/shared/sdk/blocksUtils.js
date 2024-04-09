@@ -140,7 +140,12 @@ const getGenesisBlockFromFS = async () => {
 		}
 
 		const block = await new Promise((resolve, reject) => {
-			readStream.pipe(parseStream.on('data', data => resolve(data)));
+			readStream.pipe(
+				parseStream.on('data', data => {
+					logger.info('Successfully read the genesis block from the FS.');
+					return resolve(data);
+				}),
+			);
 			parseStream.on('error', err => reject(err));
 		});
 
