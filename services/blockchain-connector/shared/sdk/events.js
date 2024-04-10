@@ -71,6 +71,7 @@ const emitEngineEvents = async () => {
 					lastBlockHeightEvent = height;
 					const newBlock = await getBlockByHeight(height);
 					Signals.get(EVENT_CHAIN_BLOCK_NEW).dispatch({ blockHeader: newBlock.header });
+					await updateTokenInfo().catch(err => logError('updateTokenInfo', err));
 
 					if ((height - genesisHeight) % roundLength === 1) {
 						const bftParameters = await getBFTParameters(height);
