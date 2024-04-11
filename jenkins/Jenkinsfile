@@ -43,7 +43,7 @@ pipeline {
 			steps {
 				nvm(readFile(".nvmrc").trim()) {
 					sh '''
-					npm run format
+					yarn format
 					if [ -z "$(git status --untracked-files=no --porcelain)" ]; then
 						echo "All files formatted"
 					else
@@ -58,14 +58,14 @@ pipeline {
 			steps {
 				script { echoBanner(STAGE_NAME) }
 				nvm(readFile('.nvmrc').trim()) {
-					dir('./framework') { sh "yarn run test:unit" }
-					dir('./services/blockchain-app-registry') { sh "yarn run test:unit" }
-					dir('./services/blockchain-connector') { sh "yarn run test:unit" }
-					dir('./services/blockchain-indexer') { sh "yarn run test:unit" }
-					dir('./services/fee-estimator') { sh "yarn run test:unit" }
-					dir('./services/market') { sh "yarn run test:unit" }
-					dir('./services/export') { sh "yarn run test:unit" }
-					dir('./services/gateway') { sh "yarn run test:unit" }
+					dir('./framework') { sh "yarn test:unit" }
+					dir('./services/blockchain-app-registry') { sh "yarn test:unit" }
+					dir('./services/blockchain-connector') { sh "yarn test:unit" }
+					dir('./services/blockchain-indexer') { sh "yarn test:unit" }
+					dir('./services/fee-estimator') { sh "yarn test:unit" }
+					dir('./services/market') { sh "yarn test:unit" }
+					dir('./services/export') { sh "yarn test:unit" }
+					dir('./services/gateway') { sh "yarn test:unit" }
 				}
 			}
 		}
