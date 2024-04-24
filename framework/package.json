@@ -48,7 +48,7 @@
 		"moleculer": "^0.14.21",
 		"moleculer-web": "^0.10.4",
 		"moment": "^2.29.4",
-		"mysql2": "^3.5.2",
+		"mysql2": "^3.9.7",
 		"nats": "^1.4.12",
 		"node-cron": "^2.0.3",
 		"prettyjson": "^1.2.1",
