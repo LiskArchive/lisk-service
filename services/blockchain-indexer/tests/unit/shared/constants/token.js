@@ -29,11 +29,15 @@ const mockTokenTopBalancesDbSearchResult = {
 	},
 	orSearch: [
 		{
-			property: 'accounts.name',
+			property: 'account_balances.address',
 			pattern: 'search123',
 		},
 		{
 			property: 'accounts.address',
+			pattern: 'search123',
+		},
+		{
+			property: 'accounts.name',
 			pattern: 'search123',
 		},
 		{

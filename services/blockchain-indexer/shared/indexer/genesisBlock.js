@@ -221,6 +221,9 @@ const indexGenesisBlockAssets = async dbTrx => {
 
 let indexedGenesisAccountBalances;
 const interval = setInterval(async () => {
+	logger.debug(
+		`indexedGenesisAccountBalances interval triggered. ${genesisAccountBalances.length} pending.`,
+	);
 	try {
 		if (genesisAccountBalances.length) {
 			if (indexedGenesisAccountBalances === false) return;
@@ -241,11 +244,11 @@ const interval = setInterval(async () => {
 					numEntries++;
 				})
 				.catch(err => {
-					numEntries--;
 					genesisAccountBalances.push(accountBalanceEntry);
 					logger.warn(
 						`Updating account balance for ${accountBalanceEntry.address} failed. Will retry.\nError: ${err.message}`,
 					);
+					logger.debug(`${numEntries} indexed so far, ${genesisAccountBalances.length} pending.`);
 				});
 		}
 
