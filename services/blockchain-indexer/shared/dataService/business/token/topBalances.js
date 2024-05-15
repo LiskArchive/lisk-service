@@ -51,11 +51,15 @@ const getTokenTopBalances = async params => {
 	if (search) {
 		params.orSearch = [
 			{
-				property: `${accountTableSchema.tableName}.name`,
+				property: `${accountBalancesTableSchema.tableName}.address`,
 				pattern: search,
 			},
 			{
 				property: `${accountTableSchema.tableName}.address`,
+				pattern: search,
+			},
+			{
+				property: `${accountTableSchema.tableName}.name`,
 				pattern: search,
 			},
 			{
